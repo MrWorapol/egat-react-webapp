@@ -31,8 +31,8 @@ export default function Header() {
                     LOGO EGAT
                 </Typography>
             </Grid>
-            <Grid container item xs={10} justifyContent="flex-end" style={{ backgroundColor: "blue" }} pr={2}>
-                <Typography>Main Meny </Typography>
+            <Grid container item xs={10} justifyContent="flex-end" style={{ backgroundColor: "white" }} pr={2}>
+                <Typography>Main Menu </Typography>
             </Grid>
         </Grid>
         // <AppBar position="static" style={{ backgroundColor:"white"}}>

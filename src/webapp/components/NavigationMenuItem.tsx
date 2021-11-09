@@ -5,14 +5,16 @@ export default function NavigationMenuItem(
     {
         icon,
         label,
-        selected
+        selected,
+        onClick
     }: {
         icon: JSX.Element,
         label: string,
-        selected: boolean
+        selected: boolean,
+        onClick: () => void,
     }) {
 
-    console.log(`selected : ${typeof (selected)}`);
+    // console.log(`selected : ${typeof (selected)}`);
 
     if (selected) {
         return renderSelected();
@@ -21,35 +23,33 @@ export default function NavigationMenuItem(
     }
 
     function renderSelected() {
-        console.log('select ja');
+        // console.log('select ja');
         return (
-            <ListItem disablePadding>
-                <ListItemButton>
-                    <ListItemIcon>
-                        {icon}
-                    </ListItemIcon>
-                    <ListItemText >
-                        <Typography style={{ fontSize: '1em', backgroundColor: 'secondary' }}>{label}</Typography>
-                    </ListItemText>
-                </ListItemButton>
-            </ListItem>
+            // <Box bgcolor="secondary.main" color="white">
+                    <ListItemButton onClick={onClick} sx={{ backgroundColor: 'secondary.main',color:"white" }}>
+                        <ListItemIcon sx={{ color: "white" }}>
+                            {icon}
+                        </ListItemIcon>
+                        <ListItemText >
+                            <Typography style={{ fontSize: '1em' }}>{label}</Typography>
+                        </ListItemText>
+                    </ListItemButton>
+            // </Box>
         );
     }
 
     function renderNotSelected() {
-        console.log('not select ja');
+        // console.log('not select ja');
 
         return (
-            <ListItem disablePadding>
-                <ListItemButton>
-                    <ListItemIcon>
-                        {icon}
-                    </ListItemIcon>
-                    <ListItemText >
-                        <Typography style={{ fontSize: '1em' }}>{label}</Typography>
-                    </ListItemText>
-                </ListItemButton>
-            </ListItem>
+            <ListItemButton onClick={onClick}>
+                <ListItemIcon>
+                    {icon}
+                </ListItemIcon>
+                <ListItemText >
+                    <Typography style={{ fontSize: '1em' }}>{label}</Typography>
+                </ListItemText>
+            </ListItemButton>
         );
     }
 }

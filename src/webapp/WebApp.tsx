@@ -5,25 +5,45 @@ import Login from './pages/login/Login'
 import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
 import theme from './theme/Theme';
 import MainPage from './pages/main/MainPage';
+import { RecoilRoot } from 'recoil';
+import { Box } from '@mui/system';
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import CustomDialog from './components/CustomDialog';
+import { useAuthGuard } from './hooks/useAuthGuard';
+import { CustomBackdrop } from './components/CustomLoadingBackdrop';
 
 export default function WebApp() {
     return (
         <ThemeProvider theme={theme}>
-            {/* <Login /> */}
-            <MainPage />
+            <RecoilRoot>
+                <React.Suspense fallback={<div>Loading...</div>}>
+                    <Router>
+                        {/* <Login /> */}
+                        <WebAdminRouting />
+                    </Router>
+                    <CustomDialog />
+                    <CustomBackdrop/>
+                </React.Suspense>
+
+            </RecoilRoot>
         </ThemeProvider>
-        // <div>
-        //     <Header />
-        //     <Grid container direction="row">
-        //         <Grid item xs={2} id="header">
-        //             <div style={{ color: 'black', backgroundColor: '#f00' }}><h1>Web App</h1></div>
-        //         </Grid>
-        //         <Grid item xs={10} id="content">
-        //             <div style={{ color: 'black', backgroundColor: '#00f' }}><h1>Web App</h1></div>
-        //             {/* <Login/> */}
-        //         </Grid>
-        //     </Grid>
-        // </div>
+    )
+}
+
+function WebAdminRouting() {
+    useAuthGuard();
+    return (
+        <Box>
+            <Switch>
+
+                <Route path='/login' exact>
+                    <Login />
+                </Route>
+                <Route path={['/']} >
+                    <MainPage />
+                </Route>
+            </Switch>
+        </Box>
     )
 }
 

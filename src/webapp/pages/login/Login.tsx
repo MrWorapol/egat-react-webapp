@@ -1,10 +1,45 @@
 import { Box, Button, Card, CardContent, Container, Grid, Paper, TextField, Typography } from '@mui/material'
 import React from 'react'
+import { useForm } from 'react-hook-form';
+import { useHistory, useParams } from 'react-router';
+import { useRecoilState } from 'recoil';
+import { useLogin } from '../../hooks/useLogin';
+import { userProfile } from '../../state/user-profile';
+import { session } from '../../state/user-sessions';
 
 
-
+type LoginForm = {
+    username: string;
+    password: string;
+}
 
 export default function Login() {
+    const { register, handleSubmit, } = useForm();
+    const [, setProfile] = useRecoilState(userProfile);
+    const { login, session } = useLogin();
+    const history = useHistory();
+    // const  params = useParams();
+    // console.log(`params is`);
+    // console.log(params);
+    const [loadingButton, setLoadingButton] = React.useState(false);
+
+    if (session) {
+        console.log(`accessToken : ${session.accessToken}`);
+        history.push('/dashboard');
+    }
+
+    const onSubmitLogin = async (data: LoginForm) => {
+        setLoadingButton(true);
+        await login(data.username, data.password);
+        setLoadingButton(false);
+        console.log(`before check accessToken`);
+        if (session) {
+            history.push('/dashboard');
+        } else {
+
+            console.log(`after check accessToken`);
+        }
+    }
     return (
         <Grid
             container
@@ -29,43 +64,50 @@ export default function Login() {
                     md={6}
                     style={{ justifyContent: 'center', alignItems: 'center', display: 'flex' }}>
                     <div style={{ margin: "1em 2em 1em  2em", width: "100%" }}>
-                        <Grid container item direction="column" style={{ justifyContent: 'flex-start', alignItems: 'start' }} spacing={2}>
-                            <Grid item>
-                                <Box>
-                                    <Typography variant="h4" style={{ marginBottom: '0.4em' }}>Login</Typography>
-                                    <Typography variant="subtitle1">Sign in to your account.</Typography>
-                                </Box>
+                        <form onSubmit={(handleSubmit(onSubmitLogin))}>
+                            <Grid container item direction="column" style={{ justifyContent: 'flex-start', alignItems: 'start' }} spacing={2}>
+                                <Grid container item>
+                                    <Box>
+                                        <Typography variant="h4" style={{ marginBottom: '0.4em' }}>Login</Typography>
+                                        <Typography variant="subtitle1">Sign in to your account.</Typography>
+                                    </Box>
+                                </Grid>
+
+                                <Grid item container>
+                                    <TextField placeholder="Username"
+                                        fullWidth
+                                        type="username"
+                                        {...register("username")}
+                                    ></TextField>
+                                </Grid>
+                                <Grid item container>
+                                    <TextField placeholder="Password" fullWidth type="password"
+                                        {...register("password")}></TextField>
+                                </Grid>
+                                <Grid item container style={{ justifyContent: 'flex-end' }}>
+
+                                    <Box style={{ right: '0' }}>
+                                        <Button variant="contained" color="primary" type="submit">Login</Button>
+                                    </Box>
+                                </Grid>
                             </Grid>
-                            <Grid item container>
-                                <TextField placeholder="Username" fullWidth ></TextField>
-                            </Grid>
-                            <Grid item container>
-                                <TextField placeholder="Password" fullWidth ></TextField>
-                            </Grid>
-                            <Grid item container style={{ justifyContent: 'flex-end' }}>
-                                <Box style={{ right: '0' }}>
-                                    <Button variant="contained" color="primary" >Login</Button>
-                                </Box>
-                            </Grid>
-                        </Grid>
+                        </form>
                     </div>
                 </Grid>
-                <Grid item
+                <Grid
                     xs={12}
                     sm={12}
                     md={6}
-
                     display={{}}
-                    style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: 'red' }}>
-                    Right Side
+                // style={{ justifyContent: 'center', alignItems: 'center' }}  >
+                >
+                    <img src={'/assets/images/pea_industry.png'} alt="egat_logo" width="100%" height="100%"></img>
                 </Grid>
             </Grid>
-        </Grid>
+        </Grid >
 
 
     )
-}
-
-function Background() {
 
 }
+
