@@ -1,5 +1,5 @@
 import { MeterDetail } from "../../state/meter-detail";
-import { UserDetail } from "../../state/user-detail";
+import { IUserDetail } from "../../state/user-detail";
 import { UserInfo } from "../../state/user-info";
 import { IUserSession } from "../../state/user-sessions";
 import { userApi } from '../../constanst';
@@ -18,7 +18,7 @@ interface IGetSearchUserRequest {
 
 interface IEditUserRequest {
     token?: IUserSession,
-    userDetail: UserDetail,
+    userDetail: IUserDetail,
     meterDetail: MeterDetail,
 }
 
@@ -38,7 +38,7 @@ interface IGetUsersResponse {
 }
 
 interface IGetUserByIDResponse {
-    userDetail: UserDetail,
+    userDetail: IUserDetail,
     meterDetail: MeterDetail,
 }
 
@@ -100,7 +100,7 @@ export default class UserManagementAPI {
             return null;
         }
         const result = await response.json();
-        const userDetail: UserDetail = result;
+        const userDetail: IUserDetail = result;
         const meterDetail: MeterDetail = result;
         const content: IGetUserByIDResponse = {
             userDetail: userDetail,
@@ -274,13 +274,6 @@ function createMockUserByID(): IGetUserByIDResponse {
             sizeOfSetup: 34,
             invertor: 'string',
             expectedDate: 'string',
-        },
-        userDetail: {
-            email: 'string@email.com',
-            fullName: 'alice wonderland',
-            phoneNumber: '1234rt6y7890',
-            role: 'roles',
-            citizenId: '1234567890123',
             address: {
                 buildingNumber: '1',
                 village: 'village',
@@ -292,6 +285,15 @@ function createMockUserByID(): IGetUserByIDResponse {
                 zipCode: '10900',
                 country: 'Thailand',
             }
+        },
+        userDetail: {
+            email: 'string@email.com',
+            fullName: 'alice wonderland',
+            phoneNumber: '1234rt6y7890',
+            role: 'roles',
+            citizenId: '1234567890123',
+            meterId: '0001',
+
         }
     }
 

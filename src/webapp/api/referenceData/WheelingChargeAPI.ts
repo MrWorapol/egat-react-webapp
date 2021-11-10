@@ -34,11 +34,22 @@ export class WheelingChargeAPI {
         //     context: result
         // }
         // return content;
-        const result: IGetWheelingChargeResponse ={
+        const result: IGetWheelingChargeResponse = {
             context: [
-
+                {
+                    title: 'test1',
+                    bahtPerKwh: 0.071,
+                    mea: 0.071,
+                    meaegat: 0.071,
+                    meapeaegat: 0.071,
+                    pea: 0.071,
+                    peaegat: 0.071,
+                    note: 'testsing data',
+                    effictiveDate: '',
+                    effictiveTime: ''
+                }
             ]
-        } 
+        }
         return result;
     }
 }

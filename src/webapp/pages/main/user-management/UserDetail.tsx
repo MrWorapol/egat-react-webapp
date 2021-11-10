@@ -9,6 +9,7 @@ import { useNavigationSet } from '../../../hooks/useNavigationSet';
 import { useUserDetail } from '../../../hooks/useUserDetail';
 // import { getUserDetail } from '../../../hooks/getUserDetail'
 import { NavigationCurrentType } from '../../../state/navigation-current-state';
+import { IUserDetail } from '../../../state/user-detail';
 import { session } from '../../../state/user-sessions';
 
 
@@ -25,17 +26,7 @@ interface IFormTextFieldInput {
         role: string,
         registrationDate: string,
         citizenId: string,
-        address: {
-            buildingNumber: string,
-            village: string,
-            soi: string,
-            road: string,
-            subDistrict: string,
-            district: string,
-            province: string,
-            zipCode: string,
-            country: string,
-        },
+        meterId: string,
     },
     meterDetail: {
         meterId: string,
@@ -58,6 +49,17 @@ interface IFormTextFieldInput {
         sizeOfSetup: number,
         invertor: string,
         expectedDate: string,
+        address: {
+            buildingNumber: string,
+            village: string,
+            soi: string,
+            road: string,
+            subDistrict: string,
+            district: string,
+            province: string,
+            zipCode: string,
+            country: string,
+        },
     }
 }
 
@@ -81,10 +83,14 @@ export default function UserDetail() {
         // if (userSession && data.userDetail && data.meterDetail) {
         // showLoading();
         try {
+            //insert meter Id to userDetail before send to api
+            let userDetailInput = data.userDetail;
+            userDetailInput.meterId = data.meterDetail.meterId
             await api.editUser({
                 // token: userSession,
+
                 meterDetail: data.meterDetail,
-                userDetail: data.userDetail,
+                userDetail: userDetailInput,
             });
         } catch (e) {
 
@@ -159,17 +165,17 @@ export default function UserDetail() {
                                         {...field}
                                     />
                                 )}
-                                name="userDetail.address.buildingNumber"
+                                name="meterDetail.address.buildingNumber"
                                 control={control}
-                                defaultValue={userDetail.address.buildingNumber}
+                                defaultValue={meterDetail.address.buildingNumber}
                             />
 
                         </GridDetailsComponent>
                         <GridDetailsComponent size={3}>
                             <Typography >หมู่บ้าน: </Typography>
                             <Controller
-                                defaultValue={userDetail.address.village}
-                                name="userDetail.address.village"
+                                defaultValue={meterDetail.address.village}
+                                name="meterDetail.address.village"
                                 control={control}
                                 render={({ field }) => (
                                     <TextField variant="standard"
@@ -183,8 +189,8 @@ export default function UserDetail() {
                         <GridDetailsComponent size={3}>
                             <Typography >ซอย: </Typography>
                             <Controller
-                                defaultValue={userDetail.address.soi}
-                                name="userDetail.address.soi"
+                                defaultValue={meterDetail.address.soi}
+                                name="meterDetail.address.soi"
                                 control={control}
                                 render={({ field }) => (
                                     <TextField variant="standard"
@@ -198,8 +204,8 @@ export default function UserDetail() {
                         <GridDetailsComponent size={3}>
                             <Typography >ถนน: </Typography>
                             <Controller
-                                defaultValue={userDetail.address.road}
-                                name="userDetail.address.road"
+                                defaultValue={meterDetail.address.road}
+                                name="meterDetail.address.road"
                                 control={control}
                                 render={({ field }) => (
                                     <TextField variant="standard"
@@ -214,8 +220,8 @@ export default function UserDetail() {
                         <GridDetailsComponent size={3}>
                             <Typography >ตำบล/แขวง: </Typography>
                             <Controller
-                                defaultValue={userDetail.address.subDistrict}
-                                name="userDetail.address.subDistrict"
+                                defaultValue={meterDetail.address.subDistrict}
+                                name="meterDetail.address.subDistrict"
                                 control={control}
                                 render={({ field }) => (
                                     <TextField variant="standard"
@@ -231,8 +237,8 @@ export default function UserDetail() {
                         <GridDetailsComponent size={3}>
                             <Typography >อำเภอ/เขต: </Typography>
                             <Controller
-                                defaultValue={userDetail.address.district}
-                                name="userDetail.address.district"
+                                defaultValue={meterDetail.address.district}
+                                name="meterDetail.address.district"
                                 control={control}
                                 render={({ field }) => (
                                     <TextField variant="standard"
@@ -247,8 +253,8 @@ export default function UserDetail() {
                         <GridDetailsComponent size={3}>
                             <Typography >จังหวัด: </Typography>
                             <Controller
-                                defaultValue={userDetail.address.province}
-                                name="userDetail.address.province"
+                                defaultValue={meterDetail.address.province}
+                                name="meterDetail.address.province"
                                 control={control}
                                 render={({ field }) => (
                                     <TextField variant="standard"
@@ -262,8 +268,8 @@ export default function UserDetail() {
                         <GridDetailsComponent size={3}>
                             <Typography >รหัสไปรษณีย์: </Typography>
                             <Controller
-                                defaultValue={userDetail.address.zipCode}
-                                name="userDetail.address.zipCode"
+                                defaultValue={meterDetail.address.zipCode}
+                                name="meterDetail.address.zipCode"
                                 control={control}
                                 render={({ field }) => (
                                     <TextField variant="standard"

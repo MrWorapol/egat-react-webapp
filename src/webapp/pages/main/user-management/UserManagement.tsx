@@ -87,7 +87,7 @@ export default function UserManagement() {
 
     return (
         <Container style={{ backgroundColor: '#FFFFFF' }}  >
-            <Grid container direction="row" pt={3} px={3} spacing={0} xs={12}>
+            <Grid container direction="row" pt={3}  spacing={0} xs={12}>
                 <Grid item container id="title">
                     <Typography sx={{ fontSize: '1.5em', color: 'secondary.main' }}>All Users</Typography>
                 </Grid>

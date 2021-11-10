@@ -21,7 +21,17 @@ export interface MeterDetail {
     sizeOfSetup: number,
     invertor: string,
     expectedDate: string,
-
+    address: {
+        buildingNumber: string,
+        village: string,
+        soi: string,
+        road: string,
+        subDistrict: string,
+        district: string,
+        province: string,
+        zipCode: string,
+        country: string,
+    },
 
 }
 

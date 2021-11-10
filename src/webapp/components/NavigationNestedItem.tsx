@@ -1,11 +1,11 @@
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { Box, Collapse, Icon, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useHistory } from 'react-router';
 import { useNavigationGet } from '../hooks/useNavigationGet';
 import { NavigationCurrentType } from '../state/navigation-current-state';
 
-interface IMenu {
+export interface IChildrenMenu {
     label: string,
     path: string,
     state: NavigationCurrentType,
@@ -23,7 +23,7 @@ export default function NavigationExpandedItem(
         label: string,
         open: boolean,
         setOpenMenu: Function,
-        menus: IMenu[]
+        menus: IChildrenMenu[]
     }) {
     const history = useHistory();
 
@@ -35,6 +35,8 @@ export default function NavigationExpandedItem(
         bgColor = 'secondary.main';
         fontColor = 'white';
     }
+
+
     return renderSelected();
 
     function renderSelected() {
@@ -58,7 +60,7 @@ export default function NavigationExpandedItem(
         );
     }
 
-    function buildChildrenListItem(menus: IMenu[]): JSX.Element {
+    function buildChildrenListItem(menus: IChildrenMenu[]): JSX.Element {
         const element = menus.map(menu => {
             let selected: boolean = false;
             if (menu.state === currentState) {
