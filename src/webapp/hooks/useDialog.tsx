@@ -11,18 +11,21 @@ export function useDialog() {
       content,
       backdrop,
       onClose,
-      width
+      width,
+      fullWidth
     }: {
-      content: JSX.Element;
-      backdrop?: boolean;
-      onClose?: () => boolean;
-      width: 'xs' | 'sm' | 'md' | 'lg' | 'xl' ;
+      content: JSX.Element,
+      backdrop?: boolean,
+      onClose?: () => boolean,
+      width: 'xs' | 'sm' | 'md' | 'lg' | 'xl',
+      fullWidth?: boolean,
     }) => {
       setDialogContent({
         content,
         backdrop: !!backdrop,
         onClose: onClose ?? (() => true),
         width: width,
+        fullWidth: fullWidth
       });
     },
     [setDialogContent]

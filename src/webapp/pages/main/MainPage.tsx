@@ -6,9 +6,10 @@ import { Switch, Route } from 'react-router-dom'
 import UserManagement from './user-management/UserManagement'
 import UserDetail from './user-management/UserDetail'
 import DashBoard from './dashboard/DashBoard'
-import { useRecoilState } from 'recoil'
-import { session } from '../../state/user-sessions'
 import WheelingCharge from './refeneced-data/wheeling-charge/WheelingCharge'
+import Imbalance from './refeneced-data/imbalance/Imbalance'
+import OtherSetting from './refeneced-data/other-setting/OtherSetting'
+import TOUTariff from './refeneced-data/tou-tariff/TOUTariff'
 
 export default function MainPage() {
     // const [sessionValue] = useRecoilState(session);
@@ -45,6 +46,15 @@ export function PageRouting() {
                 </Route>
                 <Route path="/wheeling_chart">
                     <WheelingCharge />
+                </Route>
+                <Route path="/imbalance">
+                    <Imbalance />
+                </Route>
+                <Route path="/other_setting">
+                    <OtherSetting />
+                </Route>
+                <Route path="/tou_tariff">
+                    <TOUTariff />
                 </Route>
             </Switch>
         </>

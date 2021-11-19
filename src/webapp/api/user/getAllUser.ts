@@ -1,8 +1,8 @@
 import React from 'react'
 import { useRecoilState } from "recoil";
 import { userApi } from '../../constanst';
-import { UserInfo } from '../../state/user-info';
-import { session, IUserSession } from "../../state/user-sessions";
+import { UserInfo } from '../../state/user-management/user-info';
+import {  IUserSession } from "../../state/user-sessions";
 
 export interface GetAllUserRequest {
     session: IUserSession

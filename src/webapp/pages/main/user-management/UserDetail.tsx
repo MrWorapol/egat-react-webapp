@@ -9,8 +9,7 @@ import { useNavigationSet } from '../../../hooks/useNavigationSet';
 import { useUserDetail } from '../../../hooks/useUserDetail';
 // import { getUserDetail } from '../../../hooks/getUserDetail'
 import { NavigationCurrentType } from '../../../state/navigation-current-state';
-import { IUserDetail } from '../../../state/user-detail';
-import { session } from '../../../state/user-sessions';
+import { userSessionState } from '../../../state/user-sessions';
 
 
 type MeterParams = {
@@ -70,7 +69,7 @@ export default function UserDetail() {
     const { userDetail, meterDetail, refreshUserDetailData } = useUserDetail(id);
     const { register, handleSubmit, formState: { errors }, control } = useForm<IFormTextFieldInput>();
     const [edit, setEdit] = React.useState(false);
-    const [userSession, setUserSessionValue] = useRecoilState(session);
+    const [userSession, setUserSessionValue] = useRecoilState(userSessionState);
     const { showLoading, hideLoading } = useLoadingScreen();
 
 

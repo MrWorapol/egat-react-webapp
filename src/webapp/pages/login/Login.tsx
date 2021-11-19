@@ -5,7 +5,7 @@ import { useHistory, useParams } from 'react-router';
 import { useRecoilState } from 'recoil';
 import { useLogin } from '../../hooks/useLogin';
 import { userProfile } from '../../state/user-profile';
-import { session } from '../../state/user-sessions';
+
 
 
 type LoginForm = {
@@ -15,7 +15,6 @@ type LoginForm = {
 
 export default function Login() {
     const { register, handleSubmit, } = useForm();
-    const [, setProfile] = useRecoilState(userProfile);
     const { login, session } = useLogin();
     const history = useHistory();
     // const  params = useParams();

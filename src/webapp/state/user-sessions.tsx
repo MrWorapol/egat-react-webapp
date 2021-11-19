@@ -7,7 +7,7 @@ export interface IUserSession {
   lasttimeLogIn: Date;
 }
 console.log(`hello session`);
-export const session = atom<IUserSession | null>({
+export const userSessionState = atom<IUserSession | null>({
   key: "userSession",
   default: null,
 });

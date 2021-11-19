@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { NavigationCurrentType } from "../state/navigation-current-state";
-import { session, IUserSession } from "../state/user-sessions";
+import { userSessionState, IUserSession } from "../state/user-sessions";
 import { useNavigationGet } from "./useNavigationGet";
 
 interface allowNavigationScope {
@@ -14,7 +14,7 @@ interface allowNavigationScope {
 export function useAuthGuard() {
     const [init, setInit] = useState(false);
     const previousRoute = window.location.pathname;
-    const [sessionValue, setSessionValue] = useRecoilState(session);
+    const [sessionValue, setSessionValue] = useRecoilState(userSessionState);
     const { currentState } = useNavigationGet();
     const history = useHistory();
 

@@ -27,7 +27,7 @@ export function useLoadingScreen() {
   return {
     isLoading: isLoadingValue,
     isLoadingPriority: isLoadingPriorityValue,
-    showLoading: showLoading,
-    hideLoading: hideLoading,
+    showLoading,
+    hideLoading,
   };
 }

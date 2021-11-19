@@ -1,16 +1,18 @@
 import { atom } from "recoil";
 
 export interface IWheelingCharge {
+    id: string,
+    wheelingType:  'AS'|'T' |'D'| 'RE',
     title: string,
-    bahtPerKwh: number,
+    bahtPerKWh: number,
     mea: number,
     pea: number,
-    meaegat: number,
-    peaegat: number,
-    meapeaegat: number,
+    meaEgat: number,
+    peaEgat: number,
+    meaPeaEgat: number,
     note: string,
-    effictiveDate ?: string,
-    effictiveTime ?: string,
+    effectiveDate?: string,
+    effectiveTime?: string,
 }
 
 export const wheelingChargeState = atom<IWheelingCharge[] | null>({

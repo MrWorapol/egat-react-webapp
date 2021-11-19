@@ -11,22 +11,26 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import CustomDialog from './components/CustomDialog';
 import { useAuthGuard } from './hooks/useAuthGuard';
 import { CustomBackdrop } from './components/CustomLoadingBackdrop';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import DateAdapter from '@mui/lab/AdapterDayjs';
 
 export default function WebApp() {
     return (
-        <ThemeProvider theme={theme}>
-            <RecoilRoot>
-                <React.Suspense fallback={<div>Loading...</div>}>
-                    <Router>
-                        {/* <Login /> */}
-                        <WebAdminRouting />
-                    </Router>
-                    <CustomDialog />
-                    <CustomBackdrop/>
-                </React.Suspense>
+        <LocalizationProvider dateAdapter={DateAdapter}>
+            <ThemeProvider theme={theme}>
+                <RecoilRoot>
+                    <React.Suspense fallback={<div>Loading...</div>}>
+                        <Router>
+                            {/* <Login /> */}
+                            <WebAdminRouting />
+                        </Router>
+                        <CustomDialog />
+                        <CustomBackdrop />
+                    </React.Suspense>
 
-            </RecoilRoot>
-        </ThemeProvider>
+                </RecoilRoot>
+            </ThemeProvider>
+        </LocalizationProvider>
     )
 }
 

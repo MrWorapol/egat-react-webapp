@@ -1,10 +1,9 @@
 import { useCallback, useEffect } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { userInfo } from "../state/user-info";
+import { userInfo } from "../state/user-management/user-info";
 import UserManagementAPI from "../api/user/userManagementApi"
 import { useNavigationGet } from "./useNavigationGet";
-import { NavigationCurrentType } from "../state/navigation-current-state";
-import { session } from "../state/user-sessions";
+import { userSessionState } from "../state/user-sessions";
 
 interface ISearchField {
     text?: string,
@@ -14,8 +13,7 @@ interface ISearchField {
 export function useAllUser() {
     const api = new UserManagementAPI();
     const [userInfoDataValue, setUserInfoValue] = useRecoilState(userInfo);
-    const { currentState } = useNavigationGet();
-    const sessionUser = useRecoilValue(session);
+    const sessionUser = useRecoilValue(userSessionState);
 
     const refreshAllUser = useCallback(async (searchField?: ISearchField) => {
         // console.log(`call get All User`);

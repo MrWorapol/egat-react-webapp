@@ -7,9 +7,9 @@ import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
-import { UserInfo } from '../../../state/user-info';
+import { UserInfo } from '../../../state/user-management/user-info';
 import { useHistory } from 'react-router-dom';
-import { userDetail } from '../../../state/user-detail';
+import { userDetail } from '../../../state/user-management/user-detail';
 import { useResetRecoilState } from 'recoil';
 
 

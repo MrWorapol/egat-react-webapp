@@ -1,8 +1,8 @@
 import { useCallback, useEffect } from "react";
 import { selectorFamily, useRecoilState } from "recoil";
 import UserManagementAPI from "../api/user/userManagementApi";
-import { meterDetail } from "../state/meter-detail";
-import { userDetail } from "../state/user-detail";
+import { meterDetail } from "../state/user-management/meter-detail";
+import { userDetail } from "../state/user-management/user-detail";
 
 export function useUserDetail(id: string) {
     const api = new UserManagementAPI();

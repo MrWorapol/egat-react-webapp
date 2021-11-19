@@ -2,12 +2,12 @@ import { useCallback } from "react";
 import { useRecoilState } from "recoil";
 import KeycloakAdminApi from "../api/keycloak/keycloakAdminApi";
 import { userProfile } from "../state/user-profile";
-import { session } from "../state/user-sessions";
+import { userSessionState } from "../state/user-sessions";
 
 
 export function useLogin() {
     const [, setProfile] = useRecoilState(userProfile);
-    const [sessionValue, setSession] = useRecoilState(session);
+    const [sessionValue, setSession] = useRecoilState(userSessionState);
     const api = new KeycloakAdminApi();
 
     const login = useCallback(async (username: string, password: string) => {

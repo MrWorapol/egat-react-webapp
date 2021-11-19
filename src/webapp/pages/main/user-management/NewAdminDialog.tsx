@@ -3,7 +3,7 @@ import React from 'react'
 import { useDialog } from '../../../hooks/useDialog';
 import { useForm } from 'react-hook-form';
 import { useCreateAdmin } from '../../../hooks/useCreateAdmin';
-import { IAdminRegistratoinState } from '../../../state/admin-registration-state';
+import { IAdminRegistratoinState } from '../../../state/user-management/admin-registration-state';
 
 
 

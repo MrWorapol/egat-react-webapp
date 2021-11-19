@@ -1,10 +1,10 @@
-import { MeterDetail } from "../../state/meter-detail";
-import { IUserDetail } from "../../state/user-detail";
-import { UserInfo } from "../../state/user-info";
+import { MeterDetail } from "../../state/user-management/meter-detail";
+import { IUserDetail } from "../../state/user-management/user-detail";
+import { UserInfo } from "../../state/user-management/user-info";
 import { IUserSession } from "../../state/user-sessions";
 import { userApi } from '../../constanst';
 import { IUserRoles } from "../../pages/main/user-management/UserManagement";
-import { IAdminRegistratoinState } from "../../state/admin-registration-state";
+import { IAdminRegistratoinState } from "../../state/user-management/admin-registration-state";
 
 
 interface IGetUsersByRolesRequest {
