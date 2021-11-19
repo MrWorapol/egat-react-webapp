@@ -10,6 +10,7 @@ import WheelingCharge from './refeneced-data/wheeling-charge/WheelingCharge'
 import Imbalance from './refeneced-data/imbalance/Imbalance'
 import OtherSetting from './refeneced-data/other-setting/OtherSetting'
 import TOUTariff from './refeneced-data/tou-tariff/TOUTariff'
+import NewManagement from './news-management/NewManagement'
 
 export default function MainPage() {
     // const [sessionValue] = useRecoilState(session);
@@ -55,6 +56,10 @@ export function PageRouting() {
                 </Route>
                 <Route path="/tou_tariff">
                     <TOUTariff />
+                </Route>
+                <Route path='/news'>
+                    <NewManagement />
+
                 </Route>
             </Switch>
         </>
