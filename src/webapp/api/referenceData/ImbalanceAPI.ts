@@ -24,11 +24,11 @@ interface IUpdateImbalanceRequest {
     imbalance: Iimbalance
 }
 export class ImbalanceAPI {
-    private host = refApi;
+    private endpoint = refApi;
 
     async getImbalance(req: IGetImbalanceRequest): Promise<IGetImbalanceResponse | null> {
         const path = '/reference-data/imbalance-setting'
-        const api = this.host + path;
+        const api = this.endpoint + path;
         let response: Response;
         let token = 'token';
         let headers = {
@@ -81,7 +81,7 @@ export class ImbalanceAPI {
 
     async getLogsImbalance(req: IGetLogsRequest) {
         const path = `/reference-data/imbalance-setting/${req.type}/${req.imbalance}/log`;
-        const api = this.host + path;
+        const api = this.endpoint + path;
         let response: Response;
         // let token = 'token';
         let headers = {
@@ -132,7 +132,7 @@ export class ImbalanceAPI {
 
     async updateImbalance(req: IUpdateImbalanceRequest): Promise<boolean> {
         const path = '/reference-data/imbalance-setting';
-        const api = this.host + path;
+        const api = this.endpoint + path;
         let response: Response;
         let token = 'token';
         let headers = {

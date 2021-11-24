@@ -26,11 +26,11 @@ interface IPutOtherSettingRequest {
 }
 
 export class OtherSettingAPI {
-    private host = refApi;
+    private endpoint = refApi;
 
     async getOtherSetting(req: IGetOtherSettingRequest): Promise<IGetOtherSettingResponse | null> {
         const path = '/reference-data/other-setting'
-        const api = this.host + path;
+        const api = this.endpoint + path;
         let response: Response;
         let token = 'token';
         let headers = {
@@ -80,7 +80,7 @@ export class OtherSettingAPI {
 
     async getOtherSettingLogs(req: IGetOtherSettingLogsRequest): Promise<IGetOtherSettingLogsResponse | null> {
         const path = `/reference-data/other-setting/log`;
-        const api = this.host + path;
+        const api = this.endpoint + path;
         let response: Response;
         // let token = 'token';
         let headers = {
@@ -129,7 +129,7 @@ export class OtherSettingAPI {
     }
     async putOtherSetting(req: IPutOtherSettingRequest): Promise<boolean> {
         const path = `/reference-data/other-setting`;
-        const api = this.host + path;
+        const api = this.endpoint + path;
         let response: Response;
         let token = 'token';
         let headers = {

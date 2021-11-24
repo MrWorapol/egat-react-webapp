@@ -70,11 +70,11 @@ interface IPutHolidayRequest {
 }
 
 export default class TOUTariffAPI {
-    private host = refApi;
+    private endpoint = refApi;
 
     async getTOUtariff(req: IGetTOURequest): Promise<IGetTOUResponse | null> {
         const path = '/reference-data/tou-tariff-setting'
-        const api = this.host + path;
+        const api = this.endpoint + path;
         let response: Response;
         let token = 'token';
         let headers = {
@@ -184,7 +184,7 @@ export default class TOUTariffAPI {
     }
     async putTOUTariff(req: IUpdateTOURequest): Promise<boolean> {
         const path = '/reference-data/tou-tariff-setting';
-        const api = this.host + path;
+        const api = this.endpoint + path;
         let response: Response;
         let token = 'token';
         let headers = {
@@ -216,7 +216,7 @@ export default class TOUTariffAPI {
     }
     async getTOUtariffLog(req: IGetTOULogsRequest): Promise<IGetTOUResponse | null> {
         const path = `/reference-data/tou-tariff-setting/${req.touType}/${req.title}/log`
-        const api = this.host + path;
+        const api = this.endpoint + path;
         let response: Response;
         let token = 'token';
         let headers = {
@@ -251,7 +251,7 @@ export default class TOUTariffAPI {
         //     }]
         // }
         const path = `/reference-data/tou-tariff-setting/${req.touType}/service-charge`;
-        const api = this.host + path;
+        const api = this.endpoint + path;
         let response: Response;
         let token = 'token';
         let headers = {
@@ -277,7 +277,7 @@ export default class TOUTariffAPI {
 
     async putServiceCharge(req: IPutServiceChargeRequest): Promise<boolean> {
         const path = `/reference-data/tou-tariff-setting/${req.serviceCharge.touType}/service-charge`;
-        const api = this.host + path;
+        const api = this.endpoint + path;
         let response: Response;
         let token = 'token';
         let headers = {
@@ -304,7 +304,7 @@ export default class TOUTariffAPI {
     }
     async getServiceChargeLog(req: IGetServiceChargeLogsRequest): Promise<IGetServiceChargeResponse | null> {
         const path = `/reference-data/tou-tariff-setting/${req.touType}/service-charge/log`
-        const api = this.host + path;
+        const api = this.endpoint + path;
         let response: Response;
         let token = 'token';
         let headers = {
@@ -329,7 +329,7 @@ export default class TOUTariffAPI {
     }
     async getGridPackage(req: IGetTOURequest): Promise<IGetGridPackageResponse | null> {
         const path = '/reference-data/tou-tariff-setting/grid-used-package'
-        const api = this.host + path;
+        const api = this.endpoint + path;
         let response: Response;
         let token = 'token';
         let headers = {
@@ -354,7 +354,7 @@ export default class TOUTariffAPI {
 
     async putGridUsedPackage(req: IPutGridUsedPackageRequest): Promise<boolean> {
         const path = `/reference-data/tou-tariff-setting/grid-used-package/${req.package}`;
-        const api = this.host + path;
+        const api = this.endpoint + path;
         let response: Response;
         let token = 'token';
         let headers = {
@@ -379,7 +379,7 @@ export default class TOUTariffAPI {
     }
     async getHolidaysLog(req: IGetHolidayLogsRequest): Promise<IGetHolidayLogsResponse | null> {
         const path = `/reference-data/tou-tariff-setting/${req.touType}/holidays`;
-        const api = new URL(this.host + path);
+        const api = new URL(this.endpoint + path);
         if (req.year) {
             api.searchParams.append('year', req.year);
 
@@ -408,7 +408,7 @@ export default class TOUTariffAPI {
     }
     async putHolidays(req: IPutHolidayRequest): Promise<boolean> {
         const path = `/reference-data/tou-tariff-setting/${req.touType}/holidays`;
-        const api = this.host + path;
+        const api = this.endpoint + path;
         let response: Response;
         let token = 'token';
         let headers = {

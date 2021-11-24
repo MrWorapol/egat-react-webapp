@@ -24,11 +24,11 @@ interface IGetLogsResponse {
     context: IWheelingLogs[],
 }
 export class WheelingChargeAPI {
-    private host = refApi;
+    private endpoint = refApi;
 
     async getWheelingCharge(req: IGetWheelingChargeRequest): Promise<IGetWheelingChargeResponse | null> {
         const path = '/reference-data/wheeling-charge-setting'
-        const api = this.host + path;
+        const api = this.endpoint + path;
         let response: Response;
         // let token = 'token';
         let headers = {
@@ -71,7 +71,7 @@ export class WheelingChargeAPI {
 
     async getLogByTypes(req: IGetLogsRequest) {
         const path = '/reference-data/wheeling-charge-setting/' + req.wheelingType + '/log'
-        const api = this.host + path;
+        const api = this.endpoint + path;
         let response: Response;
         let token = 'token';
         let headers = {
@@ -126,7 +126,7 @@ export class WheelingChargeAPI {
 
     async updatedWheelingCharge(req: IPutWheelingChargeRequest): Promise<boolean> {
         const path = '/reference-data/wheeling-charge-setting';
-        const api = this.host + path;
+        const api = this.endpoint + path;
         let response: Response;
         let token = 'token';
         let headers = {

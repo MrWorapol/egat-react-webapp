@@ -10,6 +10,10 @@ import WheelingCharge from './refeneced-data/wheeling-charge/WheelingCharge'
 import Imbalance from './refeneced-data/imbalance/Imbalance'
 import OtherSetting from './refeneced-data/other-setting/OtherSetting'
 import TOUTariff from './refeneced-data/tou-tariff/TOUTariff'
+import UserReport from './summary-report/users/UserReport'
+import OrderReport from './summary-report/order/OrderReport'
+import SettlementReport from './summary-report/settlement/SettlementReport'
+import BillingReport from './summary-report/billing/BillingReport'
 
 export default function MainPage() {
     // const [sessionValue] = useRecoilState(session);
@@ -23,7 +27,7 @@ export default function MainPage() {
                 <Grid container item xs={2}>
                     <NavigationMainPage />
                 </Grid>
-                <Grid container item xs={10} id="content" pt={'60px'}>
+                <Grid container item xs={10} id="content" pt={3} px={4} width='100%'>
                     {PageRouting()}
                 </Grid>
             </Grid>
@@ -56,6 +60,18 @@ export function PageRouting() {
                 <Route path="/tou_tariff">
                     <TOUTariff />
                 </Route>
+                <Route path="/users_report">
+                    <UserReport />
+                </Route>
+                <Route path="/order_report">
+                    <OrderReport />
+                </Route>
+                <Route path="/settlement_report">
+                    <SettlementReport />
+                </Route>
+                <Route path="/billing_report">
+                    <BillingReport />
+                </Route>``
             </Switch>
         </>
     )
