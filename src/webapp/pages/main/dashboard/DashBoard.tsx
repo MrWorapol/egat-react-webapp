@@ -75,14 +75,14 @@ export default function DashBoard() {
                        <Typography >Registered User</Typography>  
                        <Img src="/assets/icon/Member.png"/>
                        <Number>
-                            <Typography style={{fontSize:26}} px={2}>27</Typography>
+                            <Typography style={{fontSize:26}} px={2}>24</Typography>
                        </Number>
                     </Grid>
                     <Grid item container justifyContent='center' xs={2} px={1}>
                        <Typography >Today New Registered User</Typography> 
                        <Img src="/assets/icon/New-Member.png"/>
                        <Number>
-                            <Typography style={{fontSize:26}} px={6}>27</Typography>
+                            <Typography style={{fontSize:26}} px={7}>2</Typography>
                        </Number>
                     </Grid>
 
@@ -92,28 +92,28 @@ export default function DashBoard() {
                        <Typography>Aggregator</Typography>  
                        <Img src="/assets/icon/Member.png"/>
                        <Number>
-                            <Typography style={{fontSize:26}} px={2}>27</Typography>
+                            <Typography style={{fontSize:26}} px={2}>12</Typography>
                        </Number>
                     </Grid>
                     <Grid item container justifyContent='center' xs={1}>
                        <Typography>Prosumer</Typography>
                        <Img src="/assets/icon/Member.png"/>  
                        <Number>
-                            <Typography style={{fontSize:26}} px={2}>27</Typography>
+                            <Typography style={{fontSize:26}} px={2}>8</Typography>
                        </Number>
                     </Grid>
                     <Grid item container justifyContent='center' xs={1}>
                        <Typography>Consumer</Typography>
                        <Img src="/assets/icon/Member.png"/>
                        <Number>
-                            <Typography style={{fontSize:26}} px={2}>27</Typography>
+                            <Typography style={{fontSize:26}} px={2}>4</Typography>
                        </Number>
                     </Grid>
                     <Grid item container justifyContent='center' xs={1}>
                        <Typography>No User</Typography>
                        <Img src="/assets/icon/325.png"/>
                        <Number>
-                            <Typography style={{fontSize:26}} px={2}>27</Typography>
+                            <Typography style={{fontSize:26}} px={3}>3</Typography>
                        </Number>
                     </Grid>
                     <Grid item justifyContent="flex-end">
@@ -138,28 +138,28 @@ export default function DashBoard() {
                        <Typography>Total PV Generate</Typography>
                        <Img src="/assets/icon/311.png"/>
                        <Number>
-                            <Typography style={{fontSize:26}} px={7}>27</Typography>
+                            <Typography style={{fontSize:26}} px={7}>1,632 kWh</Typography>
                        </Number>
                     </Grid>
                     <Grid item container justifyContent='center' direction='row' xs={2}>
                        <Typography>Total Energy Storage Charge/Discharge</Typography>  
                        <Img src="/assets/icon/310.png"/>
                        <Number>
-                            <Typography style={{fontSize:26}} px={11}>27</Typography>
+                            <Typography style={{fontSize:26}} px={11}>1,632/ 1,632 kWh</Typography>
                        </Number>
                     </Grid>
                     <Grid item container justifyContent='center' direction='row' xs={3}>
                        <Typography px={12}>Total Grid Used</Typography>
                        <Img src="/assets/icon/312.png"/>
                        <Number>
-                            <Typography style={{fontSize:26}} px={20}>27</Typography>
+                            <Typography style={{fontSize:26}} px={20}>1,632 kWh</Typography>
                        </Number>
                     </Grid>
                     <Grid item container justifyContent='center' direction='row' xs={2}>
                        <Typography px={6}>Total Energy Load</Typography>
                        <Img src="/assets/icon/313.png"/>
                        <Number>
-                            <Typography style={{fontSize:26}} px={20}>27</Typography>
+                            <Typography style={{fontSize:26}} px={20}>1,632 kWh</Typography>
                        </Number>
                     </Grid>
                     
@@ -185,7 +185,7 @@ export default function DashBoard() {
                        <Typography px={1}>Total No. Order</Typography>  
                        <Img src="/assets/icon/256.png"/>
                        <Number>
-                            <Typography style={{fontSize:26}} px={2}>27</Typography>
+                            <Typography style={{fontSize:26}} px={2}>253</Typography>
                        </Number>
                     </Grid>
                     
@@ -193,28 +193,29 @@ export default function DashBoard() {
                        <Typography >Total No. Contract</Typography>
                        <Img src="/assets/icon/320.png"/>
                        <Number>
-                            <Typography style={{fontSize:26}} px={2}>27</Typography>
+                            <Typography style={{fontSize:26}} px={2}>198</Typography>
                        </Number>
                     </Grid>
                     <Grid item direction='row' justifyContent='center' xs={2} style={{textAlign:'center'}}>
                        <Typography >Total Energy Sales (Net)</Typography>
                        <Img src="/assets/icon/321.png"/>
                        <Number>
-                            <Typography style={{fontSize:26}} px={2} py={3}>27</Typography>
+                            <Typography style={{fontSize:26}} px={2} py={3}>x,xxx kWh</Typography>
                        </Number>
                     </Grid>
                     <Grid item direction='row' justifyContent='center' xs={3} style={{textAlign:'center'}}>
                        <Typography >Total Energy Buys (Net)</Typography>
                        <Img src="/assets/icon/322.png"/>
                        <Number>
-                            <Typography style={{fontSize:26}} py={3} px={2}>27</Typography>
+                            <Typography style={{fontSize:26}} py={3} px={2}>x,xxx kWh</Typography>
                        </Number>
                     </Grid>
                     <Grid item direction='row' justifyContent='center' xs={2} style={{textAlign:'center'}}>
                        <Typography >Total Energy Imbalance (Net)</Typography>
                        <Img src="/assets/icon/323.png"/>
                        <Number>
-                            <Typography style={{fontSize:26}} px={2} py={2}>27</Typography>
+                            <Typography style={{fontSize:26}} px={2} py={2}>x,xxx kWh</Typography>
+                            
                        </Number>
                     </Grid>
                     
@@ -227,35 +228,42 @@ export default function DashBoard() {
                        <Typography >Total Net Payment</Typography>
                        <Img src="/assets/icon/receipt-1.png"/>
                        <Number>
-                            <Typography style={{fontSize:26}}  px={2}>27</Typography>
+                            <Typography style={{fontSize:26}}  px={2}>x,xxx</Typography>
+                            <Typography style={{fontSize:20}} >Baht</Typography>
                        </Number>
                     </Grid>
                     <Grid item container direction='row' justifyContent='center' xs={2}>
                        <Typography >Total Energy Trading (Net)</Typography>
                        <Img src="/assets/icon/318.png"/>
                        <Number>
-                            <Typography style={{fontSize:26}} px={12}>27</Typography>
+                            <Typography style={{fontSize:26}} px={12}>x,xxx</Typography>
+                            <Typography style={{fontSize:20}} >Baht</Typography>
                        </Number>
                     </Grid>
                     <Grid item container direction='row' justifyContent='center' xs={2}>
+                        
                        <Typography px={5} >Total Grid Used</Typography>
                        <Img src="/assets/icon/317.png"/>
                        <Number>
-                            <Typography style={{fontSize:26}} px={10}>27</Typography>
+                            <Typography style={{fontSize:26}} px={10}>x,xxx</Typography>
+                            <Typography style={{fontSize:20}} >Baht</Typography>
                        </Number>
                     </Grid>
                     <Grid item container direction='row' justifyContent='center' xs={3} px={1}>
                        <Typography px={7} >Total Wheeling Charge</Typography>
                        <Img src="/assets/icon/294.png"/>
                        <Number>
-                            <Typography style={{fontSize:26}} px={20}>27</Typography>
+                            <Typography style={{fontSize:26}} px={20}>x,xxx</Typography>
+                            <Typography style={{fontSize:20}} >Baht</Typography>
+                            
                        </Number>
                     </Grid>
                     <Grid item container direction='row' justifyContent='center' xs={1}>
-                       <Typography px={2} >Acc. REC</Typography>
+                       <Typography px={3} >Acc. REC</Typography>
                        <Img src="/assets/icon/319.png"/>
                        <Number>
-                            <Typography style={{fontSize:26}} px={10}>27</Typography>
+                            <Typography style={{fontSize:26}} px={9}>x,xxx</Typography>
+                            <Typography style={{fontSize:20}} >Baht</Typography>
                        </Number>
                     </Grid>
                     <Grid item justifyContent="flex-end">
