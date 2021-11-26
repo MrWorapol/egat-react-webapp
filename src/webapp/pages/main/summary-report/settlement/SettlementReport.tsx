@@ -37,11 +37,11 @@ export default function SettlementReport() {
             </Grid>
             <Box sx={{ flexGrow: 1 }}>
                 <Grid container item direction='row' xs={12} >
-                    <Grid container item direction='column' id='left-side' xs={6} pr={3}>
+                    <Grid container item direction='column' id='left-side' xs={6}  pr={3}>
                         <Grid container item xs={'auto'} sx={{ backgroundColor: '#fff' }} id='div-area'>
                             <AllSettlementComponent />
                         </Grid>
-                        <Grid container item direction='row' xs={'auto'} sx={{ backgroundColor: '#fff' }} mt={2} pt={2} pl={2} id='div-chart'>
+                        <Grid container item direction='row' xs={6}  sx={{ backgroundColor: '#fff' }} mt={2} pt={2} pl={2} id='div-chart'>
                             <SettlementDetail />
                         </Grid>
                     </Grid>

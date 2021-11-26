@@ -29,10 +29,13 @@ export default function DoughnutChart(props: DoughNutChartProps) {
                 options={{
                     responsive: true,
                     maintainAspectRatio: true,
+                    aspectRatio: 1.5,
                     plugins: {
                         legend: {
+                            
                             position: 'right',
                             labels: {
+                                padding: 20,
                                 boxHeight: 30,
                                 // generateLabels function to change legent text
                             }

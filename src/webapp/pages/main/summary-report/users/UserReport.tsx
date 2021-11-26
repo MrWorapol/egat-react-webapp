@@ -3,6 +3,7 @@ import { Box } from '@mui/system'
 import React, { useState } from 'react'
 import { useNavigationSet } from '../../../../hooks/useNavigationSet'
 import { NavigationCurrentType } from '../../../../state/navigation-current-state'
+import PeriodComponent from '../PeriodComponent'
 import AllArea from './AllArea'
 import DoughnutChart from './DoughnutChart'
 import LocationSite from './LocationSite'
@@ -13,26 +14,10 @@ export default function UserReport() {
     const [state, setstate] = useState('all');
 
     return (
-        <Box sx={{ width: `100%`, px: 2, py: 2, maxWidth: '100%' }}>
+        <Box sx={{ width: `100%`, px: 2, pb: 2, maxWidth: '100%' }}>
             <Grid container item direction="row" justifyContent='flex-end' id='period-zone' py={1}>
-                <Grid item bgcolor='#fff'>
-                    <FormControl variant='outlined'>
-                        <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            value={state}
-                            onChange={(event: SelectChangeEvent) => { setstate(event.target.value) }}
-                            sx={{ height: '3vh' }}
-                        >
-                            <MenuItem value={'all'}> {'All Region'}</MenuItem>
-                            <MenuItem value={'n'}>{'North'}</MenuItem>
-                            <MenuItem value={'e'}>{'East'}</MenuItem>
-                            <MenuItem value={'w'}>{'West'}</MenuItem>
-                            <MenuItem value={'s'}>{'South'}</MenuItem>
-                            <MenuItem value={'ne'}>{'North East'}</MenuItem>
-                            <MenuItem value={'cen'}>{'Central'}</MenuItem>
-                        </Select>
-                    </FormControl>
+                <Grid item >
+                    <PeriodComponent />
                 </Grid>
             </Grid>
             <Box>

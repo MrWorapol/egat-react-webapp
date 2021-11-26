@@ -1,9 +1,5 @@
 import { atom } from "recoil";
 
-
-
-
-
 export interface meterInfo{
     meterId: string,
     meterName: string,

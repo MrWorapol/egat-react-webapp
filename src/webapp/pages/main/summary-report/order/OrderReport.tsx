@@ -6,7 +6,7 @@ import { Container, FormControl, Grid, MenuItem, Select, SelectChangeEvent, Typo
 import { Box } from '@mui/system'
 import AllOrder from './AllOrderComponent';
 import OrderDetail from './OrderDetail';
-import SummaryComponents from './SummaryComponents';
+import SummaryChartComponents from './SummaryChartComponents';
 export default function OrderReport() {
     useNavigationSet(NavigationCurrentType.ORDER_REPORT);
     const [state, setstate] = useState('all');
@@ -46,7 +46,7 @@ export default function OrderReport() {
                         </Grid>
                     </Grid>
                     <Grid container item id='right-side' xs={6} >
-                        <SummaryComponents />
+                        <SummaryChartComponents />
                     </Grid>
                 </Grid>
             </Box>

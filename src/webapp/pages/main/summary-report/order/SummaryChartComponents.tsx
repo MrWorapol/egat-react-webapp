@@ -7,7 +7,7 @@ export default function SummaryComponents() {
     return (
         <Box sx={{ flexGrow: 1 }}>
             <Grid container item direction='column'>
-                <Grid container item xs={'auto'} direction='row' justifyContent="center" alignItems="center" px={2} pt={2} my={1} sx={{ backgroundColor: '#fff' }}>
+                <Grid container item xs={'auto'} direction='row' justifyContent="center" alignItems="center" px={2} py={2} my={1} sx={{ backgroundColor: '#fff' }}>
                     <Grid xs={12}>
                         <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em', color: 'secondary.main' }}> Summary by Role </Typography>
                     </Grid>
@@ -27,7 +27,7 @@ export default function SummaryComponents() {
                         width={360}
                     />
                 </Grid>
-                <Grid container item xs={'auto'} direction='row' justifyContent="center" alignItems="center" px={2} pt={2} my={1} sx={{ backgroundColor: '#fff' }}>
+                <Grid container item xs={'auto'} direction='row' justifyContent="center" alignItems="center" px={2} py={2} my={1} sx={{ backgroundColor: '#fff' }}>
                     <Grid xs={12}>
                         <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em', color: 'secondary.main' }}> Summary by Buyer/Seller </Typography>
                     </Grid>
@@ -46,7 +46,7 @@ export default function SummaryComponents() {
                         width={360}
                     />
                 </Grid>
-                <Grid container item xs={'auto'} direction='row' justifyContent="center" alignItems="center" px={2} pt={2} my={1} sx={{ backgroundColor: '#fff' }}>
+                <Grid container item xs={'auto'} direction='row' justifyContent="center" alignItems="center" px={2} py={2} my={1} sx={{ backgroundColor: '#fff' }}>
                     <Grid xs={12}>
                         <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em', color: 'secondary.main' }}> Summary by Trade Market </Typography>
                     </Grid>
@@ -65,7 +65,7 @@ export default function SummaryComponents() {
                         width={400}
                     />
                 </Grid>
-                <Grid container item xs={'auto'} direction='row' justifyContent="center" alignItems="center" px={2} pt={2} my={1} sx={{ backgroundColor: '#fff' }}>
+                <Grid container item xs={'auto'} direction='row' justifyContent="center" alignItems="center" px={2} py={2} my={1} sx={{ backgroundColor: '#fff' }}>
                     <Grid xs={12}>
                         <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em', color: 'secondary.main' }}>Summary by Order Status</Typography>
                     </Grid>

@@ -18,6 +18,8 @@ export interface IEnergyInfo {
     energyLoad: number,
 }
 
+
+
 interface usedEnergyPeriod{
     period: string,
     usedEnergy: string,
