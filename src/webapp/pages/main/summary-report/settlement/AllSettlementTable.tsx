@@ -8,7 +8,7 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
 import { useHistory } from 'react-router-dom';
 import { useResetRecoilState } from 'recoil';
-import TablePaginationActions from '../../../../components/TablePaginationActions';
+import TablePaginationActionsComponent from '../../../../components/TablePaginationActions';
 
 
 interface Column {
@@ -212,7 +212,7 @@ export default function AllSettlementTable() {
                 }}
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
-                ActionsComponent={TablePaginationActions}
+                ActionsComponent={TablePaginationActionsComponent}
             />
         </Paper>
     );

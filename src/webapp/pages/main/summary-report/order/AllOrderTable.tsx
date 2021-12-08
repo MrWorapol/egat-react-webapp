@@ -8,7 +8,7 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
 import { useHistory } from 'react-router-dom';
 import { useResetRecoilState } from 'recoil';
-import TablePaginationActions from '../../../../components/TablePaginationActions';
+import TablePaginationActionsComponent from '../../../../components/TablePaginationActions';
 import { useOrderReport } from '../../../../hooks/summary-report/order/useOrderReport';
 import { IOrderInfo } from '../../../../state/summary-report/order-report/order-report-state';
 
@@ -153,7 +153,7 @@ export default function AllOrderTable() {
                 }}
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
-                ActionsComponent={TablePaginationActions}
+                ActionsComponent={TablePaginationActionsComponent}
             />
         </Paper>
     );

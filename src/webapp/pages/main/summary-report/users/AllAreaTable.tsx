@@ -8,7 +8,7 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
 import { useHistory } from 'react-router-dom';
 import { useResetRecoilState } from 'recoil';
-import TablePaginationActions from '../../../../components/TablePaginationActions';
+import TablePaginationActionsComponent from '../../../../components/TablePaginationActions';
 import { meterInfo } from '../../../../state/summary-report/user-report/user-report-state';
 import useUserReport from '../../../../hooks/summary-report/user/useUserReport';
 
@@ -156,7 +156,7 @@ export default function AllAreaTable(props: IProps) {
                 }}
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
-                ActionsComponent={TablePaginationActions}
+                ActionsComponent={TablePaginationActionsComponent}
             />
         </Paper>
     );

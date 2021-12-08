@@ -25,7 +25,7 @@ export default function PeriodComponent(props: PeriodProps) {
         showLoading(10);
         try {
             props.refreshPage();
-        }catch (e) {
+        } catch (e) {
             hideLoading(10);
         }
         hideLoading(10);

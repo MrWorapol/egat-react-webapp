@@ -8,7 +8,7 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
 import { useHistory } from 'react-router-dom';
 import { useResetRecoilState } from 'recoil';
-import TablePaginationActions from '../../../../components/TablePaginationActions';
+import TablePaginationActionsComponent from '../../../../components/TablePaginationActions';
 
 
 interface Column {
@@ -66,7 +66,7 @@ export default function BillingTableComponent() {
         <Paper sx={{ width: '100%', mb: 2 }} >
             <TableContainer >
                 <Table aria-label="">
-                    <TableHead sx={{ bgcolor: '#707070', fontWeight: '400' }}>
+                    <TableHead sx={{ bgcolor: '#E0E0E0', fontWeight: '400' }}>
                         <TableRow>
                             {columns.map((column) => (
                                 <TableCell
@@ -148,7 +148,7 @@ export default function BillingTableComponent() {
                 }}
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
-                ActionsComponent={TablePaginationActions}
+                ActionsComponent={TablePaginationActionsComponent}
             />
         </Paper>
     );
