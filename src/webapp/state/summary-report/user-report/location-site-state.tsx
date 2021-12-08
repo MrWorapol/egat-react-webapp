@@ -27,7 +27,7 @@ interface usedEnergyPeriod{
 
 
 
-export const locationSiteState = atom<| null>({
+export const locationSiteState = atom<ILocationSite| null>({
     key: 'locationSiteState',
     default: null
 })

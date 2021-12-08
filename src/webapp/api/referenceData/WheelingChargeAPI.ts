@@ -125,7 +125,7 @@ export class WheelingChargeAPI {
     }
 
     async updatedWheelingCharge(req: IPutWheelingChargeRequest): Promise<boolean> {
-        const path = '/reference-data/wheeling-charge-setting';
+        const path = `/reference-data/wheeling-charge-setting/${req.wheelingCharge.title}`;
         const api = this.endpoint + path;
         let response: Response;
         let token = 'token';

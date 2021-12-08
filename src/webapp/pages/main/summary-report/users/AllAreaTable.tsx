@@ -9,6 +9,8 @@ import LastPageIcon from '@mui/icons-material/LastPage';
 import { useHistory } from 'react-router-dom';
 import { useResetRecoilState } from 'recoil';
 import TablePaginationActions from '../../../../components/TablePaginationActions';
+import { meterInfo } from '../../../../state/summary-report/user-report/user-report-state';
+import useUserReport from '../../../../hooks/summary-report/user/useUserReport';
 
 
 interface Column {
@@ -18,79 +20,19 @@ interface Column {
 
 }
 
-// interface TablePaginationActionsProps {
-//     count: number,
-//     page: number,
-//     rowsPerPage: number;
-//     onPageChange: (
-//         event: React.MouseEvent<HTMLButtonElement>,
-//         newPage: number,
-//     ) => void;
-// }
+interface IProps {
+    data: meterInfo[],
 
-// function TablePaginationActions(props: TablePaginationActionsProps) {
-//     const theme = useTheme();
-//     const { count, page, rowsPerPage, onPageChange } = props;
-
-//     const handleFirstPageButtonClick = (
-//         event: React.MouseEvent<HTMLButtonElement>,
-//     ) => {
-//         onPageChange(event, 0);
-//     };
-
-//     const handleBackButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-//         onPageChange(event, page - 1);
-//     };
-
-//     const handleNextButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-//         onPageChange(event, page + 1);
-//     };
-
-//     const handleLastPageButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-//         onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
-//     };
-
-//     return (
-//         <Box sx={{ flexShrink: 0, ml: 2.5 }}>
-//             <IconButton
-//                 onClick={handleFirstPageButtonClick}
-//                 disabled={page === 0}
-//                 aria-label="first page"
-//             >
-//                 {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
-//             </IconButton>
-//             <IconButton
-//                 onClick={handleBackButtonClick}
-//                 disabled={page === 0}
-//                 aria-label="previous page"
-//             >
-//                 {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-//             </IconButton>
-//             <IconButton
-//                 onClick={handleNextButtonClick}
-//                 disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-//                 aria-label="next page"
-//             >
-//                 {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
-//             </IconButton>
-//             <IconButton
-//                 onClick={handleLastPageButtonClick}
-//                 disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-//                 aria-label="last page"
-//             >
-//                 {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
-//             </IconButton>
-//         </Box>
-//     );
-// }
-
-export default function AllAreaTable() {
+}
+export default function AllAreaTable(props: IProps) {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const history = useHistory();
+    const rows = props.data;
+    const { refreshLocationSite } = useUserReport();
     // const { userInfoData, refreshAllUser } = useAllUser();
     // const resetUserDetailData = useResetRecoilState(userDetail);
-    const mockDatas= [{},{}];
+    const mockDatas = [{}, {}];
     const columns: Column[] = [
         { id: 'MeterID', label: 'Meter ID' },
         { id: 'MeterName', label: 'Meter Name' },
@@ -124,12 +66,9 @@ export default function AllAreaTable() {
     };
 
 
-    function onClickViewButton(row:any) {
-        // if (userInfo.role !== 'admin ') {
-        //     resetUserDetailData();
-        //     history.push(`/user_management/${userInfo.meterId}`);
-        // }
-        console.log('click view button')
+    function onClickViewButton(row: meterInfo) {
+        refreshLocationSite(row.meterId)
+        // console.log('click view button')
     }
     return (
         <Paper sx={{ width: '100%', mb: 2 }} >
@@ -155,9 +94,9 @@ export default function AllAreaTable() {
                                 <TableCell colSpan={6} />
                             </TableRow>
                         }
-                        {/* {mockDatas.length !== 0 && (rowsPerPage > 0
-                            ? mockDatas.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                            : mockDatas
+                        {rows.length !== 0 && (rowsPerPage > 0
+                            ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            : rows
                         ).map((row, i) => (
                             <TableRow>
                                 <TableCell
@@ -168,30 +107,30 @@ export default function AllAreaTable() {
                                 <TableCell
                                 // key={row.fullName + i}
                                 >
-                                    {row.fullName}
+                                    {row.meterName}
                                 </TableCell>
                                 <TableCell
                                 // key={row.email + i}
                                 >
-                                    {row.email}
+                                    {row.siteName}
                                 </TableCell>
                                 <TableCell
                                 // key={row.phoneNumber + i}
                                 >
-                                    {row.phoneNumber}
+                                    {row.locationCode}
                                 </TableCell>
 
                                 <TableCell
                                     key={row.meterId + row.role + i}
                                 >
-                                    {row.role !== 'ADMIN' && <IconButton onClick={() => onClickViewButton(row)}>
+                                    <IconButton onClick={() => onClickViewButton(row)}>
                                         <SearchIcon />
                                     </IconButton>
-                                    }
+
                                 </TableCell>
                             </TableRow>
                         ))
-                        } */}
+                        }
                         {emptyRows > 0 && (
                             <TableRow style={{ height: 53 * emptyRows }}>
                                 <TableCell colSpan={6} />

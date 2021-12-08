@@ -1,7 +1,7 @@
 import { Grid, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import React from 'react'
-import DoughnutChart from '../users/DoughnutChart'
+import DoughnutChart from '../../../../components/DoughnutChart'
 
 export default function SummaryComponents() {
     return (

@@ -5,7 +5,7 @@ import React from 'react'
 import { useNavigationSet } from '../../../../hooks/useNavigationSet';
 import { NavigationCurrentType } from '../../../../state/navigation-current-state';
 import PeriodComponent from '../PeriodComponent';
-import DoughnutChart from '../users/DoughnutChart';
+import DoughnutChart from '../../../../components/DoughnutChart';
 import BillingTableComponent from './BillingTableComponent';
 
 export default function BillingReport() {
@@ -15,10 +15,10 @@ export default function BillingReport() {
         <Box sx={{ width: `100%`, px: 2, pb: 2, maxWidth: '100%', flexGrow: 1 }}>
             <Grid container direction='column' >
                 <Grid item container justifyContent='flex-end' id='period-zone' py={2}>
-                    <PeriodComponent />
+                    <PeriodComponent refreshPage={() => { }} />
                 </Grid>
                 <Grid item container >
-                    {buildReport('Net Payment','Net Payment Summary')}
+                    {buildReport('Net Payment', 'Net Payment Summary')}
                 </Grid>
             </Grid>
         </Box>
@@ -26,7 +26,7 @@ export default function BillingReport() {
 }
 
 
-function buildReport(title: string,titleChart: string) {
+function buildReport(title: string, titleChart: string) {
     return (
         <Box sx={{ flexGrow: 1, width: `100%`, minHeight: '20vh' }}>
             <Grid container direction='row' columns={12} sx={{ backgroundColor: '#fff' }} px={2}>

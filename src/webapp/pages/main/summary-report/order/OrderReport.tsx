@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { useNavigationSet } from '../../../../hooks/useNavigationSet'
 import { NavigationCurrentType } from '../../../../state/navigation-current-state';
 import { Container, FormControl, Grid, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material'
@@ -7,31 +7,21 @@ import { Box } from '@mui/system'
 import AllOrder from './AllOrderComponent';
 import OrderDetail from './OrderDetail';
 import SummaryChartComponents from './SummaryChartComponents';
+import PeriodComponent from '../PeriodComponent';
+import { useOrderReport } from '../../../../hooks/summary-report/order/useOrderReport';
 export default function OrderReport() {
     useNavigationSet(NavigationCurrentType.ORDER_REPORT);
-    const [state, setstate] = useState('all');
-
+    const { refreshOrderReport } = useOrderReport();
+    const refreshPage = useCallback(async () => {
+        refreshOrderReport('all', 'all', 'all', 'all');
+    }, []);
+    
+    
     return (
         <Box sx={{ width: `100%`, px: 2, py: 2, maxWidth: '100%' }}>
             <Grid container item direction="row" justifyContent='flex-end' id='period-zone' py={1}>
-                <Grid item bgcolor='#fff'>
-                    <FormControl variant='outlined'>
-                        <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            value={state}
-                            onChange={(event: SelectChangeEvent) => { setstate(event.target.value) }}
-                            sx={{ height: '3vh' }}
-                        >
-                            <MenuItem value={'all'}> {'All Region'}</MenuItem>
-                            <MenuItem value={'n'}>{'North'}</MenuItem>
-                            <MenuItem value={'e'}>{'East'}</MenuItem>
-                            <MenuItem value={'w'}>{'West'}</MenuItem>
-                            <MenuItem value={'s'}>{'South'}</MenuItem>
-                            <MenuItem value={'ne'}>{'North East'}</MenuItem>
-                            <MenuItem value={'cen'}>{'Central'}</MenuItem>
-                        </Select>
-                    </FormControl>
+                <Grid item >
+                    <PeriodComponent key='order-period' refreshPage={refreshPage} />
 
                 </Grid>
             </Grid>

@@ -1,24 +1,24 @@
 import { atom } from "recoil";
 
-interface UserSummary {
+export interface IUserSummary {
     aggregator: number,
     prosumer: number,
     consumer: number,
     noUser: number,
 }
 
-interface EnergySummary {
+export interface IEnergySummary {
     pv: number,
     energyStorage: number,
     grid: number,
     energyConsumptions: number,
 }
 
-interface ISummaryState {
-    energy: EnergySummary,
-    user: UserSummary
+export interface IUserChart {
+    energy: IEnergySummary,
+    user: IUserSummary
 }
-export const summaryState = atom<ISummaryState | null>({
-    key: 'summaryState',
+export const userChartState = atom<IUserChart | null>({
+    key: 'userChartState',
     default: null,
 })

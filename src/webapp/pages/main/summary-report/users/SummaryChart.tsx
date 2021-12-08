@@ -1,6 +1,7 @@
 import { FormControl, Grid, MenuItem, Select, SelectChangeEvent } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import DoughnutChart from './DoughnutChart'
+import { IEnergySummary, IUserChart, IUserSummary } from '../../../../state/summary-report/user-report/user-chart-state';
+import DoughnutChart from '../../../../components/DoughnutChart'
 
 interface IMap {
     [key: string]: IChartLabel;
@@ -20,8 +21,11 @@ const chartLabels: IMap = {
     }
 }
 
-export default function SummaryChart() {
-    const [summaryChart, setSummaryChart] = useState('energySummary');
+interface IProps {
+    data: IUserChart,
+}
+export default function SummaryChart(props: IProps) {
+    const [typeChart, setTypeChart] = useState('energySummary');
     let result: IChartLabel = {} as IChartLabel;
 
 
@@ -30,11 +34,11 @@ export default function SummaryChart() {
         // return () => {
 
         // }
-    }, [summaryChart])
+    }, [typeChart])
 
     const setLabels = (): IChartLabel => {
         Object.keys(chartLabels).forEach((value: string) => {
-            if (value === summaryChart) {
+            if (value === typeChart) {
 
                 result = chartLabels[value];
             }
@@ -45,20 +49,20 @@ export default function SummaryChart() {
 
     const onChangeData = (event: SelectChangeEvent) => {
 
-        setSummaryChart(event.target.value);
+        setTypeChart(event.target.value);
         // setLabels();
 
     };
     setLabels();
-    console.log(result)
+    // console.log(result)
     return (
         <>
-            <Grid container item xs={12} >
+            <Grid container item xs={12} pb={2}>
                 <FormControl variant='outlined'>
                     <Select
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
-                        value={summaryChart}
+                        value={typeChart}
                         onChange={(event: SelectChangeEvent) => { onChangeData(event) }}
                         sx={{ height: '5vh', color: 'secondary.main', fontWeight: 'bold', fontSize: '1.5em', width: '15vw' }}
                     >
@@ -67,24 +71,63 @@ export default function SummaryChart() {
                     </Select>
                 </FormControl>
             </Grid>
-            <Grid container item xs={12} justifyContent='center' alignContent='center'>
-                <DoughnutChart
-                    labels={[`Aggregator`, 'Prosumer', 'Consumer', 'No User']}
-                    datasets={[
-                        {
-                            data: [12, 19, 3, 5],
-                            backgroundColor: [
-                                '#8C52FF',
-                                '#00BCFF',
-                                '#0090FF',
-                                '#00E1FF',
-                            ],
-                            // hoverOffset: 4,
-                        },
-                    ]}
-                    width={400}
-                />
+            <Grid container item xs={12} justifyContent='center' alignContent='center' py={1}>
+                {typeChart === 'energySummary' && buildEnergyChart(props.data.energy)}
+                {typeChart === 'userSummary' && buildUserChart(props.data.user)}
+
             </Grid>
         </>
+    )
+}
+
+function buildEnergyChart(data: IEnergySummary): JSX.Element {
+
+    let sum = data.pv + data.energyStorage + data.grid + data.energyConsumptions;
+    let labels = [`PV : ${data.pv} kWh (${Number(data.pv * 100 / sum).toFixed(2)}%)`,
+    `Energy Storage : ${data.energyStorage} kWh (${Number(data.energyStorage * 100 / sum).toFixed(2)}%)`,
+    `Grid : ${data.grid} kWh (${Number(data.grid * 100 / sum).toFixed(2)}%)`,
+    `Energy Consumption : ${data.energyConsumptions} kWh (${Number(data.energyConsumptions * 100 / sum).toFixed(2)}%)`];
+    return (
+        <DoughnutChart
+            labels={labels}
+            datasets={[
+                {
+                    data: [data.pv, data.energyStorage, data.grid, data.energyConsumptions],
+                    backgroundColor: [
+                        '#8C52FF',
+                        '#00BCFF',
+                        '#0090FF',
+                        '#00E1FF',
+                    ],
+                    // hoverOffset: 4,
+                },
+            ]}
+            width={580}
+        />
+    )
+}
+function buildUserChart(data: IUserSummary): JSX.Element {
+    let sum = data.aggregator + data.prosumer + data.consumer + data.noUser;
+    let labels = [`Aggregator :${Number(data.aggregator * 100 / sum).toFixed(2)}%`,
+    `Prosumer : ${Number(data.prosumer * 100 / sum).toFixed(2)}%`,
+    `Consumer : ${Number(data.consumer * 100 / sum).toFixed(2)}%`,
+    `No User :${Number(data.noUser * 100 / sum).toFixed(2)}%`];
+    return (
+        <DoughnutChart
+            labels={labels}
+            datasets={[
+                {
+                    data: [data.aggregator, data.prosumer, data.consumer, data.noUser],
+                    backgroundColor: [
+                        '#8C52FF',
+                        '#00BCFF',
+                        '#0090FF',
+                        '#00E1FF',
+                    ],
+                    // hoverOffset: 4,
+                },
+            ]}
+            width={500}
+        />
     )
 }

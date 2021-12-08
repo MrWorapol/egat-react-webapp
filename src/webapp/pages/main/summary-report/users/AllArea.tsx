@@ -2,6 +2,7 @@ import { Checkbox, FormControl, FormControlLabel, FormGroup, Grid, MenuItem, Sel
 import { Box } from '@mui/system'
 import React, { useState } from 'react'
 import { useDebouncedCallback } from 'use-debounce/lib';
+import useUserReport from '../../../../hooks/summary-report/user/useUserReport';
 import AllAreaTable from './AllAreaTable';
 
 interface IRolesState {
@@ -15,8 +16,9 @@ export default function AllArea() {
         prosumer: false,
         consumer: false,
     });
+    const { meterTable, refreshUserTable } = useUserReport();
 
-    const roleSearchDebounce = useDebouncedCallback(
+    const refreshTable = useDebouncedCallback(
         () => {
             const selectedRoles = Object.keys(roleState).filter((key: string) => {
                 return roleState[key] === true;
@@ -24,8 +26,10 @@ export default function AllArea() {
             // if(selectedRoles.length >0){
             // refreshAllUser({ roles: [...selectedRoles] });
             // }
-            console.log(`get roles select`);
-            console.log(selectedRoles);
+            refreshUserTable([...selectedRoles], areaState);
+            // console.log(`get roles select`);
+            // console.log(selectedRoles);
+            // console.log(areaState);
         }, 2000
     )
 
@@ -35,11 +39,15 @@ export default function AllArea() {
             [event.target.name]: event.target.checked
         });
 
-        roleSearchDebounce();
-
+        refreshTable();
     }
 
-    function buildRoleSelecter(
+    const onSelectedArea = (event: SelectChangeEvent) => {
+        setAreaState(event.target.value);
+        refreshTable();
+    }
+
+    function buildRoleCheckbox(
         onCheckedRole: (event: React.ChangeEvent<HTMLInputElement>) => void
     ) {
 
@@ -79,10 +87,10 @@ export default function AllArea() {
                 <Grid item container xs={'auto'}>
                     <FormControl variant='outlined' >
                         <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
+                            // labelId="demo-simple-select-label"
+                            // id="demo-simple-select"
                             value={areaState}
-                            onChange={(event: SelectChangeEvent) => { setAreaState(event.target.value) }}
+                            onChange={(event: SelectChangeEvent) => { onSelectedArea(event) }}
                             sx={{ height: '3vh' }}
                         >
                             <MenuItem value={'total'}> {'Total'}</MenuItem>
@@ -97,10 +105,10 @@ export default function AllArea() {
 
             </Grid>
             <Grid >
-                {buildRoleSelecter(onCheckedRole)}
+                {buildRoleCheckbox(onCheckedRole)}
             </Grid>
             <Grid id="area-table">
-                <AllAreaTable />
+                {meterTable && <AllAreaTable data={meterTable}  />}
             </Grid>
         </Grid>
         // </Box>

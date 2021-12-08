@@ -65,7 +65,7 @@ export default function NavigationExpandedItem(
             let selected: boolean = false;
             if (menu.state === currentState) {
                 selected = true;
-                console.log(`childeren list menu is :${selected}`);
+                // console.log(`childeren list menu is :${selected}`);
             }
 
             return (
