@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useResetRecoilState } from "recoil";
 import KeycloakAdminApi from "../api/keycloak/keycloakAdminApi";
 import { userProfile } from "../state/user-profile";
 import { userSessionState } from "../state/user-sessions";
@@ -9,26 +9,13 @@ export function useLogin() {
     const [, setProfile] = useRecoilState(userProfile);
     const [sessionValue, setSession] = useRecoilState(userSessionState);
     const api = new KeycloakAdminApi();
-
+    const resetSession = useResetRecoilState(userSessionState);
     const login = useCallback(async (username: string, password: string) => {
-
-        // console.log(`after set session value`);
-        // console.log(sessionValue)
-        // console.log('`');
-        // setSession({
-        //     accessToken: 'accessToken',
-        //     refreshToken: 'refreshToken',
-        //     lasttimeLogIn: new Date(),
-        // })
-        console.log(`username: ${username}, password: ${password}`);
         const response = await api.login({
             username: username,
             password: password,
-            // username: 'egat-p2p-admin@gmail.com',
-            // password: 'P@ssw0rd',
         }
         );
-        // console.log(response);
         if (response) {
             const session = {
                 accessToken: response.accessToken,
@@ -37,14 +24,21 @@ export function useLogin() {
             }
             localStorage.setItem('session', JSON.stringify(session));
             setSession(session);
+            return true;
         }
+        return false;
     }, [setSession, sessionValue])
 
     const logout = useCallback(() => {
+        if (sessionValue) {
+            localStorage.removeItem('session');
+            resetSession();
+        }
     }, [])
     return {
         login,
         session: sessionValue,
+        logout,
     }
 }
 

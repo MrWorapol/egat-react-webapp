@@ -6,6 +6,8 @@ export interface IServiceCharge {
     effectiveDate: string,
     effectiveTime: string,
     editDate?: string,
+    effectiveHour?: string,
+    effectiveMinute?: string,
 }
 
 export const serviceChargeType1State = atom<IServiceCharge | null>({

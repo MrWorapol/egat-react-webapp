@@ -10,7 +10,7 @@ import { useAllUser } from '../../../hooks/useAllUser';
 import { useNavigationGet } from '../../../hooks/useNavigationGet';
 import { useDebouncedCallback } from 'use-debounce/lib';
 export interface IUserRoles {
-    agregator: boolean,
+    aggregator: boolean,
     prosumer: boolean,
     consumer: boolean,
     admin: boolean,
@@ -26,7 +26,7 @@ export default function UserManagement() {
     const [searchText, setSearchText] = useState('');
     const { refreshAllUser } = useAllUser();
     const [roleState, setRoleState] = useState<IRolesState>({
-        agregator: false,
+        aggregator: false,
         prosumer: false,
         consumer: false,
         admin: false,
@@ -144,9 +144,9 @@ export default function UserManagement() {
             <FormGroup row>
                 <FormControlLabel
                     control={
-                        <Checkbox checked={roleState.agregator} name="agregator" onChange={onCheckedRole} />
+                        <Checkbox checked={roleState.aggregator} name="aggregator" onChange={onCheckedRole} />
                     }
-                    label="Agregator"
+                    label="Aggregator"
                 />
                 <FormControlLabel
                     control={
@@ -167,7 +167,6 @@ export default function UserManagement() {
                     label="admin"
                 />
             </FormGroup>
-            <Button onClick={roleSearchDebounce}>Test SelectRoles</Button>
         </>
     }
 

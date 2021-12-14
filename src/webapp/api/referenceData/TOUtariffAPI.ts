@@ -6,7 +6,7 @@ import { ITouTariff } from "../../state/reference-data/tou-traff/tou-tariff-stat
 import { IUserSession } from "../../state/user-sessions";
 
 interface IGetTOURequest {
-    token?: IUserSession,
+    session: IUserSession,
 }
 
 interface IGetTOUResponse {
@@ -14,7 +14,7 @@ interface IGetTOUResponse {
 }
 
 interface IGetServiceChargeRequest {
-    token?: IUserSession,
+    session: IUserSession,
     touType: string,
 }
 interface IGetServiceChargeResponse {
@@ -22,24 +22,24 @@ interface IGetServiceChargeResponse {
 }
 
 interface IPutServiceChargeRequest {
-    token?: IUserSession,
+    session: IUserSession,
     serviceCharge: IServiceCharge,
 }
 
 interface IGetServiceChargeLogsRequest {
-    token?: IUserSession,
+    session: IUserSession,
     touType: string,
 }
 
 
 interface IGetTOULogsRequest {
-    token?: IUserSession,
+    session: IUserSession,
     touType: string,
     title: string,
 }
 
 interface IUpdateTOURequest {
-    token?: IUserSession,
+    session: IUserSession,
     tariff: ITouTariff
 }
 
@@ -47,14 +47,14 @@ interface IGetGridPackageResponse {
     context: IGridPackage,
 }
 
-interface IPutGridUsedPackageRequest{
-    token ?: IUserSession,
+interface IPutGridUsedPackageRequest {
+    session: IUserSession,
     package: string,
 }
 
 
 interface IGetHolidayLogsRequest {
-    token?: IUserSession,
+    session: IUserSession,
     touType: string,
     year?: string,
 }
@@ -64,7 +64,7 @@ interface IGetHolidayLogsResponse {
 }
 
 interface IPutHolidayRequest {
-    token?: IUserSession,
+    session: IUserSession,
     touType: string,
     holidays: IHoliday[],
 }

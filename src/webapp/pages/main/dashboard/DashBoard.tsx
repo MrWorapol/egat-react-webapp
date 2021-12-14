@@ -6,6 +6,7 @@ import { useNavigationSet } from '../../../hooks/useNavigationSet';
 import { NavigationCurrentType } from '../../../state/navigation-current-state';
 
 export default function DashBoard() {
+    console.log(`call dashboard`);
     useNavigationSet(NavigationCurrentType.DASHBOARD);
     return (
         <Container style={{ width: '100%', backgroundColor: '#FFFFFF', maxWidth: '100%' }} >
@@ -15,7 +16,7 @@ export default function DashBoard() {
                 </Grid>
                 <Grid item container id="actionzone" justifyContent='space-between'>
                     <Grid item container direction='row' spacing={3}>
-                      
+
                     </Grid>
                     <Grid item justifyContent="flex-end">
 

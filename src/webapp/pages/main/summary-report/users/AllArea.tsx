@@ -12,7 +12,7 @@ interface IRolesState {
 export default function AllArea() {
     const [areaState, setAreaState] = useState('total');
     const [roleState, setRoleState] = useState<IRolesState>({
-        agregator: false,
+        aggregator: false,
         prosumer: false,
         consumer: false,
     });
@@ -55,9 +55,9 @@ export default function AllArea() {
             <FormGroup row>
                 <FormControlLabel
                     control={
-                        <Checkbox checked={roleState.agregator} name="agregator" onChange={onCheckedRole} />
+                        <Checkbox checked={roleState.aggregator} name="aggregator" onChange={onCheckedRole} />
                     }
-                    label="Agregator"
+                    label="Aggregator"
                 />
                 <FormControlLabel
                     control={

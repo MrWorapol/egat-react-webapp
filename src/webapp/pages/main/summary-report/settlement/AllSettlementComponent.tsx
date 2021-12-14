@@ -20,7 +20,7 @@ interface ITableSelector {
 export default function AllSettlementComponent() {
     const [areaState, setAreaState] = useState('total');
     const [roleState, setRoleState] = useState<IRolesState>({
-        agregator: false,
+        aggregator: false,
         prosumer: false,
         consumer: false,
     });

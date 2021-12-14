@@ -17,9 +17,9 @@ export function useAllUser() {
 
     const refreshAllUser = useCallback(async (searchField?: ISearchField) => {
         // console.log(`call get All User`);
-        // if (sessionUser) {
+        if (sessionUser) {
             if (!searchField) {//get without filter
-                const response = await api.getAllUser();
+                const response = await api.getAllUser({ session: sessionUser });
                 if (response) {
                     // console.log(`result from response${response.userInfos}`);
                     setUserInfoValue(response.userInfos);
@@ -29,7 +29,7 @@ export function useAllUser() {
                 }
             } else { //get with filter
                 if (searchField.text) { //case search by text
-                    const response = await api.getUserByFilter({  text: searchField.text });
+                    const response = await api.getUserByFilter({ session: sessionUser,text: searchField.text });
                     if (response) {
                         setUserInfoValue(response.userInfos);
                     } else {
@@ -38,7 +38,7 @@ export function useAllUser() {
                     return;
                 }
                 if (searchField.roles) { //case search by roles
-                    const response = await api.getUsersByRoles({ roles: searchField.roles });
+                    const response = await api.getUsersByRoles({  session: sessionUser,roles: searchField.roles });
                     if (response) {
                         setUserInfoValue(response.userInfos);
                     } else {
@@ -47,7 +47,7 @@ export function useAllUser() {
                     return;
                 }
             }
-        // }
+        }
     }, [setUserInfoValue]);
 
 

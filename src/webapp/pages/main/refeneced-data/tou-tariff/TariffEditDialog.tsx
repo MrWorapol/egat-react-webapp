@@ -3,11 +3,17 @@ import { Box } from '@mui/system';
 import React from 'react'
 import { Controller, useForm } from 'react-hook-form';
 import { useDialog } from '../../../../hooks/useDialog';
-import { useOtherSetting } from '../../../../hooks/useOtherSetting';
-import { useTOUTariff } from '../../../../hooks/useTOUTariff';
+import { useOtherSetting } from '../../../../hooks/reference-data/useOtherSetting';
+import { useTOUTariff } from '../../../../hooks/reference-data/useTOUTariff';
 import { IOtherSetting } from '../../../../state/reference-data/other-setting/othersetting-state';
 import { ITouTariff } from '../../../../state/reference-data/tou-traff/tou-tariff-state';
 import { touTypeLabel } from './TOUTariff';
+
+import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 interface ITariffEditProps {
     tariff: ITouTariff
@@ -22,11 +28,16 @@ export default function TariffEditDialog(props: ITariffEditProps) {
     const { editTOUTariff } = useTOUTariff();
 
     const onSubmitForm = async (data: ITouTariff) => {
+        let effectiveTime = '';
+        if (data.effectiveHour && data.effectiveMinute) {
+            effectiveTime = dayjs(data.effectiveDate).hour(+data.effectiveHour).minute(+data.effectiveMinute).toISOString();
+        }
         data.bahtPerKWh = Number.parseFloat(data.bahtPerKWh + '');
         let request: ITouTariff = {
             ...data,
             id: props.tariff.id,
             touType: props.tariff.touType, title: props.tariff.title,
+            effectiveTime: effectiveTime,
         }
 
         if (await editTOUTariff(request)) {
@@ -162,23 +173,82 @@ export default function TariffEditDialog(props: ITariffEditProps) {
                                     </Typography>
                                 </Grid>
                                 <Grid item xs={5}>
-                                    <Controller
-                                        render={({ field }) => (
-                                            <TextField variant="outlined"
-                                                margin="dense"
+                                    <Box sx={{ display: 'flex', justifyContent: 'flex-start', flexWrap: 'wrap', alignItems: 'center', mt: 1 }}>
+                                        <Controller
+                                            control={control}
+                                            name="effectiveHour"
+                                            // defaultValue={dayjs(props.wheelingCharge.effectiveTime).format('HH')}
+                                            rules={{
+                                                required: true,
+                                            }}
+                                            defaultValue={`0`}
 
-                                                size='small'
-                                                sx={{ textAlignLast: 'end' }}
-                                                fullWidth={true}
-                                                {...field}
-                                            />)}
-                                        name="effectiveTime"
-                                        control={control}
-                                        defaultValue={props.tariff.effectiveTime}
-                                        rules={{
-                                            required: true,
-                                        }}
-                                    />
+                                            render={({ field }) => (
+                                                <Select variant="outlined"
+                                                    {...field}
+                                                    margin="dense"
+                                                    size='small'
+                                                    sx={{ ml: 2, maxWidth: '10em', justifyContent: 'flex-end', textAlignLast: 'end', }}
+                                                    MenuProps={{
+                                                        PaperProps: {
+                                                            style: {
+                                                                maxHeight: '40vh',
+                                                                backgroundColor: '#fff',
+                                                            }
+                                                        }
+                                                    }}
+                                                >
+                                                    {
+
+                                                    }
+                                                    {Array.from(Array(24)).map((e, i) => {
+                                                        console.log(e);
+                                                        return (
+                                                            <MenuItem value={`${i}`}> {(`00` + i).slice(-2)}</MenuItem>
+
+                                                        )
+                                                    })}
+                                                </Select>
+                                            )}
+                                        />
+                                        <Typography mx={1}>:</Typography>
+                                        <Controller
+                                            control={control}
+                                            name="effectiveMinute"
+                                            // defaultValue={dayjs(props.wheelingCharge.effectiveTime).format('HH')}
+                                            rules={{
+                                                required: true,
+                                            }}
+                                            defaultValue={`0`}
+                                            render={({ field }) => (
+
+                                                <Select variant="outlined"
+                                                    {...field}
+                                                    margin="dense"
+                                                    size='small'
+                                                    sx={{ maxWidth: '10em', justifyContent: 'flex-end', textAlignLast: 'end', }}
+                                                    MenuProps={{
+                                                        PaperProps: {
+                                                            style: {
+                                                                maxHeight: '40vh',
+                                                                backgroundColor: '#fff',
+                                                            }
+                                                        }
+                                                    }}
+                                                >
+                                                    {
+
+                                                    }
+                                                    {Array.from(Array(60)).map((e, i) => {
+                                                        return (
+                                                            <MenuItem value={`${i}`}> {(`00` + i).slice(-2)}</MenuItem>
+
+                                                        )
+                                                    })}
+                                                </Select>
+                                            )}
+                                        />
+                                    </Box>
                                 </Grid>
                             </Grid>
                         </Grid>

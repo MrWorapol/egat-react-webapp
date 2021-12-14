@@ -5,35 +5,35 @@ import { IWheelingCharge } from "../../state/reference-data/wheeling-chart/wheel
 import { IWheelingLogs } from "../../state/reference-data/wheeling-chart/wheeling-log-state";
 
 interface IGetWheelingChargeRequest {
-    token?: IUserSession,
+    session: IUserSession,
 }
 interface IGetWheelingChargeResponse {
     context: IWheelingCharge[],
 }
 
 interface IPutWheelingChargeRequest {
-    token?: IUserSession,
+    session: IUserSession,
     wheelingCharge: IWheelingCharge,
 }
 
 interface IGetLogsRequest {
-    token?: IUserSession,
+    session: IUserSession,
     wheelingType: 'AS' | 'T' | 'D' | 'RE',
 }
 interface IGetLogsResponse {
     context: IWheelingLogs[],
 }
 export class WheelingChargeAPI {
-    private endpoint = refApi;
+    private host = refApi;
 
     async getWheelingCharge(req: IGetWheelingChargeRequest): Promise<IGetWheelingChargeResponse | null> {
         const path = '/reference-data/wheeling-charge-setting'
-        const api = this.endpoint + path;
+        const api = this.host + path;
         let response: Response;
-        // let token = 'token';
+        let token = req.session.accessToken;
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+             Authorization: `Bearer ${token}`,
         }
         try {
             response = await fetch(api, {
@@ -53,16 +53,18 @@ export class WheelingChargeAPI {
         // const result: IGetWheelingChargeResponse = {
         //     context: [
         //         {
+        //             id: '99',
         //             title: 'test1',
-        //             bahtPerKwh: 0.071,
+        //             bahtPerKWh: 0.071,
         //             mea: 0.071,
-        //             meaegat: 0.071,
-        //             meapeaegat: 0.071,
+        //             meaEgat: 0.071,
+        //             meaPeaEgat: 0.071,
         //             pea: 0.071,
-        //             peaegat: 0.071,
+        //             peaEgat: 0.071,
         //             note: 'testsing data',
-        //             effectiveDate: new Date().toString(),
-        //             effectiveTime: new Date().toString()
+        //             wheelingType: "T",
+        //             effectiveDate: dayjs().format('DD/MM/YYYY'),
+        //             effectiveTime: dayjs().format('DD/MM/YYYY')
         //         }
         //     ]
         // }
@@ -71,12 +73,12 @@ export class WheelingChargeAPI {
 
     async getLogByTypes(req: IGetLogsRequest) {
         const path = '/reference-data/wheeling-charge-setting/' + req.wheelingType + '/log'
-        const api = this.endpoint + path;
+        const api = this.host + path;
         let response: Response;
-        let token = 'token';
+        let token = req.session.accessToken;
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
         }
         try {
             response = await fetch(api, {
@@ -93,50 +95,56 @@ export class WheelingChargeAPI {
             context: result
         }
         return content;
-        // const result: IGetWheelingChargeResponse = {
-        // context: [
-        // {
-        //     title: 'test1',
-        //     bahtPerKwh: 0.071,
-        //     mea: 0.071,
-        //     meaegat: 0.071,
-        //     meapeaegat: 0.071,
-        //     pea: 0.071,
-        //     peaegat: 0.071,
-        //     note: 'testsing data',
-        //     effectiveDate: new Date().toString(),
-        //     effectiveTime: new Date().toString()
-        // },
-        // {
-        //     title: 'test1',
-        //     bahtPerKwh: 120.071,
-        //     mea: 230.071,
-        //     meaegat: 1032.071,
-        //     meapeaegat: 120.071,
-        //     pea: 20.071,
-        //     peaegat: 30.071,
-        //     note: 'tes3tsing data logs',
-        //     effectiveDate: dayjs().add(7, 'day').toString(),
-        //     effectiveTime: dayjs().add(8, 'hour').toString(),
+        // const result: IGetLogsResponse = {
+        //     context: [
+        //         {
+        //             id: '1',
+        //             title: 'test1',
+        //             bahtPerKWh: 0.071,
+        //             mea: 0.071,
+        //             meaEgat: 0.071,
+        //             meaPeaEgat: 0.071,
+        //             pea: 0.071,
+        //             peaEgat: 0.071,
+        //             note: 'testsing data',
+        //             wheelingType: 'AS',
+        //             effectiveDate: dayjs().format('DD/MM/YYYY'),
+        //             effectiveTime: dayjs().format('DD/MM/YYYY'),
+        //             editDate: new Date(),
+        //         },
+        //         {
+        //             id: '2',
+        //             title: 'test1',
+        //             bahtPerKWh: 120.071,
+        //             mea: 230.071,
+        //             meaEgat: 1032.071,
+        //             meaPeaEgat: 120.071,
+        //             pea: 20.071,
+        //             peaEgat: 30.071,
+        //             note: 'tes3tsing data logs',
+        //             effectiveDate: dayjs().add(7, 'day').toString(),
+        //             effectiveTime: dayjs().add(8, 'hour').toString(),
+        //             wheelingType: 'T',
+        //             editDate: new Date(),
+        //         }
+        //     ]
         // }
-        //         ]
-        // }
-        //     return result;
+        // return result;
     }
 
     async updatedWheelingCharge(req: IPutWheelingChargeRequest): Promise<boolean> {
         const path = `/reference-data/wheeling-charge-setting/${req.wheelingCharge.title}`;
-        const api = this.endpoint + path;
+        const api = this.host + path;
         let response: Response;
-        let token = 'token';
+        let token = req.session.accessToken;
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
         }
 
         let body = JSON.stringify(req.wheelingCharge);
-        console.log(`body data`);
-        console.info(body);
+        // console.log(`body data`);
+        // console.info(body);
         try {
             response = await fetch(api, {
                 method: "PUT",

@@ -12,18 +12,21 @@ export function useCreateAdmin() {
     const { refreshAllUser } = useAllUser();
 
     const createAdmin = useCallback(async (admin: IAdminRegistratoinState) => {
-        try {
-            const response = await api.createAdmin({
-                // token : sessionUser,
-                admin: admin,
-            });
-            if (response) {
-                console.log(`response from api`);
-                console.log(response);
-                refreshAllUser();
+        if (sessionUser) {
+            try {
+                const response = await api.createAdmin({
+                    session: sessionUser,
+                    admin: admin,
+                });
+                if (response) {
+                    console.log(`response from api`);
+                    console.log(response);
+                    refreshAllUser();
+                    return true;
+                }
+            } catch (err) {
+                return false;
             }
-        } catch (err) {
-
         }
     }, [refreshAllUser])
 

@@ -9,7 +9,7 @@ import LastPageIcon from '@mui/icons-material/LastPage';
 import { useHistory } from 'react-router-dom';
 
 
-import { useWheelingCharge } from '../../../../hooks/useWheelingCharge';
+import { useWheelingCharge } from '../../../../hooks/reference-data/useWheelingCharge';
 
 import SettingsIcon from '@mui/icons-material/Settings';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';

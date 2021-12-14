@@ -5,25 +5,26 @@ import { IUserSession } from "../../state/user-sessions";
 import { userApi } from '../../constanst';
 import { IUserRoles } from "../../pages/main/user-management/UserManagement";
 import { IAdminRegistratoinState } from "../../state/user-management/admin-registration-state";
+import fetchWithTimeout from "../../utils/fetchWithTimeout";
 
 
 interface IGetUsersByRolesRequest {
-    token?: IUserSession,
+    session: IUserSession,
     roles: string[],
 }
 interface IGetSearchUserRequest {
-    token?: IUserSession,
+    session: IUserSession,
     text: string,
 }
 
 interface IEditUserRequest {
-    token?: IUserSession,
+    session: IUserSession,
     userDetail: IUserDetail,
     meterDetail: MeterDetail,
 }
 
 interface ICreateAdminRequest {
-    token?: IUserSession,
+    session: IUserSession,
     admin: IAdminRegistratoinState,
 
 }
@@ -33,8 +34,18 @@ interface ICreateAdminResponse {
     userInfo: UserInfo,
 }
 
+interface IGetUsersRequest{
+    session: IUserSession,
+}
+
 interface IGetUsersResponse {
+    
     userInfos: UserInfo[],
+}
+
+interface IGetUserByIDRequest{
+    session: IUserSession,
+    meterId: string,
 }
 
 interface IGetUserByIDResponse {
@@ -45,14 +56,14 @@ interface IGetUserByIDResponse {
 export default class UserManagementAPI {
     private host = userApi;
     // let response: Response;  
-    async getAllUser(): Promise<IGetUsersResponse | null> {
+    async getAllUser(req: IGetUsersRequest): Promise<IGetUsersResponse | null> {
         const path = '/users'
         const api = this.host + path;
         let response: Response;
-        let token = 'token';
+        let token = req.session.accessToken;
         let headers = {
             "Content-Type": "application/json",
-            // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
         }
         try {
             response = await fetch(api, {
@@ -78,17 +89,17 @@ export default class UserManagementAPI {
         // return Promise.resolve(content);
     }
 
-    async getUserByMeterID(meterId: string): Promise<IGetUserByIDResponse | null> {
-        if (meterId === 'xxx') {
-            return createMockUserByID();
-        }
-        const path = `/users/detail/${meterId}`;
+    async getUserByMeterID(req: IGetUserByIDRequest): Promise<IGetUserByIDResponse | null> {
+        // if (meterId === 'xxx') {
+        //     return createMockUserByID();
+        // }
+        const path = `/users/detail/${req.meterId}`;
         const api = this.host + path;
         let response: Response;
-        let token = '';
+        let token = req.session.accessToken;
         let headers = {
             "Content-Type": "application/json",
-            // Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${token}`
         }
 
         try {
@@ -123,10 +134,10 @@ export default class UserManagementAPI {
         api.searchParams.append('value', text);
         console.log(`filter uri is : ${api.toString()}`);
         let response: Response;
-        // let accessToken = request.token.accessToken;
+        let accessToken = request.session.accessToken;
         let headers = {
             "Content-Type": "application/json",
-            // Authorization: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${accessToken}`,
         }
         try {
             response = await fetch(api.toString(), {
@@ -193,10 +204,10 @@ export default class UserManagementAPI {
         const api = new URL(this.host + path);
         api.searchParams.append('roles', rolesParams);
         let response: Response;
-        // let accessToken = request.token.accessToken ;
+        let accessToken = request.session.accessToken ;
         let headers = {
             "Content-Type": "application/json",
-            // Authorization: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${accessToken}`,
         }
         try {
             response = await fetch(api.toString(), {
@@ -220,10 +231,10 @@ export default class UserManagementAPI {
         const path = '/users/admin';
         const api = new URL(this.host + path);
         let response: Response;
-        // let accessToken = request.token.accessToken ;
+        let accessToken = request.session.accessToken ;
         let headers = {
             "Content-Type": "application/json",
-            // Authorization: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${accessToken}`,
         }
         const body = JSON.stringify(request.admin);
 
@@ -231,11 +242,16 @@ export default class UserManagementAPI {
         console.log(body);
         console.log(`----------------body context END----------`);
         try {
-            response = await fetch(api.toString(), {
+            response = await fetchWithTimeout(api.toString(), {
                 method: "POST",
                 headers,
                 body: body
             });
+            // response = await fetch(api.toString(), {
+            //     method: "POST",
+            //     headers,
+            //     body: body
+            // });
             let result = await response.json();
             console.log(result);
             let content: ICreateAdminResponse = {
@@ -333,7 +349,7 @@ function createMockData(): IGetUsersResponse {
                 fullName: 'user5',
                 email: 'user5@email.com',
                 phoneNumber: '1234567899',
-                role: 'Agregator    '
+                role: 'Aggregator'
             }, {
                 meterId: '0006',
                 fullName: 'user6',
@@ -357,7 +373,7 @@ function createMockData(): IGetUsersResponse {
                 fullName: 'user9',
                 email: 'user9@email.com',
                 phoneNumber: '1234567899',
-                role: 'Agregator'
+                role: 'Aggregator'
             }, {
                 meterId: '0010',
                 fullName: 'user10',
@@ -395,7 +411,7 @@ function createMockData(): IGetUsersResponse {
                 fullName: 'user5',
                 email: 'user5@email.com',
                 phoneNumber: '1234567899',
-                role: 'Agregator    '
+                role: 'Aggregator'
             }, {
                 meterId: '0016',
                 fullName: 'user6',
@@ -419,7 +435,7 @@ function createMockData(): IGetUsersResponse {
                 fullName: 'user9',
                 email: 'user9@email.com',
                 phoneNumber: '1234567899',
-                role: 'Agregator'
+                role: 'Aggregator'
             }, {
                 meterId: '0020',
                 fullName: 'user10',
@@ -457,7 +473,7 @@ function createMockData(): IGetUsersResponse {
                 fullName: 'user5',
                 email: 'user5@email.com',
                 phoneNumber: '1234567899',
-                role: 'Agregator    '
+                role: 'Aggregator'
             }, {
                 meterId: '0026',
                 fullName: 'user6',
@@ -481,7 +497,7 @@ function createMockData(): IGetUsersResponse {
                 fullName: 'user9',
                 email: 'user9@email.com',
                 phoneNumber: '1234567899',
-                role: 'Agregator'
+                role: 'Aggregator'
             }, {
                 meterId: '0030',
                 fullName: 'user10',

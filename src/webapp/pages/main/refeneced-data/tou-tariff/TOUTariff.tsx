@@ -1,14 +1,13 @@
-import { Container, FormControl, Grid, InputLabel, MenuItem, Select, SelectChangeEvent, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, } from '@mui/material';
+import { Container, FormControl, Grid, MenuItem, Select, SelectChangeEvent, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, } from '@mui/material';
 import React, { useEffect, useState } from 'react'
 import { useNavigationSet } from '../../../../hooks/useNavigationSet'
-import { useTOUTariff } from '../../../../hooks/useTOUTariff';
 import { NavigationCurrentType } from '../../../../state/navigation-current-state';
 
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
-import { ITouTariff, touTariffState } from '../../../../state/reference-data/tou-traff/tou-tariff-state';
+import { ITouTariff } from '../../../../state/reference-data/tou-traff/tou-tariff-state';
 import { useResetRecoilState } from 'recoil';
 import { touTariffLogState } from '../../../../state/reference-data/tou-traff/tou-tariff-log';
 import TariffLogsDialog from './TariffLogsDialog';
@@ -19,6 +18,7 @@ import { IServiceCharge } from '../../../../state/reference-data/tou-traff/tou-s
 import ServiceChargeLogDialog from './ServiceChargeLogDialog';
 import HolidayLogsDialog from './HolidayLogsDialog';
 import CreateHolidaysDialog from './CreateHolidaysDialog';
+import { useTOUTariff } from '../../../../hooks/reference-data/useTOUTariff';
 
 // const pk: IPackage[] = [
 //     {
@@ -163,7 +163,6 @@ export default function TOUTariff() {
                     <TableBody>
                         {touTariff !== null && touTariff.length !== 0 &&
                             touTariff.map((row: ITouTariff, i: number) => {
-                                console.log()
                                 if (row.touType === touType) {
                                     return (
                                         <TableRow>
@@ -197,7 +196,6 @@ export default function TOUTariff() {
                                                             <ContentPasteIcon />
                                                         </IconButton>
                                                     </Grid>
-
                                                 </Grid>
                                             </TableCell>
                                         </TableRow>

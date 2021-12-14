@@ -4,7 +4,7 @@ import React from 'react'
 import { useResetRecoilState } from 'recoil';
 import { useDialog } from '../../../../hooks/useDialog';
 import { useNavigationSet } from '../../../../hooks/useNavigationSet';
-import { useOtherSetting } from '../../../../hooks/useOtherSetting';
+import { useOtherSetting } from '../../../../hooks/reference-data/useOtherSetting';
 import { NavigationCurrentType } from '../../../../state/navigation-current-state';
 import { otherSettingLogState } from '../../../../state/reference-data/other-setting/othersetting-log';
 import OtherSettingEditDialog from './OtherSettingEditDialog';

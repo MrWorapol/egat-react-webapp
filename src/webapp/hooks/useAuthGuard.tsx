@@ -19,9 +19,10 @@ export function useAuthGuard() {
     const history = useHistory();
 
     useEffect(() => {
-        if (init) { //changeto  !init when integration
+        if (init === false) { //changeto  !init when integration
             const localStore = localStorage.getItem('session');
-            if (localStore) {
+            if (localStore) { //if user has sessions
+                console.log(`get localStorage Successful`)
                 const sessionObject: IUserSession = JSON.parse(localStore);
                 setSessionValue({
                     accessToken: sessionObject.accessToken,
@@ -29,6 +30,8 @@ export function useAuthGuard() {
                     lasttimeLogIn: new Date(),
                 })
             } else {
+                console.log(`get localStorage Fail!!!`);
+
                 history.push('/login');
                 return;
             }
@@ -36,14 +39,14 @@ export function useAuthGuard() {
         } else {
 
             //case not login
-            // if (!sessionValue) {
-            //     if (previousRoute !== '/' && previousRoute !== '/login') {
-            //         history.push('/login?redirect=' + previousRoute);
-            //     } else {
-            //         history.push('/login');
-            //         return;
-            //     }
-            // }
+            if (!sessionValue) {
+                if (previousRoute !== '/' && previousRoute !== '/login') {
+                    history.push('/login?redirect=' + previousRoute);
+                } else {
+                    history.push('/login');
+                    return;
+                }
+            }
             //case try to access login but already logined
             if (currentState === NavigationCurrentType.LOGIN && sessionValue) {
                 history.push('/dashboard');

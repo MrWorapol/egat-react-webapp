@@ -13,6 +13,8 @@ export interface IWheelingCharge {
     note: string,
     effectiveDate?: string,
     effectiveTime?: string,
+    effectiveHour?: string,
+    effectiveMinute?: string,
 }
 
 export const wheelingChargeState = atom<IWheelingCharge[] | null>({

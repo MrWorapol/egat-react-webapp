@@ -5,7 +5,7 @@ import React, { useEffect } from 'react'
 import { useDialog } from '../../../../hooks/useDialog';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Iimbalance } from '../../../../state/reference-data/imbalance/imbalance-state';
-import { useImbalanceLogs } from '../../../../hooks/useImbalanceLogs';
+import { useImbalanceLogs } from '../../../../hooks/reference-data/useImbalanceLogs';
 
 interface ILogProps {
     no: number,

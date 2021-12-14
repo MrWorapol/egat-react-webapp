@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form';
 import { useDialog } from '../../../../hooks/useDialog';
-import { useWheelingLogs } from '../../../../hooks/useWheelingLogs';
+import { useWheelingLogs } from '../../../../hooks/reference-data/useWheelingLogs';
 import { IWheelingCharge } from '../../../../state/reference-data/wheeling-chart/wheeling-charge-state';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { IWheelingLogs } from '../../../../state/reference-data/wheeling-chart/wheeling-log-state';

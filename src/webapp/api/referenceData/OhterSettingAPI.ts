@@ -6,7 +6,7 @@ import { IUserSession } from "../../state/user-sessions";
 
 
 interface IGetOtherSettingRequest {
-    token?: IUserSession,
+    session: IUserSession,
 }
 
 interface IGetOtherSettingResponse {
@@ -14,14 +14,14 @@ interface IGetOtherSettingResponse {
 }
 
 interface IGetOtherSettingLogsRequest {
-    token?: IUserSession,
+    session: IUserSession,
 }
 
 interface IGetOtherSettingLogsResponse {
     context: IOtherSettingLog[],
 }
 interface IPutOtherSettingRequest {
-    token?: IUserSession,
+    session: IUserSession,
     setting: IOtherSetting
 }
 
@@ -32,10 +32,10 @@ export class OtherSettingAPI {
         const path = '/reference-data/other-setting'
         const api = this.endpoint + path;
         let response: Response;
-        let token = 'token';
+        let token = req.session.accessToken;
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
         }
         try {
             response = await fetch(api, {
@@ -82,10 +82,10 @@ export class OtherSettingAPI {
         const path = `/reference-data/other-setting/log`;
         const api = this.endpoint + path;
         let response: Response;
-        // let token = 'token';
+        let token = req.session.accessToken;
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
         }
         try {
             response = await fetch(api, {
@@ -131,10 +131,10 @@ export class OtherSettingAPI {
         const path = `/reference-data/other-setting`;
         const api = this.endpoint + path;
         let response: Response;
-        let token = 'token';
+        let token = req.session.accessToken;
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
         }
         let body = JSON.stringify(req.setting);
         try {

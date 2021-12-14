@@ -4,13 +4,13 @@ import { Box } from '@mui/system';
 import dayjs from 'dayjs';
 
 import { useDialog } from '../../../../hooks/useDialog';
-import { useTOUTariffLogs } from '../../../../hooks/useTOUTariffLogs';
+import { useTOUTariffLogs } from '../../../../hooks/reference-data/useTOUTariffLogs';
 import { ITouTariff } from '../../../../state/reference-data/tou-traff/tou-tariff-state';
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { touTypeLabel } from './TOUTariff';
 import { IServiceCharge } from '../../../../state/reference-data/tou-traff/tou-service-charge-state';
-import { useServiceChargeLogs } from '../../../../hooks/useServiceChargeLogs';
+import { useServiceChargeLogs } from '../../../../hooks/reference-data/useServiceChargeLogs';
 
 interface IServiceChargeProps {
     serviceCharge: IServiceCharge,

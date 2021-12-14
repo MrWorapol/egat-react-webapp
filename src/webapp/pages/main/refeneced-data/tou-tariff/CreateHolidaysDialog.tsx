@@ -1,17 +1,18 @@
 import React, { useState } from 'react'
-import { Accordion, AccordionDetails, AccordionSummary, Button, DialogActions, DialogContent, DialogTitle, Grid, List, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, FormControl, Select, MenuItem, SelectChangeEvent, IconButton } from '@mui/material';
+import { Button, DialogContent, DialogTitle, Grid, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, IconButton } from '@mui/material';
 import { Box } from '@mui/system';
-import dayjs from 'dayjs';
-import timezone from 'dayjs/plugin/timezone';
-import utc from 'dayjs/plugin/utc';
 import { useDialog } from '../../../../hooks/useDialog';
 import { IServiceCharge } from '../../../../state/reference-data/tou-traff/tou-service-charge-state';
-import useHolidayLogs from '../../../../hooks/useHolidayLogs';
-import { holidayLogsState, IHoliday } from '../../../../state/reference-data/tou-traff/holiday-state';
-import { Controller, useFieldArray, useForm, useFormContext } from 'react-hook-form';
+import useHolidayLogs from '../../../../hooks/reference-data/useHolidayLogs';
+import { IHoliday } from '../../../../state/reference-data/tou-traff/holiday-state';
+import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { DatePicker } from '@mui/lab';
+
+import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -163,9 +164,7 @@ export default function CreateHolidaysDialog(props: IServiceChargeProps) {
                     </Grid>
                 </form>
             </DialogContent>
-            {/* <DialogActions>
-            
-            </DialogActions> */}
+
         </>
     )
 }

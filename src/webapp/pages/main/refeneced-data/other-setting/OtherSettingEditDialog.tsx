@@ -2,7 +2,7 @@ import { Button, DialogContent, DialogTitle, Divider, Grid, TextField, Typograph
 import React from 'react'
 import { Controller, useForm } from 'react-hook-form';
 import { useDialog } from '../../../../hooks/useDialog';
-import { useOtherSetting } from '../../../../hooks/useOtherSetting';
+import { useOtherSetting } from '../../../../hooks/reference-data/useOtherSetting';
 import { IOtherSetting } from '../../../../state/reference-data/other-setting/othersetting-state';
 
 export default function OtherSettingEditDialog() {

@@ -13,6 +13,7 @@ import { useAuthGuard } from './hooks/useAuthGuard';
 import { CustomBackdrop } from './components/CustomLoadingBackdrop';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import DateAdapter from '@mui/lab/AdapterDayjs';
+import SnackBarNotification from './components/SnakBarNotification';
 
 export default function WebApp() {
     return (
@@ -21,11 +22,11 @@ export default function WebApp() {
                 <RecoilRoot>
                     <React.Suspense fallback={<div>Loading...</div>}>
                         <Router>
-                            {/* <Login /> */}
                             <WebAdminRouting />
                         </Router>
                         <CustomDialog />
                         <CustomBackdrop />
+                        <SnackBarNotification/>
                     </React.Suspense>
 
                 </RecoilRoot>
