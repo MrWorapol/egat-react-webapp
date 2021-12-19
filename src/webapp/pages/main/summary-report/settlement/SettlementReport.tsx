@@ -1,22 +1,28 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { useNavigationSet } from '../../../../hooks/useNavigationSet'
 import { NavigationCurrentType } from '../../../../state/navigation-current-state';
 import { Container, FormControl, Grid, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material'
 
 import { Box } from '@mui/system'
 import SettlementDetail from './SettlementDetail';
-import SummaryComponents from './SummaryComponents';
+import SummaryCharts from './SummaryChartComponents';
 import AllSettlementComponent from './AllSettlementComponent';
 import PeriodComponent from '../PeriodComponent';
+import { useSettlementReport } from '../../../../hooks/summary-report/settlement/useSettlementReport';
 export default function SettlementReport() {
     useNavigationSet(NavigationCurrentType.SETTLEMENT_REPORT);
-    const [state, setstate] = useState('all');
+
+    const { refreshSettlementReport } = useSettlementReport();
+
+    const refreshPage = useCallback(async () => {
+        refreshSettlementReport('all', 'all', 'all', 'all', 'all');
+    }, []);
 
     return (
-        <Box sx={{ width: `100%`, px: 2, py: 2, maxWidth: '100%' }}>
-            <Grid container item direction="row" justifyContent='flex-end' id='period-zone' py={1}>
+        <Box sx={{ width: `100%`, px: 2, pb: 2, maxWidth: '100%' }}>
+            <Grid container item direction="row" justifyContent='flex-end' id='period-zone' mb={1}>
                 <Grid item >
-                    <PeriodComponent refreshPage={() => { }} />
+                    <PeriodComponent key='settlement-period' refreshPage={refreshPage} />
 
                 </Grid>
             </Grid>
@@ -31,7 +37,7 @@ export default function SettlementReport() {
                         </Grid>
                     </Grid>
                     <Grid container item id='right-side' xs={6} >
-                        <SummaryComponents />
+                        <SummaryCharts />
                     </Grid>
                 </Grid>
             </Box>

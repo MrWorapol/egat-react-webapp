@@ -1,9 +1,13 @@
-import { Grid, Typography } from '@mui/material'
+import { Button, Grid, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import React from 'react'
 import DoughnutChart from '../../../../components/DoughnutChart'
+import { useSettlementReport } from '../../../../hooks/summary-report/settlement/useSettlementReport';
 
-export default function SummaryComponents() {
+export default function SummaryCharts() {
+
+    const { } = useSettlementReport();
+
     return (
         <Box sx={{ flexGrow: 1 }}>
             <Grid container item direction='column'>
@@ -24,7 +28,8 @@ export default function SummaryComponents() {
                                 // hoverOffset: 4,
                             },
                         ]}
-                        width={360}
+                        width={400}
+
                     />
                 </Grid>
                 <Grid container item xs={'auto'} direction='row' justifyContent="center" alignItems="center" px={2} pt={2} my={1} sx={{ backgroundColor: '#fff' }}>
@@ -43,7 +48,7 @@ export default function SummaryComponents() {
                                 // hoverOffset: 4,
                             },
                         ]}
-                        width={360}
+                        width={400}
                     />
                 </Grid>
                 <Grid container item xs={'auto'} direction='row' justifyContent="center" alignItems="center" px={2} pt={2} my={1} sx={{ backgroundColor: '#fff' }}>
@@ -69,27 +74,44 @@ export default function SummaryComponents() {
                     <Grid xs={12}>
                         <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em', color: 'secondary.main' }}>Summary by Order Status</Typography>
                     </Grid>
-                    <DoughnutChart
-                        labels={[`Matched`, 'Open',]}
-                        datasets={[
-                            {
-                                data: [16, 4],
-                                backgroundColor: [
-                                    '#61399F',
-                                    '#004AAD',
-                                ],
-                                // hoverOffset: 4,
-                            },
-                        ]}
-                        width={360}
-                    />
+                    <Grid container item direction='row' justifyContent='space-between' alignItems='center'>
+                        <Grid item alignItems='center'>
+                            <Button sx={{ color: '#000', fontSize: '2em', fontWeight: 'bold' }}>
+                                {'<'}
+                            </Button>
+                        </Grid>
+                        <Grid>
+                            <DoughnutChart
+                                labels={[`Matched`, 'Open',]}
+                                datasets={[
+                                    {
+                                        data: [16, 4],
+                                        backgroundColor: [
+                                            '#61399F',
+                                            '#004AAD',
+                                        ],
+                                        // hoverOffset: 4,
+                                    },
+                                ]}
+                                width={400}
+                            />
+                        </Grid>
+                        <Grid>
+                            <Button sx={{ color: '#000', fontSize: '2em', fontWeight: 'bold' }}>
+                                {'>'}
+                            </Button>
+                        </Grid>
+                    </Grid>
                 </Grid>
             </Grid>
-        </Box>
+        </Box >
     )
 }
 
 
-// function buildChart() {
-//     return <DoughnutChart datasets={ } labels={ } width={ } key={'asdf'} />
-// }
+function buildImbalanceChart() {
+    return (
+        <>
+        </>
+    )
+}

@@ -71,7 +71,7 @@ export default function AllOrderTable() {
         <Paper sx={{ width: '100%', mb: 2 }} >
             <TableContainer >
                 <Table aria-label="">
-                    <TableHead sx={{ bgcolor: 'primary.main', fontWeight: '400' }}>
+                    <TableHead sx={{ bgcolor: '#E0E0E0', fontWeight: '400' }}>
                         <TableRow>
                             {columns.map((column) => (
                                 <TableCell

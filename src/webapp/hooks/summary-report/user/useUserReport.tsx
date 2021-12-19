@@ -1,10 +1,11 @@
 import dayjs from "dayjs";
 import { useCallback, useEffect } from "react";
-import { useRecoilState } from "recoil"
+import { useRecoilState, useRecoilValue } from "recoil"
 import { UserReportAPI } from "../../../api/report/UserReportAPI";
 import { locationSiteState } from "../../../state/summary-report/user-report/location-site-state";
 import { userChartState } from "../../../state/summary-report/user-report/user-chart-state"
 import { userReportState } from "../../../state/summary-report/user-report/user-report-state";
+import { userSessionState } from "../../../state/user-sessions";
 import usePeriodTime from "../usePeriodTime";
 
 
@@ -13,10 +14,14 @@ export default function useUserReport() {
     const [meterTable, setmeterTable] = useRecoilState(userReportState);
     const [locationSite, setLocationSite] = useRecoilState(locationSiteState);
     const api = new UserReportAPI();
-    const { period, updatedPeriod } = usePeriodTime();
-    const refreshUserData = useCallback(async () => {
-        const resultChart = await api.getUserReport({ startDate: dayjs(period.startDate).toString(), endDate: dayjs(period.endDate).toString(), region: period.region });
+    const { period } = usePeriodTime();
+    const session = useRecoilValue(userSessionState);
+
+    const calculateChartData = useCallback(async () => {
         console.log(`call refresh User Data`);
+
+        console.log(`call refreshChart`);
+        const resultChart = await api.getUserReport({ startDate: dayjs(period.startDate).toString(), endDate: dayjs(period.endDate).toString(), region: period.region });
         if (resultChart) {
             setChartData(resultChart.context);
 
@@ -24,7 +29,14 @@ export default function useUserReport() {
     }, []);
 
     const refreshUserTable = useCallback(async (roles: string[], area: string) => {
-        console.log(`refresh user table`)
+        console.log(`refresh user table`);
+        console.log(session);
+        if (session) {
+            const resultfromdruid = await api.getDruidData({ session });
+            if (resultfromdruid) {
+                console.log(resultfromdruid);
+            }
+        }
         const result = await api.getUserTable({ startDate: dayjs(period.startDate).toString(), endDate: dayjs(period.endDate).toString(), region: period.region, roles: roles, area: area })
         if (result) {
             setmeterTable(result.context);
@@ -49,20 +61,20 @@ export default function useUserReport() {
 
     }, [])
     useEffect(() => {
-        if (!chartData) {
-            refreshUserData();
-        }
         if (!meterTable) {
             refreshUserTable([], 'all');
 
         }
+        if (!chartData) {
+            calculateChartData();
+        }
         return () => {
         }
-    }, [])
+    }, [session])
 
     return {
         chartData,
-        refreshUserData,
+        refreshUserData: calculateChartData,
         meterTable,
         refreshUserTable,
         locationSite,

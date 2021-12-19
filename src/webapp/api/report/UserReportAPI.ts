@@ -1,5 +1,5 @@
-import dayjs from 'dayjs';
-import React, { Component } from 'react'
+// import dayjs from 'dayjs';
+// import React, { Component } from 'react'
 import { ILocationSite } from '../../state/summary-report/user-report/location-site-state';
 import { IUserChart } from '../../state/summary-report/user-report/user-chart-state';
 import { meterInfo } from '../../state/summary-report/user-report/user-report-state';
@@ -35,8 +35,14 @@ interface IGetLocationSiteRequest {
 interface IGetLocationSiteResponse {
     context: ILocationSite
 }
+
+interface IGetDruidRequest {
+    session: IUserSession,
+}
+
 export class UserReportAPI {
     private endpoint = '';
+    private druidEndpoint = 'http://localhost:3006/summary-report/druid';//druidEndpoint;
 
     async getUserReport(req: IGetUserReportRequest): Promise<IGetUserReportResponse | null> {
         return {
@@ -102,5 +108,40 @@ export class UserReportAPI {
                 }
             }
         };
+    }
+
+    async getDruidData(req: IGetDruidRequest) {
+        console.log(`call druid api`);
+        const body = {
+            "query": `SELECT site."payload.areaId", 
+            site."payload.id", 
+            site."payload.siteName", 
+            area."payload.area", 
+            area."payload.meterId", 
+            area."payload.regionName"
+            FROM "MeterSiteTest" 
+            as site INNER JOIN "MeterAreaTest" 
+            as area ON site."payload.areaId" = area."payload.id"`,
+            "resultFormat": "object"
+        }
+        let headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": `Bearer ${req.session.accessToken}`,
+        }
+        try {
+            const result = await fetch(this.druidEndpoint, {
+                headers,
+                method: "POST",
+                body: JSON.stringify(body),
+            })
+            const context = result.json();
+            console.log(`call druid successful`)
+            console.log(context);
+            return context;
+        } catch (e) {
+            return false;
+        }
+
     }
 }

@@ -71,7 +71,7 @@ export function PageRouting() {
                 </Route>
                 <Route path="/billing_report">
                     <BillingReport />
-                </Route>``
+                </Route>
             </Switch>
         </>
     )

@@ -26,8 +26,24 @@ export default function LocationSite() {
                     <Grid container item justifyContent='flex-end' >
                         <Typography>{`Address: ${locationSite.location.lat},${locationSite.location.lng} `}</Typography>
                     </Grid>
-                    <Grid container item id='map-plugin' sx={{ backgroundColor: '#101010', borderWidth: '1px', width: 1, height: '200px' }}>
+                    <Grid container item id='map-plugin' direction='column' sx={{ backgroundColor: '#fff', borderWidth: '1px', width: 1, height: '200px', boxShadow: 2, }}>
+                        <Grid item sx={{ height: '', width: 1, }}>
 
+                        </Grid>
+                        <Grid item container direction='row'>
+                            <Grid item container direction='column' alignItems='center' xs={4}>
+                                <Typography>ไฟที่จะขายได้ 1 วันล่วงหน้า</Typography>
+                                <Typography>kWh</Typography>
+                            </Grid>
+                            <Grid item container direction='column' alignItems='center' xs={4}>
+                                <Typography>ไฟที่จะขายได้ 1 วันล่วงหน้า</Typography>
+                                <Typography>kW</Typography>
+                            </Grid>
+                            <Grid item container direction='column' alignItems='center' xs={4}>
+                                <Typography>ไฟที่จะขายได้ 1 วันล่วงหน้า</Typography>
+                                <Typography>kW</Typography>
+                            </Grid>
+                        </Grid>
                     </Grid>
                 </Grid>
                 <Grid item container xs={12} id='energy-info'>

@@ -69,9 +69,7 @@ export default function UserDetail() {
     const { userDetail, meterDetail, refreshUserDetailData } = useUserDetail(id);
     const { register, handleSubmit, formState: { errors }, control } = useForm<IFormTextFieldInput>();
     const [edit, setEdit] = React.useState(false);
-    const [userSession, setUserSessionValue] = useRecoilState(userSessionState);
-    const { showLoading, hideLoading } = useLoadingScreen();
-
+  
 
     const onSetEditable = () => {
         setEdit(!edit);

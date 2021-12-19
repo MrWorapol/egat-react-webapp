@@ -1,13 +1,11 @@
-import { Container, FormControl, Grid, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material'
+import { Grid} from '@mui/material'
 import { Box } from '@mui/system'
-import React, { useState } from 'react'
-import usePeriodTime from '../../../../hooks/summary-report/usePeriodTime'
+import React from 'react'
 import useUserReport from '../../../../hooks/summary-report/user/useUserReport'
 import { useNavigationSet } from '../../../../hooks/useNavigationSet'
 import { NavigationCurrentType } from '../../../../state/navigation-current-state'
 import PeriodComponent from '../PeriodComponent'
 import AllArea from './AllArea'
-import DoughnutChart from '../../../../components/DoughnutChart'
 import LocationSite from './LocationSite'
 import SummaryChart from './SummaryChart'
 
@@ -16,6 +14,7 @@ export default function UserReport() {
     const { chartData, refreshUserData,refreshUserTable} = useUserReport();
 
     const refreshData = async () => {
+        console.log(`call refreshData Page`);
         refreshUserData();
         refreshUserTable([],'all');
     }

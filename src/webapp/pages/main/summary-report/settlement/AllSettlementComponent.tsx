@@ -3,6 +3,7 @@ import { Checkbox, FormControl, FormControlLabel, FormGroup, Grid, MenuItem, Sel
 import { useDebouncedCallback } from 'use-debounce/lib';
 import AllSettlementTable from './AllSettlementTable';
 import { Controller, useForm } from 'react-hook-form';
+import { useSettlementReport } from '../../../../hooks/summary-report/settlement/useSettlementReport';
 
 interface IRolesState {
     [key: string]: boolean,
@@ -18,161 +19,153 @@ interface ITableSelector {
 
 
 export default function AllSettlementComponent() {
-    const [areaState, setAreaState] = useState('total');
-    const [roleState, setRoleState] = useState<IRolesState>({
-        agregator: false,
-        prosumer: false,
-        consumer: false,
-    });
-    const {
-        handleSubmit,
-        register,
-        reset,
-        control,
-        formState: { errors }
-    } = useForm<ITableSelector>();
+    const [area, setArea] = useState('total');
+    const [role, setRole] = useState('all');
+    const [buyerType, setBuyerType] = useState('all');
+    const [tradeMarket, setTradeMarket] = useState('all');
+    const [imbalance, setImbalance] = useState('all');
 
+    const { refreshSettlementReport } = useSettlementReport();
+    const refreshTable = useDebouncedCallback(() => {
+        console.log(`role: ${role}\t buyer: ${buyerType}\t orderStatus: ${imbalance}\t tradeMarket:${tradeMarket}\n area: ${area}`);
+        refreshSettlementReport(role, area, buyerType, tradeMarket, imbalance)
 
-    const roleSearchDebounce = useDebouncedCallback(
-        () => {
-            const selectedRoles = Object.keys(roleState).filter((key: string) => {
-                return roleState[key] === true;
-            });
-            // if(selectedRoles.length >0){
-            // refreshAllUser({ roles: [...selectedRoles] });
-            // }
-            console.log(`get roles select`);
-            console.log(selectedRoles);
-        }, 2000
-    )
+    }, 2000)
 
-    const onCheckedRole = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setRoleState({
-            ...roleState,
-            [event.target.name]: event.target.checked
-        });
+    const onSelectedDropdown = (event: SelectChangeEvent) => {
+        switch (event.target.name) {
+            case ('area'): {
+                setArea(event.target.value);
+                break;
+            }
+            case ('role'): {
+                setRole(event.target.value);
+                break;
+            }
+            case ('buyerType'): {
+                setBuyerType(event.target.value);
+                break;
+            }
+            case ('tradeMarket'): {
+                setTradeMarket(event.target.value);
+                break;
+            }
+            case ('imbalance'): {
+                setImbalance(event.target.value);
+                break;
+            }
+        }
 
-        roleSearchDebounce();
-
+        refreshTable();
     }
+
 
     function buildTableSelecter(// onCheckedRole: (event: React.ChangeEvent<HTMLInputElement>) => void
     ) {
         return (
             <>
                 <Grid container item xs={3}>
-                    <Controller
-                        render={({ field }) => (
-                            <Select
-                                {...field}
-                                fullWidth
-                                sx={{ height: '3vh' }}
+                    <FormControl variant='outlined' fullWidth>
+                        <Select
+                            fullWidth
+                            sx={{ height: '3vh' }}
+                            name='role'
+                            value={role}
+                            onChange={(event: SelectChangeEvent) => { onSelectedDropdown(event) }}
+                        >
+                            <MenuItem value='all'>All</MenuItem>
+                            <MenuItem value={'aggregator'}>Aggregator</MenuItem>
+                            <MenuItem value={'prosumer'}>Prosumer</MenuItem>
+                            <MenuItem value={'consumer'}>Consumer</MenuItem>
+                        </Select>
+                    </FormControl>
+                </Grid>
+                <Grid item xs={3}>
+                    <FormControl variant='outlined' fullWidth>
+                        <Select
+                            fullWidth
+                            sx={{ height: '3vh' }}
+                            name='buyerType'
+                            value={buyerType}
+                            onChange={(event: SelectChangeEvent) => { onSelectedDropdown(event) }}
+                        >
+                            <MenuItem value='all'>All</MenuItem>
+                            <MenuItem value={'seller'}>Seller</MenuItem>
+                            <MenuItem value={'buyer'}>Buyer</MenuItem>
+                        </Select>
+                    </FormControl>
+                </Grid>
+                <Grid item xs={4}>
+                    <FormControl variant='outlined' fullWidth>
+                        <Select
+                            fullWidth
+                            sx={{ height: '3vh' }}
+                            name='tradeMarket'
+                            value={tradeMarket}
+                            onChange={(event: SelectChangeEvent) => { onSelectedDropdown(event) }}
+                        >
+                            <MenuItem value='all'>All</MenuItem>
+                            <MenuItem value={'bilateral'}>Short Term Bilateral Trade</MenuItem>
+                            <MenuItem value={'pool'}>Pool Market Trade</MenuItem>
+                        </Select>
 
-                            >
-                                <MenuItem value={'aggregator'}>Aggregator</MenuItem>
-                                <MenuItem value={'prosumer'}>Prosumer</MenuItem>
-                                <MenuItem value={'consumer'}>Consumer</MenuItem>
-                            </Select>
-                        )}
-                        name="role"
-                        control={control}
-                        defaultValue={'aggregator'}
-                    />
+                    </FormControl>
                 </Grid>
                 <Grid item xs={2}>
-                    <Controller
-                        render={({ field }) => (
-                            <Select
-                                {...field}
-                                fullWidth
-                                sx={{ height: '3vh' }}
-                            >
-                                <MenuItem value={'seller'}>Seller</MenuItem>
-                                <MenuItem value={'buyer'}>Buyer</MenuItem>
-                            </Select>
-                        )}
-                        name="type"
-                        control={control}
-                        defaultValue={'seller'}
-                    />
-                </Grid>
-                <Grid item xs={5}>
-                    <Controller
-                        render={({ field }) => (
-                            <Select
-                                {...field}
-                                fullWidth
-                                sx={{ height: '3vh' }}
-                            >
-                                <MenuItem value={'bilateral'}>Short Term Bilateral Market Trade</MenuItem>
-                                <MenuItem value={'pool'}>Pool Market Trade</MenuItem>
-                            </Select>
-                        )}
-                        name="market"
-                        control={control}
-                        defaultValue={'bilateral'}
-                    />
-                </Grid>
-                <Grid item xs={2}>
-                    <Controller
-                        render={({ field }) => (
-                            <Select
-                                {...field}
-                                fullWidth
-                                sx={{ height: '3vh' }}
-                            >
-                                <MenuItem value={'matched'}>Matched</MenuItem>
-                                <MenuItem value={'open'}>Open</MenuItem>
-                            </Select>
-                        )}
-                        name="status"
-                        control={control}
-                        defaultValue={'matched'}
-                    />
+                    <FormControl variant='outlined' fullWidth>
+                        <Select
+                            fullWidth
+                            sx={{ height: '3vh' }}
+                            name='imbalance'
+                            value={imbalance}
+                            onChange={(event: SelectChangeEvent) => { onSelectedDropdown(event) }}
+                        >
+                            <MenuItem value='all'>All</MenuItem>
+                            <MenuItem value={'energyShortfall'}>Energy Shortfall</MenuItem>
+                            {/* <MenuItem value={'open'}>Open</MenuItem> */}
+                        </Select>
+                    </FormControl>
                 </Grid>
             </>
         )
     }
 
-    const onSubmitForm = async (data: ITableSelector) => {
-        console.log(data);
-    }
+
 
     return (
         <Grid container direction='column' px={2} sx={{ minHeight: '50vh' }}>
-            <form onSubmit={handleSubmit(onSubmitForm)}>
-                <Grid item container direction='row' justifyContent='space-between' id='header' pt={2}>
-                    <Grid item container xs={'auto'}>
-                        <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em', color: 'secondary.main' }}>All Settlement</Typography>
-                    </Grid>
-                    <Grid item container xs={'auto'}>
-                        <FormControl variant='outlined' >
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                value={areaState}
-                                onChange={(event: SelectChangeEvent) => { setAreaState(event.target.value) }}
-                                sx={{ height: '3vh' }}
-                            >
-                                <MenuItem value={'total'}> {'Total'}</MenuItem>
-                                <MenuItem value={'3villages'}> {'3 Villages'}</MenuItem>
-                                <MenuItem value={'tu'}>{'Thammasat University'}</MenuItem>
-                                <MenuItem value={'venueFlow'}>{'VENUE FLOW'}</MenuItem>
-                                <MenuItem value={'perfectPark'}>{'Perfect Park'}</MenuItem>
-                                <MenuItem value={'casaPermium'}>{'CASA Premium'}</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </Grid>
+            <Grid item container direction='row' justifyContent='space-between' id='header' pt={2}>
+                <Grid item container xs={'auto'}>
+                    <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em', color: 'secondary.main' }}>All Settlement</Typography>
+                </Grid>
+                <Grid item container xs={'auto'}>
+                    <FormControl variant='outlined' >
+                        <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            value={area}
+                            name='area'
+                            onChange={(event: SelectChangeEvent) => { onSelectedDropdown(event) }}
+                            sx={{ height: '3vh' }}
+                        >
+                            <MenuItem value={'total'}> {'Total'}</MenuItem>
+                            <MenuItem value={'3villages'}> {'3 Villages'}</MenuItem>
+                            <MenuItem value={'tu'}>{'Thammasat University'}</MenuItem>
+                            <MenuItem value={'venueFlow'}>{'VENUE FLOW'}</MenuItem>
+                            <MenuItem value={'perfectPark'}>{'Perfect Park'}</MenuItem>
+                            <MenuItem value={'casaPermium'}>{'CASA Premium'}</MenuItem>
+                        </Select>
+                    </FormControl>
+                </Grid>
 
-                </Grid>
-                <Grid item container direction='row' spacing={1} id='table-selector' my={1}>
-                    {buildTableSelecter()}
-                </Grid>
-            </form>
+            </Grid>
+            <Grid item container direction='row' spacing={1} id='table-selector' my={1}>
+                {buildTableSelecter()}
+            </Grid>
             <Grid id="area-table">
                 <AllSettlementTable />
             </Grid>
-        </Grid>
+        </Grid >
         // </Box>
 
     )

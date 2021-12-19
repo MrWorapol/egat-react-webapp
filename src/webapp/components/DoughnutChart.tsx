@@ -3,15 +3,15 @@ import { Box, height } from '@mui/system';
 import React from 'react'
 import { Doughnut } from 'react-chartjs-2';
 
-interface customDataSet {
+export interface CustomDataSet {
     data: number[],
     backgroundColor: string[],
     hoverOffset?: number | 4,
 }
 
-interface DoughNutChartProps {
+export interface DoughNutChartProps {
     labels: string[],
-    datasets: customDataSet[],
+    datasets: CustomDataSet[],
     width: number, //minWidth: 360
 }
 
@@ -29,10 +29,10 @@ export default function DoughnutChart(props: DoughNutChartProps) {
                 options={{
                     responsive: true,
                     maintainAspectRatio: true,
-                    aspectRatio: 1.5,
+                    aspectRatio: 1.7,
                     plugins: {
                         legend: {
-                            
+
                             position: 'right',
                             labels: {
                                 padding: 20,
@@ -55,7 +55,7 @@ export default function DoughnutChart(props: DoughNutChartProps) {
                             },
                         }
                     },
-                    cutout: 90,
+                    cutout: 95,
                 }}
             />
         </Box>

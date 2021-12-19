@@ -9,6 +9,7 @@ import LastPageIcon from '@mui/icons-material/LastPage';
 import { useHistory } from 'react-router-dom';
 import { useResetRecoilState } from 'recoil';
 import TablePaginationActionsComponent from '../../../../components/TablePaginationActions';
+import { useSettlementReport } from '../../../../hooks/summary-report/settlement/useSettlementReport';
 
 
 interface Column {
@@ -17,71 +18,11 @@ interface Column {
 
 
 }
-
-// interface TablePaginationActionsProps {
-//     count: number,
-//     page: number,
-//     rowsPerPage: number;
-//     onPageChange: (
-//         event: React.MouseEvent<HTMLButtonElement>,
-//         newPage: number,
-//     ) => void;
-// }
-// function TablePaginationActions(props: TablePaginationActionsProps) {
-//     const theme = useTheme();
-//     const { count, page, rowsPerPage, onPageChange } = props;
-//     const handleFirstPageButtonClick = (
-//         event: React.MouseEvent<HTMLButtonElement>,
-//     ) => {
-//         onPageChange(event, 0);
-//     };
-//     const handleBackButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-//         onPageChange(event, page - 1);
-//     };
-//     const handleNextButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-//         onPageChange(event, page + 1);
-//     };
-//     const handleLastPageButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-//         onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
-//     };
-//     return (
-//         <Box sx={{ flexShrink: 0, ml: 2.5 }}>
-//             <IconButton
-//                 onClick={handleFirstPageButtonClick}
-//                 disabled={page === 0}
-//                 aria-label="first page"
-//             >
-//                 {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
-//             </IconButton>
-//             <IconButton
-//                 onClick={handleBackButtonClick}
-//                 disabled={page === 0}
-//                 aria-label="previous page"
-//             >
-//                 {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-//             </IconButton>
-//             <IconButton
-//                 onClick={handleNextButtonClick}
-//                 disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-//                 aria-label="next page"
-//             >
-//                 {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
-//             </IconButton>
-//             <IconButton
-//                 onClick={handleLastPageButtonClick}
-//                 disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-//                 aria-label="last page"
-//             >
-//                 {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
-//             </IconButton>
-//         </Box>
-//     );
-// }
-
 export default function AllSettlementTable() {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const history = useHistory();
+    const { settlementReport} = useSettlementReport();
     // const { userInfoData, refreshAllUser } = useAllUser();
     // const resetUserDetailData = useResetRecoilState(userDetail);
     const mockDatas = [{}, {}];
@@ -127,10 +68,10 @@ export default function AllSettlementTable() {
         console.log('click view button')
     }
     return (
-        <Paper sx={{mb: 2 }} >
+        <Paper sx={{ mb: 2 }} >
             <TableContainer >
                 <Table aria-label="">
-                    <TableHead sx={{ bgcolor: 'primary.main', fontWeight: '400' }}>
+                    <TableHead sx={{ bgcolor: '#E0E0E0', fontWeight: '400' }}>
                         <TableRow>
                             {columns.map((column) => (
                                 <TableCell

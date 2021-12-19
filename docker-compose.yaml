@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  egat-p2p-web-admin-summary-report-api:
+    image: phwuts/egat-p2p-web-admin-summary-report-api:0.0.2
+    environment:
+      - HOST=0.0.0.0
+      - PORT=3006
+      - APP_DRUID_CLIENT_API=http://10.40.58.161:32720/druid/v2/sql
+      - KEYCLOAK_OPENID_BASE_URL=https://keycloak.iknowplus.co.th/auth/realms/egat
+    ports:
+      - 3006:3006
+    networks:
+      - egat-p2p
+
+networks:
+  egat-p2p:
+
+volumes:
+  keystore:
