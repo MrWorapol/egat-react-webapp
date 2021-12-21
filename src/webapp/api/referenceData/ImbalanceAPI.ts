@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import { refApi } from "../../constanst";
+import { IImbalanceLog } from "../../state/reference-data/imbalance/imbalance-log";
 import { Iimbalance } from "../../state/reference-data/imbalance/imbalance-state";
 import { IUserSession } from "../../state/user-sessions";
 
@@ -16,7 +17,7 @@ interface IGetLogsRequest {
     imbalance: 'Commited < Actual Energy' | 'Commited > Actual Energy',
 }
 interface IGetLogsResponse {
-    context: Iimbalance[],
+    context: IImbalanceLog[],
 }
 
 interface IUpdateImbalanceRequest {

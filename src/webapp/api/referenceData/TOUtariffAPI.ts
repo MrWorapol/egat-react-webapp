@@ -1,7 +1,8 @@
 import { refApi } from "../../constanst";
 import { IPackage, IGridPackage } from "../../state/reference-data/tou-traff/grid-package-state";
 import { IHoliday, IHolidayLogs } from "../../state/reference-data/tou-traff/holiday-state";
-import { IServiceCharge } from "../../state/reference-data/tou-traff/tou-service-charge-state";
+import { IServiceCharge, IServiceChargeLog } from "../../state/reference-data/tou-traff/tou-service-charge-state";
+import { ITouTariffLog } from "../../state/reference-data/tou-traff/tou-tariff-log";
 import { ITouTariff } from "../../state/reference-data/tou-traff/tou-tariff-state";
 import { IUserSession } from "../../state/user-sessions";
 
@@ -30,7 +31,9 @@ interface IGetServiceChargeLogsRequest {
     session: IUserSession,
     touType: string,
 }
-
+interface IGetServiceChargeLogsResponse {
+    context: IServiceChargeLog[]
+}
 
 interface IGetTOULogsRequest {
     session: IUserSession,
@@ -38,6 +41,9 @@ interface IGetTOULogsRequest {
     title: string,
 }
 
+interface IGetTOULogsResponse {
+    context: ITouTariffLog[],
+}
 interface IUpdateTOURequest {
     session: IUserSession,
     tariff: ITouTariff
@@ -76,10 +82,10 @@ export default class TOUTariffAPI {
         const path = '/reference-data/tou-tariff-setting'
         const api = this.endpoint + path;
         let response: Response;
-        let token = 'token';
+        let session = req.session.accessToken;
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${session}`,
         }
         try {
             response = await fetch(api, {
@@ -186,10 +192,10 @@ export default class TOUTariffAPI {
         const path = '/reference-data/tou-tariff-setting';
         const api = this.endpoint + path;
         let response: Response;
-        let token = 'token';
+        let session = req.session.accessToken;
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${session}`,
         }
 
         let body = JSON.stringify(req.tariff);
@@ -214,14 +220,14 @@ export default class TOUTariffAPI {
         }
 
     }
-    async getTOUtariffLog(req: IGetTOULogsRequest): Promise<IGetTOUResponse | null> {
+    async getTOUtariffLog(req: IGetTOULogsRequest): Promise<IGetTOULogsResponse | null> {
         const path = `/reference-data/tou-tariff-setting/${req.touType}/${req.title}/log`
         const api = this.endpoint + path;
         let response: Response;
-        let token = 'token';
+        let session = req.session.accessToken;
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${session}`,
         }
         try {
             response = await fetch(api, {
@@ -235,7 +241,7 @@ export default class TOUTariffAPI {
         let result = await response.json();
         console.log(`get tariff logs`);
         console.log(result);
-        let content: IGetTOUResponse = {
+        let content: IGetTOULogsResponse = {
             context: result
         }
         return content;
@@ -253,10 +259,10 @@ export default class TOUTariffAPI {
         const path = `/reference-data/tou-tariff-setting/${req.touType}/service-charge`;
         const api = this.endpoint + path;
         let response: Response;
-        let token = 'token';
+        let session = req.session.accessToken;
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${session}`,
         }
         try {
             response = await fetch(api, {
@@ -279,10 +285,10 @@ export default class TOUTariffAPI {
         const path = `/reference-data/tou-tariff-setting/${req.serviceCharge.touType}/service-charge`;
         const api = this.endpoint + path;
         let response: Response;
-        let token = 'token';
+        let session = req.session.accessToken;
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${session}`,
         }
         let body = JSON.stringify(req.serviceCharge);
         try {
@@ -302,14 +308,14 @@ export default class TOUTariffAPI {
             return false;
         }
     }
-    async getServiceChargeLog(req: IGetServiceChargeLogsRequest): Promise<IGetServiceChargeResponse | null> {
+    async getServiceChargeLog(req: IGetServiceChargeLogsRequest): Promise<IGetServiceChargeLogsResponse | null> {
         const path = `/reference-data/tou-tariff-setting/${req.touType}/service-charge/log`
         const api = this.endpoint + path;
         let response: Response;
-        let token = 'token';
+        let session = req.session.accessToken;
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${session}`,
         }
         try {
             response = await fetch(api, {
@@ -322,7 +328,7 @@ export default class TOUTariffAPI {
 
         let result = await response.json();
 
-        let content: IGetServiceChargeResponse = {
+        let content: IGetServiceChargeLogsResponse = {
             context: result
         }
         return content;
@@ -331,10 +337,10 @@ export default class TOUTariffAPI {
         const path = '/reference-data/tou-tariff-setting/grid-used-package'
         const api = this.endpoint + path;
         let response: Response;
-        let token = 'token';
+        let session = req.session.accessToken;
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${session}`,
         }
         try {
             response = await fetch(api, {
@@ -356,10 +362,10 @@ export default class TOUTariffAPI {
         const path = `/reference-data/tou-tariff-setting/grid-used-package/${req.package}`;
         const api = this.endpoint + path;
         let response: Response;
-        let token = 'token';
+        let session = req.session.accessToken;
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${session}`,
         }
         try {
             response = await fetch(api, {
@@ -385,10 +391,10 @@ export default class TOUTariffAPI {
 
         }
         let response: Response;
-        let token = 'token';
+        let session = req.session.accessToken;
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${session}`,
         }
         try {
             response = await fetch(api.toString(), {
@@ -410,10 +416,10 @@ export default class TOUTariffAPI {
         const path = `/reference-data/tou-tariff-setting/${req.touType}/holidays`;
         const api = this.endpoint + path;
         let response: Response;
-        let token = 'token';
+        let session = req.session.accessToken;
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${session}`,
         }
 
         let body = JSON.stringify({

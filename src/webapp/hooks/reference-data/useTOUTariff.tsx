@@ -40,6 +40,7 @@ export function useTOUTariff() {
                 console.info(getGridPackage)
                 setGridUsedPackage(getGridPackage.context);
             }
+            setOnLoad(false);
         }
     }, [])
 
@@ -80,10 +81,9 @@ export function useTOUTariff() {
         }
     }, [])
     useEffect(() => {
-        if (onLoad) {
+        if (!touTariff) {
             refreshTOUTariff();
-            setOnLoad(false)
-            console.debug('call ge wheelingChart');
+            console.debug('call get tou tariff');
             // console.info(wheelingCharge);
         }
 

@@ -28,10 +28,10 @@ export default function CustomTimeSelect(props: ICustomTimeSelectProps) {
             }}
         >
             {
-                Array.from(Array(10)).map((menu,i)=>{
+                Array.from(Array(props.menuLength)).map((menu,i)=>{
                 // buildMenuItems(props.menuLength, props?.step).map((menu, i) => {
                     return (
-                        <MenuItem key={i + `${menu}`} value={`${menu}`}> {(`00` + menu).slice(-2)}</MenuItem>
+                        <MenuItem key={i + `${menu}`} value={`${i}`}> {(`00` + i).slice(-2)}</MenuItem>
                     )
                 })
             }

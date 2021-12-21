@@ -47,6 +47,7 @@ export const touTypeLabel: IMap = {
 
 export default function TOUTariff() {
     useNavigationSet(NavigationCurrentType.TOU_TARIFF);
+    console.log(`open tou tariff`)
     const { showDialog } = useDialog();
     const { onLoad, touTariff, refreshTOUTariff, serviceChargeType1, serviceChargeType2, gridUsedPackage,editGridUsedPackage } = useTOUTariff();
     const resetLogs = useResetRecoilState(touTariffLogState);
@@ -57,7 +58,7 @@ export default function TOUTariff() {
 
             setPackageState(gridUsedPackage.defaultPackage);
         }
-    }, [onLoad, gridUsedPackage])
+    }, [onLoad,touTariff, gridUsedPackage])
 
     // if (!currentPackage || !touTariff || !serviceChargeType1 || serviceChargeType2 === null) {
     //     console.warn(currentPackage);

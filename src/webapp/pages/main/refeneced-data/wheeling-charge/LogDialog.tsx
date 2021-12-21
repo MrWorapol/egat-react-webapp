@@ -70,12 +70,12 @@ export default function LogDialog(props: ILogProps) {
                                 <Grid container direction='row' xs={'auto'}>
 
                                     <Typography> Effective Date : </Typography>
-                                    <Typography> {dayjs(props.wheelingCharge.effectiveDate).format('DD/MM/YYYY')}</Typography>
+                                    <Typography> {dayjs(log.wheelingChargeSetting.effectiveDateTime).format('DD/MM/YYYY')}</Typography>
                                 </Grid>
                                 <Grid container direction='row' xs={'auto'}>
 
                                     <Typography> Effective Time : </Typography>
-                                    <Typography> {dayjs(props.wheelingCharge.effectiveTime).format('HH:mm')}</Typography>
+                                    <Typography> {dayjs(log.wheelingChargeSetting.effectiveDateTime).format('HH:mm')}</Typography>
                                 </Grid>
                             </Grid>
 
@@ -86,32 +86,32 @@ export default function LogDialog(props: ILogProps) {
                             <Grid container direction='row' justifyContent="space-between" px={3} xs={'auto'} alignContent="center">
                                 <Grid container item direction="column" xs={'auto'} alignItems='center' >
                                     <Typography> Baht/Kwh</Typography>
-                                    <Typography sx={{alignItems:'center'}}> {log.bahtPerKWh}</Typography>
+                                    <Typography sx={{alignItems:'center'}}> {log.wheelingChargeSetting.bahtPerKWh}</Typography>
                                 </Grid>
                                 <Grid container direction='column' xs={'auto'}  alignItems='center'>
 
                                     <Typography> MEA</Typography>
-                                    <Typography> {log.mea}</Typography>
+                                    <Typography> {log.wheelingChargeSetting.mea}</Typography>
                                 </Grid>
                                 <Grid container direction='column' xs={'auto'} alignItems='center'>
 
                                     <Typography> PEA</Typography>
-                                    <Typography> {log.pea}</Typography>
+                                    <Typography> {log.wheelingChargeSetting.pea}</Typography>
                                 </Grid>
                                 <Grid container direction='column' xs={'auto'} alignItems='center'>
 
                                     <Typography> MEAEGAT</Typography>
-                                    <Typography> {log.meaEgat}</Typography >
+                                    <Typography> {log.wheelingChargeSetting.meaEgat}</Typography >
                                 </Grid>
                                 <Grid container direction='column' xs={'auto'} alignItems='center'>
 
                                     <Typography> PEAEGAT</Typography>
-                                    <Typography> {log.peaEgat}</Typography>
+                                    <Typography> {log.wheelingChargeSetting.peaEgat}</Typography>
                                 </Grid>
                                 <Grid container direction='column' xs={'auto'}alignItems='center'>
 
                                     <Typography> MEAPEAEGAT</Typography>
-                                    <Typography> {log.meaPeaEgat}</Typography>
+                                    <Typography> {log.wheelingChargeSetting.meaPeaEgat}</Typography>
                                 </Grid>
                             </Grid>
 

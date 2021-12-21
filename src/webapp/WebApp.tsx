@@ -36,7 +36,7 @@ export default function WebApp() {
 }
 
 function WebAdminRouting() {
-    useAuthGuard();
+    // useAuthGuard();
     return (
         <Box>
             <Switch>

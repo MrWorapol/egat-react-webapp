@@ -77,7 +77,7 @@ export default function Imbalance() {
                     </TableHead>
 
                     <TableBody>
-                        {imbalance && imbalance.length !== 0 &&
+                        {(imbalance && imbalance.length !== 0) &&
                             imbalance.map((row: Iimbalance, i) => {
                                 console.info(row);
                                 if (row.type === type) {
