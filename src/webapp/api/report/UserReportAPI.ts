@@ -1,9 +1,16 @@
 // import dayjs from 'dayjs';
 // import React, { Component } from 'react'
-import { ILocationSite } from '../../state/summary-report/user-report/location-site-state';
+// import { IMeterInfo } from '../../state/summary-report/user-report/location-site-state';
 import { IUserChart } from '../../state/summary-report/user-report/user-chart-state';
-import { meterInfo } from '../../state/summary-report/user-report/user-report-state';
+import { IUserMeterInfo } from '../../state/summary-report/user-report/user-report-state';
 import { IUserSession } from '../../state/user-sessions';
+import { mockMeterAreaDataColllection } from './mockDataCollection';
+
+
+interface IGetDruidBody {
+    query: string,
+    resultFormat: string,
+}
 
 interface IGetUserReportRequest {
     startDate: string,
@@ -16,29 +23,77 @@ interface IGetUserReportResponse {
 
 }
 
-interface IGetUserTableRequest {
-    session?: IUserSession,
+interface IGetUserMeterInfoRequest {
+    session: IUserSession,
     startDate: string,
     endDate: string,
     region: string,
     roles: string[],
     area: string,
 }
-
-interface IGetUserTableResponse {
-    context: meterInfo[],
+interface IGetUserMeterInfoResponse {
+    context: IUserMeterInfo[],
 }
-interface IGetLocationSiteRequest {
-    session?: IUserSession,
+interface IMeterAreaAndSite {
+    "payload.areaId": string,
+    "payload.id": string,
+    "payload.siteName": string,
+    "payload.area": string,
+    "payload.meterId": string,
+    "payload.regionName": string,
+}
+
+interface IMeterInfo {
+    // "payload.id": string,
+    // "payload.locationCode": string,
+    // "payload.meterName": string,
+    // "payload.position.lat": string,
+    // "payload.position.lng": string,
+    // "payload.role": string,
+    // "payload.substationEgat": string,
+    // "payload.substationPeaMea": string,
+    active: string,
+    lat: string,
+    lng: string,
+    locationCode: string,
     meterId: string,
+    meterName: string,
+    registrationDate: string,
+    role: string,
+    substationEgat: string,
+    substationPeaMea: string,
+    userId: string,
 }
-interface IGetLocationSiteResponse {
-    context: ILocationSite
+interface IGetMeterInfoRequest {
+    session: IUserSession,
+    meterId: number,
+}
+interface IGetMeterInfoResponse {
+    context: IMeterInfo[],
 }
 
-interface IGetDruidRequest {
-    session: IUserSession,
+
+interface IUserEnergyCollection {
+    id: string,
+    meterId: string,
+    meterName: string,
+    siteName: string,
+    locationCode: string,
+    role: string, //Aggregator | Prosumer | Consumer
+    area: string,
+    region: string,
+    meterInfo: {
+        peameaSubstation: string,
+        egatSubStation: string,
+        location: {
+            lat: string,
+            lng: string,
+        }
+        // energy: ,
+    }
+
 }
+
 
 export class UserReportAPI {
     private endpoint = '';
@@ -52,74 +107,45 @@ export class UserReportAPI {
             }
         }
     }
-    async getUserTable(req: IGetUserTableRequest): Promise<IGetUserTableResponse | null> {
-        let roles = '';
-        if (req.roles.length === 0) {
-            roles = 'all'
-        }
-        console.log(req);
-        return {
-            context: [
-                {
-                    meterId: '0e00300',
-                    meterName: 'Aggregator 1',
-                    area: '3 Villages',
-                    locationCode: 'mea1',
-                    role: 'aggregator',
-                    siteName: 'VENUE FLOW'
-                },
-                {
-                    meterId: '0e00301',
-                    meterName: 'Aggregator 2',
-                    area: '3 Villages',
-                    locationCode: 'mea1',
-                    role: 'aggregator',
-                    siteName: 'VENUE FLOW'
-                },
-                {
-                    meterId: '0e00302',
-                    meterName: 'Aggregator 3',
-                    area: '3 Villages',
-                    locationCode: 'mea1',
-                    role: 'aggregator',
-                    siteName: 'VENUE FLOW'
-                }
-            ]
-        }
-    }
+    // async getUserTable(req: IGetUserTableRequest): Promise<IGetUserTableResponse | null> {
+    //     await this.getUserMeterInfo();
+    //     return null;
+    // }
 
-    async getLocationSite(req: IGetLocationSiteRequest): Promise<IGetLocationSiteResponse | null> {
-        // return null;
-        return {
-            context: {
-                meterId: req.meterId,
-                egatSubStation: 'กฟผ สฟ. CHW',
-                peameaSubstation: ' กฟน. สต.แจ้งวัฒนะ(JWT) 115 kV BUS A2',
-                location: {
-                    lat: '1112',
-                    lng: '434'
-                },
-                energy: {
-                    pv: 3.7,
-                    grid: 12,
-                    energyStorage: 20,
-                    energyLoad: 2,
-                    meterId: req.meterId,
-                }
-            }
-        };
-    }
+    // async getLocationSite(req: IGetLocationSiteRequest): Promise<IGetLocationSiteResponse | null> {
+    //     // return null;
+    //     // return {
+    //     //     context: {
+    //     //         meterId: req.meterId,
+    //     //         egatSubStation: 'กฟผ สฟ. CHW',
+    //     //         peameaSubstation: ' กฟน. สต.แจ้งวัฒนะ(JWT) 115 kV BUS A2',
+    //     //         location: {
+    //     //             lat: '1112',
+    //     //             lng: '434'
+    //     //         },
+    //     //         energy: {
+    //     //             pv: 3.7,
+    //     //             grid: 12,
+    //     //             energyStorage: 20,
+    //     //             energyLoad: 2,
+    //     //             meterId: req.meterId,
+    //     //         }
+    //     //     }
+    //     // };
+    // }
+    // async getUserTable(req: IGetUserTableRequest): Promise<IGetUserTableResponse | null> {
 
-    async getDruidData(req: IGetDruidRequest) {
+    async getUserMeterInfo(req: IGetUserMeterInfoRequest): Promise<IGetUserMeterInfoResponse | null> {
         console.log(`call druid api`);
-        const body = {
+        let result: IUserMeterInfo[] = [];
+        const body: IGetDruidBody = {
             "query": `SELECT site."payload.areaId", 
             site."payload.id", 
             site."payload.siteName", 
             area."payload.area", 
             area."payload.meterId", 
             area."payload.regionName"
-            FROM "MeterSiteTest" 
+            FROM "MeterSiteDemoTest" 
             as site INNER JOIN "MeterAreaTest" 
             as area ON site."payload.areaId" = area."payload.id"`,
             "resultFormat": "object"
@@ -130,18 +156,125 @@ export class UserReportAPI {
             "Authorization": `Bearer ${req.session.accessToken}`,
         }
         try {
-            const result = await fetch(this.druidEndpoint, {
+            const response = await fetch(this.druidEndpoint, {
                 headers,
                 method: "POST",
                 body: JSON.stringify(body),
             })
-            const context = result.json();
-            console.log(`call druid successful`)
-            console.log(context);
-            return context;
+            const rawData: IMeterAreaAndSite[] = await response.json();
+            console.log(rawData);
+
+            // // const result: IGetMeterArea[] = mockMeterAreaDataColllection;
+            const rawMeterInfo = await this.getMeterInfo({ session: req.session, meterId: 1 });
+            console.log(rawMeterInfo?.context);
+            rawData.map((row, i) => {
+                console.log(`parse meter ID from JSON`)
+                let meterIds = JSON.parse(row['payload.meterId']);
+                meterIds.map(async (meterId: string) => {
+                    if (rawMeterInfo) {
+                        let meterInfo = rawMeterInfo.context.find((meter) => { return meter.meterId === meterId });
+                        if (meterInfo !== undefined) {
+                            result.push({
+                                id: meterId,//row['payload.areaId'],
+                                meterId,
+                                area: row['payload.area'],
+                                locationCode: meterInfo.locationCode,//meterInfo.context['payload.locationCode'],
+                                meterName: meterInfo.meterName,//meterInfo.context['payload.meterName'],
+                                role: meterInfo.role,// meterInfo.context['payload.role'],
+                                siteName: row['payload.siteName'],
+                                region: row['payload.regionName'],
+                                address: {
+                                    lat: meterInfo.lat,// meterInfo.context['payload.position.lat'],
+                                    lng: meterInfo.lng,//meterInfo.context['payload.position.lng'],
+                                },
+                                peameaSubstation: meterInfo.substationPeaMea,
+                                egatSubStation: meterInfo.substationEgat,
+                            })
+                        }
+                    }
+                    // if (1) {
+                    //     result.push({
+                    //         id: meterId,//row['payload.areaId'],
+                    //         meterId,
+                    //         area: row['payload.area'],
+                    //         locationCode: meterId,//meterInfo.context['payload.locationCode'],
+                    //         meterName: meterId,//meterInfo.context['payload.meterName'],
+                    //         role: meterId,// meterInfo.context['payload.role'],
+                    //         siteName: row['payload.siteName'],
+                    //         region: row['payload.regionName'],
+                    //         address: {
+                    //             lat: meterId,// meterInfo.context['payload.position.lat'],
+                    //             lng: meterId,//meterInfo.context['payload.position.lng'],
+                    //         }
+
+                    //     })
+                    // }
+                })
+            })
+            return {
+                context: result
+            };
         } catch (e) {
-            return false;
+            console.log(e);
+
+            return null;
         }
 
+    }
+
+
+    async getMeterInfo(req: IGetMeterInfoRequest): Promise<IGetMeterInfoResponse | null> {
+
+        let headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": `Bearer ${req.session.accessToken}`,
+        }
+
+        const body: IGetDruidBody = {
+            // query: `SELECT 
+            // "payload.id",            
+            // "payload.locationCode",
+            // "payload.meterName",
+            // "payload.position.lat",
+            // "payload.position.lng",
+            // "payload.role",
+            // "payload.substationEgat",
+            // "payload.substationPeaMea",
+            // FROM "MeterInfoTest2"
+            // WHERE "payload.id" = ${req.meterId}`,
+            query: `SELECT "payload.id" as meterId,
+            LATEST("payload.locationCode",10) FILTER (WHERE "payload.locationCode" IS NOT NULL) as locationCode,
+            LATEST("payload.meterName",100) FILTER (WHERE "payload.meterName" IS NOT NULL) as meterName,
+            LATEST("payload.position.lat",10) FILTER (WHERE "payload.position.lat" IS NOT NULL) as lat,
+            LATEST("payload.position.lng",10) FILTER (WHERE "payload.position.lng" IS NOT NULL) as lng,
+            LATEST("payload.substationEgat",10) FILTER (WHERE "payload.substationEgat" IS NOT NULL) as substationEgat,
+            LATEST("payload.substationPeaMea",10) FILTER (WHERE "payload.substationPeaMea" IS NOT NULL) as substationPeaMea,
+            LATEST("payload.role",10) FILTER (WHERE "payload.role" IS NOT NULL) as role,
+            LATEST("payload.active",10) FILTER (WHERE "payload.active" IS NOT NULL) as active,
+            LATEST("payload.registrationDate",10) FILTER (WHERE "payload.registrationDate" IS NOT NULL) as registrationDate,
+            LATEST("payload.userId",10) FILTER (WHERE "payload.userId" IS NOT NULL) as userId
+          FROM "MeterInfoTest2"
+          GROUP BY "payload.id"`,
+            resultFormat: "object",
+        }
+
+
+        try {
+            const response = await fetch(this.druidEndpoint, {
+                headers,
+                method: "POST",
+                body: JSON.stringify(body),
+            })
+            const rawData: IMeterInfo[] = await response.json();
+
+            console.log(`call meter ID  successful`)
+            // console.log(context);
+            return {
+                context: rawData,
+            };
+        } catch (e) {
+            return null;
+        }
     }
 }

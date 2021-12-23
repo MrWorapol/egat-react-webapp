@@ -1,18 +1,19 @@
 import { Checkbox, FormControl, FormControlLabel, FormGroup, Grid, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material'
 import { Box } from '@mui/system'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDebouncedCallback } from 'use-debounce/lib';
 import useUserReport from '../../../../hooks/summary-report/user/useUserReport';
+import { IUserMeterInfo } from '../../../../state/summary-report/user-report/user-report-state';
 import AllAreaTable from './AllAreaTable';
 
-interface IRolesState {
+export interface IRolesState {
     [key: string]: boolean,
 }
 
 export default function AllArea() {
     const [areaState, setAreaState] = useState('total');
     const [roleState, setRoleState] = useState<IRolesState>({
-        agregator: false,
+        aggregator: false,
         prosumer: false,
         consumer: false,
     });
@@ -26,11 +27,18 @@ export default function AllArea() {
             // if(selectedRoles.length >0){
             // refreshAllUser({ roles: [...selectedRoles] });
             // }
+            // if (meterTable) {
+            //     let tableFilter = meterTable.filter((row: IUserMeterInfo) => {
+            //         return roleState[row.role] !== true && areaState !== row.area;
+            //     })
+            //     console.log(tableFilter);
+            //     setDataTableState(tableFilter);
+            // }
             refreshUserTable([...selectedRoles], areaState);
             // console.log(`get roles select`);
             // console.log(selectedRoles);
             // console.log(areaState);
-        }, 2000
+        }, 0
     )
 
     const onCheckedRole = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,9 +63,9 @@ export default function AllArea() {
             <FormGroup row>
                 <FormControlLabel
                     control={
-                        <Checkbox checked={roleState.agregator} name="agregator" onChange={onCheckedRole} />
+                        <Checkbox checked={roleState.aggregator} name="aggregator" onChange={onCheckedRole} />
                     }
-                    label="Agregator"
+                    label="Aggregator"
                 />
                 <FormControlLabel
                     control={
@@ -72,7 +80,6 @@ export default function AllArea() {
                     label="Consumer"
                 />
             </FormGroup>
-            {/* <Button onClick={roleSearchDebounce}>Test SelectRoles</Button> */}
         </>
     }
 
@@ -99,6 +106,8 @@ export default function AllArea() {
                             <MenuItem value={'venueFlow'}>{'VENUE FLOW'}</MenuItem>
                             <MenuItem value={'perfectPark'}>{'Perfect Park'}</MenuItem>
                             <MenuItem value={'casaPermium'}>{'CASA Premium'}</MenuItem>
+                            <MenuItem value={'Srisangthum'}>{'Srisangthum'}</MenuItem>
+
                         </Select>
                     </FormControl>
                 </Grid>
@@ -108,7 +117,7 @@ export default function AllArea() {
                 {buildRoleCheckbox(onCheckedRole)}
             </Grid>
             <Grid id="area-table">
-                {meterTable && <AllAreaTable data={meterTable}  />}
+                {meterTable && <AllAreaTable data={meterTable} filter={{ area: areaState, role: roleState }} />}
             </Grid>
         </Grid>
         // </Box>

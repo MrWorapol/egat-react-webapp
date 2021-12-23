@@ -1,6 +1,6 @@
 import { atom } from "recoil"
 
-export interface ILocationSite {
+export interface IMeterInfo {
     meterId: string,
     peameaSubstation: string,
     egatSubStation: string,
@@ -27,7 +27,7 @@ interface usedEnergyPeriod{
 
 
 
-export const locationSiteState = atom<ILocationSite| null>({
+export const locationSiteState = atom<IMeterInfo| null>({
     key: 'locationSiteState',
     default: null
 })

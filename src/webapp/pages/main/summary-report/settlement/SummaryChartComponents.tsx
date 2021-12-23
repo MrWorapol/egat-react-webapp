@@ -28,7 +28,7 @@ export default function SummaryCharts() {
                                 // hoverOffset: 4,
                             },
                         ]}
-                        width={400}
+                        width={600}
 
                     />
                 </Grid>
@@ -48,7 +48,7 @@ export default function SummaryCharts() {
                                 // hoverOffset: 4,
                             },
                         ]}
-                        width={400}
+                        width={600}
                     />
                 </Grid>
                 <Grid container item xs={'auto'} direction='row' justifyContent="center" alignItems="center" px={2} pt={2} my={1} sx={{ backgroundColor: '#fff' }}>
@@ -67,7 +67,7 @@ export default function SummaryCharts() {
                                 // hoverOffset: 4,
                             },
                         ]}
-                        width={400}
+                        width={1}
                     />
                 </Grid>
                 <Grid container item xs={'auto'} direction='row' justifyContent="center" alignItems="center" px={2} pt={2} my={1} sx={{ backgroundColor: '#fff' }}>

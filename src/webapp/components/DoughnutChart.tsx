@@ -21,21 +21,24 @@ export default function DoughnutChart(props: DoughNutChartProps) {
         datasets: [...props.datasets],
 
     };
+    let width = props.width + 'px';
+    if (props.width === 1) {
+        width = '95%';
+    }
     return (
-        <Box justifyContent='center' alignItems='center' sx={{ width: `${props.width}px` }}>
+        <Box justifyContent='center' alignItems='center' sx={{ width: width }}>
             <Doughnut
                 data={data}
-
                 options={{
                     responsive: true,
                     maintainAspectRatio: true,
-                    aspectRatio: 1.7,
+                    aspectRatio: 2.2,
                     plugins: {
                         legend: {
 
                             position: 'right',
                             labels: {
-                                padding: 20,
+                                padding: 10,
                                 boxHeight: 30,
                                 // generateLabels function to change legent text
                             }

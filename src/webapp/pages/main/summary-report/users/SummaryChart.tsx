@@ -57,14 +57,14 @@ export default function SummaryChart(props: IProps) {
     // console.log(result)
     return (
         <>
-            <Grid container item xs={12} pb={2}>
+            <Grid item xs={12} pb={2} pl={1}>
                 <FormControl variant='outlined'>
                     <Select
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
                         value={typeChart}
                         onChange={(event: SelectChangeEvent) => { onChangeData(event) }}
-                        sx={{ height: '5vh', color: 'secondary.main', fontWeight: 'bold', fontSize: '1.5em', width: '15vw' }}
+                        sx={{ height: '5vh', color: 'secondary.main', fontWeight: 'bold', fontSize: '1.5em', width: 1 }}
                     >
                         <MenuItem value={'energySummary'}> {'Energy Summary'}</MenuItem>
                         <MenuItem value={'userSummary'}>{'User Summary'}</MenuItem>
@@ -102,7 +102,7 @@ function buildEnergyChart(data: IEnergySummary): JSX.Element {
                     // hoverOffset: 4,
                 },
             ]}
-            width={580}
+            width={1}
         />
     )
 }
@@ -127,7 +127,7 @@ function buildUserChart(data: IUserSummary): JSX.Element {
                     // hoverOffset: 4,
                 },
             ]}
-            width={500}
+            width={1}
         />
     )
 }

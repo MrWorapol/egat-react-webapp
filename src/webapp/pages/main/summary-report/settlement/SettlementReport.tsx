@@ -32,7 +32,7 @@ export default function SettlementReport() {
                         <Grid container item xs={'auto'} sx={{ backgroundColor: '#fff' }} id='div-area'>
                             <AllSettlementComponent />
                         </Grid>
-                        <Grid container item direction='row' xs={6} sx={{ backgroundColor: '#fff' }} mt={2} pt={2} pl={2} id='div-chart'>
+                        <Grid container item direction='row' xs={'auto'} sx={{ backgroundColor: '#fff' }} mt={2} pt={2} pl={2} id='div-chart'>
                             <SettlementDetail />
                         </Grid>
                     </Grid>

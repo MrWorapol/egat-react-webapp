@@ -2,15 +2,16 @@ import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, Tab
 import React from 'react'
 import SearchIcon from '@mui/icons-material/Search';
 import IconButton from '@mui/material/IconButton';
-import FirstPageIcon from '@mui/icons-material/FirstPage';
-import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
-import LastPageIcon from '@mui/icons-material/LastPage';
+// import FirstPageIcon from '@mui/icons-material/FirstPage';
+// import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
+// import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+// import LastPageIcon from '@mui/icons-material/LastPage';
 import { useHistory } from 'react-router-dom';
-import { useResetRecoilState } from 'recoil';
+// import { useResetRecoilState } from 'recoil';
 import TablePaginationActionsComponent from '../../../../components/TablePaginationActions';
-import { meterInfo } from '../../../../state/summary-report/user-report/user-report-state';
+import { IUserMeterInfo } from '../../../../state/summary-report/user-report/user-report-state';
 import useUserReport from '../../../../hooks/summary-report/user/useUserReport';
+import { IRolesState } from './AllArea';
 
 
 interface Column {
@@ -21,18 +22,17 @@ interface Column {
 }
 
 interface IProps {
-    data: meterInfo[],
+    data: IUserMeterInfo[],
+    filter: {
+        area: string,
+        role: IRolesState,
+    }
 
 }
 export default function AllAreaTable(props: IProps) {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
-    const history = useHistory();
-    const rows = props.data;
     const { refreshLocationSite } = useUserReport();
-    // const { userInfoData, refreshAllUser } = useAllUser();
-    // const resetUserDetailData = useResetRecoilState(userDetail);
-    const mockDatas = [{}, {}];
     const columns: Column[] = [
         { id: 'MeterID', label: 'Meter ID' },
         { id: 'MeterName', label: 'Meter Name' },
@@ -40,15 +40,15 @@ export default function AllAreaTable(props: IProps) {
         { id: 'locationCode', label: 'Location Code' },
         { id: 'Action', label: '' }
     ];
-    if (mockDatas === null || mockDatas === undefined) {
-        console.log(`WTF : ${mockDatas}`);
+    if (props.data === null || props.data === undefined) {
+        console.log(`WTF :`);
         return <></>;
     }
     // if (userInfoData.length === 0) {
     //     return <div><Typography variant="h1">Not found</Typography></div>;
     // }
     // Avoid a layout jump when reaching the last page with empty rows.
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - mockDatas.length) : 0;
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - props.data.length) : 0;
 
 
     const handleChangePage = (
@@ -66,7 +66,7 @@ export default function AllAreaTable(props: IProps) {
     };
 
 
-    function onClickViewButton(row: meterInfo) {
+    function onClickViewButton(row: IUserMeterInfo) {
         refreshLocationSite(row.meterId)
         // console.log('click view button')
     }
@@ -89,15 +89,16 @@ export default function AllAreaTable(props: IProps) {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {mockDatas.length === 0 && /* case notfound data */
+                        {props.data.length === 0 && /* case notfound data */
                             <TableRow style={{ height: 53 * emptyRows }}>
                                 <TableCell colSpan={6} />
                             </TableRow>
                         }
-                        {rows.length !== 0 && (rowsPerPage > 0
-                            ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                            : rows
-                        ).map((row, i) => (
+                        {props.data.length !== 0 && (rowsPerPage > 0
+                            ? props.data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            : props.data
+                        ).filter((row, i) => 
+                        ( (props.filter.role[row.role] !== true && row.area === props.filter.area ) &&
                             <TableRow>
                                 <TableCell
                                 // key={row.meterId}
@@ -129,6 +130,7 @@ export default function AllAreaTable(props: IProps) {
 
                                 </TableCell>
                             </TableRow>
+
                         ))
                         }
                         {emptyRows > 0 && (
@@ -145,7 +147,7 @@ export default function AllAreaTable(props: IProps) {
                 sx={{ right: 0 }}
                 rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
                 colSpan={3}
-                count={mockDatas.length}
+                count={props.data.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 SelectProps={{
@@ -158,7 +160,7 @@ export default function AllAreaTable(props: IProps) {
                 onRowsPerPageChange={handleChangeRowsPerPage}
                 ActionsComponent={TablePaginationActionsComponent}
             />
-        </Paper>
+        </Paper >
     );
 
 }

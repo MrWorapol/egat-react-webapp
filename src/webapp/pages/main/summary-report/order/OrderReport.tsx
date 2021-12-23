@@ -31,7 +31,7 @@ export default function OrderReport() {
                         <Grid container item xs={'auto'} sx={{ backgroundColor: '#fff' }} id='div-area'>
                             <AllOrder />
                         </Grid>
-                        <Grid container item direction='row' xs={'auto'} sx={{ backgroundColor: '#fff' }} mt={2} pt={2} pl={2} id='div-chart'>
+                        <Grid container item direction='row' xs={'auto'} sx={{ backgroundColor: '#fff' }} mt={2} pt={2} pl={3} id='div-chart'>
                             <OrderDetail />
                         </Grid>
                     </Grid>

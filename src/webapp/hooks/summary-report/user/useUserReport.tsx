@@ -30,14 +30,15 @@ export default function useUserReport() {
 
     const refreshUserTable = useCallback(async (roles: string[], area: string) => {
         console.log(`refresh user table`);
-        console.log(session);
-        if (session) {
-            const resultfromdruid = await api.getDruidData({ session });
-            if (resultfromdruid) {
-                console.log(resultfromdruid);
-            }
-        }
-        const result = await api.getUserTable({ startDate: dayjs(period.startDate).toString(), endDate: dayjs(period.endDate).toString(), region: period.region, roles: roles, area: area })
+        // console.log(session);
+        // if (session || 1) {
+        //     const resultfromdruid = await api.getDruidData({ session: { accessToken: "1", refreshToken: '12', lasttimeLogIn: new Date() } });//({ session });
+        //     if (resultfromdruid) {
+        //         console.log(resultfromdruid);
+        //         mappeddDataToDisplay(resultfromdruid);
+        //     }
+        // }
+        const result = await api.getUserMeterInfo({ startDate: dayjs(period.startDate).toString(), endDate: dayjs(period.endDate).toString(), region: period.region, roles: roles, area: area, session: { accessToken: "1", refreshToken: '12', lasttimeLogIn: new Date() } })
         if (result) {
             setmeterTable(result.context);
             if (result.context.length > 0) {
@@ -48,14 +49,14 @@ export default function useUserReport() {
     }, []);
 
     const refreshLocationSite = useCallback(async (meterId: string) => {
-        console.log(`refresh location site`)
-        const result = await api.getLocationSite({ meterId: meterId });
-        // console.log(`result from refresh Location site`);
-        // console.log(result?.context);
-        if (result) {
-            setLocationSite(result.context);
+        // console.log(`refresh location site`)
+        // const result = await api.getLocationSite({ meterId: meterId });
+        // // console.log(`result from refresh Location site`);
+        // // console.log(result?.context);
+        // if (result) {
+        //     setLocationSite(result.context);
 
-        }
+        // }
         // console.info(`location site`);
         // console.log(locationSite);
 
@@ -80,4 +81,8 @@ export default function useUserReport() {
         locationSite,
         refreshLocationSite,
     }
+}
+
+function mappeddDataToDisplay(data: any) {
+
 }

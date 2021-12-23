@@ -37,7 +37,7 @@ export default function WebApp() {
 
 function WebAdminRouting() {
     useAuthGuard();
-    const sessionValue = useRecoilValue(userSessionState);
+    // const sessionValue = useRecoilValue(userSessionState);
     return (
         <Box>
             <Switch>
@@ -45,11 +45,9 @@ function WebAdminRouting() {
                 <Route path='/login' exact>
                     <Login />
                 </Route>
-                {sessionValue &&
-                    <Route path={['/']} >
-                        <MainPage />
-                    </Route>
-                }
+                <Route path={['/']} >
+                    <MainPage />
+                </Route>
             </Switch>
         </Box>
     )

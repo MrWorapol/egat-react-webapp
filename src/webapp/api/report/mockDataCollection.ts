@@ -1,4 +1,4 @@
-export const result = [
+export const mockMeterAreaDataColllection = [
     {
         "payload.areaId": "area-03",
         "payload.id": "site-10",
