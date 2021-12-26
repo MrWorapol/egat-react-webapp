@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import { useCallback, useEffect } from "react";
 import { useRecoilState, useRecoilValue } from "recoil"
 import { UserReportAPI } from "../../../api/report/UserReportAPI";
+import { navigationCurrentState, NavigationCurrentType } from "../../../state/navigation-current-state";
 import { locationSiteState } from "../../../state/summary-report/user-report/location-site-state";
 import { userChartState } from "../../../state/summary-report/user-report/user-chart-state"
 import { userReportState } from "../../../state/summary-report/user-report/user-report-state";
@@ -10,6 +11,7 @@ import usePeriodTime from "../usePeriodTime";
 
 
 export default function useUserReport() {
+    const currentState = useRecoilValue(navigationCurrentState);
     const [chartData, setChartData] = useRecoilState(userChartState);
     const [meterTable, setmeterTable] = useRecoilState(userReportState);
     const [locationSite, setLocationSite] = useRecoilState(locationSiteState);
@@ -18,13 +20,12 @@ export default function useUserReport() {
     const session = useRecoilValue(userSessionState);
 
     const calculateChartData = useCallback(async () => {
-        console.log(`call refresh User Data`);
+        // console.log(`call refresh User Data`);
 
         console.log(`call refreshChart`);
         const resultChart = await api.getUserReport({ startDate: dayjs(period.startDate).toString(), endDate: dayjs(period.endDate).toString(), region: period.region });
         if (resultChart) {
             setChartData(resultChart.context);
-
         }
     }, []);
 
@@ -45,6 +46,7 @@ export default function useUserReport() {
                 // console.log(`conditioned is meterTable !== null & `)
                 refreshLocationSite(result.context[0].meterId);
             }
+            calculateChartData();
         }
     }, []);
 
@@ -62,16 +64,18 @@ export default function useUserReport() {
 
     }, [])
     useEffect(() => {
-        if (!meterTable) {
-            refreshUserTable([], 'all');
+        if (currentState === NavigationCurrentType.USER_REPORT) {
+            
+            if (!meterTable) {
+                refreshUserTable([], 'all');
 
-        }
-        if (!chartData) {
-            calculateChartData();
+            }
+            
         }
         return () => {
+            
         }
-    }, [session])
+    }, [])
 
     return {
         chartData,

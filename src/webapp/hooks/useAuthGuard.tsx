@@ -12,6 +12,7 @@ interface allowNavigationScope {
 }
 
 export function useAuthGuard() {
+    let count=0;
     const [init, setInit] = useState(false);
     const previousRoute = window.location.pathname;
     const [sessionValue, setSessionValue] = useRecoilState(userSessionState);
@@ -38,6 +39,8 @@ export function useAuthGuard() {
     }, []);
 
     useEffect(() => {
+        console.log('call auth guard'+ count);
+        count++;
         if (init === false) { //changeto  !init when integration
             loadLocalStorage();
         } else {

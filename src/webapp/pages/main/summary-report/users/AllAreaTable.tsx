@@ -1,5 +1,5 @@
 import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography, useTheme } from '@mui/material'
-import React from 'react'
+import React, { useEffect } from 'react'
 import SearchIcon from '@mui/icons-material/Search';
 import IconButton from '@mui/material/IconButton';
 // import FirstPageIcon from '@mui/icons-material/FirstPage';
@@ -30,7 +30,9 @@ interface IProps {
 
 }
 export default function AllAreaTable(props: IProps) {
+    console.warn('call All Area Table');
     const [page, setPage] = React.useState(0);
+    const [filterData, setFilterData] = React.useState<IUserMeterInfo[]>([]);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const { refreshLocationSite } = useUserReport();
     const columns: Column[] = [
@@ -70,6 +72,8 @@ export default function AllAreaTable(props: IProps) {
         refreshLocationSite(row.meterId)
         // console.log('click view button')
     }
+
+    
     return (
         <Paper sx={{ width: '100%', mb: 2 }} >
             <TableContainer >
@@ -97,8 +101,8 @@ export default function AllAreaTable(props: IProps) {
                         {props.data.length !== 0 && (rowsPerPage > 0
                             ? props.data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             : props.data
-                        ).filter((row, i) => 
-                        ( (props.filter.role[row.role] !== true && row.area === props.filter.area ) &&
+                        ).map((row, i) =>
+                        (
                             <TableRow>
                                 <TableCell
                                 // key={row.meterId}

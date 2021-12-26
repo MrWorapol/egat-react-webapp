@@ -1,6 +1,6 @@
 import { Grid, Typography } from '@mui/material'
 import { Box } from '@mui/system'
-import React from 'react'
+import React, { useCallback, useEffect } from 'react'
 import useUserReport from '../../../../hooks/summary-report/user/useUserReport'
 import { useNavigationGet } from '../../../../hooks/useNavigationGet'
 import { useNavigationSet } from '../../../../hooks/useNavigationSet'
@@ -9,22 +9,24 @@ import PeriodComponent from '../PeriodComponent'
 import AllArea from './AllArea'
 import LocationSite from './LocationSite'
 import SummaryChart from './SummaryChart'
-var count = 1;
+//var count = 1;
 export default function UserReport() {
     useNavigationSet(NavigationCurrentType.USER_REPORT);
     const { currentState } = useNavigationGet();
-    console.warn(count);
-    count += 1;
+   console.warn('call User Report');
+    //count += 1;
     const { chartData, refreshUserData, refreshUserTable } = useUserReport();
 
-    const refreshData = async () => {
+    const refreshData = useCallback(async () => {
         console.log(`call refreshData Page`);
         refreshUserData();
         refreshUserTable([], 'all');
-    }
+    },[])
+
+
     if (currentState === NavigationCurrentType.USER_REPORT) {
         return (
-            <Box sx={{ width: `100%`, px: 2, pb: 2, maxWidth: '100%' }}>
+            <Box sx={{ width: `100%`, px: 2, pb: 2, maxWidth: '100%' }} key='user-report'>
                 <Grid container item direction="row" justifyContent='flex-end' id='period-zone' py={1}>
                     <Grid item >
                         <PeriodComponent key='user-period' refreshPage={refreshData} />

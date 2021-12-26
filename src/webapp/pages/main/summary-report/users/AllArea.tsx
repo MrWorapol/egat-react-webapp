@@ -6,11 +6,17 @@ import useUserReport from '../../../../hooks/summary-report/user/useUserReport';
 import { IUserMeterInfo } from '../../../../state/summary-report/user-report/user-report-state';
 import AllAreaTable from './AllAreaTable';
 
-export interface IRolesState {
+interface IMap {
     [key: string]: boolean,
 }
 
+export interface IRolesState extends IMap {
+    aggregator: boolean,
+    prosumer: boolean,
+    consumer: boolean,
+}
 export default function AllArea() {
+    console.warn('call All Area');
     const [areaState, setAreaState] = useState('total');
     const [roleState, setRoleState] = useState<IRolesState>({
         aggregator: false,
@@ -18,23 +24,39 @@ export default function AllArea() {
         consumer: false,
     });
     const { meterTable, refreshUserTable } = useUserReport();
+    const [filterData, setFilterData] = useState<IUserMeterInfo[] | null>(meterTable);
 
     const refreshTable = useDebouncedCallback(
         () => {
-            const selectedRoles = Object.keys(roleState).filter((key: string) => {
-                return roleState[key] === true;
-            });
-            // if(selectedRoles.length >0){
-            // refreshAllUser({ roles: [...selectedRoles] });
-            // }
-            // if (meterTable) {
-            //     let tableFilter = meterTable.filter((row: IUserMeterInfo) => {
-            //         return roleState[row.role] !== true && areaState !== row.area;
-            //     })
-            //     console.log(tableFilter);
-            //     setDataTableState(tableFilter);
-            // }
-            refreshUserTable([...selectedRoles], areaState);
+            // const selectedRoles = Object.keys(roleState).filter((key: string) => {
+            //     return roleState[key] === true;
+            // });
+            let filterRoles = Object.values(roleState).includes(true); // if have filter return true
+            let villages = [""]
+            if (meterTable) {
+                let tableFilter = meterTable.filter((row: IUserMeterInfo) => {
+                    if (filterRoles) {
+                        if (areaState.includes('VENUE FLOW') || areaState.includes('Perfect Park') || areaState.includes('CASA Premium')) {
+                            return roleState[row.role.toLowerCase()] === true && (areaState === row.siteName);
+                        }
+                        else {
+                            return roleState[row.role.toLowerCase()] === true &&
+                                (areaState === row.area || areaState === 'total');
+                        }
+                    }
+                    else {
+                        if (areaState.includes('VENUE FLOW') || areaState.includes('Perfect Park') || areaState.includes('CASA Premium')) {
+                            return (areaState === row.siteName);
+                        } else {
+                            return (areaState === row.area || areaState === 'total');
+                        }
+                    }
+
+                })
+                console.log(tableFilter);
+                setFilterData(tableFilter);
+            }
+            // refreshUserTable([...selectedRoles], areaState);
             // console.log(`get roles select`);
             // console.log(selectedRoles);
             // console.log(areaState);
@@ -82,7 +104,18 @@ export default function AllArea() {
             </FormGroup>
         </>
     }
-
+    useEffect(() => {
+        console.log('call useEffect on All Area')
+        setFilterData(meterTable)
+        return () => {
+            setRoleState({
+                aggregator: false,
+                prosumer: false,
+                consumer: false
+            });
+            setAreaState('total')
+        }
+    }, [meterTable])
     return (
         // <Box sx={{width: '100%'}}>
         <Grid container direction='column' px={2}>
@@ -98,14 +131,14 @@ export default function AllArea() {
                             // id="demo-simple-select"
                             value={areaState}
                             onChange={(event: SelectChangeEvent) => { onSelectedArea(event) }}
-                            sx={{ height: '3vh' }}
+                            sx={{ height: '2em' }}
                         >
                             <MenuItem value={'total'}> {'Total'}</MenuItem>
-                            <MenuItem value={'3villages'}> {'3 Villages'}</MenuItem>
-                            <MenuItem value={'tu'}>{'Thammasat University'}</MenuItem>
-                            <MenuItem value={'venueFlow'}>{'VENUE FLOW'}</MenuItem>
-                            <MenuItem value={'perfectPark'}>{'Perfect Park'}</MenuItem>
-                            <MenuItem value={'casaPermium'}>{'CASA Premium'}</MenuItem>
+                            <MenuItem value={'3 Villages'}> {'3 Villages'}</MenuItem>
+                            <MenuItem value={'Thammasat University'}>{'Thammasat University'}</MenuItem>
+                            <MenuItem value={'VENUE FLOW (SC ASSET)'}>{'VENUE FLOW'}</MenuItem>
+                            <MenuItem value={'Perfect Park (Property Perfect)'}>{'Perfect Park'}</MenuItem>
+                            <MenuItem value={'CASA Premium (Q House)'}>{'CASA Premium'}</MenuItem>
                             <MenuItem value={'Srisangthum'}>{'Srisangthum'}</MenuItem>
 
                         </Select>
@@ -117,7 +150,7 @@ export default function AllArea() {
                 {buildRoleCheckbox(onCheckedRole)}
             </Grid>
             <Grid id="area-table">
-                {meterTable && <AllAreaTable data={meterTable} filter={{ area: areaState, role: roleState }} />}
+                {filterData && <AllAreaTable data={filterData} filter={{ area: areaState, role: roleState }} />}
             </Grid>
         </Grid>
         // </Box>
