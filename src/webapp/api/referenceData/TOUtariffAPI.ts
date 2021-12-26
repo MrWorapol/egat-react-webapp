@@ -19,7 +19,7 @@ interface IGetServiceChargeRequest {
     touType: string,
 }
 interface IGetServiceChargeResponse {
-    context: IServiceCharge[],
+    context: IServiceCharge,
 }
 
 interface IPutServiceChargeRequest {

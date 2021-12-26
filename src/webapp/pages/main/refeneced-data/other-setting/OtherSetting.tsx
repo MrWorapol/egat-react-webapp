@@ -12,6 +12,7 @@ import OtherSettingLogsDialog from './OtherSettingLogsDialog';
 
 export default function OtherSetting() {
     useNavigationSet(NavigationCurrentType.OTHER_SETTING);
+    console.log('open other setting');
     const { otherSetting } = useOtherSetting();
     const { showDialog } = useDialog();
     const resetLogs = useResetRecoilState(otherSettingLogState);

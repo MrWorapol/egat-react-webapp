@@ -21,7 +21,7 @@ interface allowNavigationScope {
 }
 
 export function useAuthGuard() {
-    const [init, setInit] = useState(false);
+    const [initial, setInitial] = useState(true);
     const previousRoute = window.location.pathname;
     const [sessionValue, setSessionValue] = useRecoilState(userSessionState);
     const { currentState } = useNavigationGet();
@@ -40,12 +40,20 @@ export function useAuthGuard() {
 
     const checkTokenOnInit = useCallback(async () => {
         const sessionStorage = await getSessionOnLocalStorage();
-        return Promise.resolve(sessionStorage);
+        if (sessionStorage) {
+            setSessionValue({
+                accessToken: sessionStorage.accessToken,
+                refreshToken: sessionStorage.refreshToken,
+                lasttimeLogIn: new Date(),
+            })
+        }
+        return;
+        // return Promise.resolve(sessionStorage);
 
     }, []);
     useEffect(() => {
-        if (init === false) { //changeto  !init when integration
-            const localSession = checkTokenOnInit();
+        if (initial) { //changeto  !init when integration
+            checkTokenOnInit();
 
             const localStore = localStorage.getItem('session');
             if (localStore) { //if user has sessions
@@ -62,7 +70,7 @@ export function useAuthGuard() {
                 history.push('/login');
                 return;
             }
-            setInit(!init);
+            setInitial(false);
         } else {
             const localStore = localStorage.getItem('session');
             if (localStore) {

@@ -49,7 +49,7 @@ export class OtherSettingAPI {
         let result = await response.json();
         console.log(result);
         let content: IGetOtherSettingResponse = {
-            context: result[0]
+            context: result
         }
         return content;
         // const result: IGetOtherSettingResponse = {

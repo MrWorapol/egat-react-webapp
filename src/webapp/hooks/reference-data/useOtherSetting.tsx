@@ -12,8 +12,8 @@ export function useOtherSetting() {
     const api = new OtherSettingAPI();
     const refreshOtherSetting = useCallback(async () => {
         if (userSession) {
+            console.warn('Call refresh Other Setting');
             const result = await api.getOtherSetting({ session: userSession });
-            console.log('call wheeling chart api');
             if (result !== null) {
                 console.info(result.context);
                 setOtherSetting(result.context);
@@ -35,9 +35,10 @@ export function useOtherSetting() {
     }, [])
 
     useEffect(() => {
+        console.warn(userSession);
         if (!otherSetting) {
             refreshOtherSetting();
-            console.debug('call ge wheelingChart');
+            console.debug('call get other setting');
             // console.info(wheelingCharge);
         }
 

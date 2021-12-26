@@ -29,10 +29,10 @@ export function useTOUTariff() {
             const getChargeType2 = await api.getServiceCharge({ session: userSession, touType: 'tou-2' });
             const getGridPackage = await api.getGridPackage({ session: userSession });
             if (getChargeType1 !== null) {
-                setServiceChargeType1(getChargeType1.context[0]);
+                setServiceChargeType1(getChargeType1.context);
             }
             if (getChargeType2 !== null) {
-                setServiceChargeType2(getChargeType2.context[0]);
+                setServiceChargeType2(getChargeType2.context);
             }
 
             if (getGridPackage) {
