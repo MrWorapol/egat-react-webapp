@@ -3,6 +3,7 @@ import { Box } from '@mui/system'
 import React, { useEffect, useState } from 'react'
 import { useDebouncedCallback } from 'use-debounce/lib';
 import useUserReport from '../../../../hooks/summary-report/user/useUserReport';
+import { useLoadingScreen } from '../../../../hooks/useLoadingScreen';
 import { IUserMeterInfo } from '../../../../state/summary-report/user-report/user-report-state';
 import AllAreaTable from './AllAreaTable';
 
@@ -17,6 +18,7 @@ export interface IRolesState extends IMap {
 }
 export default function AllArea() {
     console.warn('call All Area');
+    const { showLoading, hideLoading } = useLoadingScreen();
     const [areaState, setAreaState] = useState('total');
     const [roleState, setRoleState] = useState<IRolesState>({
         aggregator: false,
@@ -28,11 +30,8 @@ export default function AllArea() {
 
     const refreshTable = useDebouncedCallback(
         () => {
-            // const selectedRoles = Object.keys(roleState).filter((key: string) => {
-            //     return roleState[key] === true;
-            // });
-            let filterRoles = Object.values(roleState).includes(true); // if have filter return true
-            let villages = [""]
+            let filterRoles = Object.values(roleState).includes(true); // if have role checked filter return true
+
             if (meterTable) {
                 let tableFilter = meterTable.filter((row: IUserMeterInfo) => {
                     if (filterRoles) {
@@ -105,15 +104,19 @@ export default function AllArea() {
         </>
     }
     useEffect(() => {
-        console.log('call useEffect on All Area')
-        setFilterData(meterTable)
-        return () => {
-            setRoleState({
-                aggregator: false,
-                prosumer: false,
-                consumer: false
-            });
-            setAreaState('total')
+        showLoading(10);
+        if (meterTable) {
+            console.log('call useEffect on All Area')
+            setFilterData(meterTable)
+            hideLoading(10);
+            return () => {
+                setRoleState({
+                    aggregator: false,
+                    prosumer: false,
+                    consumer: false
+                });
+                setAreaState('total')
+            }
         }
     }, [meterTable])
     return (
