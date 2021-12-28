@@ -109,14 +109,15 @@ export default function AllArea() {
             console.log('call useEffect on All Area')
             setFilterData(meterTable)
             hideLoading(10);
-            return () => {
-                setRoleState({
-                    aggregator: false,
-                    prosumer: false,
-                    consumer: false
-                });
-                setAreaState('total')
-            }
+        }
+        //clean up 
+        return () => {
+            setRoleState({
+                aggregator: false,
+                prosumer: false,
+                consumer: false
+            });
+            setAreaState('total')
         }
     }, [meterTable])
     return (
