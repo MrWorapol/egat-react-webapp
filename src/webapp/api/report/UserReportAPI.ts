@@ -136,10 +136,10 @@ export class UserReportAPI {
     // async getUserTable(req: IGetUserTableRequest): Promise<IGetUserTableResponse | null> {
 
     async getUserMeterInfo(req: IGetUserMeterInfoRequest): Promise<IGetUserMeterInfoResponse | null> {
-        console.log(`call druid api`);
+        // console.log(`call druid api`);
         let result: IUserMeterInfo[] = [];
         const body: IGetDruidBody = {
-            "query": `SELECT site."payload.areaId", 
+            "query": `SELECT DISTINCT site."payload.areaId", 
             site."payload.id", 
             site."payload.siteName", 
             area."payload.area", 
@@ -162,30 +162,40 @@ export class UserReportAPI {
                 body: JSON.stringify(body),
             })
             const rawData: IMeterAreaAndSite[] = await response.json();
+            console.log(`MeterArea Join Site`)
+            // console.warn(rawData)
             console.log(rawData);
 
             // // const result: IGetMeterArea[] = mockMeterAreaDataColllection;
             const rawMeterInfo = await this.getMeterInfo({ session: req.session, meterId: 1 });
+            if(rawMeterInfo === null){
+                throw new Error(`cannot get Meter Info.`);
+            }
+            console.log(`Meter Info`);
             console.log(rawMeterInfo?.context);
             rawData.map((row, i) => {
-                console.log(`parse meter ID from JSON`)
+                // console.log(`parse meter ID from JSON`)
                 let meterIds = JSON.parse(row['payload.meterId']);
                 meterIds.map(async (meterId: string) => {
-                    if (rawMeterInfo) {
-                        let meterInfo = rawMeterInfo.context.find((meter) => { return meter.meterId === meterId });
+                    // console.log(`Meter ID: ${meterId}`);
+                    if (rawMeterInfo && rawMeterInfo.context.length >0) {
+                        let meterInfo = rawMeterInfo.context.find((meter) => {
+                            
+                            return meter.meterId === meterId.toString();
+                        });
                         if (meterInfo !== undefined) {
                             result.push({
-                                id: meterId,//row['payload.areaId'],
+                                id: meterInfo.userId,//row['payload.areaId'],
                                 meterId,
                                 area: row['payload.area'],
-                                locationCode: meterInfo.locationCode,//meterInfo.context['payload.locationCode'],
-                                meterName: meterInfo.meterName,//meterInfo.context['payload.meterName'],
-                                role: meterInfo.role,// meterInfo.context['payload.role'],
+                                locationCode: meterInfo.locationCode,
+                                meterName: meterInfo.meterName,
+                                role: meterInfo.role,
                                 siteName: row['payload.siteName'],
                                 region: row['payload.regionName'],
                                 address: {
-                                    lat: meterInfo.lat,// meterInfo.context['payload.position.lat'],
-                                    lng: meterInfo.lng,//meterInfo.context['payload.position.lng'],
+                                    lat: meterInfo.lat,
+                                    lng: meterInfo.lng,
                                 },
                                 peameaSubstation: meterInfo.substationPeaMea,
                                 egatSubStation: meterInfo.substationEgat,
@@ -252,9 +262,9 @@ export class UserReportAPI {
             LATEST("payload.substationPeaMea",10) FILTER (WHERE "payload.substationPeaMea" IS NOT NULL) as substationPeaMea,
             LATEST("payload.role",10) FILTER (WHERE "payload.role" IS NOT NULL) as role,
             LATEST("payload.active",10) FILTER (WHERE "payload.active" IS NOT NULL) as active,
-            LATEST("payload.registrationDate",10) FILTER (WHERE "payload.registrationDate" IS NOT NULL) as registrationDate,
-            LATEST("payload.userId",10) FILTER (WHERE "payload.userId" IS NOT NULL) as userId
-          FROM "MeterInfoTest2"
+            LATEST("payload.registrationDate",50) FILTER (WHERE "payload.registrationDate" IS NOT NULL) as registrationDate,
+            LATEST("payload.userId",30) FILTER (WHERE "payload.userId" IS NOT NULL) as userId
+          FROM "MeterInfoDataTest"
           GROUP BY "payload.id"`,
             resultFormat: "object",
         }

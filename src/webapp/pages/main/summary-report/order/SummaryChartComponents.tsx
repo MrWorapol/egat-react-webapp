@@ -24,7 +24,7 @@ export default function SummaryComponents() {
                                 // hoverOffset: 4,
                             },
                         ]}
-                        width={360}
+                        width={500}
                     />
                 </Grid>
                 <Grid container item xs={'auto'} direction='row' justifyContent="center" alignItems="center" px={2} py={2} my={1} sx={{ backgroundColor: '#fff' }}>
@@ -43,7 +43,7 @@ export default function SummaryComponents() {
                                 // hoverOffset: 4,
                             },
                         ]}
-                        width={360}
+                        width={500}
                     />
                 </Grid>
                 <Grid container item xs={'auto'} direction='row' justifyContent="center" alignItems="center" px={2} py={2} my={1} sx={{ backgroundColor: '#fff' }}>
@@ -62,7 +62,7 @@ export default function SummaryComponents() {
                                 // hoverOffset: 4,
                             },
                         ]}
-                        width={400}
+                        width={500}
                     />
                 </Grid>
                 <Grid container item xs={'auto'} direction='row' justifyContent="center" alignItems="center" px={2} py={2} my={1} sx={{ backgroundColor: '#fff' }}>
@@ -81,7 +81,7 @@ export default function SummaryComponents() {
                                 // hoverOffset: 4,
                             },
                         ]}
-                        width={360}
+                        width={500}
                     />
                 </Grid>
             </Grid>

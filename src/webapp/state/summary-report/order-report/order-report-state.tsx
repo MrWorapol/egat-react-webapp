@@ -3,10 +3,16 @@ import { atom } from "recoil";
 export interface IOrderInfo {
     orderId: string,
     tradeMarket: string,
-    role: string, //Aggregator | Prosumer | Consumer
-    orderType: string, //buyer| seller
+    userType: string, //buyer| seller
     status: string,
-    area: string, //3 Villages | Thammasat University | VENUE FLOW | Perfect Park | CASA Premium
+    userId: string,
+    settlementTime: string,
+    targetPrice: string,
+    targetAmount: string,
+    role?: string, //Aggregator | Prosumer | Consumer
+    area?: string, //3 Villages | Thammasat University | VENUE FLOW | Perfect Park | CASA Premium
+    regionName?: string,
+    contractId?: string,
 }
 
 export const orderState = atom<IOrderInfo[] | null>({

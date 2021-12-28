@@ -83,7 +83,7 @@ function buildChooseToBuy(orderDetail: IOrderDetail) {
 
 function buildOfferToSell(orderDetail: IOrderDetail) {
     return (
-        <Grid px={2} py={2} direction='column' sx={{ minHeight: '25vh' }}>
+        <Grid container px={2} py={2} direction='column' sx={{ minHeight: '25vh' }}>
             <Grid item >
                 <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em', color: 'secondary.main' }}>Order Detail</Typography>
             </Grid>

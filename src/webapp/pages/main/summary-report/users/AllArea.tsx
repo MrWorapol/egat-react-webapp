@@ -17,7 +17,7 @@ export interface IRolesState extends IMap {
     consumer: boolean,
 }
 export default function AllArea() {
-    console.warn('call All Area');
+    // console.warn('call All Area');
     const { showLoading, hideLoading } = useLoadingScreen();
     const [areaState, setAreaState] = useState('total');
     const [roleState, setRoleState] = useState<IRolesState>({
@@ -25,9 +25,10 @@ export default function AllArea() {
         prosumer: false,
         consumer: false,
     });
-    const { meterTable, refreshUserTable } = useUserReport();
+    const { meterTable } = useUserReport();
     const [filterData, setFilterData] = useState<IUserMeterInfo[] | null>(meterTable);
-
+    // console.log(`filter Data`);
+    // console.log(filterData);
     const refreshTable = useDebouncedCallback(
         () => {
             let filterRoles = Object.values(roleState).includes(true); // if have role checked filter return true
@@ -108,9 +109,9 @@ export default function AllArea() {
         if (meterTable) {
             console.log('call useEffect on All Area')
             setFilterData(meterTable)
-            hideLoading(10);
         }
         //clean up 
+        hideLoading(10);
         return () => {
             setRoleState({
                 aggregator: false,
@@ -118,6 +119,7 @@ export default function AllArea() {
                 consumer: false
             });
             setAreaState('total')
+            hideLoading(10);
         }
     }, [meterTable])
     return (

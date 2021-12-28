@@ -99,7 +99,7 @@ export default function PeriodComponent(props: PeriodProps) {
                         >
                             {startDayslist.map((day: number, i) => {
                                 return (
-                                    <MenuItem value={`${day}`} > {day}</MenuItem>
+                                    <MenuItem key={`start-day-list${day}-${Math.random() * 2.5 / 3}`} value={`${day}`} > {day}</MenuItem>
                                 )
                             })}
 
@@ -126,7 +126,7 @@ export default function PeriodComponent(props: PeriodProps) {
                         >
                             {endDayslist.map((day: number, i) => {
                                 return (
-                                    <MenuItem value={`${day}`} disabled={day < +startDay}> {day}</MenuItem>
+                                    <MenuItem key={`end-day-list${day}-${Math.random() * 2.5 / 3}`} value={`${day}`} disabled={day < +startDay}> {day}</MenuItem>
                                 )
                             })}
 
@@ -171,13 +171,13 @@ export default function PeriodComponent(props: PeriodProps) {
                         onChange={(event: SelectChangeEvent) => { handleChangeRegion(event) }}
                         sx={{}}
                     >
-                        <MenuItem value={'all'}> {'All Region'}</MenuItem>
-                        <MenuItem value={'n'}>{'North'}</MenuItem>
-                        <MenuItem value={'e'}>{'East'}</MenuItem>
-                        <MenuItem value={'w'}>{'West'}</MenuItem>
-                        <MenuItem value={'s'}>{'South'}</MenuItem>
-                        <MenuItem value={'ne'}>{'North East'}</MenuItem>
-                        <MenuItem value={'cen'}>{'Central'}</MenuItem>
+                        <MenuItem key="all-region" value={'all'}> {'All Region'}</MenuItem>
+                        <MenuItem key="north" value={'north'}>{'North'}</MenuItem>
+                        <MenuItem key="east" value={'east'}>{'East'}</MenuItem>
+                        <MenuItem key="west" value={'west'}>{'West'}</MenuItem>
+                        <MenuItem key="south " value={'south'}>{'South'}</MenuItem>
+                        <MenuItem key="northeast" value={'northeast'}>{'North East'}</MenuItem>
+                        <MenuItem key="central " value={'central'}>{'Central'}</MenuItem>
                     </Select>
                 </FormControl>
             </Grid>

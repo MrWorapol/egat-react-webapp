@@ -20,8 +20,6 @@ export default function useUserReport() {
     const session = useRecoilValue(userSessionState);
 
     const calculateChartData = useCallback(async () => {
-        // console.log(`call refresh User Data`);
-
         console.log(`call refreshChart`);
         const resultChart = await api.getUserReport({ startDate: dayjs(period.startDate).toString(), endDate: dayjs(period.endDate).toString(), region: period.region });
         if (resultChart) {
@@ -30,20 +28,13 @@ export default function useUserReport() {
     }, []);
 
     const refreshUserTable = useCallback(async (roles: string[], area: string) => {
-        console.log(`refresh user table`);
-        // console.log(session);
-        // if (session || 1) {
-        //     const resultfromdruid = await api.getDruidData({ session: { accessToken: "1", refreshToken: '12', lasttimeLogIn: new Date() } });//({ session });
-        //     if (resultfromdruid) {
-        //         console.log(resultfromdruid);
-        //         mappeddDataToDisplay(resultfromdruid);
-        //     }
-        // }
+        console.log('refresh User Energy Table');
         const result = await api.getUserMeterInfo({ startDate: dayjs(period.startDate).toString(), endDate: dayjs(period.endDate).toString(), region: period.region, roles: roles, area: area, session: { accessToken: "1", refreshToken: '12', lasttimeLogIn: new Date() } })
         if (result) {
+            // console.log(`refresh user table`);
+            // console.log(result.context)
             setmeterTable(result.context);
             if (result.context.length > 0) {
-                // console.log(`conditioned is meterTable !== null & `)
                 refreshLocationSite(result.context[0].meterId);
             }
             calculateChartData();
@@ -64,16 +55,17 @@ export default function useUserReport() {
 
     }, [])
     useEffect(() => {
-        if (currentState === NavigationCurrentType.USER_REPORT) {
-            
+        if (session && currentState === NavigationCurrentType.USER_REPORT) {
+            console.log(`call useEffect useUserReport`);
+            console.log(currentState);
             if (!meterTable) {
                 refreshUserTable([], 'all');
 
             }
-            
+
         }
         return () => {
-            
+
         }
     }, [])
 
@@ -85,8 +77,4 @@ export default function useUserReport() {
         locationSite,
         refreshLocationSite,
     }
-}
-
-function mappeddDataToDisplay(data: any) {
-
 }

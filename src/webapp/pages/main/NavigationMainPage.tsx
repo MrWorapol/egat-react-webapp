@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Grid, List} from '@mui/material'
+import { Grid, List } from '@mui/material'
 import GridViewIcon from '@mui/icons-material/GridView';
 import NavigationMenuItem from '../../components/NavigationMenuItem';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
@@ -21,26 +21,26 @@ const NavigationMainPage = () => {
         { label: 'Other Setting', path: '/other_setting', state: NavigationCurrentType.OTHER_SETTING },
     ];
 
-    const summaryChildrenMenu : IChildrenMenu[] = [
+    const summaryChildrenMenu: IChildrenMenu[] = [
         { label: 'User & Energy Report', path: '/users_report', state: NavigationCurrentType.USER_REPORT },
-        { label: 'Order Report', path: '/order_report', state: NavigationCurrentType.ORDER_REPORT},
+        { label: 'Order Report', path: '/order_report', state: NavigationCurrentType.ORDER_REPORT },
         { label: 'Settlement Report', path: '/settlement_report', state: NavigationCurrentType.SETTLEMENT_REPORT },
-        { label: 'Billing Report', path: '/billing_report', state: NavigationCurrentType.BILLING_REPORT},
+        { label: 'Billing Report', path: '/billing_report', state: NavigationCurrentType.BILLING_REPORT },
     ]
     useEffect(() => {
         referenceDataChildrenMenu.forEach(menu => {
             if (menu.state === currentState) {
                 setOpenRefMenu(true);
-                return ;
+                return;
             }
         });
         summaryChildrenMenu.forEach(menu => {
             if (menu.state === currentState) {
                 setOpenSummaryMenu(true);
-                return ;
+                return;
             }
-        });     
-        return ()=> {
+        });
+        return () => {
             setOpenRefMenu(false);
             setOpenSummaryMenu(false);
         };
@@ -93,6 +93,7 @@ const NavigationMainPage = () => {
 
         return (
             <NavigationNestedItem
+                key="reference-data-menu"
                 icon={<GridViewIcon />}
                 label='Reference Database'
                 open={openRefMenu}
@@ -107,6 +108,7 @@ const NavigationMainPage = () => {
     function buildSummaryReport(childrenMenu: IChildrenMenu[]) {
         return (
             <NavigationNestedItem
+                key="summary-repory-menu"
                 icon={<GridViewIcon />}
                 label='Summary Report'
                 open={openSummary}

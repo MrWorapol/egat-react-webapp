@@ -20,13 +20,14 @@ interface Column {
 
 }
 
-export default function AllOrderTable() {
+interface IProps {
+    data: IOrderInfo[],
+}
+export default function AllOrderTable(props: IProps) {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const history = useHistory();
-    // const { userInfoData, refreshAllUser } = useAllUser();
-    // const resetUserDetailData = useResetRecoilState(userDetail);
-    const { orderReport } = useOrderReport();
+    const { refreshOrderReport } = useOrderReport();
     const columns: Column[] = [
         { id: 'tradeMarket', label: 'Trade Market' },
         { id: 'role', label: 'Role' },
@@ -34,15 +35,15 @@ export default function AllOrderTable() {
         { id: 'orderStatus', label: 'Order Status' },
         { id: 'Action', label: '' }
     ];
-    if (orderReport === null || orderReport === undefined) {
-        console.log(`WTF : ${orderReport}`);
+    if (props.data === null || props.data === undefined) {
+        console.log(`WTF : ${props.data}`);
         return <></>;
     }
     // if (userInfoData.length === 0) {
     //     return <div><Typography variant="h1">Not found</Typography></div>;
     // }
     // Avoid a layout jump when reaching the last page with empty rows.
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - orderReport.length) : 0;
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - props.data.length) : 0;
 
 
     const handleChangePage = (
@@ -86,20 +87,20 @@ export default function AllOrderTable() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {(!orderReport || orderReport.length === 0) && /* case notfound data */
+                        {(props.data && props.data.length === 0) && /* case notfound data */
                             <TableRow style={{ height: 53 * emptyRows }}>
                                 <TableCell colSpan={6} />
                             </TableRow>
                         }
-                        {!orderReport || orderReport.length !== 0 && (rowsPerPage > 0
-                            ? orderReport.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                            : orderReport
+                        {props.data && props.data.length !== 0 && (rowsPerPage > 0
+                            ? props.data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            : props.data
                         ).map((row: IOrderInfo, i) => (
                             <TableRow>
                                 <TableCell
                                 // key={row.meterId}
                                 >
-                                    {row.tradeMarket}
+                                    {row.tradeMarket === "BILATERAL" ? "Bilateral Trade" : "Pool Market"}
                                 </TableCell>
                                 <TableCell
                                 // key={row.fullName + i}
@@ -109,7 +110,7 @@ export default function AllOrderTable() {
                                 <TableCell
                                 // key={row.email + i}
                                 >
-                                    {row.orderType}
+                                    {row.userType}
                                 </TableCell>
                                 <TableCell
                                 // key={row.phoneNumber + i}
@@ -142,7 +143,7 @@ export default function AllOrderTable() {
                 sx={{ right: 0 }}
                 rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
                 colSpan={3}
-                count={orderReport.length}
+                count={props.data.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 SelectProps={{

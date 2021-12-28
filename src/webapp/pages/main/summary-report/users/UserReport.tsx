@@ -1,30 +1,31 @@
 import { Grid, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import React, { useCallback, useEffect } from 'react'
+import { useRecoilValue } from 'recoil'
 import useUserReport from '../../../../hooks/summary-report/user/useUserReport'
 import { useNavigationGet } from '../../../../hooks/useNavigationGet'
 import { useNavigationSet } from '../../../../hooks/useNavigationSet'
 import { NavigationCurrentType } from '../../../../state/navigation-current-state'
+import { userSessionState } from '../../../../state/user-sessions'
 import PeriodComponent from '../PeriodComponent'
 import AllArea from './AllArea'
 import LocationSite from './LocationSite'
 import SummaryChart from './SummaryChart'
-//var count = 1;
+
 export default function UserReport() {
     useNavigationSet(NavigationCurrentType.USER_REPORT);
     const { currentState } = useNavigationGet();
-   console.warn('call User Report');
-    //count += 1;
+    const session = useRecoilValue(userSessionState);
     const { chartData, refreshUserData, refreshUserTable } = useUserReport();
 
     const refreshData = useCallback(async () => {
         console.log(`call refreshData Page`);
         refreshUserData();
         refreshUserTable([], 'all');
-    },[])
+    }, [])
 
 
-    if (currentState === NavigationCurrentType.USER_REPORT) {
+    if (session && currentState === NavigationCurrentType.USER_REPORT) {
         return (
             <Box sx={{ width: `100%`, px: 2, pb: 2, maxWidth: '100%' }} key='user-report'>
                 <Grid container item direction="row" justifyContent='flex-end' id='period-zone' py={1}>
@@ -53,7 +54,7 @@ export default function UserReport() {
     } else {
         return (
             <>
-            ...Loading 
+                ...Loading
             </>
         )
     }

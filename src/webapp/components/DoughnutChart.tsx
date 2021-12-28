@@ -43,7 +43,16 @@ export default function DoughnutChart(props: DoughNutChartProps) {
                                 // generateLabels function to change legent text
                             }
                         },
-
+                        
+                        // datalabels: {
+                        //     display: true,
+                        //     backgroundColor: '#ccc',
+                        //     borderRadius: 3,
+                        //     font: {
+                        //         color: 'red',
+                        //         weight: 'bold',
+                        //     }
+                        // },
                         tooltip: {
                             callbacks: {
                                 title: tooltipItems => {

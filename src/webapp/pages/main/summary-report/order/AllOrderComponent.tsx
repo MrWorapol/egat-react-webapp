@@ -1,9 +1,12 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Checkbox, FormControl, FormControlLabel, FormGroup, Grid, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material'
 import { useDebouncedCallback } from 'use-debounce/lib';
 import AllOrderTable from './AllOrderTable';
 import { Controller, useForm } from 'react-hook-form';
 import { useOrderReport } from '../../../../hooks/summary-report/order/useOrderReport';
+import { IOrderInfo, orderState } from '../../../../state/summary-report/order-report/order-report-state';
+import { useRecoilValue } from 'recoil';
+import { useLoadingScreen } from '../../../../hooks/useLoadingScreen';
 
 interface IRolesState {
     [key: string]: boolean,
@@ -19,17 +22,38 @@ interface ITableSelector {
 
 
 export default function AllOrder() {
+    const { showLoading, hideLoading } = useLoadingScreen();
     const [area, setArea] = useState('total');
     const [role, setRole] = useState('all');
-    const [buyerType, setBuyerType] = useState('all');
+    const [userType, setUserType] = useState('all');
     const [tradeMarket, setTradeMarket] = useState('all');
     const [orderStatus, setOrderStatus] = useState('all');
-
-    const { } = useOrderReport();
+    // const { orderReport } = useOrderReport();
+    const orderReport = useRecoilValue(orderState);
+    const [filterData, setFilterData] = useState<IOrderInfo[] | null>(orderReport);
 
     const refreshTable = useDebouncedCallback(() => {
-        console.log(`role: ${role}\t buyer: ${buyerType}\t orderStatus: ${orderStatus}\t tradeMarket:${tradeMarket}\n area: ${area}`);
-
+        if (orderReport) {
+            let tableFilter = [...orderReport];
+            console.log(`role: ${role}\t buyer: ${userType}\t orderStatus: ${orderStatus}\t tradeMarket:${tradeMarket}\n area: ${area}`);
+            if (role !== 'all') {
+                tableFilter = tableFilter.filter((order) => { return order.role === role });
+            }
+            if (userType !== 'all') {
+                tableFilter = tableFilter.filter((order) => { return order.userType === userType });
+            }
+            if (tradeMarket !== 'all') {
+                tableFilter = tableFilter.filter((order) => { return order.tradeMarket === tradeMarket });
+            }
+            if (orderStatus !== 'all') {
+                tableFilter = tableFilter.filter((order) => { return order.status === orderStatus });
+            }
+            setFilterData(tableFilter);
+            // let tableFilter = []; // table recoil state
+            // if(buyerType !== 'all'){
+            //     tableFilter = tableFilter.filter((row)=>{return row.})
+            // }
+        }
     }, 2000)
 
     const onSelectedDropdown = (event: SelectChangeEvent) => {
@@ -43,7 +67,7 @@ export default function AllOrder() {
                 break;
             }
             case ('buyerType'): {
-                setBuyerType(event.target.value);
+                setUserType(event.target.value);
                 break;
             }
             case ('tradeMarket'): {
@@ -85,12 +109,12 @@ export default function AllOrder() {
                             fullWidth
                             sx={{ height: '3vh' }}
                             name='buyerType'
-                            value={buyerType}
+                            value={userType}
                             onChange={(event: SelectChangeEvent) => { onSelectedDropdown(event) }}
                         >
                             <MenuItem value='all'>All</MenuItem>
-                            <MenuItem value={'seller'}>Seller</MenuItem>
-                            <MenuItem value={'buyer'}>Buyer</MenuItem>
+                            <MenuItem value={'SELLER'}>Seller</MenuItem>
+                            <MenuItem value={'BUYER'}>Buyer</MenuItem>
                         </Select>
                     </FormControl>
                 </Grid>
@@ -104,8 +128,8 @@ export default function AllOrder() {
                             onChange={(event: SelectChangeEvent) => { onSelectedDropdown(event) }}
                         >
                             <MenuItem value='all'>All</MenuItem>
-                            <MenuItem value={'bilateral'}>Bilateral Market Trade</MenuItem>
-                            <MenuItem value={'pool'}>Pool Market Trade</MenuItem>
+                            <MenuItem value={'BILATERAL'}>Bilateral Market Trade</MenuItem>
+                            <MenuItem value={'POOL'}>Pool Market Trade</MenuItem>
                         </Select>
 
                     </FormControl>
@@ -120,8 +144,8 @@ export default function AllOrder() {
                             onChange={(event: SelectChangeEvent) => { onSelectedDropdown(event) }}
                         >
                             <MenuItem value='all'>All</MenuItem>
-                            <MenuItem value={'matched'}>Matched</MenuItem>
-                            <MenuItem value={'open'}>Open</MenuItem>
+                            <MenuItem value={'Matched'}>Matched</MenuItem>
+                            <MenuItem value={'OPEN'}>Open</MenuItem>
                         </Select>
                     </FormControl>
                 </Grid>
@@ -133,7 +157,14 @@ export default function AllOrder() {
         console.log(data);
     }
 
-
+    useEffect(() => {
+        if (orderReport) {
+            setFilterData(orderReport)
+        }
+        //clean up 
+        return () => {
+        }
+    }, [orderReport])
 
     return (
         <Grid container direction='column' px={2} sx={{ minHeight: '50vh' }}>
@@ -166,7 +197,7 @@ export default function AllOrder() {
                 {buildTableSelector()}
             </Grid>
             <Grid id="area-table">
-                <AllOrderTable />
+                {filterData && <AllOrderTable data={filterData} />}
             </Grid>
         </Grid>
         // </Box>

@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Checkbox, FormControl, FormControlLabel, FormGroup, Grid, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material'
 import { useDebouncedCallback } from 'use-debounce/lib';
 import AllSettlementTable from './AllSettlementTable';
 import { Controller, useForm } from 'react-hook-form';
 import { useSettlementReport } from '../../../../hooks/summary-report/settlement/useSettlementReport';
+import { ISettlementReport } from '../../../../state/summary-report/settlement-report/settlement-report-state';
 
 interface IRolesState {
     [key: string]: boolean,
@@ -21,15 +22,32 @@ interface ITableSelector {
 export default function AllSettlementComponent() {
     const [area, setArea] = useState('total');
     const [role, setRole] = useState('all');
-    const [buyerType, setBuyerType] = useState('all');
+    const [userType, setBuyerType] = useState('all');
     const [tradeMarket, setTradeMarket] = useState('all');
     const [imbalance, setImbalance] = useState('all');
 
-    const { refreshSettlementReport } = useSettlementReport();
-    const refreshTable = useDebouncedCallback(() => {
-        console.log(`role: ${role}\t buyer: ${buyerType}\t orderStatus: ${imbalance}\t tradeMarket:${tradeMarket}\n area: ${area}`);
-        refreshSettlementReport(role, area, buyerType, tradeMarket, imbalance)
+    const { settlementReport } = useSettlementReport();
+    const [filterData, setFilterData] = useState<ISettlementReport[] | null>(settlementReport);
 
+    const refreshTable = useDebouncedCallback(() => {
+        console.log(`role: ${role}\t buyer: ${userType}\t orderStatus: ${imbalance}\t tradeMarket:${tradeMarket}\n area: ${area}`);
+        if (settlementReport) {
+            // let tableFilter = [...settlementReport];
+            // console.log(`role: ${role}\t buyer: ${userType}\t orderStatus: ${orderStatus}\t tradeMarket:${tradeMarket}\n area: ${area}`);
+            // if (role !== 'all') {
+            //     tableFilter = tableFilter.filter((order) => { return order.role === role });
+            // }
+            // if (userType !== 'all') {
+            //     tableFilter = tableFilter.filter((order) => { return order.userType === userType });
+            // }
+            // if (tradeMarket !== 'all') {
+            //     tableFilter = tableFilter.filter((order) => { return order.tradeMarket === tradeMarket });
+            // }
+            // if (imbalance !== 'all') {
+            //     tableFilter = tableFilter.filter((order) => { return order.status === orderStatus });
+            // }
+            // setFilterData(tableFilter);
+        }
     }, 2000)
 
     const onSelectedDropdown = (event: SelectChangeEvent) => {
@@ -86,12 +104,12 @@ export default function AllSettlementComponent() {
                             fullWidth
                             sx={{ height: '3vh' }}
                             name='buyerType'
-                            value={buyerType}
+                            value={userType}
                             onChange={(event: SelectChangeEvent) => { onSelectedDropdown(event) }}
                         >
                             <MenuItem value='all'>All</MenuItem>
-                            <MenuItem value={'seller'}>Seller</MenuItem>
-                            <MenuItem value={'buyer'}>Buyer</MenuItem>
+                            <MenuItem value={'SELLER'}>Seller</MenuItem>
+                            <MenuItem value={'BUYER'}>Buyer</MenuItem>
                         </Select>
                     </FormControl>
                 </Grid>
@@ -105,8 +123,8 @@ export default function AllSettlementComponent() {
                             onChange={(event: SelectChangeEvent) => { onSelectedDropdown(event) }}
                         >
                             <MenuItem value='all'>All</MenuItem>
-                            <MenuItem value={'bilateral'}>Short Term Bilateral Trade</MenuItem>
-                            <MenuItem value={'pool'}>Pool Market Trade</MenuItem>
+                            <MenuItem value={'BILATERAL'}>Short Term Bilateral Trade</MenuItem>
+                            <MenuItem value={'POOL'}>Pool Market Trade</MenuItem>
                         </Select>
 
                     </FormControl>
@@ -130,6 +148,14 @@ export default function AllSettlementComponent() {
         )
     }
 
+    useEffect(() => {
+        if (settlementReport) {
+            setFilterData(settlementReport)
+        }
+        //clean up 
+        return () => {
+        }
+    }, [settlementReport])
 
 
     return (
