@@ -33,14 +33,17 @@ export default function LocationSite() {
                         <Grid item container direction='row'>
                             <Grid item container direction='column' alignItems='center' xs={4}>
                                 <Typography>ไฟที่จะขายได้ 1 วันล่วงหน้า</Typography>
+                                <Typography sx={{fontWeight: 'bold',fontSize: '1.5em'}}>{locationSite.meterId}</Typography>
                                 <Typography>kWh</Typography>
                             </Grid>
                             <Grid item container direction='column' alignItems='center' xs={4}>
-                                <Typography>ไฟที่จะขายได้ 1 วันล่วงหน้า</Typography>
+                                <Typography>กำลังไฟฟ้าใช้จริงสูงสุด</Typography>
+                                <Typography sx={{fontWeight: 'bold',fontSize: '1.5em'}}>{locationSite.energySummary.pv}</Typography>
                                 <Typography>kW</Typography>
                             </Grid>
                             <Grid item container direction='column' alignItems='center' xs={4}>
-                                <Typography>ไฟที่จะขายได้ 1 วันล่วงหน้า</Typography>
+                                <Typography>กำลังไฟฟ้าใช้จริงโดยเฉลี่ย</Typography>
+                                <Typography sx={{fontWeight: 'bold',fontSize: '1.5em'}}>{locationSite.energySummary.energyLoad}</Typography>
                                 <Typography>kW</Typography>
                             </Grid>
                         </Grid>
@@ -53,7 +56,7 @@ export default function LocationSite() {
                             {`PV`}
                         </Typography>
                         <Typography >
-                            {locationSite.energy.pv + ` kWh`}
+                            {locationSite.energySummary.pv + ` kWh`}
                         </Typography>
                     </Grid>
                     <Grid container item justifyContent='space-between' px={4} >
@@ -61,7 +64,7 @@ export default function LocationSite() {
                             {`Energy Storage`}
                         </Typography>
                         <Typography >
-                            {locationSite.energy.energyStorage + ` kWh`}
+                            {locationSite.energySummary.energyStorage + ` kWh`}
                         </Typography>
                     </Grid>
                     <Grid container item justifyContent='space-between' px={4} >
@@ -69,7 +72,7 @@ export default function LocationSite() {
                             {`Grid`}
                         </Typography>
                         <Typography >
-                            {locationSite.energy.grid + ` kWh`}
+                            {locationSite.energySummary.grid + ` kWh`}
                         </Typography>
                     </Grid>
                     <Grid container item justifyContent='space-between' px={4} >
@@ -77,18 +80,13 @@ export default function LocationSite() {
                             {`Energy Load`}
                         </Typography>
                         <Typography >
-                            {locationSite.energy.energyLoad + ` kWh`}
+                            {locationSite.energySummary.energyLoad + ` kWh`}
                         </Typography>
                     </Grid>
                 </Grid>
                 <Grid item container xs={12} id='forecast-info' pt={3} >
                     <Typography sx={{ fontWeight: 'bold', fontSize: '1.2em' }}>Excess PV/Grid used Energy (Forecast/Actual)</Typography>
-                    <Typography py={1}>
-                        {`PEA/MEA Substation. : กฟน. สต.แจ้งวัฒนะ(JWT) 115 kV BUS A2`}
-                    </Typography>
-                    <Typography py={1}>
-                        {`EGAT Substation. : กฟผ. สฟ. CHW`}
-                    </Typography>
+
 
                 </Grid>
             </Grid >

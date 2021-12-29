@@ -41,7 +41,7 @@ export class SettlementReportAPI {
                     area: '3 Villages',
                     role: 'aggregator',
                     tradeMarket: 'bilateral',
-                    buyerType: 'seller',
+                    userType: 'seller',
                     imbalanceType: 'Energy Shortfall',
 
                 }

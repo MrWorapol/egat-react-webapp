@@ -1,11 +1,12 @@
 import dayjs from "dayjs";
 import { useCallback, useEffect } from "react";
-import { useRecoilState, useRecoilValue } from "recoil"
+import { useRecoilState, useRecoilValue, useResetRecoilState } from "recoil"
 import { UserReportAPI } from "../../../api/report/UserReportAPI";
 import { navigationCurrentState, NavigationCurrentType } from "../../../state/navigation-current-state";
 import { locationSiteState } from "../../../state/summary-report/user-report/location-site-state";
-import { userChartState } from "../../../state/summary-report/user-report/user-chart-state"
-import { userReportState } from "../../../state/summary-report/user-report/user-report-state";
+import { IPowerData, powerDatastate } from "../../../state/summary-report/user-report/power-data-state";
+import { IUserSummary, userChartState } from "../../../state/summary-report/user-report/user-chart-state"
+import { IUserMeterInfo, userReportState } from "../../../state/summary-report/user-report/user-report-state";
 import { userSessionState } from "../../../state/user-sessions";
 import usePeriodTime from "../usePeriodTime";
 
@@ -15,52 +16,121 @@ export default function useUserReport() {
     const [chartData, setChartData] = useRecoilState(userChartState);
     const [meterTable, setmeterTable] = useRecoilState(userReportState);
     const [locationSite, setLocationSite] = useRecoilState(locationSiteState);
+    const [powerData, setPowerData] = useRecoilState(powerDatastate);
+    const resetLocationSite = useResetRecoilState(locationSiteState);
     const api = new UserReportAPI();
     const { period } = usePeriodTime();
     const session = useRecoilValue(userSessionState);
 
-    const calculateChartData = useCallback(async () => {
-        console.log(`call refreshChart`);
-        const resultChart = await api.getUserReport({ startDate: dayjs(period.startDate).toString(), endDate: dayjs(period.endDate).toString(), region: period.region });
-        if (resultChart) {
-            setChartData(resultChart.context);
+    const getPowerDatas = useCallback(async () => {
+        if (session) {
+            const result = await api.getPowerInfos({ session });
+            console.log(`callculate Power Data`)
+            console.log(result);
+            if (result) {
+                setPowerData(result.powerData);
+                return result;
+            }
         }
+
     }, []);
 
     const refreshUserTable = useCallback(async (roles: string[], area: string) => {
         console.log('refresh User Energy Table');
-        const result = await api.getUserMeterInfo({ startDate: dayjs(period.startDate).toString(), endDate: dayjs(period.endDate).toString(), region: period.region, roles: roles, area: area, session: { accessToken: "1", refreshToken: '12', lasttimeLogIn: new Date() } })
-        if (result) {
+        const userMeters = await api.getUserMeterInfo({ startDate: dayjs(period.startDate).toString(), endDate: dayjs(period.endDate).toString(), region: period.region, roles: roles, area: area, session: { accessToken: "1", refreshToken: '12', lasttimeLogIn: new Date() } })
+        if (userMeters) {
             // console.log(`refresh user table`);
             // console.log(result.context)
-            setmeterTable(result.context);
-            if (result.context.length > 0) {
-                refreshLocationSite(result.context[0].meterId);
+            let userSummary: IUserSummary = { AGGREGATOR: 0, CONSUMER: 0, PROSUMER: 0, noUser: 0 };
+            userMeters.context.map((meter: IUserMeterInfo) => {
+                userSummary[meter.role] += 1;
+            })
+            // console.log(`userSummary `);
+            // console.log(userSummary);
+            let powerData = await getPowerDatas();
+            if (powerData) {
+                console.log(`energySummary`);
+                console.log(powerData);
+                setChartData({
+                    energy: {
+                        pv: Math.floor(powerData.summaryPower.load + powerData.summaryPower.inSolar + powerData.summaryPower.inGrid + powerData.summaryPower.inBattery),
+                        energyStorage: Math.floor(powerData.summaryPower.inSolar + powerData.summaryPower.inBattery),
+                        energyConsumptions: Math.floor(powerData.summaryPower.load),
+                        grid: Math.floor(powerData.summaryPower.inGrid)
+
+                    },
+                    user: {
+                        AGGREGATOR: userSummary.AGGREGATOR,
+                        CONSUMER: userSummary.CONSUMER,
+                        PROSUMER: userSummary.PROSUMER,
+                        noUser: userSummary.noUser,
+                    },
+                })
+                setPowerData(powerData.powerData);
             }
-            calculateChartData();
+
+            setmeterTable(userMeters.context);
         }
     }, []);
 
-    const refreshLocationSite = useCallback(async (meterId: string) => {
-        // console.log(`refresh location site`)
-        // const result = await api.getLocationSite({ meterId: meterId });
-        // // console.log(`result from refresh Location site`);
-        // // console.log(result?.context);
-        // if (result) {
-        //     setLocationSite(result.context);
+    const refreshLocationSite = useCallback(async (meter: IUserMeterInfo) => {
+        if (locationSite) {
+            resetLocationSite();
+        }
+        if (powerData) {
+            let powerDataByMeterId = powerData.filter(
+                (row: IPowerData) => {
+                    return meter.meterId.toString() === row.meterId.toString()
+                });
+            let energySummary = {
+                pv: 0,
+                energyStorage: 0,
+                energyConsumptions: 0,
+                grid: 0
+            }
+            if (powerDataByMeterId.length > 0) {
+                powerDataByMeterId.map((row: IPowerData) => {
+                    energySummary.pv += Math.floor(row.load + row.inSolar + row.inGrid + row.inBattery);
+                    energySummary.energyStorage += Math.floor(row.inSolar + row.inBattery);
+                    energySummary.energyConsumptions += Math.floor(row.load);
+                    energySummary.grid += Math.floor(row.inGrid);
 
-        // }
-        // console.info(`location site`);
-        // console.log(locationSite);
+                })
+            }
+            console.log(energySummary);
+            setLocationSite({
+                meterId: meter.meterId,
+                peameaSubstation: meter.peameaSubstation,
+                egatSubStation: meter.egatSubStation,
+                location: {
+                    lat: meter.address.lat,
+                    lng: meter.address.lng
+                },
+                energySummary: {
+                    grid: energySummary.grid,
+                    energyStorage: energySummary.energyStorage,
+                    energyLoad: energySummary.energyConsumptions,
+                    pv: energySummary.pv,
+                },
+                // powerUsed: {
+                //     actual: powerDataByMeterId.map((data))
+                // }
+
+
+            })
+
+        };
 
     }, [])
+
     useEffect(() => {
         if (session && currentState === NavigationCurrentType.USER_REPORT) {
-            console.log(`call useEffect useUserReport`);
-            console.log(currentState);
             if (!meterTable) {
                 refreshUserTable([], 'all');
 
+            }
+            if (meterTable && !locationSite) {
+                refreshLocationSite(meterTable[0]);
             }
 
         }
@@ -71,7 +141,7 @@ export default function useUserReport() {
 
     return {
         chartData,
-        refreshUserData: calculateChartData,
+        refreshUserData: getPowerDatas,
         meterTable,
         refreshUserTable,
         locationSite,

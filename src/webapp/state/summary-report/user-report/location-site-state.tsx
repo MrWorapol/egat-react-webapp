@@ -1,6 +1,7 @@
 import { atom } from "recoil"
+import { IPowerData } from "./power-data-state"
 
-export interface IMeterInfo {
+export interface IPowerByMeter {
     meterId: string,
     peameaSubstation: string,
     egatSubStation: string,
@@ -8,10 +9,22 @@ export interface IMeterInfo {
         lat: string,
         lng: string,
     }
-    energy: IEnergyInfo,
+
+    energySummary: IEnergyInfo,
+
+    powerUsed?: {
+        forecast: IPowerUsed[]
+        actual: IPowerUsed[]
+    }
 }
+
+interface IPowerUsed {
+    pv: number,
+    grid: number,
+    timestamp: string,
+}
+
 export interface IEnergyInfo {
-    meterId: string,
     pv: number,
     energyStorage: number,
     grid: number,
@@ -20,14 +33,17 @@ export interface IEnergyInfo {
 
 
 
-interface usedEnergyPeriod{
+interface IForecastPower {
+
+}
+interface usedEnergyPeriod {
     period: string,
     usedEnergy: string,
 }
 
 
 
-export const locationSiteState = atom<IMeterInfo| null>({
+export const locationSiteState = atom<IPowerByMeter | null>({
     key: 'locationSiteState',
     default: null
 })

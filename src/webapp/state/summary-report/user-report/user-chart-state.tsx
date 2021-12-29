@@ -1,13 +1,15 @@
 import { atom } from "recoil";
-
-export interface IUserSummary {
-    aggregator: number,
-    prosumer: number,
-    consumer: number,
+interface IMap {
+    [key: string]: number;
+}
+export interface IUserSummary extends IMap {
+    AGGREGATOR: number,
+    PROSUMER: number,
+    CONSUMER: number,
     noUser: number,
 }
 
-export interface IEnergySummary {
+export interface IEnergySummary extends IMap {
     pv: number,
     energyStorage: number,
     grid: number,

@@ -1,7 +1,8 @@
 // import dayjs from 'dayjs';
 // import React, { Component } from 'react'
 // import { IMeterInfo } from '../../state/summary-report/user-report/location-site-state';
-import { IUserChart } from '../../state/summary-report/user-report/user-chart-state';
+import { IPowerData } from '../../state/summary-report/user-report/power-data-state';
+import { IEnergySummary } from '../../state/summary-report/user-report/user-chart-state';
 import { IUserMeterInfo } from '../../state/summary-report/user-report/user-report-state';
 import { IUserSession } from '../../state/user-sessions';
 import { mockMeterAreaDataColllection } from './mockDataCollection';
@@ -12,15 +13,21 @@ interface IGetDruidBody {
     resultFormat: string,
 }
 
-interface IGetUserReportRequest {
-    startDate: string,
-    endDate: string,
-    region: string,
+interface IGetPowerInfosRequest {
+    session: IUserSession,
+}
+interface IGetPowerInfosResponse {
+    powerData: IPowerData[],
+    summaryPower: ISummaryPowerInfo,
+
 
 }
-interface IGetUserReportResponse {
-    context: IUserChart,
 
+interface ISummaryPowerInfo {
+    inBattery: number,
+    inGrid: number,
+    inSolar: number,
+    load: number,
 }
 
 interface IGetUserMeterInfoRequest {
@@ -35,12 +42,18 @@ interface IGetUserMeterInfoResponse {
     context: IUserMeterInfo[],
 }
 interface IMeterAreaAndSite {
-    "payload.areaId": string,
-    "payload.id": string,
-    "payload.siteName": string,
-    "payload.area": string,
-    "payload.meterId": string,
-    "payload.regionName": string,
+    "meterId": string,
+    "userId": string,
+    "meterName": string,
+    "role": string,
+    "locationCode": string,
+    "lat": string,
+    "lng": string,
+    "substationEgat": string,
+    "substationPeaMea": string,
+    "siteName": string,
+    "area": string,
+    "regionName": string,
 }
 
 interface IMeterInfo {
@@ -99,14 +112,7 @@ export class UserReportAPI {
     private endpoint = '';
     private druidEndpoint = 'http://localhost:3006/summary-report/druid';//druidEndpoint;
 
-    async getUserReport(req: IGetUserReportRequest): Promise<IGetUserReportResponse | null> {
-        return {
-            context: {
-                energy: { pv: 1, grid: 12, energyStorage: 12.33, energyConsumptions: 14 },
-                user: { prosumer: 12, noUser: 40, consumer: 22, aggregator: 23 }
-            }
-        }
-    }
+
     // async getUserTable(req: IGetUserTableRequest): Promise<IGetUserTableResponse | null> {
     //     await this.getUserMeterInfo();
     //     return null;
@@ -139,15 +145,36 @@ export class UserReportAPI {
         // console.log(`call druid api`);
         let result: IUserMeterInfo[] = [];
         const body: IGetDruidBody = {
-            "query": `SELECT DISTINCT site."payload.areaId", 
-            site."payload.id", 
-            site."payload.siteName", 
-            area."payload.area", 
-            area."payload.meterId", 
-            area."payload.regionName"
-            FROM "MeterSiteDemoTest" 
-            as site INNER JOIN "MeterAreaTest" 
-            as area ON site."payload.areaId" = area."payload.id"`,
+            "query": `SELECT 
+            "meterId",
+            "userId",
+            "meterName",
+            "role",
+            "locationCode",
+            "lat",
+            "lng",
+            "substationEgat",
+            "substationPeaMea",
+            "payload.siteName" as "siteName",
+            "payload.group" as "area",
+            "payload.regionName" as "regionName"
+          FROM (SELECT "payload.id" as meterId,
+            LATEST("payload.locationCode",10) FILTER (WHERE "payload.locationCode" IS NOT NULL) as locationCode,
+            LATEST("payload.meterName",100) FILTER (WHERE "payload.meterName" IS NOT NULL) as meterName,
+            LATEST("payload.position.lat",10) FILTER (WHERE "payload.position.lat" IS NOT NULL) as lat,
+            LATEST("payload.position.lng",10) FILTER (WHERE "payload.position.lng" IS NOT NULL) as lng,
+            LATEST("payload.substationEgat",10) FILTER (WHERE "payload.substationEgat" IS NOT NULL) as substationEgat,
+            LATEST("payload.substationPeaMea",10) FILTER (WHERE "payload.substationPeaMea" IS NOT NULL) as substationPeaMea,
+            LATEST("payload.role",10) FILTER (WHERE "payload.role" IS NOT NULL) as role,
+            LATEST("payload.active",10) FILTER (WHERE "payload.active" IS NOT NULL) as active,
+            LATEST("payload.registrationDate",30) FILTER (WHERE "payload.registrationDate" IS NOT NULL) as registrationDate,
+            LATEST("payload.userId",50) FILTER (WHERE "payload.userId" IS NOT NULL) as userId,
+            LATEST("payload.userTypeName",50) FILTER (WHERE "payload.userTypeName" is not null) as userTypeName
+          FROM "MeterInfoDataTest2"
+          GROUP BY "payload.id") as info
+          INNER JOIN "MeterSiteDataTest" as site
+          ON info."userTypeName" = site."payload.userTypeName"
+          WHERE info."active" = true`,
             "resultFormat": "object"
         }
         let headers = {
@@ -162,65 +189,83 @@ export class UserReportAPI {
                 body: JSON.stringify(body),
             })
             const rawData: IMeterAreaAndSite[] = await response.json();
-            console.log(`MeterArea Join Site`)
-            // console.warn(rawData)
-            console.log(rawData);
+            // console.log(`MeterArea Join Site`)
+            // // console.warn(rawData)
+            // console.log(rawData);
 
-            // // const result: IGetMeterArea[] = mockMeterAreaDataColllection;
-            const rawMeterInfo = await this.getMeterInfo({ session: req.session, meterId: 1 });
-            if(rawMeterInfo === null){
-                throw new Error(`cannot get Meter Info.`);
-            }
-            console.log(`Meter Info`);
-            console.log(rawMeterInfo?.context);
-            rawData.map((row, i) => {
-                // console.log(`parse meter ID from JSON`)
-                let meterIds = JSON.parse(row['payload.meterId']);
-                meterIds.map(async (meterId: string) => {
-                    // console.log(`Meter ID: ${meterId}`);
-                    if (rawMeterInfo && rawMeterInfo.context.length >0) {
-                        let meterInfo = rawMeterInfo.context.find((meter) => {
-                            
-                            return meter.meterId === meterId.toString();
-                        });
-                        if (meterInfo !== undefined) {
-                            result.push({
-                                id: meterInfo.userId,//row['payload.areaId'],
-                                meterId,
-                                area: row['payload.area'],
-                                locationCode: meterInfo.locationCode,
-                                meterName: meterInfo.meterName,
-                                role: meterInfo.role,
-                                siteName: row['payload.siteName'],
-                                region: row['payload.regionName'],
-                                address: {
-                                    lat: meterInfo.lat,
-                                    lng: meterInfo.lng,
-                                },
-                                peameaSubstation: meterInfo.substationPeaMea,
-                                egatSubStation: meterInfo.substationEgat,
-                            })
-                        }
-                    }
-                    // if (1) {
-                    //     result.push({
-                    //         id: meterId,//row['payload.areaId'],
-                    //         meterId,
-                    //         area: row['payload.area'],
-                    //         locationCode: meterId,//meterInfo.context['payload.locationCode'],
-                    //         meterName: meterId,//meterInfo.context['payload.meterName'],
-                    //         role: meterId,// meterInfo.context['payload.role'],
-                    //         siteName: row['payload.siteName'],
-                    //         region: row['payload.regionName'],
-                    //         address: {
-                    //             lat: meterId,// meterInfo.context['payload.position.lat'],
-                    //             lng: meterId,//meterInfo.context['payload.position.lng'],
-                    //         }
-
-                    //     })
-                    // }
+            rawData.map((row: IMeterAreaAndSite) => {
+                result.push({
+                    id: row.userId,//row['payload.areaId'],
+                    meterId: row.meterId,
+                    area: row.area,
+                    locationCode: row.locationCode,
+                    meterName: row.meterName,
+                    role: row.role,
+                    siteName: row.siteName,
+                    region: row.regionName,
+                    address: {
+                        lat: row.lat,
+                        lng: row.lng,
+                    },
+                    peameaSubstation: row.substationPeaMea,
+                    egatSubStation: row.substationEgat,
                 })
             })
+            // // const result: IGetMeterArea[] = mockMeterAreaDataColllection;
+            // const rawMeterInfo = await this.getMeterInfo({ session: req.session, meterId: 1 });
+            // if (rawMeterInfo === null) {
+            //     throw new Error(`cannot get Meter Info.`);
+            // }
+            // console.log(`Meter Info`);
+            // console.log(rawMeterInfo?.context);
+            // rawData.map((row, i) => {
+            //     // console.log(`parse meter ID from JSON`)
+            //     let meterIds = JSON.parse(row['userId']);
+            //     meterIds.map(async (meterId: string) => {
+            //         // console.log(`Meter ID: ${meterId}`);
+            //         if (rawMeterInfo && rawMeterInfo.context.length > 0) {
+            //             let meterInfo = rawMeterInfo.context.find((meter) => {
+
+            //                 return meter.meterId === meterId.toString();
+            //             });
+            //             if (meterInfo !== undefined) {
+            //                 result.push({
+            //                     id: meterInfo.userId,//row['payload.areaId'],
+            //                     meterId,
+            //                     area: row['area'],
+            //                     locationCode: meterInfo.locationCode,
+            //                     meterName: meterInfo.meterName,
+            //                     role: meterInfo.role,
+            //                     siteName: row['siteName'],
+            //                     region: row['payload.regionName'],
+            //                     address: {
+            //                         lat: meterInfo.lat,
+            //                         lng: meterInfo.lng,
+            //                     },
+            //                     peameaSubstation: meterInfo.substationPeaMea,
+            //                     egatSubStation: meterInfo.substationEgat,
+            //                 })
+            //             }
+            //         }
+            //         // if (1) {
+            //         //     result.push({
+            //         //         id: meterId,//row['payload.areaId'],
+            //         //         meterId,
+            //         //         area: row['payload.area'],
+            //         //         locationCode: meterId,//meterInfo.context['payload.locationCode'],
+            //         //         meterName: meterId,//meterInfo.context['payload.meterName'],
+            //         //         role: meterId,// meterInfo.context['payload.role'],
+            //         //         siteName: row['payload.siteName'],
+            //         //         region: row['payload.regionName'],
+            //         //         address: {
+            //         //             lat: meterId,// meterInfo.context['payload.position.lat'],
+            //         //             lng: meterId,//meterInfo.context['payload.position.lng'],
+            //         //         }
+
+            //         //     })
+            //         // }
+            //     })
+            // })
             return {
                 context: result
             };
@@ -242,17 +287,6 @@ export class UserReportAPI {
         }
 
         const body: IGetDruidBody = {
-            // query: `SELECT 
-            // "payload.id",            
-            // "payload.locationCode",
-            // "payload.meterName",
-            // "payload.position.lat",
-            // "payload.position.lng",
-            // "payload.role",
-            // "payload.substationEgat",
-            // "payload.substationPeaMea",
-            // FROM "MeterInfoTest2"
-            // WHERE "payload.id" = ${req.meterId}`,
             query: `SELECT "payload.id" as meterId,
             LATEST("payload.locationCode",10) FILTER (WHERE "payload.locationCode" IS NOT NULL) as locationCode,
             LATEST("payload.meterName",100) FILTER (WHERE "payload.meterName" IS NOT NULL) as meterName,
@@ -278,8 +312,7 @@ export class UserReportAPI {
             })
             const rawData: IMeterInfo[] = await response.json();
 
-            console.log(`call meter ID  successful`)
-            // console.log(context);
+
             return {
                 context: rawData,
             };
@@ -287,4 +320,55 @@ export class UserReportAPI {
             return null;
         }
     }
+
+    async getPowerInfos(req: IGetPowerInfosRequest): Promise<IGetPowerInfosResponse | null> {
+        let headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": `Bearer ${req.session.accessToken}`,
+        }
+
+        const body: IGetDruidBody = {
+
+            query: `SELECT 
+            "__time" as "timestamp",
+            "payload.id",
+            "payload.inBattery" as "inBattery", 
+            "payload.inGrid" as "inGrid", 
+            "payload.inSolar" as "inSolar", 
+            "payload.load" as "load",
+            "payload.meterId" as "meterId"
+            FROM "Power"`,
+            resultFormat: "object",
+        }
+
+
+        try {
+            const response = await fetch(this.druidEndpoint, {
+                headers,
+                method: "POST",
+                body: JSON.stringify(body),
+            })
+            const rawData: IPowerData[] = await response.json();
+            const result = {
+                inBattery: 0,
+                inGrid: 0,
+                inSolar: 0,
+                load: 0,
+            }
+            rawData.map((power: ISummaryPowerInfo) => {
+                result.inBattery += power.inBattery;
+                result.inGrid += power.inGrid;
+                result.inSolar += power.inSolar;
+                result.load += power.load;
+            })
+            return {
+                powerData: rawData,
+                summaryPower: result,
+            };
+        } catch (e) {
+            return null;
+        }
+    }
+
 }

@@ -1,23 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { Checkbox, FormControl, FormControlLabel, FormGroup, Grid, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material'
+import { FormControl, Grid, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material'
 import { useDebouncedCallback } from 'use-debounce/lib';
 import AllSettlementTable from './AllSettlementTable';
-import { Controller, useForm } from 'react-hook-form';
 import { useSettlementReport } from '../../../../hooks/summary-report/settlement/useSettlementReport';
 import { ISettlementReport } from '../../../../state/summary-report/settlement-report/settlement-report-state';
-
-interface IRolesState {
-    [key: string]: boolean,
-}
-
-
-interface ITableSelector {
-    role: string,
-    type: string,
-    status: string,
-    market: string,
-}
-
 
 export default function AllSettlementComponent() {
     const [area, setArea] = useState('total');

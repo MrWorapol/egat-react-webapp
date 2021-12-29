@@ -46,7 +46,7 @@ function buildChooseToBuy(orderDetail: IOrderDetail) {
         { key: 'tradingFee', label: 'Trading fee', unit: 'Baht' }
     ];
     return (
-        <Grid px={2} py={2} direction='column' sx={{ minHeight: '25vh' }}>
+        <Grid px={2} py={2} sx={{ minHeight: '25vh' }}>
             <Grid item >
                 <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em', color: 'secondary.main' }}>Order Detail</Typography>
             </Grid>
@@ -61,7 +61,7 @@ function buildChooseToBuy(orderDetail: IOrderDetail) {
             <Grid item py={1}>
                 <Typography sx={{ fontSize: '1.2em' }}>{orderDetail.tradeMarket ==='pool' ? 'Pool Market Trade':'Bilateral Trade'}</Typography>
             </Grid>
-            <Grid item container xs={12} id='energy-info'>
+            <Grid item container  id='energy-info'>
                 {details.map((detail, index) => {
                     return (
                         <Grid container item justifyContent='space-between' pl={4} pr={6} >
@@ -83,7 +83,7 @@ function buildChooseToBuy(orderDetail: IOrderDetail) {
 
 function buildOfferToSell(orderDetail: IOrderDetail) {
     return (
-        <Grid container px={2} py={2} direction='column' sx={{ minHeight: '25vh' }}>
+        <Grid container px={2} py={2}  sx={{ minHeight: '25vh' }}>
             <Grid item >
                 <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em', color: 'secondary.main' }}>Order Detail</Typography>
             </Grid>
@@ -98,7 +98,7 @@ function buildOfferToSell(orderDetail: IOrderDetail) {
             <Grid item py={1}>
                 <Typography sx={{ fontSize: '1.2em' }}>{orderDetail.tradeMarket ==='pool' ? 'Pool Market Trade':'Bilateral Trade'}</Typography>
             </Grid>
-            <Grid item container xs={12} id='energy-info'>
+            <Grid item container  id='energy-info'>
                 <Grid container item justifyContent='space-between' px={4} >
                     <Typography>
                         {`PV`}

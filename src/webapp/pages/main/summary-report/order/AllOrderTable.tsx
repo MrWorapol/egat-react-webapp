@@ -96,9 +96,9 @@ export default function AllOrderTable(props: IProps) {
                             ? props.data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             : props.data
                         ).map((row: IOrderInfo, i) => (
-                            <TableRow>
+                            <TableRow key={`${i}-${row.orderId}`}>
                                 <TableCell
-                                // key={row.meterId}
+                                key={row.orderId}
                                 >
                                     {row.tradeMarket === "BILATERAL" ? "Bilateral Trade" : "Pool Market"}
                                 </TableCell>

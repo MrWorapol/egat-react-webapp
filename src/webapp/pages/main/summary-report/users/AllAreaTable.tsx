@@ -66,7 +66,7 @@ export default function AllAreaTable(props: IProps) {
 
 
     function onClickViewButton(row: IUserMeterInfo) {
-        refreshLocationSite(row.meterId)
+        refreshLocationSite(row)
         // console.log('click view button')
     }
     return (

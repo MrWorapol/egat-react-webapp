@@ -54,7 +54,7 @@ export default function AllOrder() {
             //     tableFilter = tableFilter.filter((row)=>{return row.})
             // }
         }
-    }, 2000)
+    }, 0)
 
     const onSelectedDropdown = (event: SelectChangeEvent) => {
         switch (event.target.name) {
