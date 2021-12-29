@@ -2,8 +2,14 @@ import { Grid, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import React from 'react'
 import DoughnutChart from '../../../../components/DoughnutChart'
+import { IOrderChart } from '../../../../state/summary-report/order-report/order-chart-state'
 
-export default function SummaryComponents() {
+interface IProps {
+    data: IOrderChart,
+}
+
+export default function SummaryComponents(props: IProps) {
+    const { trade, status, role, buyerType } = props.data;
     return (
         <Box sx={{ flexGrow: 1 }}>
             <Grid container item direction='column'>
@@ -12,10 +18,10 @@ export default function SummaryComponents() {
                         <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em', color: 'secondary.main' }}> Summary by Role </Typography>
                     </Grid>
                     <DoughnutChart
-                        labels={[`Aggregator`, 'Prosumer', 'Consumer']}
+                        labels={[`Aggregator ${role.aggregator} (${role.aggregator*100/(role.aggregator+role.prosumer+role.consumer)})%`, `Prosumer ${role.prosumer*100/(role.aggregator+role.prosumer+role.consumer)} %`, `Consumer ${role.consumer*100/(role.aggregator+role.prosumer+role.consumer)} %`]}
                         datasets={[
                             {
-                                data: [6, 12, 2],
+                                data: [role.aggregator, role.prosumer, role.consumer],
                                 backgroundColor: [
                                     '#4A90E2',
                                     '#46B61E',
@@ -32,10 +38,10 @@ export default function SummaryComponents() {
                         <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em', color: 'secondary.main' }}> Summary by Buyer/Seller </Typography>
                     </Grid>
                     <DoughnutChart
-                        labels={[`Seller`, 'Buyer']}
+                        labels={[`Seller ${buyerType.seller*100/(buyerType.seller+buyerType.buyer)} %`, `Buyer ${buyerType.buyer*100/(buyerType.seller+buyerType.buyer)}`]}
                         datasets={[
                             {
-                                data: [12, 36],
+                                data: [buyerType.seller, buyerType.buyer],
                                 backgroundColor: [
                                     '#61399F',
                                     '#004AAD',
@@ -51,10 +57,10 @@ export default function SummaryComponents() {
                         <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em', color: 'secondary.main' }}> Summary by Trade Market </Typography>
                     </Grid>
                     <DoughnutChart
-                        labels={[`Bilateral Trade `, 'Pool Market Trade']}
+                        labels={[`Bilateral Trade ${Math.floor(trade.bilateral*100/(trade.bilateral+trade.pool))} %`, `Pool Market Trade ${Math.floor(trade.pool*100/(trade.bilateral+trade.pool))} %`]}
                         datasets={[
                             {
-                                data: [4, 12],
+                                data: [trade.bilateral, trade.pool],
                                 backgroundColor: [
                                     '#61399F',
                                     '#004AAD',
@@ -70,10 +76,10 @@ export default function SummaryComponents() {
                         <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em', color: 'secondary.main' }}>Summary by Order Status</Typography>
                     </Grid>
                     <DoughnutChart
-                        labels={[`Matched`, 'Open',]}
+                        labels={[`Matched ${Math.floor(status.matched*100/(status.matched+status.open))} %`, `Open ${status.matched*100/(status.matched+status.open)} %`,]}
                         datasets={[
                             {
-                                data: [16, 4],
+                                data: [status.matched, status.open],
                                 backgroundColor: [
                                     '#61399F',
                                     '#004AAD',

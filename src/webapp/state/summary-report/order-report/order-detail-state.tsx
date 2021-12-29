@@ -5,10 +5,10 @@ interface IMap {
 }
 
 export interface IOrderDetail extends IMap {
-    orderId: string,
-    orderType: string,
+    contractId?: string,
+    userType: string,
     tradeMarket: string,
-    orderDetail: IBuyDetail | ISellDetail,
+    orderDetail: IBuyDetail | ISellDetail | IOpenOrderDetail,
 }
 
 export interface ISellDetail extends IMap {
@@ -30,6 +30,12 @@ export interface IBuyDetail extends IMap {
     wheelingCharge: number,
     tradingFee: number,
 
+}
+
+export interface IOpenOrderDetail extends IMap {
+    settlementTime: string,
+    price: string,
+    commitedAmount: string,
 }
 
 export const orderDetailState = atom<IOrderDetail | null>({

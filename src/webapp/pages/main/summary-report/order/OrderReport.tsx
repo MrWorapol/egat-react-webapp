@@ -17,7 +17,7 @@ export default function OrderReport() {
     const { currentState } = useNavigationGet();
     const session = useRecoilValue(userSessionState);
 
-    const { refreshOrderReport } = useOrderReport();
+    const { refreshOrderReport,orderChart } = useOrderReport();
     const refreshPage = useCallback(async () => {
         refreshOrderReport([], 'all', 'all', 'all', 'all');
     }, []);
@@ -41,7 +41,7 @@ export default function OrderReport() {
                         </Grid>
                     </Grid>
                     <Grid container item id='right-side' xs={6} >
-                        <SummaryChartComponents />
+                        {orderChart && <SummaryChartComponents data={orderChart}/>}
                     </Grid>
                 </Grid>
             </Box>

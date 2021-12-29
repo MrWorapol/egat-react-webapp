@@ -22,12 +22,13 @@ interface Column {
 
 interface IProps {
     data: IOrderInfo[],
+    page: number,
 }
 export default function AllOrderTable(props: IProps) {
-    const [page, setPage] = React.useState(0);
+    const [page, setPage] = React.useState(props.page);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const history = useHistory();
-    const { refreshOrderReport } = useOrderReport();
+    const { refreshOrderDetail } = useOrderReport();
     const columns: Column[] = [
         { id: 'tradeMarket', label: 'Trade Market' },
         { id: 'role', label: 'Role' },
@@ -61,13 +62,14 @@ export default function AllOrderTable(props: IProps) {
     };
 
 
-    function onClickViewButton(row: any) {
+    function onClickViewButton(row: IOrderInfo) {
         // if (userInfo.role !== 'admin ') {
         //     resetUserDetailData();
         //     history.push(`/user_management/${userInfo.meterId}`);
         // }
-        console.log('click view button')
+        refreshOrderDetail(row)
     }
+    
     return (
         <Paper sx={{ width: '100%', mb: 2 }} >
             <TableContainer >

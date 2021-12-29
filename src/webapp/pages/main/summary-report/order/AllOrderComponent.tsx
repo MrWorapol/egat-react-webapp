@@ -37,7 +37,8 @@ export default function AllOrder() {
             let tableFilter = [...orderReport];
             console.log(`role: ${role}\t buyer: ${userType}\t orderStatus: ${orderStatus}\t tradeMarket:${tradeMarket}\n area: ${area}`);
             if (role !== 'all') {
-                tableFilter = tableFilter.filter((order) => { return order.role === role });
+
+                tableFilter = tableFilter.filter((order) => { return (order.role !== undefined && order.role.toLowerCase() === role.toLowerCase()) });
             }
             if (userType !== 'all') {
                 tableFilter = tableFilter.filter((order) => { return order.userType === userType });
@@ -46,7 +47,7 @@ export default function AllOrder() {
                 tableFilter = tableFilter.filter((order) => { return order.tradeMarket === tradeMarket });
             }
             if (orderStatus !== 'all') {
-                tableFilter = tableFilter.filter((order) => { return order.status === orderStatus });
+                tableFilter = tableFilter.filter((order) => { return order.status.toLowerCase() === orderStatus.toLowerCase() });
             }
             setFilterData(tableFilter);
             // let tableFilter = []; // table recoil state
@@ -197,7 +198,7 @@ export default function AllOrder() {
                 {buildTableSelector()}
             </Grid>
             <Grid id="area-table">
-                {filterData && <AllOrderTable data={filterData} />}
+                {filterData && <AllOrderTable data={filterData} page={0} />}
             </Grid>
         </Grid>
         // </Box>

@@ -4,12 +4,17 @@ import { useRecoilState, useRecoilValue, useResetRecoilState } from "recoil"
 import { IGetOrderTableRequest, OrderReportAPI } from "../../../api/report/OrderReportAPI";
 import { UserReportAPI } from "../../../api/report/UserReportAPI";
 import { NavigationCurrentType } from "../../../state/navigation-current-state";
+import { IOrderChart, orderChartState } from "../../../state/summary-report/order-report/order-chart-state";
 import { orderDetailState } from "../../../state/summary-report/order-report/order-detail-state";
-import { orderState } from "../../../state/summary-report/order-report/order-report-state";
+import { IOrderInfo, orderState } from "../../../state/summary-report/order-report/order-report-state";
+import { IUserMeterInfo } from "../../../state/summary-report/user-report/user-report-state";
 import { userSessionState } from "../../../state/user-sessions";
 import { useNavigationGet } from "../../useNavigationGet";
 import usePeriodTime from "../usePeriodTime";
-
+interface ISummaryMap {
+    [key: string]:
+    number
+}
 
 export function useOrderReport() {
     console.log(`call Use ORDER REPORT`);
@@ -17,14 +22,14 @@ export function useOrderReport() {
     const { currentState } = useNavigationGet();
     const [orderReport, setOrderReport] = useRecoilState(orderState)
     const [orderDetail, setOrderDetail] = useRecoilState(orderDetailState);
-
+    const [orderChart, setOrderChart] = useRecoilState(orderChartState);
     const resetOrderDetail = useResetRecoilState(orderDetailState);
     const { period } = usePeriodTime();
     const orderApi = new OrderReportAPI();
     const userMeterApi = new UserReportAPI();
     const refreshOrderReport = useCallback(async (roles: string[], buyerType: string, tradeMarket: string, orderStatus: string, area: string) => {
         if (session !== null) {
-            // const userMeterInfos = await userMeterApi.getUserMeterInfo({ startDate: dayjs(period.startDate).toString(), endDate: dayjs(period.endDate).toString(), region: period.region, roles: roles, area: area, session: { accessToken: "1", refreshToken: '12', lasttimeLogIn: new Date() } })
+            const userMeterInfos = await userMeterApi.getUserMeterInfo({ startDate: dayjs(period.startDate).toString(), endDate: dayjs(period.endDate).toString(), region: period.region, roles: roles, area: area, session: { accessToken: "1", refreshToken: '12', lasttimeLogIn: new Date() } })
             const req: IGetOrderTableRequest = {
                 startDate: dayjs(period.startDate).toString(),
                 endDate: dayjs(period.endDate).toString(),
@@ -36,29 +41,95 @@ export function useOrderReport() {
                 session,
             }
             let allOrder = await orderApi.getOrderTable(req);
+            let summaryRole: ISummaryMap = { 'aggregator': 0, 'prosumer': 0, 'consumer': 0 };
+            let summaryUserType: ISummaryMap = { 'seller': 0, 'buyer': 0 };
+            let summaryTradeMarket: ISummaryMap = { 'bilateral': 0, 'pool': 0 };
+            let summaryStatus: ISummaryMap = { 'open': 0, 'matched': 0 }
+            if (allOrder && userMeterInfos) {
+                console.log(`user Meter Infos`);
+                console.log(userMeterInfos);
+                let output: IOrderInfo[] = [];
+                let test: IOrderChart;
+                allOrder.context.map((order: IOrderInfo) => {
+                    let meterInfo = userMeterInfos.context.find((user: IUserMeterInfo) => { return user.id.toString() === order.userId.toString() })
+                    console.log(`get meter Info`);
+                    console.log(meterInfo);
+                    if (meterInfo && meterInfo !== undefined) {
 
-            if (allOrder) {//&& userMeterInfos) {
+                        summaryRole[meterInfo.role.toLowerCase()] += 1;
+                        summaryTradeMarket[order.tradeMarket.toLowerCase()] += 1;
+                        summaryUserType[order.userType.toLowerCase()] += 1;
+                        summaryStatus[order.status.toLowerCase()] += 1;
+                        output.push({
+                            ...order,
+                            role: meterInfo.role,
+                            area: meterInfo.area,
+                            regionName: meterInfo.region,
+                        })
 
-                setOrderReport(allOrder.context);
-                refreshOrderDetail(allOrder.context[0].orderId);
+                    }
+                })
+                console.log(summaryRole);
+                setOrderChart(
+                    {
+                        role: {
+                            aggregator: summaryRole.aggregator,
+                            prosumer: summaryRole.prosumer,
+                            consumer: summaryRole.consumer,
+                        },
+                        buyerType: {
+                            seller: summaryUserType.seller,
+                            buyer: summaryUserType.buyer,
+                        },
+                        trade: {
+                            bilateral: summaryTradeMarket.bilateral,
+                            pool: summaryTradeMarket.pool,
+                        },
+                        status: {
+                            matched: summaryStatus.matched,
+                            open: summaryStatus.open
+                        }
+                    })
+                setOrderReport(output);
+                refreshOrderDetail(allOrder.context[0]);
 
             }
         }
     }, [])
 
-    const refreshOrderDetail = useCallback(async (orderId: string) => {
+
+    const refreshOrderDetail = useCallback(async (orderInfo: IOrderInfo) => {
+
         // if (orderDetail) { //clear state of detail 
         //     resetOrderDetail();
         // }
-        const result = await orderApi.getOderDetail({ orderId });
-        if (result) {
-            setOrderDetail(result.context);
+        if(orderInfo.status.toLowerCase() === 'open'){
+            setOrderDetail({
+                userType: orderInfo.userType,
+                tradeMarket: orderInfo.tradeMarket,
+                orderDetail: {
+                    settlementTime: orderInfo.settlementTime,
+                    price: orderInfo.targetPrice,
+                    commitedAmount: orderInfo.targetAmount
+                }
+            })
+        }
+        if (session) {
+            
+            const result = await orderApi.getOderDetail({ session: session, traceContractId: orderInfo.userId });
+            // if (result) {
+            //     setOrderDetail(result.context);
+            // }
+            // setOrderDetail({
+
+            // })
         }
     }, []);
+
     useEffect(() => {
         if (session && currentState === NavigationCurrentType.ORDER_REPORT) {
-            console.log(`call useEffect useOrderReport`);
-            console.log(session);
+            // console.log(`call useEffect useOrderReport`);
+            // console.log(session);
             if (!orderReport) {
 
                 refreshOrderReport([], 'all', 'all', 'all', 'all');
@@ -76,6 +147,6 @@ export function useOrderReport() {
         refreshOrderReport,
         orderDetail,
         refreshOrderDetail,
-
+        orderChart
     }
 }
