@@ -46,36 +46,36 @@ export default class UserManagementAPI {
     private host = userApi;
     // let response: Response;  
     async getAllUser(): Promise<IGetUsersResponse | null> {
-        const path = '/users'
-        const api = this.host + path;
-        let response: Response;
-        let token = 'token';
-        let headers = {
-            "Content-Type": "application/json",
-            // Authorization: `Bearer ${token}`,
-        }
-        try {
-            response = await fetch(api, {
-                method: "GET",
-                headers
-            });
-        } catch (e) {
-            return null;
-        }
+        // const path = '/users'
+        // const api = this.host + path;
+        // let response: Response;
+        // let token = 'token';
+        // let headers = {
+        //     "Content-Type": "application/json",
+        //     // Authorization: `Bearer ${token}`,
+        // }
+        // try {
+        //     response = await fetch(api, {
+        //         method: "GET",
+        //         headers
+        //     });
+        // } catch (e) {
+        //     return null;
+        // }
 
-        let result = await response.json();
-        console.log(result);
-        let content: IGetUsersResponse = {
-            userInfos: result
-        }
-        return content;
+        // let result = await response.json();
+        // console.log(result);
+        // let content: IGetUsersResponse = {
+        //     userInfos: result
+        // }
+        // return content;
         // let res = await fetchWithTimeout(uri.toString(), {
         //     method: "GET",
         //     headers,
         // })
         //mocking Data
-        // const content: IGetUsersResponse = createMockData();
-        // return Promise.resolve(content);
+        const content: IGetUsersResponse = createMockData();
+        return Promise.resolve(content);
     }
 
     async getUserByMeterID(meterId: string): Promise<IGetUserByIDResponse | null> {

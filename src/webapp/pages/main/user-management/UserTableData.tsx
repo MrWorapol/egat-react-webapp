@@ -30,6 +30,7 @@ interface TablePaginationActionsProps {
     ) => void;
 }
 
+
 function TablePaginationActions(props: TablePaginationActionsProps) {
     const theme = useTheme();
     const { count, page, rowsPerPage, onPageChange } = props;
@@ -91,7 +92,7 @@ export default function UserTableData() {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const history = useHistory();
-    const { userInfoData, refreshAllUser } = useAllUser();
+    const { userInfoData, refreshAllUser } = useAllUser();//
     const resetUserDetailData = useResetRecoilState(userDetail);
 
     const columns: Column[] = [
