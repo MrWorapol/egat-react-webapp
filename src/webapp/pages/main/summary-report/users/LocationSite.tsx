@@ -27,11 +27,12 @@ export default function LocationSite() {
                     <Grid container item justifyContent='flex-end' >
                         <Typography>{`Address: ${locationSite.location.lat},${locationSite.location.lng} `}</Typography>
                     </Grid>
-                    <Grid container item id='map-plugin' direction='column' sx={{ backgroundColor: '#fff', borderWidth: '1px', width: 1, height: '200px', boxShadow: 2, }}>
-                        <Grid item sx={{ height: '10vh', width: 1, }}>
-                            <GoogleMap address={{ lat: +locationSite.location.lat, lng: +locationSite.location.lng }} zoom={8} />
+                    <Grid container item id='map-plugin' direction='column' sx={{ backgroundColor: '#fff', borderWidth: '1px', width: 1, height: '300px', boxShadow: 2, }}>
+                        <Grid item sx={{ height: '70%', width: 1, }}>
+                        
+                            <GoogleMap address={{ lat: +locationSite.location.lat, lng: +locationSite.location.lng }} zoom={18} />
                         </Grid>
-                        <Grid item container direction='row'>
+                        <Grid item container direction='row' sx={{height:'20%'}}>
                             <Grid item container direction='column' alignItems='center' xs={4}>
                                 <Typography>ไฟที่จะขายได้ 1 วันล่วงหน้า</Typography>
                                 <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em' }}>{locationSite.meterId}</Typography>
