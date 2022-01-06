@@ -16,25 +16,27 @@ export default function AllSettlementComponent() {
     const [filterData, setFilterData] = useState<ISettlementReport[] | null>(settlementReport);
 
     const refreshTable = useDebouncedCallback(() => {
-        console.log(`role: ${role}\t buyer: ${userType}\t orderStatus: ${imbalance}\t tradeMarket:${tradeMarket}\n area: ${area}`);
         if (settlementReport) {
-            // let tableFilter = [...settlementReport];
+            let tableFilter = [...settlementReport];
             // console.log(`role: ${role}\t buyer: ${userType}\t orderStatus: ${orderStatus}\t tradeMarket:${tradeMarket}\n area: ${area}`);
-            // if (role !== 'all') {
-            //     tableFilter = tableFilter.filter((order) => { return order.role === role });
-            // }
-            // if (userType !== 'all') {
-            //     tableFilter = tableFilter.filter((order) => { return order.userType === userType });
-            // }
-            // if (tradeMarket !== 'all') {
-            //     tableFilter = tableFilter.filter((order) => { return order.tradeMarket === tradeMarket });
-            // }
-            // if (imbalance !== 'all') {
-            //     tableFilter = tableFilter.filter((order) => { return order.status === orderStatus });
-            // }
-            // setFilterData(tableFilter);
+            if (role !== 'all') {
+                tableFilter = tableFilter.filter((report) => { return report.role === role });
+            }
+            if (userType !== 'all') {
+                tableFilter = tableFilter.filter((report) => { return report.userType === userType });
+            }
+            if (tradeMarket !== 'all') {
+                tableFilter = tableFilter.filter((report) => { return report.tradeMarket === tradeMarket });
+            }
+            if (imbalance !== 'all') {
+
+                tableFilter = tableFilter.filter((report) => {
+                    return report.imbalanceStatus === imbalance
+                });
+            }
+            setFilterData(tableFilter);
         }
-    }, 2000)
+    }, 0)
 
     const onSelectedDropdown = (event: SelectChangeEvent) => {
         switch (event.target.name) {
@@ -175,7 +177,7 @@ export default function AllSettlementComponent() {
                 {buildTableSelecter()}
             </Grid>
             <Grid id="area-table">
-                <AllSettlementTable />
+                {filterData && <AllSettlementTable data={filterData} page={0} />}
             </Grid>
         </Grid >
         // </Box>

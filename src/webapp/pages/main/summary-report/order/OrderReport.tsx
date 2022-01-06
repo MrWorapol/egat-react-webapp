@@ -25,7 +25,7 @@ export default function OrderReport() {
     if( session && currentState === NavigationCurrentType.ORDER_REPORT ){
     return (
         <Box sx={{ width: `100%`, px: 2, py: 2, maxWidth: '100%' }}>
-            <Grid container item direction="row" justifyContent='flex-end' id='period-zone' py={1}>
+            <Grid container item direction="row" justifyContent='flex-end' id='period-zone' mb={1}>
                 <Grid item >
                     <PeriodComponent key='order-period' refreshPage={refreshPage} />
                 </Grid>

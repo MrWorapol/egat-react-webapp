@@ -1,4 +1,5 @@
 import { atom } from "recoil";
+import { ISettlementReport } from "./settlement-report-state";
 
 export interface ISettlementDetail {
     contractId: string,
@@ -13,7 +14,7 @@ export interface ISettlementDetail {
     netEnergyPrice: number,
 }
 
-export const settlementDetailState = atom<ISettlementDetail | null>({
+export const settlementDetailState = atom<ISettlementReport | null>({
     key: 'settlementDetailState',
     default: null,
 })

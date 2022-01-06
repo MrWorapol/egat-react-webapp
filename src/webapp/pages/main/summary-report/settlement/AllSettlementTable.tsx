@@ -10,6 +10,7 @@ import { useHistory } from 'react-router-dom';
 import { useResetRecoilState } from 'recoil';
 import TablePaginationActionsComponent from '../../../../components/TablePaginationActions';
 import { useSettlementReport } from '../../../../hooks/summary-report/settlement/useSettlementReport';
+import { ISettlementReport } from '../../../../state/summary-report/settlement-report/settlement-report-state';
 
 
 interface Column {
@@ -18,14 +19,15 @@ interface Column {
 
 
 }
-export default function AllSettlementTable() {
+interface IProps {
+    data: ISettlementReport[],
+    page: number,
+}
+export default function AllSettlementTable(props: IProps) {
+    const { refreshSettlementDetail } = useSettlementReport();
+    const { data } = props;
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
-    const history = useHistory();
-    const { settlementReport} = useSettlementReport();
-    // const { userInfoData, refreshAllUser } = useAllUser();
-    // const resetUserDetailData = useResetRecoilState(userDetail);
-    const mockDatas = [{}, {}];
     const columns: Column[] = [
         { id: 'contractId', label: 'Contract ID' },
         { id: 'role', label: 'Role' },
@@ -34,15 +36,13 @@ export default function AllSettlementTable() {
         { id: 'imbalance', label: 'Imbalance' },
         { id: 'Action', label: '' }
     ];
-    if (mockDatas === null || mockDatas === undefined) {
-        console.log(`WTF : ${mockDatas}`);
+    if (data === null || data === undefined) {
+        console.log(`WTF : ${data}`);
         return <></>;
     }
-    // if (userInfoData.length === 0) {
-    //     return <div><Typography variant="h1">Not found</Typography></div>;
-    // }
+
     // Avoid a layout jump when reaching the last page with empty rows.
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - mockDatas.length) : 0;
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
 
 
     const handleChangePage = (
@@ -60,12 +60,8 @@ export default function AllSettlementTable() {
     };
 
 
-    function onClickViewButton(row: any) {
-        // if (userInfo.role !== 'admin ') {
-        //     resetUserDetailData();
-        //     history.push(`/user_management/${userInfo.meterId}`);
-        // }
-        console.log('click view button')
+    function onClickViewButton(row: ISettlementReport) {
+        refreshSettlementDetail(row);
     }
     return (
         <Paper sx={{ mb: 2 }} >
@@ -86,39 +82,46 @@ export default function AllSettlementTable() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {mockDatas.length === 0 && /* case notfound data */
+                        {data.length === 0 && /* case notfound data */
                             <TableRow style={{ height: 53 * emptyRows }}>
                                 <TableCell colSpan={6} />
                             </TableRow>
                         }
-                        {/* {mockDatas.length !== 0 && (rowsPerPage > 0
-                            ? mockDatas.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                            : mockDatas
+                        {data.length !== 0 && (rowsPerPage > 0
+                            ? data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            : data
                         ).map((row, i) => (
                             <TableRow>
                                 <TableCell
-                                // key={row.meterId}
+                                    key={row.contractId + row.userType}
                                 >
-                                    {row.meterId}
+                                    {row.contractId}
                                 </TableCell>
                                 <TableCell
-                                // key={row.fullName + i}
+                                    key={row.role + row.userType + i}
                                 >
-                                    {row.fullName}
+                                    {row.role}
                                 </TableCell>
                                 <TableCell
-                                // key={row.email + i}
+                                    key={row.userType + i}
                                 >
-                                    {row.email}
+                                    {row.userType}
                                 </TableCell>
                                 <TableCell
-                                // key={row.phoneNumber + i}
+                                    key={row.tradeMarket + i}
                                 >
-                                    {row.phoneNumber}
+                                    {console.log(row.tradeMarket)}
+                                    {row.tradeMarket === "BILATERAL" && "Bilateral Trade"}
+                                    {row.tradeMarket === "POOL" && "Pool Market"}
                                 </TableCell>
-
                                 <TableCell
-                                    key={row.meterId + row.role + i}
+                                    key={row.imbalanceStatus + i}
+                                >
+                                    {row.imbalanceStatus === "energyShortfall" && "Energy ShortFall"}
+                                    {row.imbalanceStatus === "energyExcess" && "Energy Excess"}
+                                </TableCell>
+                                <TableCell
+                                    key={row.contractId + row.role + i}
                                 >
                                     {row.role !== 'ADMIN' && <IconButton onClick={() => onClickViewButton(row)}>
                                         <SearchIcon />
@@ -127,7 +130,7 @@ export default function AllSettlementTable() {
                                 </TableCell>
                             </TableRow>
                         ))
-                        } */}
+                        }
                         {emptyRows > 0 && (
                             <TableRow style={{ height: 53 * emptyRows }}>
                                 <TableCell colSpan={6} />
@@ -142,7 +145,7 @@ export default function AllSettlementTable() {
                 sx={{ right: 0 }}
                 rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
                 colSpan={3}
-                count={mockDatas.length}
+                count={data.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 SelectProps={{

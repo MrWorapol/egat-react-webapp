@@ -3,23 +3,26 @@ import { Box } from '@mui/system'
 import React from 'react'
 import DoughnutChart from '../../../../components/DoughnutChart'
 import { useSettlementReport } from '../../../../hooks/summary-report/settlement/useSettlementReport';
+import { ISettlementChart } from '../../../../state/summary-report/settlement-report/settlement-chart-state';
 
-export default function SummaryCharts() {
-
-    const { } = useSettlementReport();
+interface IProps {
+    data: ISettlementChart,
+}
+export default function SummaryCharts(props: IProps) {
+    const { buyerType, role, status, trade } = props.data;
 
     return (
         <Box sx={{ flexGrow: 1 }}>
             <Grid container item direction='column'>
                 <Grid container item xs={'auto'} direction='row' justifyContent="center" alignItems="center" px={2} pt={2} my={1} sx={{ backgroundColor: '#fff' }}>
-                    <Grid xs={12}>
+                    <Grid container xs={12}>
                         <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em', color: 'secondary.main' }}> Summary by Role </Typography>
                     </Grid>
                     <DoughnutChart
-                        labels={[`Aggregator`, 'Prosumer', 'Consumer']}
+                        labels={[`Aggregator ${role.aggregator} (${role.aggregator * 100 / (role.aggregator + role.prosumer + role.consumer)})%`, `Prosumer ${role.prosumer * 100 / (role.aggregator + role.prosumer + role.consumer)} %`, `Consumer ${role.consumer * 100 / (role.aggregator + role.prosumer + role.consumer)} %`]}
                         datasets={[
                             {
-                                data: [6, 12, 2],
+                                data: [role.aggregator, role.prosumer, role.consumer],
                                 backgroundColor: [
                                     '#4A90E2',
                                     '#46B61E',
@@ -28,7 +31,7 @@ export default function SummaryCharts() {
                                 // hoverOffset: 4,
                             },
                         ]}
-                        width={600}
+                        width={500}
 
                     />
                 </Grid>
@@ -37,10 +40,10 @@ export default function SummaryCharts() {
                         <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em', color: 'secondary.main' }}> Summary by Buyer/Seller </Typography>
                     </Grid>
                     <DoughnutChart
-                        labels={[`Seller`, 'Buyer']}
+                        labels={[`Seller ${buyerType.seller * 100 / (buyerType.seller + buyerType.buyer)} %`, `Buyer ${buyerType.buyer * 100 / (buyerType.seller + buyerType.buyer)}`]}
                         datasets={[
                             {
-                                data: [12, 36],
+                                data: [buyerType.seller, buyerType.buyer],
                                 backgroundColor: [
                                     '#61399F',
                                     '#004AAD',
@@ -48,7 +51,7 @@ export default function SummaryCharts() {
                                 // hoverOffset: 4,
                             },
                         ]}
-                        width={600}
+                        width={500}
                     />
                 </Grid>
                 <Grid container item xs={'auto'} direction='row' justifyContent="center" alignItems="center" px={2} pt={2} my={1} sx={{ backgroundColor: '#fff' }}>
@@ -56,10 +59,10 @@ export default function SummaryCharts() {
                         <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em', color: 'secondary.main' }}> Summary by Trade Market </Typography>
                     </Grid>
                     <DoughnutChart
-                        labels={[`Bilateral Trade `, 'Pool Market Trade']}
+                        labels={[`Bilateral Trade ${Math.floor(trade.bilateral * 100 / (trade.bilateral + trade.pool))} %`, `Pool Market Trade ${Math.floor(trade.pool * 100 / (trade.bilateral + trade.pool))} %`]}
                         datasets={[
                             {
-                                data: [4, 12],
+                                data: [trade.bilateral, trade.pool],
                                 backgroundColor: [
                                     '#61399F',
                                     '#004AAD',
@@ -67,7 +70,7 @@ export default function SummaryCharts() {
                                 // hoverOffset: 4,
                             },
                         ]}
-                        width={1}
+                        width={500}
                     />
                 </Grid>
                 <Grid container item xs={'auto'} direction='row' justifyContent="center" alignItems="center" px={2} pt={2} my={1} sx={{ backgroundColor: '#fff' }}>
@@ -82,18 +85,19 @@ export default function SummaryCharts() {
                         </Grid>
                         <Grid>
                             <DoughnutChart
-                                labels={[`Matched`, 'Open',]}
+                                labels={[`Energy Excess ${Math.floor(status.energyExcess * 100 / (status.energyExcess + status.energyShortfall))} %`,
+                                `Energy Shortfall ${status.energyShortfall * 100 / (status.energyExcess + status.energyShortfall)} %`,]}
                                 datasets={[
                                     {
                                         data: [16, 4],
                                         backgroundColor: [
-                                            '#61399F',
-                                            '#004AAD',
+                                            '#FFBD59',
+                                            '#B7A239',
                                         ],
                                         // hoverOffset: 4,
                                     },
                                 ]}
-                                width={400}
+                                width={500}
                             />
                         </Grid>
                         <Grid>

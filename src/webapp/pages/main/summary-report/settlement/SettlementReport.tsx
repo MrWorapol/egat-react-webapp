@@ -16,7 +16,7 @@ export default function SettlementReport() {
     useNavigationSet(NavigationCurrentType.SETTLEMENT_REPORT);
     const { currentState } = useNavigationGet();
     const session = useRecoilValue(userSessionState);
-    const { refreshSettlementReport } = useSettlementReport();
+    const { refreshSettlementReport, settlementChart } = useSettlementReport();
 
     const refreshPage = useCallback(async () => {
         refreshSettlementReport('all', 'all', 'all', 'all', 'all');
@@ -33,16 +33,16 @@ export default function SettlementReport() {
                 </Grid>
                 <Box sx={{ flexGrow: 1 }}>
                     <Grid container item direction='row' xs={12} >
-                        <Grid container item direction='column' id='left-side' xs={6} pr={3}>
+                        <Grid container item direction='column' id='left-side' xs={6} pr={5}>
                             <Grid container item xs={'auto'} sx={{ backgroundColor: '#fff' }} id='div-area'>
                                 <AllSettlementComponent />
                             </Grid>
-                            <Grid container item direction='row' xs={'auto'} sx={{ backgroundColor: '#fff' }} mt={2} pt={2} pl={2} id='div-chart'>
+                            <Grid container item direction='row' xs={'auto'} sx={{ backgroundColor: '#fff' }} mt={2} pt={2} pl={3} id='div-chart'>
                                 <SettlementDetail />
                             </Grid>
                         </Grid>
                         <Grid container item id='right-side' xs={6} >
-                            <SummaryCharts />
+                            {settlementChart && <SummaryCharts data={settlementChart} />}
                         </Grid>
                     </Grid>
                 </Box>

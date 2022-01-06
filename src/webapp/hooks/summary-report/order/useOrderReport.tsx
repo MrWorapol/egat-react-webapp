@@ -27,8 +27,9 @@ export function useOrderReport() {
     const { period } = usePeriodTime();
     const orderApi = new OrderReportAPI();
     const userMeterApi = new UserReportAPI();
+
     const refreshOrderReport = useCallback(async (roles: string[], buyerType: string, tradeMarket: string, orderStatus: string, area: string) => {
-        if (session !== null) {
+        if (session !== null) { //check session before call api
             const userMeterInfos = await userMeterApi.getUserMeterInfo({ startDate: dayjs(period.startDate).toString(), endDate: dayjs(period.endDate).toString(), region: period.region, roles: roles, area: area, session: { accessToken: "1", refreshToken: '12', lasttimeLogIn: new Date() } })
             const req: IGetOrderTableRequest = {
                 startDate: dayjs(period.startDate).toString(),
@@ -49,7 +50,6 @@ export function useOrderReport() {
                 console.log(`user Meter Infos`);
                 console.log(userMeterInfos);
                 let output: IOrderInfo[] = [];
-                let test: IOrderChart;
                 allOrder.context.map((order: IOrderInfo) => {
                     let meterInfo = userMeterInfos.context.find((user: IUserMeterInfo) => { return user.id.toString() === order.userId.toString() })
                     console.log(`get meter Info`);
@@ -114,16 +114,16 @@ export function useOrderReport() {
                 }
             })
         }
-        if (session) {
+        // if (session) {
             
-            const result = await orderApi.getOderDetail({ session: session, traceContractId: orderInfo.userId });
-            // if (result) {
-            //     setOrderDetail(result.context);
-            // }
-            // setOrderDetail({
+        //     const result = await orderApi.getOderDetail({ session: session, traceContractId: orderInfo.userId });
+        //     // if (result) {
+        //     //     setOrderDetail(result.context);
+        //     // }
+        //     // setOrderDetail({
 
-            // })
-        }
+        //     // })
+        // }
     }, []);
 
     useEffect(() => {

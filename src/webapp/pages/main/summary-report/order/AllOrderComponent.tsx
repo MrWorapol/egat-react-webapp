@@ -50,10 +50,7 @@ export default function AllOrder() {
                 tableFilter = tableFilter.filter((order) => { return order.status.toLowerCase() === orderStatus.toLowerCase() });
             }
             setFilterData(tableFilter);
-            // let tableFilter = []; // table recoil state
-            // if(buyerType !== 'all'){
-            //     tableFilter = tableFilter.filter((row)=>{return row.})
-            // }
+
         }
     }, 0)
 

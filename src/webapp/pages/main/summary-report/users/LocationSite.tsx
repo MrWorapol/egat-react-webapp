@@ -2,6 +2,7 @@ import { Grid, Typography } from '@mui/material'
 import { color } from '@mui/system'
 import React from 'react'
 import useUserReport from '../../../../hooks/summary-report/user/useUserReport';
+import GoogleMap from './GoogleMap';
 
 export default function LocationSite() {
     const { locationSite } = useUserReport();
@@ -27,23 +28,23 @@ export default function LocationSite() {
                         <Typography>{`Address: ${locationSite.location.lat},${locationSite.location.lng} `}</Typography>
                     </Grid>
                     <Grid container item id='map-plugin' direction='column' sx={{ backgroundColor: '#fff', borderWidth: '1px', width: 1, height: '200px', boxShadow: 2, }}>
-                        <Grid item sx={{ height: '', width: 1, }}>
-
+                        <Grid item sx={{ height: '10vh', width: 1, }}>
+                            <GoogleMap address={{ lat: +locationSite.location.lat, lng: +locationSite.location.lng }} zoom={8} />
                         </Grid>
                         <Grid item container direction='row'>
                             <Grid item container direction='column' alignItems='center' xs={4}>
                                 <Typography>ไฟที่จะขายได้ 1 วันล่วงหน้า</Typography>
-                                <Typography sx={{fontWeight: 'bold',fontSize: '1.5em'}}>{locationSite.meterId}</Typography>
+                                <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em' }}>{locationSite.meterId}</Typography>
                                 <Typography>kWh</Typography>
                             </Grid>
                             <Grid item container direction='column' alignItems='center' xs={4}>
                                 <Typography>กำลังไฟฟ้าใช้จริงสูงสุด</Typography>
-                                <Typography sx={{fontWeight: 'bold',fontSize: '1.5em'}}>{locationSite.energySummary.pv}</Typography>
+                                <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em' }}>{locationSite.energySummary.pv}</Typography>
                                 <Typography>kW</Typography>
                             </Grid>
                             <Grid item container direction='column' alignItems='center' xs={4}>
                                 <Typography>กำลังไฟฟ้าใช้จริงโดยเฉลี่ย</Typography>
-                                <Typography sx={{fontWeight: 'bold',fontSize: '1.5em'}}>{locationSite.energySummary.energyLoad}</Typography>
+                                <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em' }}>{locationSite.energySummary.energyLoad}</Typography>
                                 <Typography>kW</Typography>
                             </Grid>
                         </Grid>
