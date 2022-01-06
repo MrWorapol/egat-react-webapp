@@ -1,18 +1,21 @@
 import { useCallback, useEffect } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { ImbalanceAPI } from "../../api/referenceData/ImbalanceAPI";
+import { NavigationCurrentType } from "../../state/navigation-current-state";
 import { Iimbalance, imbalanceState } from "../../state/reference-data/imbalance/imbalance-state";
 import { userSessionState } from "../../state/user-sessions";
+import { useNavigationGet } from "../useNavigationGet";
 import { useSnackBarNotification } from "../useSnackBarNotification";
 
 export function useImbalance() {
+    const session = useRecoilValue(userSessionState);
+    const { currentState } = useNavigationGet();
     const [imbalance, setImbalance] = useRecoilState(imbalanceState);
-    const sessionUser = useRecoilValue(userSessionState);
     const api = new ImbalanceAPI();
     const { showSnackBar } = useSnackBarNotification();
     const refreshImbalance = useCallback(async () => {
-        if (sessionUser) {
-            const response = await api.getImbalance({ session: sessionUser });
+        if (session) {
+            const response = await api.getImbalance({ session: session });
             console.log('call wheeling chart api');
             if (response !== null) {
                 showSnackBar({
@@ -27,8 +30,8 @@ export function useImbalance() {
 
 
     const updateImbalance = useCallback(async (imbalance: Iimbalance) => {
-        if (sessionUser) {
-            const response = await api.updateImbalance({ session: sessionUser, imbalance: imbalance });
+        if (session) {
+            const response = await api.updateImbalance({ session: session, imbalance: imbalance });
             if (response !== null) {
                 showSnackBar({
                     serverity: "success",
@@ -40,12 +43,13 @@ export function useImbalance() {
         }
     }, [])
     useEffect(() => {
-        if (!imbalance) {
-            refreshImbalance();
-            console.debug('call ge wheelingChart');
-            console.info(imbalance);
+        if (session && currentState === NavigationCurrentType.IMBALANCE) {
+            if (!imbalance) {
+                refreshImbalance();
+                console.debug('call ge wheelingChart');
+                console.info(imbalance);
+            }
         }
-
     }, [imbalance, refreshImbalance])
     return {
         imbalance,
