@@ -95,7 +95,7 @@ const NavigationMainPage = () => {
             <NavigationNestedItem
                 key="reference-data-menu"
                 icon={<GridViewIcon />}
-                label='Reference Database'
+                label='Reference Data'
                 open={openRefMenu}
                 setOpenMenu={() => {
                     setOpenRefMenu(!openRefMenu);

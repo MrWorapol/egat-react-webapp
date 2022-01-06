@@ -140,7 +140,7 @@ export default function PeriodComponent(props: PeriodProps) {
                         views={['year', 'month']}
                         // label="Year and Month"
                         minDate={dayjs().subtract(2, 'year')}
-                        maxDate={dayjs().add(5, 'year')}
+                        maxDate={dayjs()}
                         value={period.startDate}
                         disableMaskedInput
                         onChange={(newValue) => {

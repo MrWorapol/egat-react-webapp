@@ -12,23 +12,12 @@ export function useLogin() {
 
     const login = useCallback(async (username: string, password: string) => {
 
-        // console.log(`after set session value`);
-        // console.log(sessionValue)
-        // console.log('`');
-        // setSession({
-        //     accessToken: 'accessToken',
-        //     refreshToken: 'refreshToken',
-        //     lasttimeLogIn: new Date(),
-        // })
         console.log(`username: ${username}, password: ${password}`);
         const response = await api.login({
             username: username,
             password: password,
-            // username: 'egat-p2p-admin@gmail.com',
-            // password: 'P@ssw0rd',
-        }
-        );
-        // console.log(response);
+        });
+        
         if (response) {
             const session = {
                 accessToken: response.accessToken,

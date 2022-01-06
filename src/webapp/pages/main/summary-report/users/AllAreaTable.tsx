@@ -27,14 +27,15 @@ interface IProps {
         area: string,
         role: IRolesState,
     }
-    
+
 }
 export default function AllAreaTable(props: IProps) {
     console.warn('call All Area Table');
     const resetPage = 0;
     const [page, setPage] = React.useState(resetPage);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
-    const { refreshLocationSite } = useUserReport();
+
+    const { refreshLocationSite, locationSite } = useUserReport();
     const columns: Column[] = [
         { id: 'MeterID', label: 'Meter ID' },
         { id: 'MeterName', label: 'Meter Name' },
@@ -48,7 +49,7 @@ export default function AllAreaTable(props: IProps) {
     }
     // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - props.data.length) : 0;
-    
+
 
     const handleChangePage = (
         event: React.MouseEvent<HTMLButtonElement> | null,
@@ -66,14 +67,18 @@ export default function AllAreaTable(props: IProps) {
 
 
     function onClickViewButton(row: IUserMeterInfo) {
-        refreshLocationSite(row)
+        if (locationSite && row.meterId.toString() === locationSite.meterId.toString()) {
+            return;
+        } else {
+            refreshLocationSite(row)
+        }
         // console.log('click view button')
     }
     return (
         <Paper sx={{ width: '100%', mb: 2 }} >
             <TableContainer >
                 <Table aria-label="">
-                    <TableHead sx={{ bgcolor: 'primary.main', fontWeight: '400' }}>
+                    <TableHead sx={{ bgcolor: '#E0E0E0', fontWeight: '400' }}>
                         <TableRow>
                             {columns.map((column) => (
                                 <TableCell

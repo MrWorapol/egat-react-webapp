@@ -1,8 +1,8 @@
-import { localDruidEndpoint } from "../../constanst";
+import { druidEndpoint, localDruidEndpoint } from "../../constanst";
 
 
 export class BillingReportAPI {
-    private host = localDruidEndpoint;
+    private host = druidEndpoint;
 
     
 

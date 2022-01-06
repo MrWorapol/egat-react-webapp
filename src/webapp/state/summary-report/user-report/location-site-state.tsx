@@ -13,15 +13,9 @@ export interface IPowerByMeter {
     energySummary: IEnergyInfo,
 
     powerUsed?: {
-        forecast: IPowerUsed[]
-        actual: IPowerUsed[]
+        forecast: IPowerGraph[]
+        actual: IPowerGraph[]
     }
-}
-
-interface IPowerUsed {
-    pv: number,
-    grid: number,
-    timestamp: string,
 }
 
 export interface IEnergyInfo {
@@ -31,17 +25,11 @@ export interface IEnergyInfo {
     energyLoad: number,
 }
 
-
-
-interface IForecastPower {
-
+export interface IPowerGraph {
+    pv: number,
+    grid: number,
+    timestamp: string,
 }
-interface usedEnergyPeriod {
-    period: string,
-    usedEnergy: string,
-}
-
-
 
 export const locationSiteState = atom<IPowerByMeter | null>({
     key: 'locationSiteState',
