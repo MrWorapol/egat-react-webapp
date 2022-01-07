@@ -191,6 +191,7 @@ function buildForecastChart( //,chartRef: React.MutableRefObject<any>
                     plugins: {
                         legend: {
                             position: "bottom",
+                            onClick: (e) => { }
                         }
                     },
                     scales: {
@@ -199,11 +200,7 @@ function buildForecastChart( //,chartRef: React.MutableRefObject<any>
                         },
                         yAxes: {
                             stacked: true,
-                            // ticks: {
-                            //     callback: function (value, index, values) {
-                            //         return value < 0 ? -value : value;
-                            //     }
-                            // }
+                            
                         }
                     }
                 }}

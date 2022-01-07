@@ -32,7 +32,7 @@ export function useSettlementReport() {
 
     const refreshSettlementReport = useCallback(async (role: string, area: string, buyerType: string, tradeMarket: string, orderStatus: string) => {
         if (session) {
-            const userMeterInfos = await userMeterApi.getUserMeterInfo({ startDate: dayjs(period.startDate).toString(), endDate: dayjs(period.endDate).toString(), region: period.region, roles: [role], area: area, session: { accessToken: "1", refreshToken: '12', lasttimeLogIn: new Date() } })
+            const userMeterInfos = await userMeterApi.getUserMeterInfo({ startDate: dayjs(period.startDate).toString(), endDate: dayjs(period.endDate).toString(), region: period.region, roles: [role], area: area, session });
             const req = {
                 startDate: dayjs(period.startDate).toString(),
                 endDate: dayjs(period.endDate).toString(),

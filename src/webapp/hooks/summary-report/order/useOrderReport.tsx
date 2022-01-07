@@ -30,7 +30,7 @@ export function useOrderReport() {
 
     const refreshOrderReport = useCallback(async (roles: string[], buyerType: string, tradeMarket: string, orderStatus: string, area: string) => {
         if (session !== null) { //check session before call api
-            const userMeterInfos = await userMeterApi.getUserMeterInfo({ startDate: dayjs(period.startDate).toString(), endDate: dayjs(period.endDate).toString(), region: period.region, roles: roles, area: area, session: { accessToken: "1", refreshToken: '12', lasttimeLogIn: new Date() } })
+            const userMeterInfos = await userMeterApi.getUserMeterInfo({ startDate: dayjs(period.startDate).toString(), endDate: dayjs(period.endDate).toString(), region: period.region, roles: roles, area: area, session })
             const req: IGetOrderTableRequest = {
                 startDate: dayjs(period.startDate).toString(),
                 endDate: dayjs(period.endDate).toString(),
@@ -103,7 +103,7 @@ export function useOrderReport() {
         // if (orderDetail) { //clear state of detail 
         //     resetOrderDetail();
         // }
-        if(orderInfo.status.toLowerCase() === 'open'){
+        if (orderInfo.status.toLowerCase() === 'open') {
             setOrderDetail({
                 userType: orderInfo.userType,
                 tradeMarket: orderInfo.tradeMarket,
@@ -115,7 +115,7 @@ export function useOrderReport() {
             })
         }
         // if (session) {
-            
+
         //     const result = await orderApi.getOderDetail({ session: session, traceContractId: orderInfo.userId });
         //     // if (result) {
         //     //     setOrderDetail(result.context);
@@ -128,10 +128,7 @@ export function useOrderReport() {
 
     useEffect(() => {
         if (session && currentState === NavigationCurrentType.ORDER_REPORT) {
-            // console.log(`call useEffect useOrderReport`);
-            // console.log(session);
             if (!orderReport) {
-
                 refreshOrderReport([], 'all', 'all', 'all', 'all');
             }
         }

@@ -41,9 +41,10 @@ export default function DoughnutChart(props: DoughNutChartProps) {
                                 padding: 10,
                                 boxHeight: 30,
                                 // generateLabels function to change legent text
-                            }
+                            },
+                            onClick: (e) => { }
                         },
-                        
+
                         // datalabels: {
                         //     display: true,
                         //     backgroundColor: '#ccc',
