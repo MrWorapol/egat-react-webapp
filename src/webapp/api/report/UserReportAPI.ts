@@ -156,13 +156,14 @@ export class UserReportAPI {
             LATEST("payload.registrationDate",30) FILTER (WHERE "payload.registrationDate" IS NOT NULL) as registrationDate,
             LATEST("payload.userId",50) FILTER (WHERE "payload.userId" IS NOT NULL) as userId,
             LATEST("payload.userTypeName",50) FILTER (WHERE "payload.userTypeName" IS NOT NULL) as userTypeName
-          FROM "MeterInfoDataTest2"
+          FROM "MeterInfoOnEgat"
           GROUP BY "payload.id") as info
           INNER JOIN "MeterSiteDataTest" as site
           ON info."userTypeName" = site."payload.userTypeName"
           WHERE info."active" = true`,
             "resultFormat": "object"
         }
+        //local: MeterInfoDataTest2 , egat : FROM MeterInfoOnEgat
         let headers = {
             "Content-Type": "application/json",
             "Accept": "application/json",

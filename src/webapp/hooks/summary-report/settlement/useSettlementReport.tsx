@@ -57,8 +57,6 @@ export function useSettlementReport() {
             if (settlementReports && userMeterInfos && imbalanceReport) {
                 let output: ISettlementReport[] = [];
                 settlementReports.context.map((report: ISettlementReport) => {
-                    summaryTradeMarket[report.tradeMarket.toLowerCase()] += 1;
-
                     report.imbalance = []; //prepare for insert imbalance Data
                     let imbalanceData: IImbalanceReport[] = imbalanceReport.context.filter((imbalance: IImbalanceReport) => {
                         return imbalance.tradeContractId.toString() === report.contractId.toString()
@@ -77,13 +75,13 @@ export function useSettlementReport() {
                                     case "BUYER_IMBALANCE_OVERCOMMIT":
                                         report.imbalanceStatus = "energyExcess";
                                         report.imbalance?.push(imbalanceCase);
-                                        summaryImbalance["energyExcess"] += 1;
+                                        // summaryImbalance["energyExcess"] += 1;
                                         break;
                                     case "SELLER_IMBALANCE_UNDERCOMMIT":
                                     case "BUYER_IMBALANCE_UNDERCOMMIT":
                                         report.imbalanceStatus = "energyShortfall";
                                         report.imbalance?.push(imbalanceCase);
-                                        summaryImbalance["energyShortfall"] += 1;
+                                        // summaryImbalance["energyShortfall"] += 1;
                                         break;
                                     default:
                                         break;
@@ -95,8 +93,10 @@ export function useSettlementReport() {
                     }
                     let buyerId = userMeterInfos.context.find((user: IUserMeterInfo) => { return user.id.toString() === report.buyerId.toString() })
                     if (buyerId) {
+                        summaryTradeMarket[report.tradeMarket.toLowerCase()] += 1;
                         summaryRole[buyerId.role.toLowerCase()] += 1; //count  role user
                         summaryUserType["BUYER".toLowerCase()] += 1;
+                        summaryImbalance[report.imbalanceStatus] += 1;
 
                         output.push({
                             ...report,
@@ -108,8 +108,11 @@ export function useSettlementReport() {
                     }
                     let sellerId = userMeterInfos.context.find((user: IUserMeterInfo) => { return user.id.toString() === report.sellerId.toString() })
                     if (sellerId) {
+                        summaryTradeMarket[report.tradeMarket.toLowerCase()] += 1;
                         summaryRole[sellerId.role.toLowerCase()] += 1; //count  role user
                         summaryUserType["SELLER".toLowerCase()] += 1;
+                        summaryImbalance[report.imbalanceStatus] += 1;
+
                         output.push({
                             ...report,
                             userType: "SELLER",
@@ -119,8 +122,8 @@ export function useSettlementReport() {
                         })
                     }
                 });
-                // console.log(`output from mapping userMeter`);
-                // console.log(output);
+                console.log(`output from summary Imbalance With userMeter`);
+                console.log(summaryImbalance);
                 setSettlementReport(output);
                 setSettlementChart(
                     {

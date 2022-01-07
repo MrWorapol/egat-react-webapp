@@ -19,7 +19,7 @@ export default class KeycloakAdminApi {
     
         const api = this.host + path;
 
-        const body = JSON.stringify({ email: request.username, password: request.password });
+        const body = JSON.stringify({ username: request.username, password: request.password });
         let response: Response;
 
         try {

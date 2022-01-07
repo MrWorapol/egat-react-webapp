@@ -8,7 +8,8 @@ interface IMap {
 
 export default function SettlementDetail() {
     const { settlementDetail } = useSettlementReport();
-    if (settlementDetail !== null) {
+    console.log(settlementDetail);
+    if (settlementDetail !== null && settlementDetail !== undefined) {
         // console.log(`Call Settlement Detail ${settlementDetail.contractId}`);
         // console.log(settlementDetail.userType);
 

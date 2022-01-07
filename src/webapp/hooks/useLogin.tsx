@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useResetRecoilState } from "recoil";
 import KeycloakAdminApi from "../api/keycloak/keycloakAdminApi";
 import { userProfile } from "../state/user-profile";
 import { userSessionState } from "../state/user-sessions";
@@ -9,6 +9,7 @@ export function useLogin() {
     const [, setProfile] = useRecoilState(userProfile);
     const [sessionValue, setSession] = useRecoilState(userSessionState);
     const api = new KeycloakAdminApi();
+    const resetSession = useResetRecoilState(userSessionState);
 
     const login = useCallback(async (username: string, password: string) => {
 
@@ -17,7 +18,7 @@ export function useLogin() {
             username: username,
             password: password,
         });
-        
+
         if (response) {
             const session = {
                 accessToken: response.accessToken,
@@ -30,9 +31,14 @@ export function useLogin() {
     }, [setSession, sessionValue])
 
     const logout = useCallback(() => {
+        if (sessionValue) {
+            localStorage.removeItem('session');
+            resetSession();
+        }
     }, [])
     return {
         login,
+        logout,
         session: sessionValue,
     }
 }

@@ -89,7 +89,7 @@ export default function SummaryCharts(props: IProps) {
                                 `Energy Shortfall ${status.energyShortfall * 100 / (status.energyExcess + status.energyShortfall)} %`,]}
                                 datasets={[
                                     {
-                                        data: [16, 4],
+                                        data: [status.energyExcess, status.energyShortfall ],
                                         backgroundColor: [
                                             '#FFBD59',
                                             '#B7A239',
