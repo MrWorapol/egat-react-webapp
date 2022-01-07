@@ -1,7 +1,8 @@
 import React from 'react'
 import GoogleMapReact, { BootstrapURLKeys, Maps } from 'google-map-react';
 import { Box } from '@mui/system';
-import Marker from './Marker';
+import RoomIcon from '@mui/icons-material/Room';
+
 
 interface IProps {
     address: {
@@ -10,7 +11,16 @@ interface IProps {
     }
     zoom: number
 }
-// const AnyReactComponent = ({ text }) => <div>{text}</div>;
+
+const Marker = (props: any) => {
+    return (
+        <RoomIcon
+            className="marker"
+            style={{ color: "red", cursor: 'pointer', width: '1em', height: '1em' }}
+        />
+    );
+};
+
 export default function GoogleMap(props: IProps) {
     const { address, zoom } = props;
 

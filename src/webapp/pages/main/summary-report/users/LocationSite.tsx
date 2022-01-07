@@ -5,7 +5,6 @@ import useUserReport from '../../../../hooks/summary-report/user/useUserReport';
 import { IEnergyInfo, IPowerGraph } from '../../../../state/summary-report/user-report/location-site-state';
 import GoogleMap from './GoogleMap';
 import { Bar } from 'react-chartjs-2';
-import { } from 'chart.js';
 
 export default function LocationSite() {
     const { locationSite } = useUserReport();
@@ -14,7 +13,21 @@ export default function LocationSite() {
 
     if (locationSite) {
         let summaryPVForecast = 0;
-        locationSite.powerUsed && locationSite.powerUsed.forecast.forEach((forecast) => { summaryPVForecast += forecast.pv });
+        let maximumPVUsed = 0;
+        let averagePVUsed = 0;
+        if (locationSite.powerUsed) {
+            averagePVUsed = locationSite.powerUsed.actual.length > 24 ? locationSite.energySummary.energyLoad / locationSite.powerUsed.actual.length : locationSite.energySummary.energyLoad;
+            locationSite.powerUsed.forecast.forEach((forecast) => {
+                summaryPVForecast += forecast.pv;
+            });
+            locationSite.powerUsed.actual.forEach((actual) => {
+                maximumPVUsed = maximumPVUsed < actual.pv ? actual.pv : maximumPVUsed; //check maximum Grid Us
+            });
+            if (locationSite.powerUsed.forecast.length > 24) {
+                summaryPVForecast = summaryPVForecast / (locationSite.powerUsed.forecast.length);
+            }
+        }
+
         return (
             <Grid container direction='row'>
                 <Grid item container xs={12} id='title' sx={{ maxHeight: '64px' }}>
@@ -46,12 +59,12 @@ export default function LocationSite() {
                             </Grid>
                             <Grid item container direction='column' alignItems='center' xs={4}>
                                 <Typography>กำลังไฟฟ้าใช้จริงสูงสุด</Typography>
-                                <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em' }}>{locationSite.energySummary.pv}</Typography>
+                                <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em' }}>{maximumPVUsed}</Typography>
                                 <Typography>kW</Typography>
                             </Grid>
                             <Grid item container direction='column' alignItems='center' xs={4}>
                                 <Typography>กำลังไฟฟ้าใช้จริงโดยเฉลี่ย</Typography>
-                                <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em' }}>{locationSite.energySummary.energyLoad}</Typography>
+                                <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em' }}>{ Math.round(averagePVUsed * 100) / 100}</Typography>
                                 <Typography>kW</Typography>
                             </Grid>
                         </Grid>
@@ -200,7 +213,7 @@ function buildForecastChart( //,chartRef: React.MutableRefObject<any>
                         },
                         yAxes: {
                             stacked: true,
-                            
+
                         }
                     }
                 }}

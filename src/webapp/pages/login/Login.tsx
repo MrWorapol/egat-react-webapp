@@ -3,6 +3,7 @@ import React from 'react'
 import { useForm } from 'react-hook-form';
 import { useHistory, useParams } from 'react-router';
 import { useRecoilState } from 'recoil';
+import { useLoadingScreen } from '../../hooks/useLoadingScreen';
 import { useLogin } from '../../hooks/useLogin';
 import { userProfile } from '../../state/user-profile';
 
@@ -17,6 +18,7 @@ export default function Login() {
     const { register, handleSubmit, } = useForm();
     const { login, session } = useLogin();
     const history = useHistory();
+    const { showLoading, hideLoading } = useLoadingScreen();
     // const  params = useParams();
     // console.log(`params is`);
     // console.log(params);
@@ -28,10 +30,12 @@ export default function Login() {
     }
 
     const onSubmitLogin = async (data: LoginForm) => {
+        showLoading(10);
         setLoadingButton(true);
         await login(data.username, data.password);
         setLoadingButton(false);
         console.log(`before check accessToken`);
+        hideLoading(10);
         if (session) {
             history.push('/dashboard');
         } else {
