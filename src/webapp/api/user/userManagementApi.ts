@@ -2,28 +2,28 @@ import { MeterDetail } from "../../state/user-management/meter-detail";
 import { IUserDetail } from "../../state/user-management/user-detail";
 import { UserInfo } from "../../state/user-management/user-info";
 import { IUserSession } from "../../state/user-sessions";
-import { userApi } from '../../constanst';
+import { egatHost, userApi } from '../../constanst';
 import { IUserRoles } from "../../pages/main/user-management/UserManagement";
 import { IAdminRegistratoinState } from "../../state/user-management/admin-registration-state";
 
 
 interface IGetUsersByRolesRequest {
-    token?: IUserSession,
+    session: IUserSession,
     roles: string[],
 }
 interface IGetSearchUserRequest {
-    token?: IUserSession,
+    session: IUserSession,
     text: string,
 }
 
 interface IEditUserRequest {
-    token?: IUserSession,
+    session: IUserSession,
     userDetail: IUserDetail,
     meterDetail: MeterDetail,
 }
 
 interface ICreateAdminRequest {
-    token?: IUserSession,
+    session: IUserSession,
     admin: IAdminRegistratoinState,
 
 }
@@ -32,27 +32,33 @@ interface ICreateAdminResponse {
     status: number,
     userInfo: UserInfo,
 }
-
+interface IGetUserRequest {
+    session: IUserSession
+}
 interface IGetUsersResponse {
     userInfos: UserInfo[],
 }
 
+interface IGetUserByIDRequest {
+    session: IUserSession,
+    meterId: string,
+}
 interface IGetUserByIDResponse {
     userDetail: IUserDetail,
     meterDetail: MeterDetail,
 }
 
 export default class UserManagementAPI {
-    private host = userApi;
+    private host = egatHost;
     // let response: Response;  
-    async getAllUser(): Promise<IGetUsersResponse | null> {
-        const path = '/users'
+    async getAllUser(req: IGetUserRequest): Promise<IGetUsersResponse | null> {
+        const path = '/web-admin/users'
         const api = this.host + path;
         let response: Response;
-        let token = 'token';
+        let token = req.session.accessToken;
         let headers = {
             "Content-Type": "application/json",
-            // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
         }
         try {
             response = await fetch(api, {
@@ -78,17 +84,17 @@ export default class UserManagementAPI {
         // return Promise.resolve(content);
     }
 
-    async getUserByMeterID(meterId: string): Promise<IGetUserByIDResponse | null> {
-        if (meterId === 'xxx') {
-            return createMockUserByID();
-        }
-        const path = `/users/detail/${meterId}`;
+    async getUserByMeterID(req: IGetUserByIDRequest): Promise<IGetUserByIDResponse | null> {
+        // if (meterId === 'xxx') {
+        //     return createMockUserByID();
+        // }
+        const path = `/web-admin/users/detail/${req.meterId}`;
         const api = this.host + path;
         let response: Response;
-        let token = '';
+        let token = req.session.accessToken;
         let headers = {
             "Content-Type": "application/json",
-            // Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${token}`
         }
 
         try {
@@ -118,15 +124,15 @@ export default class UserManagementAPI {
     async getUserByFilter(request: IGetSearchUserRequest): Promise<IGetUsersResponse | null> {
         // https://egat-p2p-webadmin-profile.di.iknowplus.co.th/users/search?value=0123456789
         const text = request.text;
-        const path = '/users/search'
+        const path = '/web-admin/users/filter'
         const api = new URL(this.host + path);
         api.searchParams.append('value', text);
         console.log(`filter uri is : ${api.toString()}`);
         let response: Response;
-        // let accessToken = request.token.accessToken;
+        let accessToken = request.session.accessToken;
         let headers = {
             "Content-Type": "application/json",
-            // Authorization: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${accessToken}`,
         }
         try {
             response = await fetch(api.toString(), {
@@ -151,10 +157,10 @@ export default class UserManagementAPI {
         const path = '/users/detail/';
         const api = new URL(this.host + path + request.meterDetail.meterId);
         let response: Response;
-        // let accessToken = request.token.accessToken ;
+        let accessToken = request.session.accessToken;
         let headers = {
             "Content-Type": "application/json",
-            // Authorization: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${accessToken}`,
         }
         const body = JSON.stringify({
             userDetail: request.userDetail,
@@ -193,10 +199,10 @@ export default class UserManagementAPI {
         const api = new URL(this.host + path);
         api.searchParams.append('roles', rolesParams);
         let response: Response;
-        // let accessToken = request.token.accessToken ;
+        let accessToken = request.session.accessToken ;
         let headers = {
             "Content-Type": "application/json",
-            // Authorization: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${accessToken}`,
         }
         try {
             response = await fetch(api.toString(), {
@@ -220,10 +226,10 @@ export default class UserManagementAPI {
         const path = '/users/admin';
         const api = new URL(this.host + path);
         let response: Response;
-        // let accessToken = request.token.accessToken ;
+        let accessToken = request.session.accessToken ;
         let headers = {
             "Content-Type": "application/json",
-            // Authorization: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${accessToken}`,
         }
         const body = JSON.stringify(request.admin);
 

@@ -1,4 +1,4 @@
-import { druidEndpoint } from '../../constanst';
+import { druidHost } from '../../constanst';
 import { IPowerData } from '../../state/summary-report/user-report/power-data-state';
 import { IEnergySummary } from '../../state/summary-report/user-report/user-chart-state';
 import { IUserMeterInfo } from '../../state/summary-report/user-report/user-report-state';
@@ -96,7 +96,7 @@ interface IForecastData {
 
 export class UserReportAPI {
     private endpoint = '';
-    private druidEndpoint = druidEndpoint;//druidEndpoint;
+    private druidEndpoint = druidHost;//druidEndpoint;
 
 
     // async getUserTable(req: IGetUserTableRequest): Promise<IGetUserTableResponse | null> {
@@ -155,7 +155,7 @@ export class UserReportAPI {
             LATEST("payload.active",10) FILTER (WHERE "payload.active" IS NOT NULL) as active,
             LATEST("payload.registrationDate",30) FILTER (WHERE "payload.registrationDate" IS NOT NULL) as registrationDate,
             LATEST("payload.userId",50) FILTER (WHERE "payload.userId" IS NOT NULL) as userId,
-            LATEST("payload.userTypeName",50) FILTER (WHERE "payload.userTypeName" is not null) as userTypeName
+            LATEST("payload.userTypeName",50) FILTER (WHERE "payload.userTypeName" IS NOT NULL) as userTypeName
           FROM "MeterInfoDataTest2"
           GROUP BY "payload.id") as info
           INNER JOIN "MeterSiteDataTest" as site

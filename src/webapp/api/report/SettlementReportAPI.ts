@@ -1,4 +1,4 @@
-import { druidEndpoint, localDruidEndpoint, summaryApi } from "../../constanst";
+import { druidHost, localDruidEndpoint, summaryApi } from "../../constanst";
 import { ISettlementDetail } from "../../state/summary-report/settlement-report/settlement-detail-state";
 import { IImbalanceReport, ISettlementReport } from "../../state/summary-report/settlement-report/settlement-report-state";
 
@@ -39,7 +39,7 @@ interface IGetSettlementDetailResponse {
 }
 
 export class SettlementReportAPI {
-    private endpoint = druidEndpoint;
+    private endpoint = druidHost;
 
     async getSettlementReport(req: IGetSettlementReportRequest): Promise<IGetSettlementReportResponse | null> {
         const body: IGetDruidBody = {

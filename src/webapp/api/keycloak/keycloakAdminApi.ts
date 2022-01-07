@@ -1,4 +1,4 @@
-import { userApi } from "../../constanst";
+import { egatHost } from "../../constanst";
 
 export interface LoginRequest {
     username: string;
@@ -10,14 +10,13 @@ export interface LoginResponse {
 }
 
 export default class KeycloakAdminApi {
-    private host = userApi;
-    // username -> egat-p2p-admin@gmail.com
-    // password -> P@ssw0rd
+    private host = egatHost;
+    
 
     async login(request: LoginRequest): Promise<LoginResponse | null> {
-        // console.log(`call login API`);
-        const path = '/login';
-        // let header = new Headers({ 'Content-Type': 'application/'})
+    
+        const path = '/web-admin/login';
+    
         const api = this.host + path;
 
         const body = JSON.stringify({ email: request.username, password: request.password });

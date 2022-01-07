@@ -29,7 +29,7 @@ export default function PeriodComponent(props: PeriodProps) {
             hideLoading(10);
         }
         hideLoading(10);
-    }, 4000);
+    }, 0);
     const handleChangeStartDay = (e: SelectChangeEvent<string>) => {
         setStartDay(e.target.value);
         setEndDay(e.target.value);

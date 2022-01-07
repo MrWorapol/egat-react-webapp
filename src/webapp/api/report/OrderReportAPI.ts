@@ -1,4 +1,4 @@
-import { druidEndpoint, localDruidEndpoint } from '../../constanst';
+import { druidHost, localDruidEndpoint } from '../../constanst';
 import { IOrderDetail } from '../../state/summary-report/order-report/order-detail-state';
 import { IOrderInfo } from '../../state/summary-report/order-report/order-report-state';
 import { IUserSession } from '../../state/user-sessions';
@@ -60,7 +60,7 @@ interface IGetOrderTableResponse {
 }
 
 export class OrderReportAPI {
-    private endpoint = druidEndpoint;
+    private endpoint = druidHost;
 
     async getOderDetail(req: IGetOrderDetailRequest): Promise<IGetOrderDetailResponse | null> {
 

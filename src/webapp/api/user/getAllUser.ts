@@ -15,13 +15,13 @@ export const getAllUser = async (
     request: GetAllUserRequest
 ): Promise<GetAllUserResponse | null> => {
 
-    const path = '/users'
+    const path = '/web-admin/users'
     const uri = new URL(userApi + path);
     let response: Response;
     let token = request.session.accessToken;
     let headers = {
         "Content-Type": "application/json",
-        // Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
     }
     try {
         response = await fetch(uri.toString(), {

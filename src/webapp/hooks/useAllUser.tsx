@@ -13,13 +13,13 @@ interface ISearchField {
 export function useAllUser() {
     const api = new UserManagementAPI();
     const [userInfoDataValue, setUserInfoValue] = useRecoilState(userInfo);
-    const sessionUser = useRecoilValue(userSessionState);
+    const session = useRecoilValue(userSessionState);
 
     const refreshAllUser = useCallback(async (searchField?: ISearchField) => {
         // console.log(`call get All User`);
-        // if (sessionUser) {
+        if (session) {
             if (!searchField) {//get without filter
-                const response = await api.getAllUser();
+                const response = await api.getAllUser({ session });
                 if (response) {
                     // console.log(`result from response${response.userInfos}`);
                     setUserInfoValue(response.userInfos);
@@ -29,7 +29,7 @@ export function useAllUser() {
                 }
             } else { //get with filter
                 if (searchField.text) { //case search by text
-                    const response = await api.getUserByFilter({  text: searchField.text });
+                    const response = await api.getUserByFilter({ text: searchField.text,session });
                     if (response) {
                         setUserInfoValue(response.userInfos);
                     } else {
@@ -38,7 +38,7 @@ export function useAllUser() {
                     return;
                 }
                 if (searchField.roles) { //case search by roles
-                    const response = await api.getUsersByRoles({ roles: searchField.roles });
+                    const response = await api.getUsersByRoles({ roles: searchField.roles,session });
                     if (response) {
                         setUserInfoValue(response.userInfos);
                     } else {
@@ -47,7 +47,7 @@ export function useAllUser() {
                     return;
                 }
             }
-        // }
+        }
     }, [setUserInfoValue]);
 
 
