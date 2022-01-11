@@ -1,5 +1,5 @@
 export const userApi = 'https://ercapip2p.egat.co.th';//https://egat-p2p-webadmin-profile.di.iknowplus.co.th';
-export const refApi = 'https://egat-p2p-webadmin-ref-data.di.iknowplus.co.th';
+// export const refApi = 'https://egat-p2p-webadmin-ref-data.di.iknowplus.co.th';
 export const summaryApi = '';
 
 

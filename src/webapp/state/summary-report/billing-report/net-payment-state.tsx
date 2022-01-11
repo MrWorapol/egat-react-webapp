@@ -4,11 +4,12 @@ export interface INetPaymentTable {
     meterId: string,
     meterName: string,
     role: string,
+    area: string,
     netPrice: number,
 }
 
 export interface INetPaymentChart {
-    tradingPaymeny: number,
+    tradingPayment: number,
     gridUsed: number,
     wheelingCharge: number,
 }
@@ -18,7 +19,7 @@ export interface INetPaymentState {
     chart: INetPaymentChart,
 }
 
-export const netPaymentState = atom<INetPaymentState | null>({
+export const netPaymentReportState = atom<INetPaymentState | null>({
     key: 'netPaymentState',
     default: null,
 })

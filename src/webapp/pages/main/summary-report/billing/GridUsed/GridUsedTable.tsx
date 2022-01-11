@@ -2,12 +2,14 @@ import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, Tab
 import React from 'react'
 import SearchIcon from '@mui/icons-material/Search';
 import IconButton from '@mui/material/IconButton';
-import useOrderReport from '../../../../hooks/summary-report/order/useOrderReport';
-
+import FirstPageIcon from '@mui/icons-material/FirstPage';
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+import LastPageIcon from '@mui/icons-material/LastPage';
 import { useHistory } from 'react-router-dom';
-
-import TablePaginationActionsComponent from '../../../../components/TablePaginationActions';
-import { IOrderInfo } from '../../../../state/summary-report/order-report/order-report-state';
+import { useResetRecoilState } from 'recoil';
+import TablePaginationActionsComponent from '../../../../../components/TablePaginationActions';
+import { IGridUsedTable } from '../../../../../state/summary-report/billing-report/grid-used-state';
 
 
 interface Column {
@@ -18,30 +20,31 @@ interface Column {
 }
 
 interface IProps {
-    data: IOrderInfo[],
-    page: number,
+    gridUsedTable: IGridUsedTable[],
 }
-export default function AllOrderTable(props: IProps) {
-    const [page, setPage] = React.useState(props.page);
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+export default function GridUsedTable(props: IProps) {
+    let gridUsedTable = props.gridUsedTable;
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(3);
     const history = useHistory();
-    const { refreshOrderDetail } = useOrderReport();
+    console.log(gridUsedTable);
+
     const columns: Column[] = [
-        { id: 'tradeMarket', label: 'Trade Market' },
+        { id: 'meterId', label: 'Meter Id.' },
+        { id: 'meterName', label: 'Meter Name' },
         { id: 'role', label: 'Role' },
-        { id: 'buyer/seller', label: 'Buyer/Seller' },
-        { id: 'orderStatus', label: 'Order Status' },
-        { id: 'Action', label: '' }
+        { id: 'gridPrice', label: 'Grid Price' },
+        { id: 'gridUsed', label: 'Grid Used' }
     ];
-    if (props.data === null || props.data === undefined) {
-        console.log(`WTF : ${props.data}`);
+    if (gridUsedTable === null || gridUsedTable === undefined) {
+        console.log(`WTF : ${gridUsedTable}`);
         return <></>;
     }
     // if (userInfoData.length === 0) {
     //     return <div><Typography variant="h1">Not found</Typography></div>;
     // }
     // Avoid a layout jump when reaching the last page with empty rows.
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - props.data.length) : 0;
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - gridUsedTable.length) : 0;
 
 
     const handleChangePage = (
@@ -59,12 +62,8 @@ export default function AllOrderTable(props: IProps) {
     };
 
 
-    function onClickViewButton(row: IOrderInfo) {
-        // if (userInfo.role !== 'admin ') {
-        //     resetUserDetailData();
-        //     history.push(`/user_management/${userInfo.meterId}`);
-        // }
-        refreshOrderDetail(row)
+    function onClickViewButton(row: any) {
+        console.log('click view button')
     }
 
     return (
@@ -86,44 +85,44 @@ export default function AllOrderTable(props: IProps) {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {(props.data && props.data.length === 0) && /* case notfound data */
+                        {gridUsedTable.length === 0 &&  /* case notfound data */
                             <TableRow style={{ height: 53 * emptyRows }}>
-                                <TableCell colSpan={6} />
+
+                                <TableCell colSpan={6}>
+                                    No Data Found
+                                </TableCell>
                             </TableRow>
                         }
-                        {props.data && props.data.length !== 0 && (rowsPerPage > 0
-                            ? props.data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                            : props.data
-                        ).map((row: IOrderInfo, i) => (
-                            <TableRow key={`${i}-${row.orderId}`}>
+                        {gridUsedTable.length !== 0 && (rowsPerPage > 0
+                            ? gridUsedTable.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            : gridUsedTable
+                        ).map((row: IGridUsedTable, i: number) => (
+                            <TableRow>
                                 <TableCell
-                                    key={row.orderId}
+                                    key={row.meterId + i}
                                 >
-                                    {row.tradeMarket === "BILATERAL" ? "Bilateral Trade" : "Pool Market"}
+                                    {row.meterId}
                                 </TableCell>
                                 <TableCell
-                                // key={row.fullName + i}
+                                    key={row.meterName + i}
+                                >
+                                    {row.meterName}
+                                </TableCell>
+                                <TableCell
+                                    key={row.role + i}
                                 >
                                     {row.role}
                                 </TableCell>
                                 <TableCell
-                                // key={row.email + i}
+                                    key={row.gridPrice + i}
                                 >
-                                    {row.userType}
-                                </TableCell>
-                                <TableCell
-                                // key={row.phoneNumber + i}
-                                >
-                                    {row.status}
+                                    {row.gridPrice}
                                 </TableCell>
 
                                 <TableCell
-                                    key={row.orderId + row.role + i}
+                                    key={row.gridUsedType + row.role + i}
                                 >
-                                    <IconButton onClick={() => onClickViewButton(row)}>
-                                        <SearchIcon />
-                                    </IconButton>
-
+                                    {row.gridUsedType}
                                 </TableCell>
                             </TableRow>
                         ))
@@ -140,9 +139,9 @@ export default function AllOrderTable(props: IProps) {
             <TablePagination
                 component='div'
                 sx={{ right: 0 }}
-                rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                rowsPerPageOptions={[3, 5]}
                 colSpan={3}
-                count={props.data.length}
+                count={gridUsedTable.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 SelectProps={{

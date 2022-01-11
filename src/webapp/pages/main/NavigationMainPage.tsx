@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'react'
 import { Grid, List } from '@mui/material'
-import GridViewIcon from '@mui/icons-material/GridView';
 import NavigationMenuItem from '../../components/NavigationMenuItem';
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import { useHistory } from 'react-router-dom';
 import { useNavigationGet } from '../../hooks/useNavigationGet';
 import { NavigationCurrentType } from '../../state/navigation-current-state';
 import NavigationNestedItem, { IChildrenMenu } from '../../components/NavigationNestedItem';
+
+import GridViewIcon from '@mui/icons-material/GridView';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import NoteAltOutlinedIcon from '@mui/icons-material/NoteAltOutlined';
+import AssessmentOutlinedIcon from '@mui/icons-material/AssessmentOutlined';
+import CampaignOutlinedIcon from '@mui/icons-material/CampaignOutlined';
 
 const NavigationMainPage = () => {
     const { currentState } = useNavigationGet();
@@ -94,7 +98,7 @@ const NavigationMainPage = () => {
         return (
             <NavigationNestedItem
                 key="reference-data-menu"
-                icon={<GridViewIcon />}
+                icon={<NoteAltOutlinedIcon />}
                 label='Reference Data'
                 open={openRefMenu}
                 setOpenMenu={() => {
@@ -109,7 +113,7 @@ const NavigationMainPage = () => {
         return (
             <NavigationNestedItem
                 key="summary-repory-menu"
-                icon={<GridViewIcon />}
+                icon={<AssessmentOutlinedIcon />}
                 label='Summary Report'
                 open={openSummary}
                 setOpenMenu={() => {
@@ -123,7 +127,7 @@ const NavigationMainPage = () => {
     function buildNews() {
         return (
             <NavigationMenuItem
-                icon={<GridViewIcon />}
+                icon={<CampaignOutlinedIcon />}
                 label='News Management'
                 selected={currentState === NavigationCurrentType.NEWS_MANAGEMENT}
                 onClick={() => {

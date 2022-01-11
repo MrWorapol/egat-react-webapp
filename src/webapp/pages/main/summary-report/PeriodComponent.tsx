@@ -21,15 +21,21 @@ export default function PeriodComponent(props: PeriodProps) {
     const endDayslist = buildDaylist(period.startDate);
     const { showLoading, hideLoading } = useLoadingScreen();
 
+    let isCurrentMonth = dayjs().diff(period.startDate, 'month') === 0 && dayjs().diff(period.startDate, 'year') === 0 ? true : false;
+
+    console.log(`current Momth : ${isCurrentMonth}\t diff year:${dayjs().diff(period.startDate, 'year')}`);
     const debounceFn = useDebouncedCallback(() => {
-        showLoading(10);
+        showLoading(1);
         try {
+            setTimeout(() => {
+                
+            }, 2000);
             props.refreshPage();
         } catch (e) {
-            hideLoading(10);
+            hideLoading(1);
         }
-        hideLoading(10);
-    }, 0);
+        hideLoading(1);
+    }, 2000);
     const handleChangeStartDay = (e: SelectChangeEvent<string>) => {
         setStartDay(e.target.value);
         setEndDay(e.target.value);
@@ -99,7 +105,11 @@ export default function PeriodComponent(props: PeriodProps) {
                         >
                             {startDayslist.map((day: number, i) => {
                                 return (
-                                    <MenuItem key={`start-day-list${day}-${Math.random() * 2.5 / 3}`} value={`${day}`} > {day}</MenuItem>
+                                    <MenuItem key={`start-day-list${day}-${Math.random() * 2.5 / 3}`} value={`${day}`}
+                                        disabled={
+                                            isCurrentMonth && day > dayjs().date()//if start date is in this month > disabled day is more than today
+                                        }
+                                    > {day}</MenuItem>
                                 )
                             })}
 
@@ -126,7 +136,16 @@ export default function PeriodComponent(props: PeriodProps) {
                         >
                             {endDayslist.map((day: number, i) => {
                                 return (
-                                    <MenuItem key={`end-day-list${day}-${Math.random() * 2.5 / 3}`} value={`${day}`} disabled={day < +startDay}> {day}</MenuItem>
+                                    <MenuItem
+                                        key={`end-day-list${day}-${Math.random() * 2.5 / 3}`}
+                                        value={`${day}`}
+                                        disabled={
+                                            isCurrentMonth && day > dayjs().date()/* is case this month && year */
+                                                ? day < +startDay || day > dayjs().date()  //YES : disabled  day within range 'under startDay ' and 'more than today'   
+                                                : day < +startDay} //'disabled day within range under startDay'
+                                    >
+                                        {day}
+                                    </MenuItem>
                                 )
                             })}
 
@@ -138,11 +157,10 @@ export default function PeriodComponent(props: PeriodProps) {
                 <Box sx={{ backgroundColor: '#fff' }}>
                     <DatePicker
                         views={['year', 'month']}
-                        // label="Year and Month"
-                        minDate={dayjs().subtract(2, 'year')}
+                        minDate={dayjs().subtract(2, 'year').subtract(1, 'day')}
                         maxDate={dayjs()}
                         value={period.startDate}
-                        disableMaskedInput
+                        disableMaskedInput={true}
                         onChange={(newValue) => {
                             if (newValue) {
                                 handleChangeMonth(newValue);
@@ -150,14 +168,9 @@ export default function PeriodComponent(props: PeriodProps) {
 
                             }
                         }}
-                        // renderInput={({ inputRef, inputProps, InputProps }) => (
-                        //     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        //         <TextField variant='standard' ref={inputRef} {...inputProps}/>
 
-                        //     </Box>
-                        // )}
                         renderInput={(params) => <TextField
-
+                            disabled={true}
                             {...params} helperText={null} />}
                     />
                 </Box>

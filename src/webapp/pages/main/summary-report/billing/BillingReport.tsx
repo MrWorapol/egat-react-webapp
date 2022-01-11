@@ -1,81 +1,71 @@
-// import { Divider,  } from '@mui/material';
-import { Divider, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography, useTheme } from '@mui/material'
+
+import {  Grid, Typography } from '@mui/material'
 import { Box } from '@mui/system'
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useNavigationSet } from '../../../../hooks/useNavigationSet';
 import { NavigationCurrentType } from '../../../../state/navigation-current-state';
 import PeriodComponent from '../PeriodComponent';
-import DoughnutChart from '../../../../components/DoughnutChart';
-import BillingTableComponent from './BillingTableComponent';
 
-export default function BillingReport() {
+import useBillingReport from '../../../../hooks/summary-report/billing/useBillingReport';
+import GridUsed from './GridUsed/GridUsed';
+import NetEnergyTrading from './NetEnergyTrading/NetEnergyTrading';
+import WheelingChargeReport from './WheelingCharge/WheelingChargeReport';
+import NetPayment from './NetPayment/NetPayment';
+import { useNavigationGet } from '../../../../hooks/useNavigationGet';
+import { useRecoilValue } from 'recoil';
+import { userSessionState } from '../../../../state/user-sessions';
+
+export default function BillingReport()  {
     useNavigationSet(NavigationCurrentType.BILLING_REPORT);
+    const session = useRecoilValue(userSessionState);
+    const { currentState } = useNavigationGet();
 
-    const refreshPage = useCallback(() => {
+    const {
+        refreshInvoice,
+        netPaymentReport,
+        energyPaymentReport,
+        gridUsedReport,
+        wheelingChargeReport
+    } = useBillingReport();
 
-    }, [])
 
-    return (
-        <Box sx={{ width: `100%`, px: 2, pb: 2, maxWidth: '100%', flexGrow: 1 }}>
-            <Grid container direction='column' spacing={3}>
-                <Grid item container justifyContent='flex-end' id='period-zone' py={2}>
-                    <PeriodComponent key='billing-period' refreshPage={refreshPage} />
+
+    const refreshPage = useCallback(async () => {
+        refreshInvoice();
+    }, []);
+
+    useEffect(() => {
+
+        return () => {
+
+        }
+    }, [netPaymentReport, energyPaymentReport, gridUsedReport, wheelingChargeReport])
+    if (session && currentState === NavigationCurrentType.BILLING_REPORT) {
+        return (
+            <Box sx={{ width: `100%`, px: 2, pb: 2, maxWidth: '100%', flexGrow: 1 }}>
+                <Grid container direction='column' spacing={3}>
+                    <Grid item container justifyContent='flex-end' id='period-zone' py={2}>
+                        <PeriodComponent key='billing-period' refreshPage={refreshPage} />
+                    </Grid>
+                    <Grid item container >
+                        {netPaymentReport && <NetPayment netPayment={netPaymentReport} />}
+                    </Grid>
+                    <Grid item container >
+                        {energyPaymentReport && <NetEnergyTrading netEnergyTrading={energyPaymentReport} />}
+                    </Grid>
+                    <Grid item container >
+                        {gridUsedReport && <GridUsed gridUsedData={gridUsedReport} />}
+                    </Grid>
+                    <Grid item container >
+                        {wheelingChargeReport && <WheelingChargeReport wheelingChargeReport={wheelingChargeReport} />}
+                    </Grid>
                 </Grid>
-                <Grid item container >
-                    {buildReport('Net Payment', 'Net Payment Summary')}
-                </Grid>
-                <Grid item container >
-                    {buildReport('saas', 'Net Payment Summary')}
-                </Grid>
-                <Grid item container >
-                    {buildReport('Net Payment', 'Net Payment Summary')}
-                </Grid>
-                <Grid item container >
-                    {buildReport('Net Payment', 'Net Payment Summary')}
-                </Grid>
-            </Grid>
-        </Box>
-    )
+            </Box>
+        )
+    } else {
+        console.log(`cannot load page`);
+        return <>Loading...</>;
+    }
 }
 
 
-function buildReport(title: string, titleChart: string) {
-    return (
-        <Box sx={{ flexGrow: 1, width: `100%`, minHeight: '20vh' }}>
-            <Grid container direction='row' columns={12} sx={{ backgroundColor: '#fff' }} pl={3}>
-                <Grid container item xs={6} id='left-table' sx={{}} direction='row' >
-                    <Grid container item xs={11}>
-                        <Grid item xs={12} py={1}>
-                            <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em', color: 'secondary.main' }}>{title}</Typography>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <BillingTableComponent />
-                        </Grid>
-                    </Grid>
-                    <Grid container item xs={1} sx={{ my: 2 }} justifyContent='flex-end'>
-                        <Divider orientation="vertical" color="#707070" />
-                    </Grid>
-                </Grid>
-                <Grid container item xs={6} direction='column' sx={{ backgroundColor: '#fff' }} >
-                    <Grid item py={1} px={3}>
-                        <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em', color: 'secondary.main' }}>{titleChart}</Typography>
-                    </Grid>
-                    <Grid item container justifyContent='center' alignItems='center'>
-                        <DoughnutChart
-                            labels={['Net Energy Trading Payment : xx.xx Baht (62.0%)', 'Grid Used : xx.xx Baht (21.0%)', 'Wheeling Charge : xx.xx Baht (17.0%)']}
-                            datasets={
-                                [{
-                                    data: [62, 21, 17],
-                                    backgroundColor: ['#FFDE00', '#A9C521', '#62A53A'],
-                                },
-                                ]
-                            }
-                            width={500}
-
-                        />
-                    </Grid>
-                </Grid>
-            </Grid>
-        </Box >
-    )
-}

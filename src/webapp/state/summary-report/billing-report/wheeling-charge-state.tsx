@@ -5,7 +5,8 @@ export interface IWheelingChargeTable {
     meterId: string,
     meterName: string,
     role: string,
-    price: number
+    area: string,
+    price: number,
 }
 
 export interface IWheelingSummaryChart {
@@ -26,7 +27,7 @@ export interface INetWheelingSummaryChart {
 }
 
 export interface IWheelingReportState {
-    table: IWheelingChargeTable,
+    table: IWheelingChargeTable[],
     summary: IWheelingSummaryChart,
     netSummary: INetWheelingSummaryChart,
 }

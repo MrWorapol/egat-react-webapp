@@ -10,14 +10,14 @@ interface IGetDruidBody {
 }
 interface IGetSettlementReportRequest {
     session: IUserSession,
-    startDate: string,
-    endDate: string,
-    region: string,
-    area: string,
-    role: string,
-    buyerType: string,
-    tradeMarket: string,
-    orderStatus: string,
+    startDate?: string,
+    endDate?: string,
+    region?: string,
+    area?: string,
+    role?: string,
+    buyerType?: string,
+    tradeMarket?: string,
+    orderStatus?: string,
 }
 
 interface IGetSettlementReportResponse {
@@ -41,9 +41,9 @@ interface IGetSettlementDetailResponse {
 export class SettlementReportAPI {
     private endpoint = druidHost;
 
-    async getSettlementReport(req: IGetSettlementReportRequest): Promise<IGetSettlementReportResponse | null> {
+    async getTradeContractReport(req: IGetSettlementReportRequest): Promise<IGetSettlementReportResponse | null> {
         const body: IGetDruidBody = {
-            "query": `SELECT DISTINCT "__time", 
+            "query": `SELECT DISTINCT "__time" as "timestamp", 
             "payload.id" as "contractId",
             "payload.amount" as "energyCommitted",
             "payload.price" as "priceCommitted",
@@ -53,10 +53,10 @@ export class SettlementReportAPI {
             "payload.buyerId" as "buyerId",
             "payload.sellerId" as "sellerId",
             "payload.settlementTime" as "settlementTime",
-            "payload.timestamp" as "timestamp",
             "payload.tradingFee" as "tradingFee",
-            "payload.wheelingChargeFee" as "wheelingChargeFee"
-            FROM "TradeContractDemoTest"`,
+            "payload.wheelingChargeFee" as "wheelingChargeFee",
+            "payload.priceRuleApplied" as "priceRuleApplied"
+            FROM "TradeContractOnEgat"`,
             "resultFormat": "object"
         }
         let headers = {
@@ -71,19 +71,6 @@ export class SettlementReportAPI {
                 body: JSON.stringify(body),
             })
             const detailFromJSON: ISettlementReport[] = await response.json();
-            // const results: IGetOrderResponse[] = detailFromJSON.map((order: IOrderResponseFromJSON) => {
-            //     return {
-            //         orderId: order[`payload.id`],
-            //         userId: order.userId,
-            //         status: order.status,
-            //         targetAmount: order.targetAmount,
-            //         targetPrice: order.targetPrice,
-            //         userType: "SELLER",
-            //         tradeMarket: "POOL",
-            //         settlementTime: order.settlementTime
-
-            //     }
-            // })
             console.log(`get Settlement`);
             console.log(detailFromJSON);
             return {
@@ -98,7 +85,7 @@ export class SettlementReportAPI {
 
     }
 
-    async getImbalanceReport(req: IGetSettlementReportRequest): Promise<IGetImbalanceReport | null> {
+    async getTradeDataReport(req: IGetSettlementReportRequest): Promise<IGetImbalanceReport | null> {
         const body: IGetDruidBody = {
             "query": `SELECT "payload.amount" as "amount", 
             "payload.buyerId" as "buyerId",
@@ -108,12 +95,14 @@ export class SettlementReportAPI {
             "payload.priceRuleApplied" as "priceRuleApplied",
             "payload.sellerId" as "sellerId",
             "payload.sellerType" as "sellerType",
-            "payload.tradeContractId" as "tradeContractId",
+            "payload.tradeContractIds" as "tradeContractId",
             "payload.tradeType" as "tradeType",
             "payload.tradingFee" as "tradingFee",
-            "payload.wheelingChargeFee" as "wheelingChargeFee"
-            FROM "TradeDataTest"`,
+            "payload.wheelingChargeTotal" as "wheelingChargeFee",
+            "payload.priceRuleApplied" as "priceRuleApplied"
+            FROM "TradeOnEgat2"`,
             "resultFormat": "object"
+
         }
         let headers = {
             "Content-Type": "application/json",

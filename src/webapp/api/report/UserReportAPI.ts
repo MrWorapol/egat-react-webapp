@@ -99,36 +99,7 @@ export class UserReportAPI {
     private druidEndpoint = druidHost;//druidEndpoint;
 
 
-    // async getUserTable(req: IGetUserTableRequest): Promise<IGetUserTableResponse | null> {
-    //     await this.getUserMeterInfo();
-    //     return null;
-    // }
-
-    // async getLocationSite(req: IGetLocationSiteRequest): Promise<IGetLocationSiteResponse | null> {
-    //     // return null;
-    //     // return {
-    //     //     context: {
-    //     //         meterId: req.meterId,
-    //     //         egatSubStation: 'กฟผ สฟ. CHW',
-    //     //         peameaSubstation: ' กฟน. สต.แจ้งวัฒนะ(JWT) 115 kV BUS A2',
-    //     //         location: {
-    //     //             lat: '1112',
-    //     //             lng: '434'
-    //     //         },
-    //     //         energy: {
-    //     //             pv: 3.7,
-    //     //             grid: 12,
-    //     //             energyStorage: 20,
-    //     //             energyLoad: 2,
-    //     //             meterId: req.meterId,
-    //     //         }
-    //     //     }
-    //     // };
-    // }
-    // async getUserTable(req: IGetUserTableRequest): Promise<IGetUserTableResponse | null> {
-
-    async getUserMeterInfo(req: IGetUserMeterInfoRequest): Promise<IGetUserMeterInfoResponse | null> {
-        // console.log(`call druid api`);
+       async getUserMeterInfo(req: IGetUserMeterInfoRequest): Promise<IGetUserMeterInfoResponse | null> {
         let result: IUserMeterInfo[] = [];
         const body: IGetDruidBody = {
             "query": `SELECT 
@@ -181,13 +152,11 @@ export class UserReportAPI {
                 throw Error(`CODE: ${response.status} \nMessage: ${response.statusText}`)
             }
             const rawData: IMeterAreaAndSite[] = await response.json();
-            // console.log(`MeterArea Join Site`)
-            // // console.warn(rawData)
-            // console.log(rawData);
+         
 
             rawData.map((row: IMeterAreaAndSite) => {
                 result.push({
-                    id: row.userId,//row['payload.areaId'],
+                    id: row.userId,
                     meterId: row.meterId,
                     area: row.area,
                     locationCode: row.locationCode,
@@ -213,51 +182,7 @@ export class UserReportAPI {
         }
 
     }
-
-
-    async getMeterInfo(req: IGetMeterInfoRequest): Promise<IGetMeterInfoResponse | null> {
-
-        let headers = {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            "Authorization": `Bearer ${req.session.accessToken}`,
-        }
-
-        const body: IGetDruidBody = {
-            query: `SELECT "payload.id" as meterId,
-            LATEST("payload.locationCode",10) FILTER (WHERE "payload.locationCode" IS NOT NULL) as locationCode,
-            LATEST("payload.meterName",100) FILTER (WHERE "payload.meterName" IS NOT NULL) as meterName,
-            LATEST("payload.position.lat",10) FILTER (WHERE "payload.position.lat" IS NOT NULL) as lat,
-            LATEST("payload.position.lng",10) FILTER (WHERE "payload.position.lng" IS NOT NULL) as lng,
-            LATEST("payload.substationEgat",10) FILTER (WHERE "payload.substationEgat" IS NOT NULL) as substationEgat,
-            LATEST("payload.substationPeaMea",10) FILTER (WHERE "payload.substationPeaMea" IS NOT NULL) as substationPeaMea,
-            LATEST("payload.role",10) FILTER (WHERE "payload.role" IS NOT NULL) as role,
-            LATEST("payload.active",10) FILTER (WHERE "payload.active" IS NOT NULL) as active,
-            LATEST("payload.registrationDate",50) FILTER (WHERE "payload.registrationDate" IS NOT NULL) as registrationDate,
-            LATEST("payload.userId",30) FILTER (WHERE "payload.userId" IS NOT NULL) as userId
-          FROM "MeterInfoDataTest"
-          GROUP BY "payload.id"`,
-            resultFormat: "object",
-        }
-
-
-        try {
-            const response = await fetch(this.druidEndpoint, {
-                headers,
-                method: "POST",
-                body: JSON.stringify(body),
-            })
-            const rawData: IMeterInfo[] = await response.json();
-
-
-            return {
-                context: rawData,
-            };
-        } catch (e) {
-            return null;
-        }
-    }
-
+ 
     async getPowerInfos(req: IGetPowerInfosRequest): Promise<IGetPowerInfosResponse | null> {
         let headers = {
             "Content-Type": "application/json",
@@ -275,7 +200,7 @@ export class UserReportAPI {
             "payload.inSolar" as "inSolar", 
             "payload.load" as "load",
             "payload.meterId" as "meterId"
-            FROM "Power"`,
+            FROM "DirtyPowerOnEgat2"`,
             resultFormat: "object",
         }
 
@@ -294,10 +219,10 @@ export class UserReportAPI {
                 load: 0,
             }
             rawData.map((power: ISummaryPowerInfo) => {
-                result.inBattery += power.inBattery;
-                result.inGrid += power.inGrid;
-                result.inSolar += power.inSolar;
-                result.load += power.load;
+                result.inBattery += +power.inBattery;
+                result.inGrid += +power.inGrid;
+                result.inSolar += +power.inSolar;
+                result.load += +power.load;
             })
             return {
                 powerData: rawData,
@@ -323,7 +248,7 @@ export class UserReportAPI {
                 "payload.inGrid" as "inGrid",
                 "payload.inSolar" as "inSolar",
                 "payload.load" as "load" 
-                FROM "ForecastDemoTest"
+                FROM "DirtyForecastOnEgat2"
                 WHERE "payload.meterId" = ${+req.meterId}`,
             resultFormat: "object",
         }

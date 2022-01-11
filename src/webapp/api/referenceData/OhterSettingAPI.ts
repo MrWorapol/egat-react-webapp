@@ -1,4 +1,4 @@
-import { refApi } from "../../constanst";
+import { egatHost } from "../../constanst";
 import { IOtherSettingLog } from "../../state/reference-data/other-setting/othersetting-log";
 import { IOtherSetting } from "../../state/reference-data/other-setting/othersetting-state";
 import { IUserSession } from "../../state/user-sessions";
@@ -26,11 +26,11 @@ interface IPutOtherSettingRequest {
 }
 
 export class OtherSettingAPI {
-    private endpoint = refApi;
+    private uri = egatHost;
 
     async getOtherSetting(req: IGetOtherSettingRequest): Promise<IGetOtherSettingResponse | null> {
         const path = '/reference-data/other-setting'
-        const api = this.endpoint + path;
+        const api = this.uri + path;
         let response: Response;
         let token = 'token';
         let headers = {
@@ -80,7 +80,7 @@ export class OtherSettingAPI {
 
     async getOtherSettingLogs(req: IGetOtherSettingLogsRequest): Promise<IGetOtherSettingLogsResponse | null> {
         const path = `/reference-data/other-setting/log`;
-        const api = this.endpoint + path;
+        const api = this.uri + path;
         let response: Response;
         // let token = 'token';
         let headers = {
@@ -129,7 +129,7 @@ export class OtherSettingAPI {
     }
     async putOtherSetting(req: IPutOtherSettingRequest): Promise<boolean> {
         const path = `/reference-data/other-setting`;
-        const api = this.endpoint + path;
+        const api = this.uri + path;
         let response: Response;
         let token = 'token';
         let headers = {

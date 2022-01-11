@@ -4,15 +4,16 @@ export interface IGridUsedTable {
     meterId: string,
     meterName: string,
     role: string,
+    area: string,
     gridPrice: number,
-    gridUsed: string,
+    gridUsedType: string,
 }
 
 export interface IGridUsedChart {
     gridUsed: number,
     serviceCharge: number,
     ft: number,
-    summary: number,
+    amount: number,
     vat: number,
     discount: number,
 }
@@ -30,7 +31,7 @@ export interface IGridUsedState {
     netTOUTariff: ITOUTariffChart,
     amountTOUTariff: ITOUTariffChart
 }
-export const gridUsedState = atom<IGridUsedState| null>({
+export const gridUsedReportState = atom<IGridUsedState | null>({
     key: 'gridUsedState',
     default: null,
 })

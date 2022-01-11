@@ -17,6 +17,7 @@ export interface ISettlementReport {
     wheelingChargeFee: number,
     imbalance?: IImbalanceReport[]
     imbalanceStatus: string,
+    priceRuleApplied: string,
 }
 
 export interface IImbalanceReport {
@@ -30,6 +31,7 @@ export interface IImbalanceReport {
     buyerType: string, // USER | DSO
     sellerType: string, // USER | DSO
     tradingFee: number,
+    priceRuleApplied: string,
 }
 
 export const settlementReportState = atom<ISettlementReport[] | null>({

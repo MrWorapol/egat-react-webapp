@@ -113,8 +113,9 @@ function buildOfferToSell(settlement: ISettlementReport) {
                 <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em', color: 'secondary.main' }}>Settlement Detail</Typography>
             </Grid>
             <Grid container item direction='row' alignItems='center' pt={2}>
-                <Typography sx={{ fontWeight: 'bold', fontSize: '1.3em', color: 'success.light' }}>
-                    {`Seller`}
+                <Typography sx={{ fontWeight: 'bold', fontSize: '1.3em', color: settlement.userType.toLowerCase() === 'seller' ? 'success.light' : 'error.light' }}>
+                    {settlement.userType.toLowerCase() === 'seller' && `Seller`}
+                    {settlement.userType.toLowerCase() === 'buyer' && `Buyer`}
                 </Typography>
                 <Typography sx={{ fontWeight: 'bold', fontSize: '1.3em' }} pl={2}>
                     {`Contract ID : ${settlement.contractId}`}
@@ -137,7 +138,8 @@ function buildOfferToSell(settlement: ISettlementReport) {
                 </Grid>
                 <Grid container item justifyContent='space-between' pl={4} pr={6} >
                     <Typography>
-                        {'NET Sales'}
+                        {settlement.userType.toLowerCase() === 'seller' && 'NET Sales'}
+                        {settlement.userType.toLowerCase() === 'buyer' && 'NET Buy'}
                     </Typography>
                     <Typography >
                         {`${settlement.priceCommitted + settlement.tradingFee + settlement.wheelingChargeFee} Baht`}
@@ -146,7 +148,8 @@ function buildOfferToSell(settlement: ISettlementReport) {
                 {imbalance &&
                     <Grid container item justifyContent='space-between' pl={4} pr={6} >
                         <Typography>
-                            {'Seller imbalance amount'}
+                            {settlement.userType.toLowerCase() === 'seller' && 'Seller imbalance amount'}
+                            {settlement.userType.toLowerCase() === 'buyer' && 'Buyer imbalance amount'}
                         </Typography>
                         <Typography >
                             {`${imbalance.amount} kWh`}
@@ -156,7 +159,8 @@ function buildOfferToSell(settlement: ISettlementReport) {
                 {imbalance &&
                     <Grid container item justifyContent='space-between' pl={4} pr={6} >
                         <Typography>
-                            {'Seller imbalance'}
+                            {settlement.userType.toLowerCase() === 'seller' && 'Seller imbalance'}
+                            {settlement.userType.toLowerCase() === 'buyer' && 'Buyer imbalance'}
                         </Typography>
                         <Typography >
                             {`(${imbalance.price}) Baht`}
@@ -165,7 +169,8 @@ function buildOfferToSell(settlement: ISettlementReport) {
                 }
                 <Grid container item justifyContent='space-between' pl={4} pr={6} >
                     <Typography>
-                        {'NET energy price(NET Sales/Energy Delivered)'}
+                        {settlement.userType.toLowerCase() === 'seller' && 'NET energy price(NET Sales/Energy Delivered)'}
+                        {settlement.userType.toLowerCase() === 'buyer' && 'NET energy price(NET Buy/Energy Used)'}
                     </Typography>
                     <Typography >
                         {`${settlement.priceCommitted + settlement.tradingFee + settlement.wheelingChargeFee / (imbalance ? settlement.energyCommitted - imbalance.amount : settlement.energyCommitted)} Baht/kWh`}

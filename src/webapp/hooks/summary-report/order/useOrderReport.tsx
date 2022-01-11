@@ -16,7 +16,7 @@ interface ISummaryMap {
     number
 }
 
-export function useOrderReport() {
+export default function useOrderReport() {
     console.log(`call Use ORDER REPORT`);
     const session = useRecoilValue(userSessionState);
     const { currentState } = useNavigationGet();
@@ -100,9 +100,9 @@ export function useOrderReport() {
 
     const refreshOrderDetail = useCallback(async (orderInfo: IOrderInfo) => {
 
-        // if (orderDetail) { //clear state of detail 
-        //     resetOrderDetail();
-        // }
+        if (orderDetail) { //clear state of detail 
+            resetOrderDetail();
+        }
         if (orderInfo.status.toLowerCase() === 'open') {
             setOrderDetail({
                 userType: orderInfo.userType,

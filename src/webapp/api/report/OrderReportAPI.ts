@@ -78,7 +78,7 @@ export class OrderReportAPI {
             "payload.timestamp",
             "payload.tradingFee",
             "payload.wheelingChargeFee"
-            FROM "TradeContractDemoTest"
+            FROM "TradeContractOnEgat"
             WHERE "payload.id" = '61ad40610cf1ac18b2e25c1a'`,
             "resultFormat": "object"
         }
@@ -140,14 +140,14 @@ export class OrderReportAPI {
             results.context.push(...bilateralBuyerOrders);
         }
 
-        console.log(`result from pool trade Offer`);
-        console.log(poolSellerOrders);
-        console.log(`Get Pool Trade Bid`);
-        console.log(poolBuyerOrders);
-        console.log(`get Bilateral Trade Offer`);
-        console.log(bilateralSellerOrders);
-        console.log(`Get Bilateral Trade Settlement`);
-        console.log(bilateralBuyerOrders);
+        // console.log(`result from pool trade Offer`);
+        // console.log(poolSellerOrders);
+        // console.log(`Get Pool Trade Bid`);
+        // console.log(poolBuyerOrders);
+        // console.log(`get Bilateral Trade Offer`);
+        // console.log(bilateralSellerOrders);
+        // console.log(`Get Bilateral Trade Settlement`);
+        // console.log(bilateralBuyerOrders);
         return results;
 
     }
@@ -161,7 +161,7 @@ export class OrderReportAPI {
             LATEST(CAST("__time" as VARCHAR) ,50 ) FILTER(WHERE "__time" is not null) settlementTime,
             LATEST(CAST("payload.targetPrice" as VARCHAR),10 ) FILTER(WHERE "payload.targetPrice" is not null) targetPrice,
             LATEST(CAST("payload.targetAmount" as VARCHAR),10 ) FILTER(WHERE "payload.targetAmount" is not null) targetAmount
-            FROM "PoolMarketOfferDemoTest2"
+            FROM "PoolMarketOfferOnEgat"
             GROUP BY "payload.id"`,
             "resultFormat": "object"
         }
@@ -207,7 +207,7 @@ export class OrderReportAPI {
             LATEST(CAST("payload.settlementTime" as VARCHAR),50 ) FILTER(WHERE "payload.settlementTime" is not null) settlementTime,
             LATEST(CAST("payload.targetPrice" as VARCHAR),10 ) FILTER(WHERE "payload.targetPrice" is not null) targetPrice,
             LATEST(CAST("payload.targetAmount" as VARCHAR),10 ) FILTER(WHERE "payload.targetAmount" is not null) targetAmount
-            FROM "PoolMarketBidDemoTest"
+            FROM "PoolMarketBidOnEgat"
             GROUP BY "payload.id"`,
             "resultFormat": "object"
         }
@@ -254,7 +254,7 @@ export class OrderReportAPI {
             LATEST(CAST("payload.settlementTime" as VARCHAR),50 ) FILTER(WHERE "payload.settlementTime" is not null) settlementTime,
             LATEST(CAST("payload.targetPrice" as VARCHAR),10 ) FILTER(WHERE "payload.targetPrice" is not null) targetPrice,
             LATEST(CAST("payload.targetAmount" as VARCHAR),10 ) FILTER(WHERE "payload.targetAmount" is not null) targetAmount
-            FROM "BilateralTradeOfferDemoTest2"
+            FROM "BilateralTradeOfferOnEgat"
             GROUP BY "payload.id"`,
             "resultFormat": "object"
         }
@@ -300,7 +300,7 @@ export class OrderReportAPI {
             "payload.settlementTime" settlementTime,
             "payload.amount" as targetAmount,
             "payload.price" as targetPrice
-            FROM "BilateralSettlementDemoTest"`,
+            FROM "BilateralSettlementOnEgat"`,
             "resultFormat": "object"
         }
         let headers = {

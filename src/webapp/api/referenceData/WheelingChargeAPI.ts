@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { refApi } from "../../constanst";
+import { egatHost } from "../../constanst";
 import { IUserSession } from "../../state/user-sessions";
 import { IWheelingCharge } from "../../state/reference-data/wheeling-chart/wheeling-charge-state";
 import { IWheelingLogs } from "../../state/reference-data/wheeling-chart/wheeling-log-state";
@@ -24,11 +24,11 @@ interface IGetLogsResponse {
     context: IWheelingLogs[],
 }
 export class WheelingChargeAPI {
-    private endpoint = refApi;
+    private uri = egatHost;
 
     async getWheelingCharge(req: IGetWheelingChargeRequest): Promise<IGetWheelingChargeResponse | null> {
         const path = '/reference-data/wheeling-charge-setting'
-        const api = this.endpoint + path;
+        const api = this.uri + path;
         let response: Response;
         // let token = 'token';
         let headers = {
@@ -71,7 +71,7 @@ export class WheelingChargeAPI {
 
     async getLogByTypes(req: IGetLogsRequest) {
         const path = '/reference-data/wheeling-charge-setting/' + req.wheelingType + '/log'
-        const api = this.endpoint + path;
+        const api = this.uri + path;
         let response: Response;
         let token = 'token';
         let headers = {
@@ -126,7 +126,7 @@ export class WheelingChargeAPI {
 
     async updatedWheelingCharge(req: IPutWheelingChargeRequest): Promise<boolean> {
         const path = `/reference-data/wheeling-charge-setting/${req.wheelingCharge.title}`;
-        const api = this.endpoint + path;
+        const api = this.uri + path;
         let response: Response;
         let token = 'token';
         let headers = {

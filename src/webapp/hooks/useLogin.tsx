@@ -31,10 +31,15 @@ export function useLogin() {
     }, [setSession, sessionValue])
 
     const logout = useCallback(() => {
-        if (sessionValue) {
+        //clear local storage
+        if (localStorage.getItem('session')) {
             localStorage.removeItem('session');
+        }
+        if (sessionValue) {
+            // localStorage.removeItem('session');
             resetSession();
         }
+
     }, [])
     return {
         login,

@@ -44,8 +44,8 @@ export function useSettlementReport() {
                 orderStatus,
                 session
             }
-            const settlementReports = await api.getSettlementReport(req);
-            const imbalanceReport = await api.getImbalanceReport(req);
+            const settlementReports = await api.getTradeContractReport(req);
+            const imbalanceReport = await api.getTradeDataReport(req);
             // console.log(`imbalance Report from API : `)
             // console.log(imbalanceReport);
             let summaryRole: ISummaryMap = { 'aggregator': 0, 'prosumer': 0, 'consumer': 0 };
@@ -54,7 +54,7 @@ export function useSettlementReport() {
             let summaryImbalance: ISummaryMap = { 'energyExcess': 0, 'energyShortfall': 0 };
             //wait for summary Imbalance
 
-            if (settlementReports && userMeterInfos && imbalanceReport) {
+            if ((settlementReports && userMeterInfos && imbalanceReport) && settlementReports.context.length > 0 && userMeterInfos.context.length > 0 && imbalanceReport.context.length > 0) {
                 let output: ISettlementReport[] = [];
                 settlementReports.context.map((report: ISettlementReport) => {
                     report.imbalance = []; //prepare for insert imbalance Data

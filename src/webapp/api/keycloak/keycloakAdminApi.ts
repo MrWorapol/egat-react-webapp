@@ -48,6 +48,7 @@ export default class KeycloakAdminApi {
     }
 
     async logout() {
+        
         return;
     }
 

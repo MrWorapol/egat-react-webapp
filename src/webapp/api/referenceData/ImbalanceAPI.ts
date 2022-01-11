@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { refApi } from "../../constanst";
+import { egatHost } from "../../constanst";
 import { Iimbalance } from "../../state/reference-data/imbalance/imbalance-state";
 import { IUserSession } from "../../state/user-sessions";
 
@@ -24,11 +24,11 @@ interface IUpdateImbalanceRequest {
     imbalance: Iimbalance
 }
 export class ImbalanceAPI {
-    private endpoint = refApi;
+    private uri = egatHost;
 
     async getImbalance(req: IGetImbalanceRequest): Promise<IGetImbalanceResponse | null> {
         const path = '/reference-data/imbalance-setting'
-        const api = this.endpoint + path;
+        const api = this.uri + path;
         let response: Response;
         let token = 'token';
         let headers = {
@@ -81,7 +81,7 @@ export class ImbalanceAPI {
 
     async getLogsImbalance(req: IGetLogsRequest) {
         const path = `/reference-data/imbalance-setting/${req.type}/${req.imbalance}/log`;
-        const api = this.endpoint + path;
+        const api = this.uri + path;
         let response: Response;
         // let token = 'token';
         let headers = {
@@ -132,7 +132,7 @@ export class ImbalanceAPI {
 
     async updateImbalance(req: IUpdateImbalanceRequest): Promise<boolean> {
         const path = '/reference-data/imbalance-setting';
-        const api = this.endpoint + path;
+        const api = this.uri + path;
         let response: Response;
         let token = 'token';
         let headers = {

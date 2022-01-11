@@ -8,7 +8,8 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
 import { useHistory } from 'react-router-dom';
 import { useResetRecoilState } from 'recoil';
-import TablePaginationActionsComponent from '../../../../components/TablePaginationActions';
+import TablePaginationActionsComponent from '../../../../../components/TablePaginationActions';
+import { IEnergyPaymentTable } from '../../../../../state/summary-report/billing-report/energy-payment-state';
 
 
 interface Column {
@@ -18,29 +19,29 @@ interface Column {
 
 }
 
-export default function BillingTableComponent() {
+interface IProps {
+    energyPaymentTable: IEnergyPaymentTable[],
+}
+export default function EnergyTradingTable(props: IProps) {
+    let energyPaymentTable = props.energyPaymentTable;
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(3);
     const history = useHistory();
-    // const { userInfoData, refreshAllUser } = useAllUser();
-    // const resetUserDetailData = useResetRecoilState(userDetail);
-    const mockDatas = [{}, {}];
+    console.log(energyPaymentTable);
+
     const columns: Column[] = [
-        { id: 'tradeMarket', label: 'Trade Market' },
+        { id: 'meterId', label: 'Meter Id.' },
+        { id: 'meterName', label: 'Meter Name' },
         { id: 'role', label: 'Role' },
-        { id: 'buyer/seller', label: 'Buyer/Seller' },
-        { id: 'orderStatus', label: 'Order Status' },
-        { id: 'Action', label: '' }
+        { id: 'netPrice', label: 'Net Price' },
     ];
-    if (mockDatas === null || mockDatas === undefined) {
-        console.log(`WTF : ${mockDatas}`);
+    if (energyPaymentTable === null || energyPaymentTable === undefined) {
+        console.log(`WTF : ${energyPaymentTable}`);
         return <></>;
     }
-    // if (userInfoData.length === 0) {
-    //     return <div><Typography variant="h1">Not found</Typography></div>;
-    // }
+    
     // Avoid a layout jump when reaching the last page with empty rows.
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - mockDatas.length) : 1;
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - energyPaymentTable.length) : 0;
 
 
     const handleChangePage = (
@@ -81,48 +82,42 @@ export default function BillingTableComponent() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {mockDatas.length === 0 && /* case notfound data */
+                        {energyPaymentTable.length === 0 &&  /* case notfound data */
                             <TableRow style={{ height: 53 * emptyRows }}>
-                                <TableCell colSpan={6} />
+
+                                <TableCell colSpan={6}>
+                                    No Data Found
+                                </TableCell>
                             </TableRow>
                         }
-                        {/* {mockDatas.length !== 0 && (rowsPerPage > 0
-                            ? mockDatas.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                            : mockDatas
-                        ).map((row, i) => (
+                        {energyPaymentTable.length !== 0 && (rowsPerPage > 0
+                            ? energyPaymentTable.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            : energyPaymentTable
+                        ).map((row: IEnergyPaymentTable, i: number) => (
                             <TableRow>
                                 <TableCell
-                                // key={row.meterId}
+                                    key={row.meterId + i}
                                 >
                                     {row.meterId}
                                 </TableCell>
                                 <TableCell
-                                // key={row.fullName + i}
+                                    key={row.meterName + i}
                                 >
-                                    {row.fullName}
+                                    {row.meterName}
                                 </TableCell>
                                 <TableCell
-                                // key={row.email + i}
+                                    key={row.role + i}
                                 >
-                                    {row.email}
+                                    {row.role}
                                 </TableCell>
                                 <TableCell
-                                // key={row.phoneNumber + i}
+                                    key={row.netPrice + i}
                                 >
-                                    {row.phoneNumber}
-                                </TableCell>
-
-                                <TableCell
-                                    key={row.meterId + row.role + i}
-                                >
-                                    {row.role !== 'ADMIN' && <IconButton onClick={() => onClickViewButton(row)}>
-                                        <SearchIcon />
-                                    </IconButton>
-                                    }
+                                    {row.netPrice}
                                 </TableCell>
                             </TableRow>
                         ))
-                        } */}
+                        }
                         {emptyRows > 0 && (
                             <TableRow style={{ height: 53 * emptyRows }}>
                                 <TableCell colSpan={6} />
@@ -135,9 +130,9 @@ export default function BillingTableComponent() {
             <TablePagination
                 component='div'
                 sx={{ right: 0 }}
-                rowsPerPageOptions={[3, 5, 10, 25, { label: 'All', value: -1 }]}
+                rowsPerPageOptions={[3, 5]}
                 colSpan={3}
-                count={mockDatas.length}
+                count={energyPaymentTable.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 SelectProps={{

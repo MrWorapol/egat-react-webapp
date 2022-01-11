@@ -5,6 +5,7 @@ export interface IEnergyPaymentTable {
     meterId: string,
     meterName: string,
     role: string,
+    area: string,
     netPrice: number,
 }
 
@@ -17,27 +18,27 @@ export interface IEnergyPaymentChart {
     discountFees: number,
 }
 export interface INetImbalanceSummaryChart {
-    netSellerImPlus: number,
-    netSellerImMinus: number,
-    netBuyerImPlus: number,
-    netBuyerImMinus: number,
+    netSellerImbalanceOverCommited: number,
+    netSellerImbalanceUnderCommited: number,
+    netBuyerImbalanceOverCommited: number,
+    netBuyerImbalanceUnderCommited: number,
 }
 
 export interface IAmountImbalanceSummaryChart {
-    netSellerImPlus: number,
-    netSellerImMinus: number,
-    netBuyerImPlus: number,
-    netBuyerImMinus: number,
+    amountSellerImbalanceOverCommited: number,
+    amountSellerImbalanceUnderCommited: number,
+    amountBuyerImbalanceOverCommited: number,
+    amountBuyerImbalanceUnderCommited: number,
 }
 
 export interface IEnergyPaymentState {
-    table: IEnergyPaymentTable,
-    paymentChart: IEnergyPaymentChart,
+    table: IEnergyPaymentTable[],
+    energyPaymentChart: IEnergyPaymentChart,
     netImbalanceChart: INetImbalanceSummaryChart,
     amountImbalanceChart: IAmountImbalanceSummaryChart,
 
 }
-export const energyPaymentState = atom<IEnergyPaymentState| null>({
+export const energyPaymentReportState = atom<IEnergyPaymentState| null>({
     key: 'energyPaymentState',
     default: null,
 })

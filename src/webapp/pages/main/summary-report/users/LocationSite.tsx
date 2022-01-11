@@ -1,14 +1,20 @@
 import { Button, Grid, Typography } from '@mui/material'
-import { Box, color } from '@mui/system'
-import React, { useRef, useState } from 'react'
+import { Box } from '@mui/system'
+import React, { useState } from 'react'
 import useUserReport from '../../../../hooks/summary-report/user/useUserReport';
 import { IEnergyInfo, IPowerGraph } from '../../../../state/summary-report/user-report/location-site-state';
 import GoogleMap from './GoogleMap';
 import { Bar } from 'react-chartjs-2';
 
+import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
 export default function LocationSite() {
     const { locationSite } = useUserReport();
-    const [range, setRange] = useState({ start: 0, end: 4 });
+    const [range, setRange] = useState({ start: 0, end: 5 });
 
 
     if (locationSite) {
@@ -18,7 +24,9 @@ export default function LocationSite() {
         if (locationSite.powerUsed) {
             averagePVUsed = locationSite.powerUsed.actual.length > 24 ? locationSite.energySummary.energyLoad / locationSite.powerUsed.actual.length : locationSite.energySummary.energyLoad;
             locationSite.powerUsed.forecast.forEach((forecast) => {
-                summaryPVForecast += forecast.pv;
+
+                console.log(`${locationSite.meterId}foreactPV: ${typeof(forecast.pv)}\t`);
+                summaryPVForecast += +forecast.pv;
             });
             locationSite.powerUsed.actual.forEach((actual) => {
                 maximumPVUsed = maximumPVUsed < actual.pv ? actual.pv : maximumPVUsed; //check maximum Grid Us
@@ -59,12 +67,12 @@ export default function LocationSite() {
                             </Grid>
                             <Grid item container direction='column' alignItems='center' xs={4}>
                                 <Typography>กำลังไฟฟ้าใช้จริงสูงสุด</Typography>
-                                <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em' }}>{maximumPVUsed}</Typography>
+                                <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em' }}>{Math.round(maximumPVUsed * 100) / 100}</Typography>
                                 <Typography>kW</Typography>
                             </Grid>
                             <Grid item container direction='column' alignItems='center' xs={4}>
                                 <Typography>กำลังไฟฟ้าใช้จริงโดยเฉลี่ย</Typography>
-                                <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em' }}>{ Math.round(averagePVUsed * 100) / 100}</Typography>
+                                <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em' }}>{Math.round(averagePVUsed * 100) / 100}</Typography>
                                 <Typography>kW</Typography>
                             </Grid>
                         </Grid>
@@ -157,30 +165,32 @@ function buildForecastChart( //,chartRef: React.MutableRefObject<any>
     start: number,
     end: number
 ) {
+    const { forecast, actual } = powerUsed;
     const labels = ["00:00-01:00", "01:00-02:00", "02:00-03:00", "03:00-04:00", "04:00-05:00", "05:00-06:00", "06:00-07:00", "07:00-08:00", "08:00-09:00", "09:00-10:00", "10:00-11:00", "11:00-12:00", "12:00-13:00", "13:00-14:00", "14:00-15:00", "15:00-16:00", "16:00-17:00", "17:00-18:00", "18:00-19:00", "19:00-20:00", "20:00-21:00", "21:00-22:00", "22:00-23:00", "23:00-23:59"];
+
 
 
     let excessPvForecast = {
         label: 'Excess PV Forecast',
-        data: powerUsed.forecast.slice(start, end).map((power: IPowerGraph) => { return power.pv }),
+        data: forecast.slice(start, end).map((power: IPowerGraph) => { return power.pv }),
         backgroundColor: '#7D6302',
         stack: "Stack 0",
     }
     let gridUsedForecast = {
         label: 'Grid Used Forecast',
-        data: powerUsed.forecast.slice(start, end).map((power: IPowerGraph) => { return -power.grid }),
+        data: forecast.slice(start, end).map((power: IPowerGraph) => { return -power.grid }),
         backgroundColor: '#760404',
         stack: "Stack 0",
     }
     let excessPvActual = {
         label: 'Excess PV Actual',
-        data: powerUsed.actual.slice(start, end).map((power: IPowerGraph) => { return power.pv }),
+        data: actual.slice(start, end).map((power: IPowerGraph) => { return power.pv }),
         backgroundColor: '#FEC908',
         stack: "Stack 1",
     }
     let gridUsedActual = {
         label: 'Grid Used Actual',
-        data: powerUsed.actual.slice(start, end).map((power: IPowerGraph) => { return -power.grid }),
+        data: actual.slice(start, end).map((power: IPowerGraph) => { return -power.grid }),
         backgroundColor: '#FF0000',
         stack: "Stack 1",
 
@@ -220,4 +230,9 @@ function buildForecastChart( //,chartRef: React.MutableRefObject<any>
             />
         </Box>
     )
+}
+
+
+function sumPowerInDay(inputData: IPowerGraph[]) {
+
 }

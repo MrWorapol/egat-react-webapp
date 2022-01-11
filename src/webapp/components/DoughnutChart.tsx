@@ -69,6 +69,7 @@ export default function DoughnutChart(props: DoughNutChartProps) {
                         }
                     },
                     cutout: 95,
+                    radius: "90%"
                 }}
             />
         </Box>

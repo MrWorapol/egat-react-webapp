@@ -104,14 +104,14 @@ export default function useUserReport() {
                 }
                 if (powerDataByMeterId.length > 0) {
                     powerDataByMeterId.map((row: IPowerData) => {
-                        energySummary.pv += Math.floor(row.load + row.inSolar + row.inGrid + row.inBattery);
-                        energySummary.energyStorage += Math.floor(row.inSolar + row.inBattery);
-                        energySummary.energyConsumptions += Math.floor(row.load);
-                        energySummary.grid += Math.floor(row.inGrid);
+                        energySummary.pv += Math.floor(+row.load + +row.inSolar + +row.inGrid + +row.inBattery);
+                        energySummary.energyStorage += Math.floor(+row.inSolar + +row.inBattery);
+                        energySummary.energyConsumptions += Math.floor(+row.load);
+                        energySummary.grid += Math.floor(+row.inGrid);
                         actualPower.push({ //insert actual power in array
                             timestamp: row.timestamp,
-                            grid: row.inGrid,
-                            pv: row.load + row.inSolar + row.inGrid + row.inBattery
+                            grid: +row.inGrid,
+                            pv: +row.load + +row.inSolar + +row.inGrid + +row.inBattery
                         })
                     })
                 }

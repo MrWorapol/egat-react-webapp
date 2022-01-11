@@ -1,7 +1,7 @@
 import { Grid, Typography } from '@mui/material'
 import React from 'react'
-import { useOrderReport } from '../../../../hooks/summary-report/order/useOrderReport';
 import { IOrderDetail } from '../../../../state/summary-report/order-report/order-detail-state';
+import useOrderReport from '../../../../hooks/summary-report/order/useOrderReport';
 
 import dayjs from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';

@@ -8,7 +8,7 @@ import AllOrder from './AllOrderComponent';
 import OrderDetail from './OrderDetail';
 import SummaryChartComponents from './SummaryChartComponents';
 import PeriodComponent from '../PeriodComponent';
-import { useOrderReport } from '../../../../hooks/summary-report/order/useOrderReport';
+import useOrderReport  from '../../../../hooks/summary-report/order/useOrderReport';
 import { useRecoilValue } from 'recoil';
 import { userSessionState } from '../../../../state/user-sessions';
 import { useNavigationGet } from '../../../../hooks/useNavigationGet';
