@@ -1,7 +1,7 @@
 import { atom } from "recoil";
 interface IMap {
     [key: string]: {
-        [x: string]: number,
+        [attribute: string]: number,
     }
 }
 export interface ISettlementChart extends IMap {
@@ -21,7 +21,19 @@ export interface ISettlementChart extends IMap {
     status: {
         energyExcess: number,
         energyShortfall: number,
+    },
+    netImbalanceAmountByStatus: {
+        sellerUnderCommit: number,
+        sellerOverCommit: number,
+        buyerUnderCommit: number,
+        buyerOverCommit: number
+    },
+    netImbalanceAmount: {
+        netSale: number,
+        netBuy: number,
+        netAll: number
     }
+
 }
 
 

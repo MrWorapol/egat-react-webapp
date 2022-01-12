@@ -162,31 +162,37 @@ export default function useBillingReport() {
 
     //wait for confirm with p'chin about  data are already use or need to query with trade Table
     const InsertGridUsedReport = (gridUsedData: IGridUsedState, invoiceWithMeters: IInvoice[], user: IUserMeterInfo) => {
+        let gridPriceByGridUsedAndMeterSummary: { [key: string]: number } = { "PEAK_MONFRI": 0, "OFFPEAK_MONFRI": 0, "OFFPEAK_SATSUN": 0, "OFFPEAK_HOLIDAY": 0 };
+        // let row: IGridUsedTable = {
+        //     meterId: user.meterId,
+        //     meterName: user.meterName,
+        //     role: user.role,
+        //     area: user.area,
+        //     gridPrice: invoiceWithMeter.reference.touTariff, //tariff because calculate from mobile
+        //     gridUsedType: invoiceWithMeter.reference.touTariffType
+        // };
         invoiceWithMeters.map((invoiceWithMeter) => {
-            let row: IGridUsedTable = {
-                meterId: user.meterId,
-                meterName: user.meterName,
-                role: user.role,
-                area: user.area,
-                gridPrice: invoiceWithMeter.reference.touTariff, //tariff because calculate from mobile
-                gridUsedType: invoiceWithMeter.reference.touTariffType
-            };
             switch (invoiceWithMeter.reference.touTariffType) {
                 case "PEAK_MONFRI":
                     gridUsedData.netTOUTariff.peak += invoiceWithMeter.reference.touTariff;
                     gridUsedData.amountTOUTariff.peak += invoiceWithMeter.reference.amount;
+                    gridPriceByGridUsedAndMeterSummary["PEAK_MONFRI"] += invoiceWithMeter.reference.touTariff;
                     break;
                 case "OFFPEAK_MONFRI":
                     gridUsedData.netTOUTariff.offPeak += invoiceWithMeter.reference.touTariff;
                     gridUsedData.amountTOUTariff.offPeak += invoiceWithMeter.reference.amount;
+                    gridPriceByGridUsedAndMeterSummary["OFFPEAK_MONFRI"] += invoiceWithMeter.reference.touTariff;
                     break;
                 case "OFFPEAK_SATSUN":
                     gridUsedData.netTOUTariff.offPeakWeekend += invoiceWithMeter.reference.touTariff;
                     gridUsedData.amountTOUTariff.offPeakWeekend += invoiceWithMeter.reference.amount;
+                    gridPriceByGridUsedAndMeterSummary["OFFPEAK_SATSUN"] += invoiceWithMeter.reference.touTariff;
+
                     break;
                 case "OFFPEAK_HOLIDAY": //
                     gridUsedData.netTOUTariff.offPeakHoliday += invoiceWithMeter.reference.touTariff;
                     gridUsedData.amountTOUTariff.offPeakHoliday += invoiceWithMeter.reference.amount;
+                    gridPriceByGridUsedAndMeterSummary["OFFPEAK_HOLIDAY"] += invoiceWithMeter.reference.touTariff;
                     break;
                 default: break;
             }
@@ -196,8 +202,22 @@ export default function useBillingReport() {
             gridUsedData.gridChart.amount += invoiceWithMeter.reference.amount;
             gridUsedData.gridChart.vat += invoiceWithMeter.reference.vat;
             gridUsedData.gridChart.discount += invoiceWithMeter.reference.gridUsedDiscount;
-            gridUsedData.table.push(row);
+            // gridUsedData.table.push(row);
         })
+        Object.keys(gridPriceByGridUsedAndMeterSummary).forEach((gridUsedType: string) => {
+            if (gridPriceByGridUsedAndMeterSummary[gridUsedType] > 0) {
+                gridUsedData.table.push(
+                    {
+                        meterId: user.meterId,
+                        meterName: user.meterName,
+                        role: user.role,
+                        area: user.area,
+                        gridPrice: gridPriceByGridUsedAndMeterSummary[gridUsedType], //tariff because calculate from mobile
+                        gridUsedType: gridUsedType
+                    }
+                )
+            }
+        });
     };
     //issue about data
     const InsertWheelingChargeReport = (wheelingData: IWheelingReportState, invoiceWithMeters: IInvoice[], user: IUserMeterInfo, tradeDatas: IImbalanceReport[]) => {
@@ -264,7 +284,7 @@ export default function useBillingReport() {
 
     useEffect(() => {
         if (session && currentState === NavigationCurrentType.BILLING_REPORT) {
-            if ( !energyPaymentReport && !gridUsedReport && !wheelingChargeReport) {
+            if (!energyPaymentReport && !gridUsedReport && !wheelingChargeReport) {
                 console.log(`call refresh Invoice`);
                 console.log(session);
                 refreshInvoice(session);

@@ -19,7 +19,7 @@ const NavigationMainPage = () => {
     const [openSummary, setOpenSummaryMenu] = useState(false);
 
     const referenceDataChildrenMenu: IChildrenMenu[] = [
-        { label: 'Wheeling Charge Setting', path: '/wheeling_chart', state: NavigationCurrentType.WHEELING_CHART },
+        { label: 'Wheeling Charge Setting', path: '/wheeling_charge', state: NavigationCurrentType.WHEELING_CHART },
         { label: 'Imbalance Setting', path: '/imbalance', state: NavigationCurrentType.IMBALANCE },
         { label: 'TOU Tariff Setting', path: '/tou_tariff', state: NavigationCurrentType.TOU_TARIFF },
         { label: 'Other Setting', path: '/other_setting', state: NavigationCurrentType.OTHER_SETTING },

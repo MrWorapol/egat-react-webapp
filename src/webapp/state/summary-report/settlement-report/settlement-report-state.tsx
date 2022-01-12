@@ -21,7 +21,7 @@ export interface ISettlementReport {
 }
 
 export interface IImbalanceReport {
-    tradeContractId: string,
+    tradeContractIds: string,
     tradeDataId: string,
     tradeType: string, // CONTRACT | SELLER_IMBALANCE_UNDERCOMMIT | SELLER_IMBALANCE_OVERCOMMIT | BUYER_IMBALANCE_UNDERCOMMIT | BUYER_IMBALANCE_OVERCOMMIT
     price: number, //price Deliverd 
@@ -32,6 +32,10 @@ export interface IImbalanceReport {
     sellerType: string, // USER | DSO
     tradingFee: number,
     priceRuleApplied: string,
+    imbalanceBuyerOverCommit: number,
+    imbalanceBuyerUnderCommit: number,
+    imbalanceSellerOverCommit: number,
+    imbalanceSellerUnderCommit: number
 }
 
 export const settlementReportState = atom<ISettlementReport[] | null>({

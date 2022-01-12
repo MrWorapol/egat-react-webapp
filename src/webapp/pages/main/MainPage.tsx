@@ -48,7 +48,7 @@ export function PageRouting() {
                 <Route path='/user_management' >
                     <UserManagement />
                 </Route>
-                <Route path="/wheeling_chart">
+                <Route path="/wheeling_charge">
                     <WheelingCharge />
                 </Route>
                 <Route path="/imbalance">

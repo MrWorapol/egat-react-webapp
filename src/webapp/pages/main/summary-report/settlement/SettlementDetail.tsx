@@ -1,5 +1,6 @@
 import { Grid, Typography } from '@mui/material'
 import { useSettlementReport } from '../../../../hooks/summary-report/settlement/useSettlementReport';
+import { ISettlementDetail } from '../../../../state/summary-report/settlement-report/settlement-detail-state';
 import { IImbalanceReport, ISettlementReport } from '../../../../state/summary-report/settlement-report/settlement-report-state';
 
 interface IMap {
@@ -10,17 +11,15 @@ export default function SettlementDetail() {
     const { settlementDetail } = useSettlementReport();
     console.log(settlementDetail);
     if (settlementDetail !== null && settlementDetail !== undefined) {
-        // console.log(`Call Settlement Detail ${settlementDetail.contractId}`);
-        // console.log(settlementDetail.userType);
-
-        if (settlementDetail.userType.toLowerCase() === "buyer") {
-            console.log(`build To Buy`)
-            return buildChooseToBuy(settlementDetail);
-        }
-        else {
-            console.log(`build Offer To Sell`)
-            return buildOfferToSell(settlementDetail);
-        }
+        // if(settlementDetail.imbalanceStatus === "")
+        // if (settlementDetail.userType.toLowerCase() === "buyer") {
+        //     console.log(`build To Buy`)
+        //     return buildChooseToBuy(settlementDetail);
+        // }
+        // else {
+        //     console.log(`build Offer To Sell`)
+        return buildSettlementDetail(settlementDetail);
+        // }
     } else {
 
         return (
@@ -100,13 +99,13 @@ function buildChooseToBuy(settlement: ISettlementReport) {
     )
 }
 
-function buildOfferToSell(settlement: ISettlementReport) {
-    let imbalance: IImbalanceReport | undefined;
-    if (settlement.imbalance !== undefined && settlement.imbalance.length > 0) {
-        imbalance = settlement.imbalance.find((imbalance) => { return imbalance.tradeType === "SELLER_IMBALANCE_UNDERCOMMIT" || imbalance.tradeType === "SELLER_IMBALANCE_OVERCOMMIT" })
-        console.log(`is settlement imbalance`)
-        console.log(imbalance);
-    }
+function buildSettlementDetail(settlement: ISettlementDetail) {
+    // let imbalance: IImbalanceReport | undefined;
+    // if (settlement.imbalance !== undefined && settlement.imbalance.length > 0) {
+    //     imbalance = settlement.imbalance.find((imbalance) => { return imbalance.tradeType === "SELLER_IMBALANCE_UNDERCOMMIT" || imbalance.tradeType === "SELLER_IMBALANCE_OVERCOMMIT" })
+    //     console.log(`is settlement imbalance`)
+    //     console.log(imbalance);
+    // }
     return (
         <Grid px={2} py={2} direction='column' sx={{ minHeight: '25vh' }}>
             <Grid item >
@@ -121,19 +120,24 @@ function buildOfferToSell(settlement: ISettlementReport) {
                     {`Contract ID : ${settlement.contractId}`}
                 </Typography>
             </Grid>
-            <Grid item py={1}>
-                <Typography sx={{ fontSize: '1.2em' }}>
+            <Grid container item direction='row' alignItems='center' pt={2}>
+                <Typography sx={{ fontSize: '1.2em', color: 'error.light' }}>
+                    {settlement.imbalanceType === "energyShortfall" && "Energy Shortfall"}
+                    {settlement.imbalanceType === "POOl" && "Energy Excess"}
+                </Typography>
+                
+                <Typography sx={{ fontSize: '1.2em' }} ml={2}>
                     {settlement.tradeMarket === "BILATERAL" && "Bilateral Market"}
                     {settlement.tradeMarket === "POOl" && "Pool Market"}
                 </Typography>
             </Grid>
-            <Grid item container xs={12} id='energy-info'>
+            <Grid item container xs={12} id='energy-info' mt={3}>
                 <Grid container item justifyContent='space-between' pl={4} pr={6} >
                     <Typography>
                         {'Energy Commited/Delivered'}
                     </Typography>
                     <Typography >
-                        {`${settlement.energyCommitted}/${imbalance ? settlement.energyCommitted - imbalance.amount : settlement.energyCommitted} kWh`}
+                        {`${(Math.round(settlement.energyCommited * 100) / 100).toFixed(2)}/${(Math.round(settlement.energyDeliverd * 100) / 100).toFixed(2)} kWh`}
                     </Typography>
                 </Grid>
                 <Grid container item justifyContent='space-between' pl={4} pr={6} >
@@ -142,28 +146,28 @@ function buildOfferToSell(settlement: ISettlementReport) {
                         {settlement.userType.toLowerCase() === 'buyer' && 'NET Buy'}
                     </Typography>
                     <Typography >
-                        {`${settlement.priceCommitted + settlement.tradingFee + settlement.wheelingChargeFee} Baht`}
+                        {`${(Math.round(settlement.netPrice * 100) / 100).toFixed(2)} Baht`}
                     </Typography>
                 </Grid>
-                {imbalance &&
+                {settlement.orderImbalanceAmount &&
                     <Grid container item justifyContent='space-between' pl={4} pr={6} >
                         <Typography>
                             {settlement.userType.toLowerCase() === 'seller' && 'Seller imbalance amount'}
                             {settlement.userType.toLowerCase() === 'buyer' && 'Buyer imbalance amount'}
                         </Typography>
                         <Typography >
-                            {`${imbalance.amount} kWh`}
+                            {`${(Math.round(settlement.orderImbalanceAmount * 100) / 100).toFixed(2)} kWh`}
                         </Typography>
                     </Grid>
                 }
-                {imbalance &&
+                {settlement.orderImbalance &&
                     <Grid container item justifyContent='space-between' pl={4} pr={6} >
                         <Typography>
                             {settlement.userType.toLowerCase() === 'seller' && 'Seller imbalance'}
                             {settlement.userType.toLowerCase() === 'buyer' && 'Buyer imbalance'}
                         </Typography>
                         <Typography >
-                            {`(${imbalance.price}) Baht`}
+                            {`(${(Math.round(settlement.orderImbalance * 100) / 100).toFixed(2)}) Baht`}
                         </Typography>
                     </Grid>
                 }
@@ -173,7 +177,7 @@ function buildOfferToSell(settlement: ISettlementReport) {
                         {settlement.userType.toLowerCase() === 'buyer' && 'NET energy price(NET Buy/Energy Used)'}
                     </Typography>
                     <Typography >
-                        {`${settlement.priceCommitted + settlement.tradingFee + settlement.wheelingChargeFee / (imbalance ? settlement.energyCommitted - imbalance.amount : settlement.energyCommitted)} Baht/kWh`}
+                        {` ${(Math.round(settlement.netEnergyPrice * 100) / 100).toFixed(2)} Baht/kWh`}
                     </Typography>
                 </Grid>
 

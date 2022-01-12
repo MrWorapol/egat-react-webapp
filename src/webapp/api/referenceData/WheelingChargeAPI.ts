@@ -5,19 +5,19 @@ import { IWheelingCharge } from "../../state/reference-data/wheeling-chart/wheel
 import { IWheelingLogs } from "../../state/reference-data/wheeling-chart/wheeling-log-state";
 
 interface IGetWheelingChargeRequest {
-    token?: IUserSession,
+    session: IUserSession,
 }
 interface IGetWheelingChargeResponse {
     context: IWheelingCharge[],
 }
 
 interface IPutWheelingChargeRequest {
-    token?: IUserSession,
+    session: IUserSession,
     wheelingCharge: IWheelingCharge,
 }
 
 interface IGetLogsRequest {
-    token?: IUserSession,
+    session: IUserSession,
     wheelingType: 'AS' | 'T' | 'D' | 'RE',
 }
 interface IGetLogsResponse {
@@ -33,7 +33,7 @@ export class WheelingChargeAPI {
         // let token = 'token';
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${req.session.accessToken}`,
         }
         try {
             response = await fetch(api, {
@@ -73,10 +73,9 @@ export class WheelingChargeAPI {
         const path = '/reference-data/wheeling-charge-setting/' + req.wheelingType + '/log'
         const api = this.uri + path;
         let response: Response;
-        let token = 'token';
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${req.session.accessToken}`,
         }
         try {
             response = await fetch(api, {
@@ -131,7 +130,7 @@ export class WheelingChargeAPI {
         let token = 'token';
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${req.session.accessToken}`,
         }
 
         let body = JSON.stringify(req.wheelingCharge);

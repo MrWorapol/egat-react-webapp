@@ -3,18 +3,18 @@ import { ISettlementReport } from "./settlement-report-state";
 
 export interface ISettlementDetail {
     contractId: string,
-    orderType: string, //buyer| seller
-    tradeMarket: string,
-    imbalanceType: string,
-    energyCommited: number,
+    userType: string, //buyer| seller
+    tradeMarket: string, //bilateral /pool market /long term 
+    imbalanceType: string, //shorfall | excess | contract
+    energyCommited: number, 
     energyDeliverd: number,
-    netBuy: number,
-    buyerImbalance: number,
-    buyerImbalanceAmount: number,
+    netPrice: number,
+    orderImbalance?: number,
+    orderImbalanceAmount?: number,
     netEnergyPrice: number,
 }
 
-export const settlementDetailState = atom<ISettlementReport | null>({
+export const settlementDetailState = atom<ISettlementDetail | null>({
     key: 'settlementDetailState',
     default: null,
 })

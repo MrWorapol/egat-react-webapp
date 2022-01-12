@@ -49,19 +49,19 @@ export function useAuthGuard() {
     }, []);
 
     const checkRefreshToken = useCallback(async () => {
-        // console.log(`checkRefreshToken`);
+        console.log(`checkRefreshToken`);
         let localSession = localStorage.getItem("session");
         if (localSession) {
             let decodeToken: SessionDecode = jwt_decode(localSession);
             if (decodeToken) {
                 let expireUnixTime = decodeToken.exp;
                 if (expireUnixTime) {
+                    // console.log(`expire on sesion:${dayjs(expireUnixTime).unix()}\n now unix${dayjs().unix()}`);
                     if (dayjs().unix() > expireUnixTime) {
                         localStorage.removeItem("session");
                         resetSessionState();
                         history.push('/login');
                     }
-                    // console.log(`expire on sesion:${dayjs(expireUnixTime).unix()}\n now unix${dayjs().unix()}`);
                 }
             }
         }

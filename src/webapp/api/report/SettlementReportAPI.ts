@@ -95,11 +95,15 @@ export class SettlementReportAPI {
             "payload.priceRuleApplied" as "priceRuleApplied",
             "payload.sellerId" as "sellerId",
             "payload.sellerType" as "sellerType",
-            "payload.tradeContractIds" as "tradeContractId",
+            "payload.tradeContractIds" as "tradeContractIds",
             "payload.tradeType" as "tradeType",
             "payload.tradingFee" as "tradingFee",
             "payload.wheelingChargeTotal" as "wheelingChargeFee",
-            "payload.priceRuleApplied" as "priceRuleApplied"
+            "payload.priceRuleApplied" as "priceRuleApplied",
+            "payload.reference.imbalanceBuyerOverCommit" as "imbalanceBuyerOverCommit",
+            "payload.reference.imbalanceBuyerUnderCommit" as "imbalanceBuyerUnderCommit", 
+            "payload.reference.imbalanceSellerOverCommit"as "imbalanceSellerOverCommit", 
+            "payload.reference.imbalanceSellerUnderCommit" as "imbalanceSellerUnderCommit"
             FROM "TradeOnEgat2"`,
             "resultFormat": "object"
 
@@ -130,8 +134,8 @@ export class SettlementReportAPI {
         }
     }
 
-    async getSettlementDetail(req: IGetSettlementDetailRequest): Promise<IGetSettlementDetailResponse> {
-        return { context: {} as ISettlementDetail };
-    }
+    // async getSettlementDetail(req: IGetSettlementDetailRequest): Promise<IGetSettlementDetailResponse> {
+    //     return { context: {} as ISettlementDetail };
+    // }
 
 }

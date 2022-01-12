@@ -119,6 +119,7 @@ export default function AllSettlementTable(props: IProps) {
                                 >
                                     {row.imbalanceStatus === "energyShortfall" && "Energy ShortFall"}
                                     {row.imbalanceStatus === "energyExcess" && "Energy Excess"}
+                                    {row.imbalanceStatus === "CONTRACT" && "CONTRACT"}
                                 </TableCell>
                                 <TableCell
                                     key={row.contractId + row.role + i}
