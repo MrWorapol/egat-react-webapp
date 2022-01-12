@@ -9,29 +9,66 @@ import { Editor}  from 'react-draft-wysiwyg';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';//render
 import { draftToMarkdown, markdownToDraft } from 'markdown-draft-js';
 import { useRecoilState } from 'recoil';
+
 import { useAllNews } from '../../../hooks/useAllNews';
 import NewsManagementAPI from '../../../api/news/newsManagementApi';
 
+import { NewsInfo } from '../../../state/news-management/news-info';
+import { INewsDetail, newsDetail } from '../../../state/news-management/news-detail';
+
 ;//npm i markdown-draft-js -s
 
-export default function CreateNewsDialog(this: any) {
+export default function CreateNewsDialog(this: any) 
+{
     const { closeDialog } = useDialog();
     const { putRecentsNews} = useAllNews();
+    const date = new Date('2015-03-04T00:00:00.000Z');
     const api = new NewsManagementAPI();
     // const [] = useRecoilState(newscreation);
     const { register, handleSubmit, watch, formState: { errors } } = useForm<NewsCreationState>();
-    const onSubmitForm = (data: NewsCreationState) => {
+    const onSubmitForm = (data: NewsCreationState) => 
+    {
        data.content = markdown;
        putRecentsNews(data);
-      //put api post here
-       
+       console.log(`${date.getDate()}/${date.getMonth()}/${date.getFullYear()}-${date.getUTCHours()}:${date.getUTCMinutes()}:${date.getUTCSeconds()}`);
+
+       if (typeof (data?.title) === 'string' &&
+        typeof (data?.content) === 'string')
+        {
+          newsrecentDetailholder.title = data.title;
+          newsrecentDetailholder.content = data.content;
+        }
+        callPostapi(newsrecentDetailholder);
       // console.log('data');
       // console.log(data);
       //  console.log(RecentNews);
       //  refreshAllNews();
-    };
+    }
     const [markdown,setMarkdown] = useState("");
 
+
+    let newsrecentDetailholder: NewsInfo= {
+      id: 'IDholder',
+      title: 'Titleholder',
+      date: 'Dateholder',
+      content: 'Contentholder',
+      status: 'Statusholder',
+    };
+
+    async function callPostapi(newsDetailholder : NewsInfo) 
+    {   
+        try {
+            //insert Id to newsDetail before send to api
+            await api.createNews({
+              newsInfo : newsDetailholder,
+            });
+        } catch (e) {
+            console.log(e);
+        }
+        console.log(`back from api`);
+        //return (<SnakBarNotification/>);
+        
+    }
     return (
         <>
             <Dialog

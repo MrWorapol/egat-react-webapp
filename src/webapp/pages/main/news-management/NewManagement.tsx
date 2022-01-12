@@ -1,4 +1,4 @@
-import { Button, Container, Grid, Typography , TextField,Box} from '@mui/material'
+import { Button, Container, Grid, Typography , TextField} from '@mui/material'
 import React,{ useState } from 'react'
 import SearchIcon from '@mui/icons-material/Search';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -55,7 +55,7 @@ export default function NewManagement() {
                         <TextField
                             autoFocus
                             margin="none"
-                            id="password"
+                            id="keywords"
                             label="Search"
                             type="text"
                             fullWidth
@@ -65,14 +65,13 @@ export default function NewManagement() {
                             InputProps={{
                                 endAdornment: (
                                   <InputAdornment position='end'>
-                                    <SearchIcon />
+                                    <SearchIcon/>
                                   </InputAdornment>
                                 ),
-                              }}
+                            }}
                         >
                         </TextField>
                     </Grid>
-
                         <Grid item container mt={2} >
                             {currentState === NavigationCurrentType.NEWS_MANAGEMENT && <NewsTableData />}
                         </Grid>
@@ -81,22 +80,26 @@ export default function NewManagement() {
         </Container>
     )
 
-    function buildCreateNewsButton() {
+    function buildCreateNewsButton() 
+    {
         return <>
-            <Button variant="contained" endIcon={<AddCircleOutlineIcon />} onClick={CreateNewsOnClicked}>
+            <Button variant="contained" endIcon={<AddCircleOutlineIcon />} onClick={createNewsOnClicked}>
                 Create News
             </Button>
         </>
 
     }
 
-    function CreateNewsOnClicked() {
+    function createNewsOnClicked() 
+    {
          showDialog({
              content: <CreateNewsDialog />,
              onClose: () => false,
              width: 'sm',
          });
+
     }
+
 
     
 }

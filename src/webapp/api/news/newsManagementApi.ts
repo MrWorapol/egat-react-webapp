@@ -16,7 +16,7 @@ interface IPublishNewsRequest {
 
 interface ICreateNewsRequest {
     token?: IUserSession,
-    admin: IAdminRegistratoinState,
+    //admin: IAdminRegistratoinState,
     newsInfo: NewsInfo,
 }
 

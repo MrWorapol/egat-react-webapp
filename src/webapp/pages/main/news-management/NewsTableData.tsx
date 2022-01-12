@@ -1,7 +1,8 @@
-import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, 
-    TableRow, Typography, useTheme, Button, ButtonGroup , Container , Menu, MenuItem } from '@mui/material'
+import {
+    Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination,
+    TableRow, Typography, useTheme, Button, Menu, MenuItem,Alert
+} from '@mui/material'
 
-import SearchIcon from '@mui/icons-material/Search';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -16,21 +17,22 @@ import React from 'react'
 import NewsManagementAPI from '../../../api/news/newsManagementApi';
 import { useAllNews } from '../../../hooks/useAllNews';
 import { NewsInfo } from '../../../state/news-management/news-info';
-import { INewsDetail,newsDetail } from '../../../state/news-management/news-detail';
+import { INewsDetail, newsDetail } from '../../../state/news-management/news-detail';
 import { useHistory } from 'react-router-dom';
 import { grey } from '@mui/material/colors';
 import { useRecoilState } from "recoil";
-import { Dialog , DialogActions ,DialogContent , DialogTitle } from '@mui/material'
+import { Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material'
 import { useDialog } from '../../../hooks/useDialog';
-import { Editor}  from 'react-draft-wysiwyg';
-import { EditorState,convertFromRaw } from 'draft-js';
-import {markdownToDraft } from 'markdown-draft-js';
-import MarkdownPreview from '@uiw/react-markdown-preview';
+import  SnakBarNotification  from '../../../components/SnakBarNotification';
+import { Editor } from 'react-draft-wysiwyg';
+import { EditorState, convertFromRaw } from 'draft-js';
+import { markdownToDraft } from 'markdown-draft-js';
+import MarkdownPreview from '@uiw/react-markdown-preview';//https://github.com/uiwjs/react-markdown-preview
 
-//https://github.com/uiwjs/react-markdown-preview
-
+import Snackbar, { SnackbarOrigin } from '@mui/material/Snackbar';
+import { useSnackbar } from '../../../hooks/useSnackbar';
 interface Column {
-    id: 'id' | 'title' | 'date' | 'content' | 'status' | 'action' ,
+    id: 'id' | 'title' | 'date' | 'content' | 'status' | 'action',
     label: string,
 
 }
@@ -45,63 +47,63 @@ interface TablePaginationActionsProps {
     ) => void;
 }
 
-    function TablePaginationActions(props: TablePaginationActionsProps) {
-        const theme = useTheme();
-        const { count, page, rowsPerPage, onPageChange } = props;
+function TablePaginationActions(props: TablePaginationActionsProps) {
+    const theme = useTheme();
+    const { count, page, rowsPerPage, onPageChange } = props;
 
-        const handleFirstPageButtonClick = (
-            event: React.MouseEvent<HTMLButtonElement>,
-        ) => {
-            onPageChange(event, 0);
-        };
+    const handleFirstPageButtonClick = (
+        event: React.MouseEvent<HTMLButtonElement>,
+    ) => {
+        onPageChange(event, 0);
+    };
 
-        const handleBackButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-            onPageChange(event, page - 1);
-        };
+    const handleBackButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        onPageChange(event, page - 1);
+    };
 
-        const handleNextButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-            onPageChange(event, page + 1);
-        };
+    const handleNextButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        onPageChange(event, page + 1);
+    };
 
-        const handleLastPageButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-            onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
-        };
+    const handleLastPageButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
+    };
 
-        return (
-            <Box sx={{ flexShrink: 0, ml: 2.5 }}>
-                <IconButton
-                    onClick={handleFirstPageButtonClick}
-                    disabled={page === 0}
-                    aria-label="first page"
-                >
-                    {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
-                </IconButton>
-                <IconButton
-                    onClick={handleBackButtonClick}
-                    disabled={page === 0}
-                    aria-label="previous page"
-                >
-                    {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-                </IconButton>
-                <IconButton
-                    onClick={handleNextButtonClick}
-                    disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-                    aria-label="next page"
-                >
-                    {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
-                </IconButton>
-                <IconButton
-                    onClick={handleLastPageButtonClick}
-                    disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-                    aria-label="last page"
-                >
-                    {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
-                </IconButton>
-            </Box>
-        );
-    }
+    return (
+        <Box sx={{ flexShrink: 0, ml: 2.5 }}>
+            <IconButton
+                onClick={handleFirstPageButtonClick}
+                disabled={page === 0}
+                aria-label="first page"
+            >
+                {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
+            </IconButton>
+            <IconButton
+                onClick={handleBackButtonClick}
+                disabled={page === 0}
+                aria-label="previous page"
+            >
+                {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+            </IconButton>
+            <IconButton
+                onClick={handleNextButtonClick}
+                disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+                aria-label="next page"
+            >
+                {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+            </IconButton>
+            <IconButton
+                onClick={handleLastPageButtonClick}
+                disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+                aria-label="last page"
+            >
+                {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
+            </IconButton>
+        </Box>
+    );
+}
 
-    
+
 
 export default function NewsTableData() {
     console.log(`call userTable Data`);
@@ -109,6 +111,7 @@ export default function NewsTableData() {
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     // const { showDialog } = useDialog();
     const history = useHistory();
+    
     /////set recoil
     const { NewsInfoData, refreshAllNews,
         putRecentsNews, } = useAllNews();
@@ -146,7 +149,7 @@ export default function NewsTableData() {
     };
 
     console.log(`user data on render ${NewsInfoData}`);
-    
+
     //set minwidth ,theme
     return (
         <Paper sx={{ width: '100%', mb: 2 }} >
@@ -170,7 +173,7 @@ export default function NewsTableData() {
                             <TableRow style={{ height: 53 * emptyRows }}>
                                 <TableCell colSpan={6} />
                             </TableRow>
-                            }
+                        }
                         {NewsInfoData.length !== 0 && (rowsPerPage > 0
                             ? NewsInfoData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             : NewsInfoData
@@ -194,7 +197,7 @@ export default function NewsTableData() {
                                 <TableCell
                                 // key={row.email + i}
                                 >
-                                  <MarkdownPreview source={row.content} />  
+                                    <MarkdownPreview source={row.content} />
                                 </TableCell>
                                 <TableCell
                                 // key={row.phoneNumber + i}
@@ -202,8 +205,9 @@ export default function NewsTableData() {
                                     {row.status}
                                 </TableCell>
                                 <TableCell >
-                                    {<IconButton >
-                                        <BasicMenu data = {row}/>
+                                    {
+                                    <IconButton >
+                                        <BasicMenu data={row} />
                                     </IconButton>
                                     }
                                 </TableCell>
@@ -216,11 +220,10 @@ export default function NewsTableData() {
                             </TableRow>
                         )}
                     </TableBody>
-                   
                 </Table>
 
             </TableContainer>
-            
+
             <TablePagination
                 component='div'
                 sx={{ right: 0 }}
@@ -239,207 +242,250 @@ export default function NewsTableData() {
                 onRowsPerPageChange={handleChangeRowsPerPage}
                 ActionsComponent={TablePaginationActions}
             />
+        
         </Paper>
     );
 
 }
-    function BasicMenu({data}:{ data:NewsInfo}) {
-        const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-        const open = Boolean(anchorEl);
-        const api = new NewsManagementAPI();
-        let iNewsDetailholder : INewsDetail ;
+function BasicMenu({ data }: { data: NewsInfo }) {
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
+    const api = new NewsManagementAPI();
+    let newsDetailholder: INewsDetail;
 
-        iNewsDetailholder = {
-            id : 'IDholder',
-            title: 'Titleholder',
-            date : 'Dateholder',
-            content : 'Contentholder',
-            status : 'Statusholder',
-            };
-        
-        const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    newsDetailholder = {
+        id: 'IDholder',
+        title: 'Titleholder',
+        date: 'Dateholder',
+        content: 'Contentholder',
+        status: 'Statusholder',
+    };
+
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
-        };
+    };
 
-        const handleClose = () => {
+    const handleClose = () => {
         setAnchorEl(null);
-        };
-        
-        if (typeof(data?.id)=='string' && 
-        typeof(data?.title)=='string'&&
-        typeof(data?.date)=='string'&&
-        typeof(data?.content)=='string'&&
-        typeof(data?.status)=='string') {
-            iNewsDetailholder.id = data.id;
-            iNewsDetailholder.title = data.title;
-            iNewsDetailholder.title = data.date;
-            iNewsDetailholder.content = data.content;
-            iNewsDetailholder.title = data.status;
+    };
+
+    if (typeof (data?.id) === 'string' &&
+        typeof (data?.title) === 'string' &&
+        typeof (data?.date) === 'string' &&
+        typeof (data?.content) === 'string' &&
+        typeof (data?.status) === 'string') {
+        newsDetailholder.id = data.id;
+        newsDetailholder.title = data.title;
+        newsDetailholder.title = data.date;
+        newsDetailholder.content = data.content;
+        newsDetailholder.title = data.status;
+    }
+
+    const { showDialog } = useDialog();
+    const { showSnackbar } = useSnackbar();
+
+    function viewNewsDetailOnClicked(data: NewsInfo) 
+    {
+        console.log(data.title);
+        console.log(data.content);
+
+        showDialog({
+            content: <ScrollDialog NewsPara={data} />,
+            onClose: () => false,
+            width: 'sm',
+        });
+    }
+
+    async function publishOnClicked() 
+    {   
+        console.log(newsDetailholder);
+        console.log(`is Publish`);
+        try {
+            //insert Id to newsDetail before send to api
+            await api.publishNews({
+                // token: userSession,
+                newsDetail: newsDetailholder,
+            });
+        } catch (e) {
+            console.log(e);
         }
-
-
-        //console.log(data);
-        
-        const { showDialog } = useDialog();
-        function ViewNewsDetailOnClicked(data : NewsInfo) {
-        
-            console.log(data.title);
-            console.log(data.content);
-        
-            showDialog({
-                content: <ScrollDialog NewsPara={data} />,
+        console.log(`back from api`);
+        showSnackbar({
+                content: <PositionedSnackbar/>,
                 onClose: () => false,
                 width: 'sm',
-             });
+                anchorOrigin : {
+                    vertical: 'center',
+                    horizontal : 'buttom'
+                },
+                autoHideDuration : 6000 
+            })
+        //showDialog //showSnackbar
+    }
+
+    async function deleteOnClicked() 
+    {
+        console.log(newsDetailholder);
+        console.log(`is Delete`);
+
+        try {
+            //insert Id to newsDetail before send to api
+            await api.deleteNews({
+                // token: userSession,
+                newsDetail: newsDetailholder,
+            });
+        } catch (e) {
+            console.log(e);
         }
+        console.log(`back from api`);
+    }
 
 
-        async function PublishOnClicked() {
-        
-            console.log(iNewsDetailholder);
-            console.log(`is Publish`);
-
-            try {
-                //insert Id to newsDetail before send to api
-                await api.publishNews({
-                    // token: userSession,
-                    newsDetail: iNewsDetailholder,
-                });
-            } catch (e) {
-    
-            }
-            console.log(`back from api`);
-        }
-
-        async function DeleteOnClicked() {
-        
-            console.log(iNewsDetailholder);
-            console.log(`is Delete`);
-
-            try {
-                //insert Id to newsDetail before send to api
-                await api.deleteNews({
-                    // token: userSession,
-                    newsDetail: iNewsDetailholder,
-                });
-            } catch (e) {
-    
-            }
-            console.log(`back from api`);
-        }
-
-
-        return (
+    return (
         <div>
             <Button
-            id="basic-button"
-            aria-controls="basic-menu"
-            aria-haspopup="true"
-            aria-expanded={open ? 'true' : undefined}
-            onClick={handleClick}
-            
+                id="basic-button"
+                aria-controls="basic-menu"
+                aria-haspopup="true"
+                aria-expanded={open ? 'true' : undefined}
+                onClick={handleClick}
+
             >
-            <MoreVertIcon
-            
-            sx={{ color: grey[900] }}
-            />
+                <MoreVertIcon
+
+                    sx={{ color: grey[900] }}
+                />
             </Button>
-                                        
+
             <Menu
-            id="basic-menu"
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
-            MenuListProps={{
-                'aria-labelledby': 'basic-button',
-            }}
+                id="basic-menu"
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                MenuListProps={{
+                    'aria-labelledby': 'basic-button',
+                }}
             >
-                <MenuItem onClick={() => {ViewNewsDetailOnClicked(data)}}>
+                <MenuItem onClick={() => { viewNewsDetailOnClicked(data) }}>
                     <VisibilityIcon />
                     View
                 </MenuItem>
-                <MenuItem onClick={() => {PublishOnClicked()}}>
-                    <CheckCircleIcon/>
+                <MenuItem onClick={() => { publishOnClicked() }}>
+                    <CheckCircleIcon />
                     Publish
                 </MenuItem>
-                <MenuItem onClick={() => {DeleteOnClicked()}}>
-                    <DeleteIcon/>
+                <MenuItem onClick={() => { deleteOnClicked() }}>
+                    <DeleteIcon />
                     Delete
                 </MenuItem>
             </Menu>
         </div>
-        );
-    }
+    );
+}
 
 
-    function ScrollDialog( {NewsPara}:{ NewsPara:NewsInfo}){
-        
-        //const [scroll, setScroll] = React.useState<DialogProps['scroll']>('paper');
-        const { closeDialog } = useDialog();
-        const ID =  NewsPara?.id 
-        const tittle =  NewsPara?.title;
+function ScrollDialog({ NewsPara }: { NewsPara: NewsInfo }) {
 
-        var stringcontent = 'stringholder';
-        var content = EditorState.createEmpty();
-        //console.log(NewsPara);
-        const [editorState, setEditorState] = React.useState(
-            () => {
-                if (typeof(NewsPara?.content) === 'string'){
-                    //console.log(NewsPara?.content);
-                    stringcontent = NewsPara?.content;
-                    //console.log(stringcontent);
-                };
+    //const [scroll, setScroll] = React.useState<DialogProps['scroll']>('paper');
+    const { closeDialog } = useDialog();
+    const ID = NewsPara?.id
+    const tittle = NewsPara?.title;
+    
+    var stringcontent = 'stringholder';
+    var content = EditorState.createEmpty();
+    //console.log(NewsPara);
+    const [editorState, setEditorState] = React.useState(
+        () => {
+            if (typeof (NewsPara?.content) === 'string') {
+                //console.log(NewsPara?.content);
+                stringcontent = NewsPara?.content;
+                //console.log(stringcontent);
+            };
 
             const contentState = convertFromRaw(markdownToDraft(stringcontent));
             //https://www.markdownguide.org/cheat-sheet/
             console.log(contentState);
             return content
-                ?EditorState.createWithContent(contentState)
-                :EditorState.createEmpty();
-            }
-        );
+                ? EditorState.createWithContent(contentState)
+                : EditorState.createEmpty();
+        }
+    );
 
-        return ( 
-            <div>
+    return (
+        <div>
             <Dialog
                 open={true}
                 fullWidth={true}
-                maxWidth = "md"
-                PaperProps={{ 
-                    sx: {  
-                        mx: 5 ,
-                        width: "941", 
-                        height: "599" 
-                        }
-                    }}
+                maxWidth="md"
+                PaperProps={{
+                    sx: {
+                        mx: 5,
+                        width: "941",
+                        height: "599"
+                    }
+                }}
                 scroll="paper"
                 aria-labelledby="scroll-dialog-title"
                 aria-describedby="scroll-dialog-description"
             >
                 <DialogTitle id="scroll-dialog-title">
-                <Typography color='secondary.main' variant='h6' sx={{ fontWeight: 'bold' }}>
-                    News ID : {ID}
-                </Typography>
+                    <Typography color='secondary.main' variant='h6' sx={{ fontWeight: 'bold' }}>
+                        News ID : {ID}
+                    </Typography>
                 </DialogTitle>
                 <DialogTitle sx={{ mx: 5 }}>Title: {tittle}</DialogTitle>
 
                 <DialogContent sx={{ mx: 5 }}>
                     <Paper variant="outlined">
-                        <Editor 
+                        <Editor
                             editorState={editorState}
                             toolbarHidden
-                            readOnly 
+                            readOnly
                         />
-                    </Paper>        
-                </DialogContent>   
+                    </Paper>
+                </DialogContent>
                 <DialogActions>
-                <Button variant='outlined' onClick={closeDialog}>
-                                Close
-                </Button>
+                    <Button variant='outlined' onClick={closeDialog}>
+                        Close
+                    </Button>
                 </DialogActions>
-            </Dialog>      
-            </div>  
-        );
-    }
+            </Dialog>
+        </div>
+    );
+}
 
+  interface State extends SnackbarOrigin {
+    open: boolean;
+  }
   
+  function PositionedSnackbar() {
+    const { closeSnackbar } = useSnackbar();
+    const text = 'text holder';
+    const [state, setState] = React.useState<State>({
+      open: true,
+      vertical: 'bottom',
+      horizontal: 'center',
+    });
+    const { vertical, horizontal, open } = state;
+    const handleClick = (newState: SnackbarOrigin) => () => {
+      setState({ open: true, ...newState });
+    };
+  
+    const handleClose = () => {
+      setState({ ...state, open: false });
+    };
+
+    return (
+      <div>
+        <Snackbar
+          anchorOrigin={{ vertical, horizontal }}
+          open={true} 
+          autoHideDuration={6000} 
+        >
+            <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+                This is a success message!
+            </Alert>
+        </Snackbar>
+      </div>
+    );
+  }
