@@ -1,7 +1,7 @@
 
-import {  Grid, Typography } from '@mui/material'
+import { Grid, Typography } from '@mui/material'
 import { Box } from '@mui/system'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigationSet } from '../../../../hooks/useNavigationSet';
 import { NavigationCurrentType } from '../../../../state/navigation-current-state';
 import PeriodComponent from '../PeriodComponent';
@@ -15,10 +15,10 @@ import { useNavigationGet } from '../../../../hooks/useNavigationGet';
 import { useRecoilValue } from 'recoil';
 import { userSessionState } from '../../../../state/user-sessions';
 
-export default function BillingReport()  {
+export default function BillingReport() {
     useNavigationSet(NavigationCurrentType.BILLING_REPORT);
-    const session = useRecoilValue(userSessionState);
     const { currentState } = useNavigationGet();
+    const session = useRecoilValue(userSessionState);
 
     const {
         refreshInvoice,
@@ -31,15 +31,18 @@ export default function BillingReport()  {
 
 
     const refreshPage = useCallback(async () => {
-        refreshInvoice();
+        if (session) {
+            refreshInvoice(session);
+        }
     }, []);
 
-    useEffect(() => {
-
-        return () => {
-
+    const buildNetPayment = useMemo(() => {
+        if (netPaymentReport) {
+            return <NetPayment netPayment={netPaymentReport} />
         }
-    }, [netPaymentReport, energyPaymentReport, gridUsedReport, wheelingChargeReport])
+    }, [netPaymentReport])
+
+
     if (session && currentState === NavigationCurrentType.BILLING_REPORT) {
         return (
             <Box sx={{ width: `100%`, px: 2, pb: 2, maxWidth: '100%', flexGrow: 1 }}>
@@ -48,7 +51,7 @@ export default function BillingReport()  {
                         <PeriodComponent key='billing-period' refreshPage={refreshPage} />
                     </Grid>
                     <Grid item container >
-                        {netPaymentReport && <NetPayment netPayment={netPaymentReport} />}
+                        {buildNetPayment}
                     </Grid>
                     <Grid item container >
                         {energyPaymentReport && <NetEnergyTrading netEnergyTrading={energyPaymentReport} />}
@@ -66,6 +69,8 @@ export default function BillingReport()  {
         console.log(`cannot load page`);
         return <>Loading...</>;
     }
+
+
 }
 
 

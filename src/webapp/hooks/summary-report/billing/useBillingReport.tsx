@@ -4,7 +4,7 @@ import { BillingReportAPI } from "../../../api/report/BillingReportAPI";
 import { UserReportAPI } from "../../../api/report/UserReportAPI";
 import { NavigationCurrentType } from "../../../state/navigation-current-state";
 import { billingState, IInvoice } from "../../../state/summary-report/billing-report/billing-report-state"
-import { userSessionState } from "../../../state/user-sessions";
+import { IUserSession, userSessionState } from "../../../state/user-sessions";
 import { useNavigationGet } from "../../useNavigationGet";
 import dayjs from 'dayjs';
 import usePeriodTime from "../usePeriodTime";
@@ -12,30 +12,34 @@ import { IUserMeterInfo } from "../../../state/summary-report/user-report/user-r
 import { energyPaymentReportState, IEnergyPaymentState, IEnergyPaymentTable } from "../../../state/summary-report/billing-report/energy-payment-state";
 import { INetPaymentState, netPaymentReportState, INetPaymentTable } from "../../../state/summary-report/billing-report/net-payment-state";
 import { gridUsedReportState, IGridUsedState, IGridUsedTable } from "../../../state/summary-report/billing-report/grid-used-state";
-import { IWheelingChargeTable, IWheelingReportState, wheelingReportState } from "../../../state/summary-report/billing-report/wheeling-charge-state";
+import { IWheelingReportState, wheelingReportState } from "../../../state/summary-report/billing-report/wheeling-charge-state";
 import { SettlementReportAPI } from "../../../api/report/SettlementReportAPI";
 import { IImbalanceReport } from "../../../state/summary-report/settlement-report/settlement-report-state";
+import { useLoadingScreen } from "../../useLoadingScreen";
 import { useAuthGuard } from "../../useAuthGuard";
 
 export default function useBillingReport() {
+    const session = useRecoilValue(userSessionState);
+    // const { session } = useAuthGuard();
+    const { currentState } = useNavigationGet();
+    const { period } = usePeriodTime();
+    const { showLoading, hideLoading } = useLoadingScreen();
+    const billingAPI = new BillingReportAPI();
+    const userMeterApi = new UserReportAPI();
+    const settlementAPI = new SettlementReportAPI();
+
+
     const [invoiceReport, setInvoiceReport] = useRecoilState(billingState);
     const [netPaymentReport, setNetPaymentReport] = useRecoilState(netPaymentReportState);
     const [energyPaymentReport, setEnergyPaymentReport] = useRecoilState(energyPaymentReportState);
     const [gridUsedReport, setGridUsedReport] = useRecoilState(gridUsedReportState);
     const [wheelingChargeReport, setWheelingChargeReport] = useRecoilState(wheelingReportState);
 
-    // const session = useRecoilValue(userSessionState);
-    const {session} = useAuthGuard();
-    const { currentState } = useNavigationGet();
-    const { period } = usePeriodTime();
-
-    const billingAPI = new BillingReportAPI();
-    const userMeterApi = new UserReportAPI();
-    const settlementAPI = new SettlementReportAPI();
-
-    const refreshInvoice = useCallback(async () => {
-        if (session) {
-            const userMeterInfos = await userMeterApi.getUserMeterInfo({ startDate: dayjs(period.startDate).toString(), endDate: dayjs(period.endDate).toString(), region: period.region, roles: ["roles"], area: "area", session })
+    const refreshInvoice = useCallback(async (session: IUserSession) => {
+        showLoading(15);
+        if (session !== null) {
+            console.log(`call api`);
+            let userMeterInfos = await userMeterApi.getUserMeterInfo({ startDate: dayjs(period.startDate).toString(), endDate: dayjs(period.endDate).toString(), region: period.region, roles: ["roles"], area: "area", session })
             let invoiceReports = await billingAPI.getInvoiceReport({ session });
             let tradeDatas = await settlementAPI.getTradeDataReport({ session });
             console.log(invoiceReports);
@@ -87,9 +91,10 @@ export default function useBillingReport() {
                 console.log(`set Billing Report State`);
             }
         }
+        hideLoading(15);
 
     }, [])
-    const InsertNetPaymentReport = useCallback((netPaymentData: INetPaymentState, invoiceWithMeters: IInvoice[], user: IUserMeterInfo) => {
+    const InsertNetPaymentReport = (netPaymentData: INetPaymentState, invoiceWithMeters: IInvoice[], user: IUserMeterInfo) => {
         let row: INetPaymentTable = {
             meterId: user.meterId,
             meterName: user.meterName,
@@ -106,11 +111,14 @@ export default function useBillingReport() {
             netPaymentData.chart.tradingPayment += invoiceWithMeter.price + invoiceWithMeter.tradingFee + (invoiceWithMeter.price * invoiceWithMeter.vat / 100) //energyTradepayment netPrice
             netPaymentData.chart.gridUsed += invoiceWithMeter.reference.touTariff; //GridUsed Price
             netPaymentData.chart.wheelingCharge += invoiceWithMeter.wheelingChargeTotal; //GridUsed Price
+            // console.log(`tradingPayment : ${netPaymentData.chart.tradingPayment}`);
+            // console.log(`gridUsed : ${netPaymentData.chart.gridUsed}`);
+            // console.log(`wheelingCharge: ${netPaymentData.chart.wheelingCharge}`);
         })
         netPaymentData.table.push(row);
-    }, []);
+    }
 
-    const InsertEnergyPaymentReport = useCallback((energyPaymentData: IEnergyPaymentState, invoiceWithMeters: IInvoice[], user: IUserMeterInfo) => {
+    const InsertEnergyPaymentReport = (energyPaymentData: IEnergyPaymentState, invoiceWithMeters: IInvoice[], user: IUserMeterInfo) => {
         let row: IEnergyPaymentTable = { meterId: user.meterId, meterName: user.meterName, role: user.role, area: user.area, netPrice: 0 };
         invoiceWithMeters.map((invoiceWithMeter: IInvoice) => {
             row.netPrice += invoiceWithMeter.price + invoiceWithMeter.tradingFee + (invoiceWithMeter.price * invoiceWithMeter.vat / 100) //energyTradepayment netPrice
@@ -150,10 +158,10 @@ export default function useBillingReport() {
         });
         energyPaymentData.table.push(row);
 
-    }, []);
+    };
 
     //wait for confirm with p'chin about  data are already use or need to query with trade Table
-    const InsertGridUsedReport = useCallback((gridUsedData: IGridUsedState, invoiceWithMeters: IInvoice[], user: IUserMeterInfo) => {
+    const InsertGridUsedReport = (gridUsedData: IGridUsedState, invoiceWithMeters: IInvoice[], user: IUserMeterInfo) => {
         invoiceWithMeters.map((invoiceWithMeter) => {
             let row: IGridUsedTable = {
                 meterId: user.meterId,
@@ -190,34 +198,40 @@ export default function useBillingReport() {
             gridUsedData.gridChart.discount += invoiceWithMeter.reference.gridUsedDiscount;
             gridUsedData.table.push(row);
         })
-    }, []);
+    };
     //issue about data
-    const InsertWheelingChargeReport = useCallback((wheelingData: IWheelingReportState, invoiceWithMeters: IInvoice[], user: IUserMeterInfo, tradeDatas: IImbalanceReport[]) => {
-
+    const InsertWheelingChargeReport = (wheelingData: IWheelingReportState, invoiceWithMeters: IInvoice[], user: IUserMeterInfo, tradeDatas: IImbalanceReport[]) => {
+        let wheelingChargeByMeterSummary: { [key: string]: number } = { "mea": 0, "pea": 0, "meaegat": 0, "peaegat": 0, "meapeaegat": 0 };
         invoiceWithMeters.map((invoiceWithMeter) => {
             let wheelingChargeType = tradeDatas.find((tradeData) => { return tradeData.tradeDataId === invoiceWithMeter.tradeId });
 
-            let row: IWheelingChargeTable = {
-                meterId: user.meterId, meterName: user.meterName, role: user.role, area: user.area,
-                price: invoiceWithMeter.wheelingChargeTotal,/*dont sure is correct for wheelingcharge fee  */
-                wheelingCharge: wheelingChargeType?.priceRuleApplied || "Cannot Find Type", //how to get type of wheeling charge
+            // let row: IWheelingChargeTable = { //group by meterId
+            //     meterId: user.meterId, meterName: user.meterName, role: user.role, area: user.area,
+            //     price: invoiceWithMeter.wheelingChargeTotal,/*dont sure is correct for wheelingcharge fee  */
+            //     wheelingCharge: wheelingChargeType?.priceRuleApplied || "Cannot Find Type", //how to get type of wheeling charge
 
-            };
+            // };
+
             if (wheelingChargeType && wheelingChargeType.priceRuleApplied) {
                 switch (wheelingChargeType.priceRuleApplied.toLowerCase()) {
                     case "mea":
+                        wheelingChargeByMeterSummary.mea += invoiceWithMeter.wheelingChargeTotal;
                         wheelingData.summary.mea += invoiceWithMeter.wheelingChargeTotal;
                         break;
                     case "pea":
+                        wheelingChargeByMeterSummary.pea += invoiceWithMeter.wheelingChargeTotal;
                         wheelingData.summary.pea += invoiceWithMeter.wheelingChargeTotal;
                         break;
                     case "meaegat":
+                        wheelingChargeByMeterSummary.meaegat += invoiceWithMeter.wheelingChargeTotal;
                         wheelingData.summary.meaegat += invoiceWithMeter.wheelingChargeTotal;
                         break;
                     case "peaegat":
+                        wheelingChargeByMeterSummary.peaegat += invoiceWithMeter.wheelingChargeTotal;
                         wheelingData.summary.peaegat += invoiceWithMeter.wheelingChargeTotal;
                         break;
                     case "meapeaegat":
+                        wheelingChargeByMeterSummary.meapeaegat += invoiceWithMeter.wheelingChargeTotal;
                         wheelingData.summary.meapeaegat += invoiceWithMeter.wheelingChargeTotal;
                         break;
                     default:
@@ -230,17 +244,38 @@ export default function useBillingReport() {
             wheelingData.netSummary.d += invoiceWithMeter.wheelingChargeD;
             wheelingData.netSummary.re += invoiceWithMeter.wheelingChargeRe;
             wheelingData.netSummary.vat += invoiceWithMeter.vat;
-            wheelingData.table.push(row);
+            // wheelingData.table.push(row);
         });
-    }, []);
+        Object.keys(wheelingChargeByMeterSummary).forEach((wheelingType: string) => { //group by meterId && wheelingChargeType 
+            if (wheelingChargeByMeterSummary[wheelingType] > 0) {
+                wheelingData.table.push(
+                    {
+                        meterId: user.meterId,
+                        meterName: user.meterName,
+                        role: user.role,
+                        area: user.area,
+                        price: wheelingChargeByMeterSummary[wheelingType],
+                        wheelingCharge: wheelingType
+                    }
+                )
+            }
+        })
+    }
+
     useEffect(() => {
         if (session && currentState === NavigationCurrentType.BILLING_REPORT) {
-            if (!invoiceReport) {
+            if ( !energyPaymentReport && !gridUsedReport && !wheelingChargeReport) {
                 console.log(`call refresh Invoice`);
-                refreshInvoice();
+                console.log(session);
+                refreshInvoice(session);
             }
         }
-    })
+        return () => {
+
+        }
+    }, [currentState])
+
+
     return {
         invoiceReport,
         refreshInvoice,

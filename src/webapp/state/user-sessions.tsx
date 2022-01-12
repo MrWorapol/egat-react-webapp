@@ -6,7 +6,7 @@ export interface IUserSession {
   refreshToken: string;
   lasttimeLogIn: Date;
 }
-console.log(`hello session`);
+// console.log(`hello session`);
 export const userSessionState = atom<IUserSession | null>({
   key: "userSession",
   default: null,

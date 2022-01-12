@@ -13,7 +13,7 @@ export default function GridUsedChart(props: IProps) {
         netTOUTariff,
         amountTOUTariff } = props.gridUsed;
     const [typeChart, setTypeChart] = useState('netTouTariffSummary');
-   
+
     useEffect(() => {
     }, [typeChart])
 
@@ -92,12 +92,12 @@ function buildTOUTariffChart(tariff: ITOUTariffChart): JSX.Element {
 function buildGridUsedChart(gridUsed: IGridUsedChart): JSX.Element {
     let sum = gridUsed.amount + gridUsed.discount + gridUsed.ft + gridUsed.gridUsed + gridUsed.serviceCharge + gridUsed.vat;
     let labels = [
-        `Grid Used : ${Number(gridUsed.gridUsed * 100).toFixed(2)} Baht ${Number(gridUsed.gridUsed * 100 / sum).toFixed(2)}%`,
-        `ค่าบริการ : ${Number(gridUsed.serviceCharge* 100).toFixed(2)} Baht ${Number(gridUsed.serviceCharge * 100 / sum).toFixed(2)}%`,
-        `ค่าไฟฟ้าผันแปร(Ft) : ${Number(gridUsed.ft * 100).toFixed(2)} Baht ${Number(gridUsed.ft * 100 / sum).toFixed(2)}%`,
-        `ร่วมค่าไฟฟ้าก่อนภาษีมูลค่าเพิ่ม :  ${Number(gridUsed.amount* 100).toFixed(2)} Baht ${Number(gridUsed.amount * 100 / sum).toFixed(2)}%`,
-        `VAT :  ${Number(gridUsed.vat * 100).toFixed(2)} Baht ${Number(gridUsed.vat * 100 / sum).toFixed(2)}%`,
-        `ส่วนลดค่าพลังงานไฟฟ้า : ${Number(gridUsed.discount* 100).toFixed(2)} Baht${Number(gridUsed.discount * 100 / sum).toFixed(2)}%`,
+        `Grid Used : ${(Math.round(gridUsed.gridUsed * 100) / 100).toFixed(2)} Baht ${Number(gridUsed.gridUsed * 100 / sum).toFixed(2)}%`,
+        `ค่าบริการ : ${(Math.round(gridUsed.serviceCharge* 100) / 100).toFixed(2)} Baht ${Number(gridUsed.serviceCharge * 100 / sum).toFixed(2)}%`,
+        `ค่าไฟฟ้าผันแปร(Ft) : ${Number(gridUsed.ft).toFixed(2)} Baht ${Number(gridUsed.ft * 100 / sum).toFixed(2)}%`,
+        `ร่วมค่าไฟฟ้าก่อนภาษีมูลค่าเพิ่ม :  ${Number(gridUsed.amount).toFixed(2)} Baht ${Number(gridUsed.amount * 100 / sum).toFixed(2)}%`,
+        `VAT :  ${Number(gridUsed.vat).toFixed(2)} Baht ${Number(gridUsed.vat * 100 / sum).toFixed(2)}%`,
+        `ส่วนลดค่าพลังงานไฟฟ้า : ${Number(gridUsed.discount).toFixed(2)} Baht${Number(gridUsed.discount * 100 / sum).toFixed(2)}%`,
 
     ];
 

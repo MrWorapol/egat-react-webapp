@@ -23,7 +23,7 @@ export default function PeriodComponent(props: PeriodProps) {
 
     let isCurrentMonth = dayjs().diff(period.startDate, 'month') === 0 && dayjs().diff(period.startDate, 'year') === 0 ? true : false;
 
-    console.log(`current Momth : ${isCurrentMonth}\t diff year:${dayjs().diff(period.startDate, 'year')}`);
+    // console.log(`current Momth : ${isCurrentMonth}\t diff year:${dayjs().diff(period.startDate, 'year')}`);
     const debounceFn = useDebouncedCallback(() => {
         showLoading(1);
         try {
@@ -164,7 +164,7 @@ export default function PeriodComponent(props: PeriodProps) {
                         onChange={(newValue) => {
                             if (newValue) {
                                 handleChangeMonth(newValue);
-                                console.log(`new Month Select${newValue.format('DD/MM/YYYY')}`);
+                                // console.log(`new Month Select${newValue.format('DD/MM/YYYY')}`);
 
                             }
                         }}

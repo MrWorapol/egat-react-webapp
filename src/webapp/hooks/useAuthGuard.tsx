@@ -45,11 +45,11 @@ export function useAuthGuard() {
             history.push('/login');
             return;
         }
-        setInit(!init);
+        setInit(false);
     }, []);
 
     const checkRefreshToken = useCallback(async () => {
-        console.log(`checkRefreshToken`);
+        // console.log(`checkRefreshToken`);
         let localSession = localStorage.getItem("session");
         if (localSession) {
             let decodeToken: SessionDecode = jwt_decode(localSession);
@@ -59,6 +59,7 @@ export function useAuthGuard() {
                     if (dayjs().unix() > expireUnixTime) {
                         localStorage.removeItem("session");
                         resetSessionState();
+                        history.push('/login');
                     }
                     // console.log(`expire on sesion:${dayjs(expireUnixTime).unix()}\n now unix${dayjs().unix()}`);
                 }
@@ -66,11 +67,14 @@ export function useAuthGuard() {
         }
     }, [])
     useEffect(() => {
-        // console.log('call auth guard' + count);
         // count++;
         if (init === true) { //changeto  !init when integration
+            console.log('call auth Initial');
             loadLocalStorage();
         } else {
+            console.log('session Loadable');
+            console.log(sessionValue);
+
             checkRefreshToken();
             //case not login
             if (!sessionValue) {

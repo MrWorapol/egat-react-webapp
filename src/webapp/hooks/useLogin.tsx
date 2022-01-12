@@ -34,6 +34,7 @@ export function useLogin() {
         //clear local storage
         if (localStorage.getItem('session')) {
             localStorage.removeItem('session');
+            resetSession();
         }
         if (sessionValue) {
             // localStorage.removeItem('session');

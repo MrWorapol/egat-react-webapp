@@ -5,7 +5,7 @@ import { useLoadingScreen } from "../hooks/useLoadingScreen";
 
 export function CustomBackdrop() {
   const { isLoading } = useLoadingScreen();
-  console.log(`is Loading ${isLoading}`);
+  // console.log(`is Loading ${isLoading}`);
   return (
     <Backdrop open={isLoading} style={{ zIndex: 10000 }}>
       <CircularProgress style={{ zIndex: 10001, color: "white" }} />

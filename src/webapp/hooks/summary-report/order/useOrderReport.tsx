@@ -29,6 +29,8 @@ export default function useOrderReport() {
     const userMeterApi = new UserReportAPI();
 
     const refreshOrderReport = useCallback(async (roles: string[], buyerType: string, tradeMarket: string, orderStatus: string, area: string) => {
+        console.log(`call api`);
+        console.log(session);
         if (session !== null) { //check session before call api
             const userMeterInfos = await userMeterApi.getUserMeterInfo({ startDate: dayjs(period.startDate).toString(), endDate: dayjs(period.endDate).toString(), region: period.region, roles: roles, area: area, session })
             const req: IGetOrderTableRequest = {
@@ -139,6 +141,8 @@ export default function useOrderReport() {
 
         }
     }, [])
+
+    
     return {
         orderReport,
         refreshOrderReport,

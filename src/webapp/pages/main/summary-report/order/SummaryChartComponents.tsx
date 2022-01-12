@@ -18,10 +18,10 @@ export default function SummaryComponents(props: IProps) {
                         <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em', color: 'secondary.main' }}> Summary by Role </Typography>
                     </Grid>
                     <DoughnutChart
-                        labels={[`Aggregator ${role.aggregator} (${role.aggregator*100/(role.aggregator+role.prosumer+role.consumer)})%`, `Prosumer ${role.prosumer*100/(role.aggregator+role.prosumer+role.consumer)} %`, `Consumer ${role.consumer*100/(role.aggregator+role.prosumer+role.consumer)} %`]}
+                        labels={[`Aggregator ${role.aggregator} (${role.aggregator * 100 / (role.aggregator + role.prosumer + role.consumer)})%`, `Prosumer ${role.prosumer * 100 / (role.aggregator + role.prosumer + role.consumer)} %`, `Consumer ${role.consumer * 100 / (role.aggregator + role.prosumer + role.consumer)} %`]}
                         datasets={[
                             {
-                                data: [role.aggregator, role.prosumer, role.consumer],
+                                data: [Number((Math.round(role.aggregator * 100) / 100).toFixed(2)), role.prosumer, role.consumer],
                                 backgroundColor: [
                                     '#4A90E2',
                                     '#46B61E',
@@ -38,7 +38,8 @@ export default function SummaryComponents(props: IProps) {
                         <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em', color: 'secondary.main' }}> Summary by Buyer/Seller </Typography>
                     </Grid>
                     <DoughnutChart
-                        labels={[`Seller ${buyerType.seller*100/(buyerType.seller+buyerType.buyer)} %`, `Buyer ${buyerType.buyer*100/(buyerType.seller+buyerType.buyer)}`]}
+                        labels={[`Seller ${(Math.round(buyerType.seller * 100 / (buyerType.seller + buyerType.buyer) * 100) / 100).toFixed(2)} %`,
+                        `Buyer ${(Math.round(buyerType.buyer * 100 / (buyerType.seller + buyerType.buyer) * 100) / 100).toFixed(2)} %`]}
                         datasets={[
                             {
                                 data: [buyerType.seller, buyerType.buyer],
@@ -57,7 +58,8 @@ export default function SummaryComponents(props: IProps) {
                         <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em', color: 'secondary.main' }}> Summary by Trade Market </Typography>
                     </Grid>
                     <DoughnutChart
-                        labels={[`Bilateral Trade ${Math.floor(trade.bilateral*100/(trade.bilateral+trade.pool))} %`, `Pool Market Trade ${Math.floor(trade.pool*100/(trade.bilateral+trade.pool))} %`]}
+                        labels={[`Bilateral Trade ${(Math.round((trade.bilateral * 100 / (trade.bilateral + trade.pool)) * 100) / 100).toFixed(2)} %`,
+                        `Pool Market Trade ${(Math.round(trade.pool * 100 / (trade.bilateral + trade.pool) * 100 / 100).toFixed(2))} %`]}
                         datasets={[
                             {
                                 data: [trade.bilateral, trade.pool],
@@ -76,7 +78,8 @@ export default function SummaryComponents(props: IProps) {
                         <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em', color: 'secondary.main' }}>Summary by Order Status</Typography>
                     </Grid>
                     <DoughnutChart
-                        labels={[`Matched ${Math.floor(status.matched*100/(status.matched+status.open))} %`, `Open ${status.matched*100/(status.matched+status.open)} %`,]}
+                        labels={[`Matched ${Math.round(status.matched * 100 / (status.matched + status.open) * 100 / 100).toFixed(2)} %`, 
+                                `Open ${Math.round(status.matched * 100 / (status.matched + status.open)*100/100).toFixed(2)} %`,]}
                         datasets={[
                             {
                                 data: [status.matched, status.open],
@@ -94,8 +97,3 @@ export default function SummaryComponents(props: IProps) {
         </Box>
     )
 }
-
-
-// function buildChart() {
-//     return <DoughnutChart datasets={ } labels={ } width={ } key={'asdf'} />
-// }
