@@ -1,5 +1,6 @@
 import { Alert, Snackbar, SnackbarOrigin } from '@mui/material'
 import React from 'react'
+import { useSnackbar } from '../hooks/useSnackbar';
 
 export interface State extends SnackbarOrigin {
     open: boolean;
@@ -7,31 +8,30 @@ export interface State extends SnackbarOrigin {
 
 
 export default function SnakBarNotification() {
-    const [state, setState] = React.useState<State>({
-        open: false,
-        vertical: 'top',
-        horizontal: 'center',
-    });
-    const { vertical, horizontal, open } = state;
+    const {snackbarContent,closeSnackbar} = useSnackbar();
 
-    const handleClick = (newState: SnackbarOrigin) => () => {
-        setState({ open: true, ...newState });
+    const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+        if (reason === 'clickaway') {
+            return;
+        }  
+        closeSnackbar();
     };
 
-    const handleClose = () => {
-        setState({ ...state, open: false });
-    };
     return (
         <Snackbar
             anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-            open={open}
+            open={snackbarContent !==null}
             onClose={handleClose}
-            message="I love snacks"
-            key={vertical + horizontal}
+            key={"snackbar-key"}
+            autoHideDuration={3000}
         >
-            <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-                This is a success message!
+            <Alert 
+            onClose={handleClose} 
+            severity={ snackbarContent?.servirity} 
+            sx={{ width: '100%' }}>
+                {snackbarContent?.message}
             </Alert>
+
         </Snackbar>
     )
 }

@@ -13,6 +13,7 @@ import { useAuthGuard } from './hooks/useAuthGuard';
 import { CustomBackdrop } from './components/CustomLoadingBackdrop';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import DateAdapter from '@mui/lab/AdapterDayjs';
+import SnakBarNotification from './components/SnakBarNotification';
 
 export default function WebApp() {
     return (
@@ -26,6 +27,7 @@ export default function WebApp() {
                         </Router>
                         <CustomDialog />
                         <CustomBackdrop />
+                        <SnakBarNotification/>
                     </React.Suspense>
 
                 </RecoilRoot>

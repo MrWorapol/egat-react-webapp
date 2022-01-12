@@ -302,24 +302,36 @@ function BasicMenu({ data }: { data: NewsInfo }) {
         console.log(`is Publish`);
         try {
             //insert Id to newsDetail before send to api
-            await api.publishNews({
-                // token: userSession,
-                newsDetail: newsDetailholder,
-            });
-        } catch (e) {
-            console.log(e);
-        }
-        console.log(`back from api`);
-        showSnackbar({
-                content: <PositionedSnackbar/>,
-                onClose: () => false,
+            await api.publishNews(
+                { // token: userSession,
+                newsDetail: newsDetailholder
+            })
+
+            showSnackbar({
+                message:"Publish Successful",
+                servirity: "success",
                 width: 'sm',
                 anchorOrigin : {
                     vertical: 'center',
                     horizontal : 'buttom'
                 },
-                autoHideDuration : 6000 
+                autoHideDuration : 4000 
             })
+  
+        } catch (e) {
+            console.log(e);
+            showSnackbar({
+                message:`Cannot Publish with status:\n${e}`,
+                servirity: "error",
+                width: 'sm',
+                anchorOrigin : {
+                    vertical: 'center',
+                    horizontal : 'buttom'
+                },
+                autoHideDuration : 4000 
+            })
+        }
+        console.log(`back from api`);
         //showDialog //showSnackbar
     }
 
@@ -458,34 +470,34 @@ function ScrollDialog({ NewsPara }: { NewsPara: NewsInfo }) {
     open: boolean;
   }
   
-  function PositionedSnackbar() {
-    const { closeSnackbar } = useSnackbar();
-    const text = 'text holder';
-    const [state, setState] = React.useState<State>({
-      open: true,
-      vertical: 'bottom',
-      horizontal: 'center',
-    });
-    const { vertical, horizontal, open } = state;
-    const handleClick = (newState: SnackbarOrigin) => () => {
-      setState({ open: true, ...newState });
-    };
+//   function PositionedSnackbar() {
+//     const { closeSnackbar } = useSnackbar();
+//     const text = 'text holder';
+//     const [state, setState] = React.useState<State>({
+//       open: true,
+//       vertical: 'bottom',
+//       horizontal: 'center',
+//     });
+//     const { vertical, horizontal, open } = state;
+//     const handleClick = (newState: SnackbarOrigin) => () => {
+//       setState({ open: true, ...newState });
+//     };
   
-    const handleClose = () => {
-      setState({ ...state, open: false });
-    };
+//     const handleClose = () => {
+//       setState({ ...state, open: false });
+//     };
 
-    return (
-      <div>
-        <Snackbar
-          anchorOrigin={{ vertical, horizontal }}
-          open={true} 
-          autoHideDuration={6000} 
-        >
-            <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-                This is a success message!
-            </Alert>
-        </Snackbar>
-      </div>
-    );
-  }
+//     return (
+//       <div>
+//         <Snackbar
+//           anchorOrigin={{ vertical, horizontal }}
+//           open={true} 
+//           autoHideDuration={6000} 
+//         >
+//             <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+//                 This is a success message!
+//             </Alert>
+//         </Snackbar>
+//       </div>
+//     );
+//   }
