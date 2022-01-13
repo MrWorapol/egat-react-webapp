@@ -1,12 +1,8 @@
 import {
-    Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination,
-    TableRow, Typography, useTheme, Button, Menu, MenuItem,Alert
+    Box, Paper, Table, TableBody, TableCell, TableContainer, 
+    TableHead, TablePagination,TableRow, Typography, useTheme
 } from '@mui/material'
 
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import DeleteIcon from '@mui/icons-material/Delete';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import IconButton from '@mui/material/IconButton';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
@@ -14,23 +10,11 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
 
 import React from 'react'
-import NewsManagementAPI from '../../../api/news/newsManagementApi';
 import { useAllNews } from '../../../hooks/useAllNews';
-import { NewsInfo } from '../../../state/news-management/news-info';
-import { INewsDetail, newsDetail } from '../../../state/news-management/news-detail';
 import { useHistory } from 'react-router-dom';
-import { grey } from '@mui/material/colors';
-import { useRecoilState } from "recoil";
-import { Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material'
-import { useDialog } from '../../../hooks/useDialog';
-import  SnakBarNotification  from '../../../components/SnakBarNotification';
-import { Editor } from 'react-draft-wysiwyg';
-import { EditorState, convertFromRaw } from 'draft-js';
-import { markdownToDraft } from 'markdown-draft-js';
 import MarkdownPreview from '@uiw/react-markdown-preview';//https://github.com/uiwjs/react-markdown-preview
+import BasicMenu from './BasicMenu';
 
-import Snackbar, { SnackbarOrigin } from '@mui/material/Snackbar';
-import { useSnackbar } from '../../../hooks/useSnackbar';
 interface Column {
     id: 'id' | 'title' | 'date' | 'content' | 'status' | 'action',
     label: string,
@@ -102,7 +86,6 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
         </Box>
     );
 }
-
 
 
 export default function NewsTableData() {
@@ -199,10 +182,10 @@ export default function NewsTableData() {
                                 >
                                     <MarkdownPreview source={row.content} />
                                 </TableCell>
-                                <TableCell
+                                <TableCell sx={{ color: row.status === 'PUBLISHED'?'success.light':'error.light'  }}
                                 // key={row.phoneNumber + i}
                                 >
-                                    {row.status}
+                                        {row.status}
                                 </TableCell>
                                 <TableCell >
                                     {
@@ -247,257 +230,6 @@ export default function NewsTableData() {
     );
 
 }
-function BasicMenu({ data }: { data: NewsInfo }) {
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const open = Boolean(anchorEl);
-    const api = new NewsManagementAPI();
-    let newsDetailholder: INewsDetail;
 
-    newsDetailholder = {
-        id: 'IDholder',
-        title: 'Titleholder',
-        date: 'Dateholder',
-        content: 'Contentholder',
-        status: 'Statusholder',
-    };
 
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-
-    if (typeof (data?.id) === 'string' &&
-        typeof (data?.title) === 'string' &&
-        typeof (data?.date) === 'string' &&
-        typeof (data?.content) === 'string' &&
-        typeof (data?.status) === 'string') {
-        newsDetailholder.id = data.id;
-        newsDetailholder.title = data.title;
-        newsDetailholder.title = data.date;
-        newsDetailholder.content = data.content;
-        newsDetailholder.title = data.status;
-    }
-
-    const { showDialog } = useDialog();
-    const { showSnackbar } = useSnackbar();
-
-    function viewNewsDetailOnClicked(data: NewsInfo) 
-    {
-        console.log(data.title);
-        console.log(data.content);
-
-        showDialog({
-            content: <ScrollDialog NewsPara={data} />,
-            onClose: () => false,
-            width: 'sm',
-        });
-    }
-
-    async function publishOnClicked() 
-    {   
-        console.log(newsDetailholder);
-        console.log(`is Publish`);
-        try {
-            //insert Id to newsDetail before send to api
-            await api.publishNews(
-                { // token: userSession,
-                newsDetail: newsDetailholder
-            })
-
-            showSnackbar({
-                message:"Publish Successful",
-                servirity: "success",
-                width: 'sm',
-                anchorOrigin : {
-                    vertical: 'center',
-                    horizontal : 'buttom'
-                },
-                autoHideDuration : 4000 
-            })
   
-        } catch (e) {
-            console.log(e);
-            showSnackbar({
-                message:`Cannot Publish with status:\n${e}`,
-                servirity: "error",
-                width: 'sm',
-                anchorOrigin : {
-                    vertical: 'center',
-                    horizontal : 'buttom'
-                },
-                autoHideDuration : 4000 
-            })
-        }
-        console.log(`back from api`);
-        //showDialog //showSnackbar
-    }
-
-    async function deleteOnClicked() 
-    {
-        console.log(newsDetailholder);
-        console.log(`is Delete`);
-
-        try {
-            //insert Id to newsDetail before send to api
-            await api.deleteNews({
-                // token: userSession,
-                newsDetail: newsDetailholder,
-            });
-        } catch (e) {
-            console.log(e);
-        }
-        console.log(`back from api`);
-    }
-
-
-    return (
-        <div>
-            <Button
-                id="basic-button"
-                aria-controls="basic-menu"
-                aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
-                onClick={handleClick}
-
-            >
-                <MoreVertIcon
-
-                    sx={{ color: grey[900] }}
-                />
-            </Button>
-
-            <Menu
-                id="basic-menu"
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleClose}
-                MenuListProps={{
-                    'aria-labelledby': 'basic-button',
-                }}
-            >
-                <MenuItem onClick={() => { viewNewsDetailOnClicked(data) }}>
-                    <VisibilityIcon />
-                    View
-                </MenuItem>
-                <MenuItem onClick={() => { publishOnClicked() }}>
-                    <CheckCircleIcon />
-                    Publish
-                </MenuItem>
-                <MenuItem onClick={() => { deleteOnClicked() }}>
-                    <DeleteIcon />
-                    Delete
-                </MenuItem>
-            </Menu>
-        </div>
-    );
-}
-
-
-function ScrollDialog({ NewsPara }: { NewsPara: NewsInfo }) {
-
-    //const [scroll, setScroll] = React.useState<DialogProps['scroll']>('paper');
-    const { closeDialog } = useDialog();
-    const ID = NewsPara?.id
-    const tittle = NewsPara?.title;
-    
-    var stringcontent = 'stringholder';
-    var content = EditorState.createEmpty();
-    //console.log(NewsPara);
-    const [editorState, setEditorState] = React.useState(
-        () => {
-            if (typeof (NewsPara?.content) === 'string') {
-                //console.log(NewsPara?.content);
-                stringcontent = NewsPara?.content;
-                //console.log(stringcontent);
-            };
-
-            const contentState = convertFromRaw(markdownToDraft(stringcontent));
-            //https://www.markdownguide.org/cheat-sheet/
-            console.log(contentState);
-            return content
-                ? EditorState.createWithContent(contentState)
-                : EditorState.createEmpty();
-        }
-    );
-
-    return (
-        <div>
-            <Dialog
-                open={true}
-                fullWidth={true}
-                maxWidth="md"
-                PaperProps={{
-                    sx: {
-                        mx: 5,
-                        width: "941",
-                        height: "599"
-                    }
-                }}
-                scroll="paper"
-                aria-labelledby="scroll-dialog-title"
-                aria-describedby="scroll-dialog-description"
-            >
-                <DialogTitle id="scroll-dialog-title">
-                    <Typography color='secondary.main' variant='h6' sx={{ fontWeight: 'bold' }}>
-                        News ID : {ID}
-                    </Typography>
-                </DialogTitle>
-                <DialogTitle sx={{ mx: 5 }}>Title: {tittle}</DialogTitle>
-
-                <DialogContent sx={{ mx: 5 }}>
-                    <Paper variant="outlined">
-                        <Editor
-                            editorState={editorState}
-                            toolbarHidden
-                            readOnly
-                        />
-                    </Paper>
-                </DialogContent>
-                <DialogActions>
-                    <Button variant='outlined' onClick={closeDialog}>
-                        Close
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        </div>
-    );
-}
-
-  interface State extends SnackbarOrigin {
-    open: boolean;
-  }
-  
-//   function PositionedSnackbar() {
-//     const { closeSnackbar } = useSnackbar();
-//     const text = 'text holder';
-//     const [state, setState] = React.useState<State>({
-//       open: true,
-//       vertical: 'bottom',
-//       horizontal: 'center',
-//     });
-//     const { vertical, horizontal, open } = state;
-//     const handleClick = (newState: SnackbarOrigin) => () => {
-//       setState({ open: true, ...newState });
-//     };
-  
-//     const handleClose = () => {
-//       setState({ ...state, open: false });
-//     };
-
-//     return (
-//       <div>
-//         <Snackbar
-//           anchorOrigin={{ vertical, horizontal }}
-//           open={true} 
-//           autoHideDuration={6000} 
-//         >
-//             <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-//                 This is a success message!
-//             </Alert>
-//         </Snackbar>
-//       </div>
-//     );
-//   }

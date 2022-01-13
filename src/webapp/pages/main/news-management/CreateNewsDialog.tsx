@@ -1,28 +1,26 @@
 import { Button, DialogActions, DialogContent, DialogTitle, TextField, Typography, FormGroup, Dialog, Paper} from '@mui/material';
-import React,{ Component, useState } from 'react';
+import { Component, useState } from 'react';
 import { useDialog } from '../../../hooks/useDialog';
-import { ChangeHandler, useForm } from 'react-hook-form';
-import { NewsCreationState,newscreation } from '../../../state/news-management/news-creation-state';
-import { render } from "react-dom";
-import { EditorState, ContentState, convertToRaw } from 'draft-js';
+import { useForm } from 'react-hook-form';
+import { NewsCreationState} from '../../../state/news-management/news-creation-state';
+import { EditorState,  convertToRaw } from 'draft-js';
 import { Editor}  from 'react-draft-wysiwyg';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';//render
-import { draftToMarkdown, markdownToDraft } from 'markdown-draft-js';
-import { useRecoilState } from 'recoil';
+import { draftToMarkdown} from 'markdown-draft-js';
 
 import { useAllNews } from '../../../hooks/useAllNews';
 import NewsManagementAPI from '../../../api/news/newsManagementApi';
-
 import { NewsInfo } from '../../../state/news-management/news-info';
 import { INewsDetail, newsDetail } from '../../../state/news-management/news-detail';
 
-;//npm i markdown-draft-js -s
+import { useSnackbar } from '../../../hooks/useSnackbar';
+//npm i markdown-draft-js -s
 
 export default function CreateNewsDialog(this: any) 
-{
+{   
     const { closeDialog } = useDialog();
+    const { showSnackbar } = useSnackbar();
     const { putRecentsNews} = useAllNews();
-    const date = new Date('2015-03-04T00:00:00.000Z');
     const api = new NewsManagementAPI();
     // const [] = useRecoilState(newscreation);
     const { register, handleSubmit, watch, formState: { errors } } = useForm<NewsCreationState>();
@@ -30,8 +28,7 @@ export default function CreateNewsDialog(this: any)
     {
        data.content = markdown;
        putRecentsNews(data);
-       console.log(`${date.getDate()}/${date.getMonth()}/${date.getFullYear()}-${date.getUTCHours()}:${date.getUTCMinutes()}:${date.getUTCSeconds()}`);
-
+     
        if (typeof (data?.title) === 'string' &&
         typeof (data?.content) === 'string')
         {
@@ -39,10 +36,7 @@ export default function CreateNewsDialog(this: any)
           newsrecentDetailholder.content = data.content;
         }
         callPostapi(newsrecentDetailholder);
-      // console.log('data');
-      // console.log(data);
-      //  console.log(RecentNews);
-      //  refreshAllNews();
+      
     }
     const [markdown,setMarkdown] = useState("");
 
@@ -52,7 +46,7 @@ export default function CreateNewsDialog(this: any)
       title: 'Titleholder',
       date: 'Dateholder',
       content: 'Contentholder',
-      status: 'Statusholder',
+      status: 'DRAFT',
     };
 
     async function callPostapi(newsDetailholder : NewsInfo) 
@@ -62,12 +56,30 @@ export default function CreateNewsDialog(this: any)
             await api.createNews({
               newsInfo : newsDetailholder,
             });
+            showSnackbar({
+              message:"Create Successful",
+              servirity: "success",
+              width: 'sm',
+              anchorOrigin : {
+                  vertical: 'center',
+                  horizontal : 'buttom'
+              },
+              autoHideDuration : 4000 
+          })
         } catch (e) {
             console.log(e);
+            showSnackbar({
+              message:`Cannot Create with status:\n${e}`,
+              servirity: "error",
+              width: 'sm',
+              anchorOrigin : {
+                  vertical: 'center',
+                  horizontal : 'buttom'
+              },
+              autoHideDuration : 4000 
+          })
         }
         console.log(`back from api`);
-        //return (<SnakBarNotification/>);
-        
     }
     return (
         <>
@@ -82,8 +94,7 @@ export default function CreateNewsDialog(this: any)
                 }
               }}
               scroll = 'paper'
-              >
-              
+              >  
               <DialogTitle>
                   <Typography color='secondary.main' variant='h6' sx={{ fontWeight: 'bold' }}>
                       Create News
@@ -148,22 +159,15 @@ class ControlledEditor extends Component <Props, State> {
         this.state = {
           editorState: EditorState.createEmpty(),
         };
-
-      }
-
+  }
   onEditorStateChange = (editorState : EditorState) => {
     this.setState({
       editorState,
     });
-
-
     const content = editorState.getCurrentContent();
     const rawObject = convertToRaw(content);
     const markdownString = draftToMarkdown(rawObject);
-
     this.props.onNewMarkdown(markdownString);
-
-    //console.log(editorState.getCurrentContent().getPlainText())
   };
   
   render() {

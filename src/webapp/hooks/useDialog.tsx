@@ -34,7 +34,6 @@ export function useDialog() {
   const closeDialog = useCallback(() => {
     setDialogContent(null);
   }, [setDialogContent]);
-  console.log('set dialog');
   return {
     dialogContent: dialogContentValue,
     showDialog,

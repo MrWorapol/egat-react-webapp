@@ -38,7 +38,7 @@ export function useAllNews() {
             title: recentNews.title,
             date : 'Dateholder',
             content : recentNews.content,
-            status : 'Statusholder',
+            status : 'DRAFT',
             
         }
         console.log(`put recents News Data: `);
@@ -72,7 +72,6 @@ export function useAllNews() {
              else{
                 const mocknewdata = [mocknewsdata];
                 console.log(newsInfoDataValue);
-                console.log(mocknewdata[0].id);
                 
                 if (mocknewdata) {
                     setNewsInfoValue(mocknewdata);

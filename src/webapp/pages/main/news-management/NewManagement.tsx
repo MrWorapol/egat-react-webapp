@@ -7,7 +7,6 @@ import { useNavigationSet } from '../../../hooks/useNavigationSet'
 import { NavigationCurrentType } from '../../../state/navigation-current-state'
 import CreateNewsDialog from './CreateNewsDialog';
 import { useDialog } from '../../../hooks/useDialog';
-import { NewsCreationState } from '../../../state/news-management/news-creation-state';
 import NewsTableData from './NewsTableData';
 import { useNavigationGet } from '../../../hooks/useNavigationGet';
 import { useAllNews } from '../../../hooks/useAllNews';
@@ -29,9 +28,6 @@ export default function NewManagement() {
             refreshAllNews({ text: searchText });
         }, 2000
     )
-
-    
-
     const onTypingText = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchText(e.target.value)
         searchTextDebounce();
@@ -87,7 +83,6 @@ export default function NewManagement() {
                 Create News
             </Button>
         </>
-
     }
 
     function createNewsOnClicked() 
@@ -97,10 +92,6 @@ export default function NewManagement() {
              onClose: () => false,
              width: 'sm',
          });
-
     }
-
-
-    
 }
 
