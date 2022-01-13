@@ -74,7 +74,7 @@ export default function AllSettlementComponent() {
                     <FormControl variant='outlined' fullWidth>
                         <Select
                             fullWidth
-                            sx={{ height: '3vh' }}
+                            sx={{ height: '3em' }}
                             name='role'
                             value={role}
                             onChange={(event: SelectChangeEvent) => { onSelectedDropdown(event) }}
