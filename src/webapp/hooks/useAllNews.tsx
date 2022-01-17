@@ -7,7 +7,6 @@ import { ApiTwoTone } from "@mui/icons-material";
 
 interface ISearchField {
     text?: string,
-    roles?: string[],
 }
 
 export function useAllNews() {
@@ -67,16 +66,29 @@ export function useAllNews() {
                 } else {
                     setNewsInfoValue([]);
                 }
-
             }
-             else{
-                const mocknewdata = [mocknewsdata];
-                console.log(newsInfoDataValue);
-                
-                if (mocknewdata) {
-                    setNewsInfoValue(mocknewdata);
+            else{
+                if (searchField.text === 'string'){
+                    const response = await api.getNews({
+                        keyword : searchField.text 
+                        });
+                        console.log(response);   
+                        if (response) {
+                            setNewsInfoValue(response.newsInfos);
+                        } else {
+                            setNewsInfoValue([]);
+                        }
                 } else {
-                    setNewsInfoValue([]);
+                    const response = await api.getAllNews();
+                    //const mocknewdata = [mocknewsdata];
+                    if (response) {
+                        // console.log(`result from response${response.userInfos}`);
+                        setNewsInfoValue(response.newsInfos);
+                        console.log(response);
+                        // console.log(userInfoDataValue);
+                    } else {
+                        setNewsInfoValue([]);
+                    }
                 }
              }
                 // else { //get with filter

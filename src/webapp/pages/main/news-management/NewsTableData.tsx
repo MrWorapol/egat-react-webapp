@@ -14,7 +14,7 @@ import { useAllNews } from '../../../hooks/useAllNews';
 import { useHistory } from 'react-router-dom';
 import MarkdownPreview from '@uiw/react-markdown-preview';//https://github.com/uiwjs/react-markdown-preview
 import BasicMenu from './BasicMenu';
-
+//table limit
 interface Column {
     id: 'id' | 'title' | 'date' | 'content' | 'status' | 'action',
     label: string,
@@ -96,7 +96,7 @@ export default function NewsTableData() {
     const history = useHistory();
     
     /////set recoil
-    const { NewsInfoData, refreshAllNews,
+    const { NewsInfoData: newsInfoData, refreshAllNews,
         putRecentsNews, } = useAllNews();
     const columns: Column[] = [
         { id: 'id', label: 'ID' },
@@ -106,15 +106,15 @@ export default function NewsTableData() {
         { id: 'status', label: 'Status' },
         { id: 'action', label: '' }
     ];
-    if (NewsInfoData === null || NewsInfoData === undefined) {
-        console.log(`Error : ${NewsInfoData}`);
+    if (newsInfoData === null || newsInfoData === undefined) {
+        console.log(`Error : ${newsInfoData}`);
         return <></>;
     }
     // if (userInfoData.length === 0) {
     //     return <div><Typography variant="h1">Not found</Typography></div>;
     // }
     // Avoid a layout jump when reaching the last page with empty rows.
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - NewsInfoData.length) : 0;
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - newsInfoData.length) : 0;
 
 
     const handleChangePage = (
@@ -131,7 +131,7 @@ export default function NewsTableData() {
         setPage(0);
     };
 
-    console.log(`user data on render ${NewsInfoData}`);
+    console.log(`user data on render ${newsInfoData}`);
 
     //set minwidth ,theme
     return (
@@ -151,18 +151,19 @@ export default function NewsTableData() {
                             ))}
                         </TableRow>
                     </TableHead>
-                    <TableBody>
-                        {NewsInfoData.length === 0 && /* case notfound data */
+                    <TableBody sx={{width : "100%"}}>
+                        {newsInfoData.length === 0 && /* case notfound data */
                             <TableRow style={{ height: 53 * emptyRows }}>
                                 <TableCell colSpan={6} />
                             </TableRow>
                         }
-                        {NewsInfoData.length !== 0 && (rowsPerPage > 0
-                            ? NewsInfoData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                            : NewsInfoData
+                        {newsInfoData.length !== 0 && (rowsPerPage > 0
+                            ? newsInfoData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            : newsInfoData
                         ).map((row, i) => (
                             <TableRow>
                                 <TableCell
+                                sx={{maxWidth:'sm'}} 
                                 // key={row.meterId}
                                 >
                                     {row.id}
@@ -177,17 +178,19 @@ export default function NewsTableData() {
                                 >
                                     {row.date}
                                 </TableCell>
-                                <TableCell
+                                <TableCell sx={{maxWidth:'sm'}} 
                                 // key={row.email + i}
                                 >
                                     <MarkdownPreview source={row.content} />
                                 </TableCell>
-                                <TableCell sx={{ color: row.status === 'PUBLISHED'?'success.light':'error.light'  }}
+                                <TableCell 
+                                sx={{ color: row.status === 'PUBLISHED'?'success.light':'error.light'  }}
                                 // key={row.phoneNumber + i}
                                 >
                                         {row.status}
                                 </TableCell>
-                                <TableCell >
+                                <TableCell
+                                >
                                     {
                                     <IconButton >
                                         <BasicMenu data={row} />
@@ -212,7 +215,7 @@ export default function NewsTableData() {
                 sx={{ right: 0 }}
                 rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
                 colSpan={3}
-                count={NewsInfoData.length}
+                count={newsInfoData.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 SelectProps={{

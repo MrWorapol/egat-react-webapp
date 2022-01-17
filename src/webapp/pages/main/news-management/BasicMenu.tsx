@@ -8,6 +8,7 @@ import NewsManagementAPI from '../../../api/news/newsManagementApi';
 import { NewsInfo } from '../../../state/news-management/news-info';
 import { INewsDetail} from '../../../state/news-management/news-detail';
 import { grey } from '@mui/material/colors';
+import { useAllNews } from '../../../hooks/useAllNews';
 import { useDialog } from '../../../hooks/useDialog';
 import { useSnackbar } from '../../../hooks/useSnackbar';
 import ScrollDialog from './ScrollDialog';
@@ -48,6 +49,7 @@ export default function BasicMenu({ data }: { data: NewsInfo }) {
 
     const { showDialog } = useDialog();
     const { showSnackbar } = useSnackbar();
+    const { refreshAllNews} = useAllNews();
 
     function viewNewsDetailOnClicked(data: NewsInfo) 
     {
@@ -71,7 +73,6 @@ export default function BasicMenu({ data }: { data: NewsInfo }) {
                 { // token: userSession,
                 newsDetail: newsDetailholder
             })
-
             showSnackbar({
                 message:"Publish Successful",
                 servirity: "success",
@@ -82,7 +83,6 @@ export default function BasicMenu({ data }: { data: NewsInfo }) {
                 },
                 autoHideDuration : 4000 
             })
-  
         } catch (e) {
             console.log(e);
             showSnackbar({
@@ -96,7 +96,9 @@ export default function BasicMenu({ data }: { data: NewsInfo }) {
                 autoHideDuration : 4000 
             })
         }
+        refreshAllNews();
         console.log(`back from api`);
+        
     }
 
     async function deleteOnClicked() 
@@ -132,6 +134,7 @@ export default function BasicMenu({ data }: { data: NewsInfo }) {
                 autoHideDuration : 4000 
             })
         }
+        refreshAllNews();
         console.log(`back from api`);
     }
 

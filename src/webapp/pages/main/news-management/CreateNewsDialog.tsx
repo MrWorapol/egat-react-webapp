@@ -15,28 +15,31 @@ import { INewsDetail, newsDetail } from '../../../state/news-management/news-det
 
 import { useSnackbar } from '../../../hooks/useSnackbar';
 //npm i markdown-draft-js -s
-
+//""
 export default function CreateNewsDialog(this: any) 
 {   
     const { closeDialog } = useDialog();
     const { showSnackbar } = useSnackbar();
-    const { putRecentsNews} = useAllNews();
+    const { putRecentsNews,refreshAllNews} = useAllNews();
     const api = new NewsManagementAPI();
     // const [] = useRecoilState(newscreation);
     const { register, handleSubmit, watch, formState: { errors } } = useForm<NewsCreationState>();
     const onSubmitForm = (data: NewsCreationState) => 
     {
-       data.content = markdown;
-       putRecentsNews(data);
+      data.content = markdown;
+      putRecentsNews(data);
      
-       if (typeof (data?.title) === 'string' &&
-        typeof (data?.content) === 'string')
-        {
-          newsrecentDetailholder.title = data.title;
-          newsrecentDetailholder.content = data.content;
-        }
-        callPostapi(newsrecentDetailholder);
+      if (typeof (data?.title) === 'string' &&
+      typeof (data?.content) === 'string')
+      {
+        newsrecentDetailholder.title = data.title;
+        console.log(data.title);
+        newsrecentDetailholder.content = data.content;
+        console.log(data.content);
+      }
+      callPostapi(newsrecentDetailholder);
       
+      closeDialog();
     }
     const [markdown,setMarkdown] = useState("");
 
@@ -79,6 +82,7 @@ export default function CreateNewsDialog(this: any)
               autoHideDuration : 4000 
           })
         }
+        refreshAllNews();
         console.log(`back from api`);
     }
     return (
