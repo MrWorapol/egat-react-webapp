@@ -1,8 +1,15 @@
 import { druidHost, localDruidEndpoint, summaryApi } from "../../constanst";
+import { IPeriod } from "../../state/summary-report/period-state";
 import { ISettlementDetail } from "../../state/summary-report/settlement-report/settlement-detail-state";
 import { IImbalanceReport, ISettlementReport } from "../../state/summary-report/settlement-report/settlement-report-state";
 
 import { IUserSession } from "../../state/user-sessions";
+
+import dayjs from "dayjs";
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 interface IGetDruidBody {
     query: string,
@@ -10,9 +17,7 @@ interface IGetDruidBody {
 }
 interface IGetSettlementReportRequest {
     session: IUserSession,
-    startDate?: string,
-    endDate?: string,
-    region?: string,
+    period?: IPeriod,
     area?: string,
     role?: string,
     buyerType?: string,
@@ -42,6 +47,7 @@ export class SettlementReportAPI {
     private endpoint = druidHost;
 
     async getTradeContractReport(req: IGetSettlementReportRequest): Promise<IGetSettlementReportResponse | null> {
+        const period = req.period;
         const body: IGetDruidBody = {
             "query": `SELECT DISTINCT "__time" as "timestamp", 
             "payload.id" as "contractId",
@@ -70,9 +76,35 @@ export class SettlementReportAPI {
                 method: "POST",
                 body: JSON.stringify(body),
             })
+            if (response.status !== 200) {
+                return null;
+            }
+
             const detailFromJSON: ISettlementReport[] = await response.json();
-            console.log(`get Settlement`);
-            console.log(detailFromJSON);
+            
+            if (period !== undefined) {
+                if (dayjs(period.endDate).startOf('day').isSame(dayjs(period.startDate).startOf('day')) // if start and end date is same day
+                    && dayjs(period.startDate).startOf('day').isSame(dayjs().startOf('day'))) {//and is same today 
+                    return {
+                        context: detailFromJSON
+                    };
+
+                } else {
+                    let settlementPeriod: ISettlementReport[] = [];
+                    detailFromJSON.forEach((settlement: ISettlementReport) => {
+                        let inRange = dayjs(settlement.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
+                            && dayjs(settlement.timestamp).isBefore(dayjs(period.endDate).endOf('day'));
+                        if (inRange) {
+                            settlementPeriod.push(settlement);
+                        }
+
+                    })
+                    return {
+                        context: settlementPeriod,
+                    }
+                }
+            }
+
             return {
                 context: detailFromJSON
             };
@@ -86,8 +118,11 @@ export class SettlementReportAPI {
     }
 
     async getTradeDataReport(req: IGetSettlementReportRequest): Promise<IGetImbalanceReport | null> {
+        const period = req.period;
         const body: IGetDruidBody = {
-            "query": `SELECT "payload.amount" as "amount", 
+            "query": `SELECT 
+            "__time" as "timestamp",
+            "payload.amount" as "amount", 
             "payload.buyerId" as "buyerId",
             "payload.buyerType" as "buyerType",
             "payload.id" as "tradeDataId",
@@ -120,9 +155,33 @@ export class SettlementReportAPI {
                 body: JSON.stringify(body),
             })
             const resultFromJSON: IImbalanceReport[] = await response.json();
+            if (response.status !== 200) {
+                return null;
+            }
+            
+            if (period !== undefined) {
+                if (dayjs(period.endDate).startOf('day').isSame(dayjs(period.startDate).startOf('day')) // if start and end date is same day
+                    && dayjs(period.startDate).startOf('day').isSame(dayjs().startOf('day'))) {//and is same today 
+                    return {
+                        context: resultFromJSON
+                    };
 
-            console.log(`get Imbalance Report`);
-            console.log(resultFromJSON);
+                } else {
+                    let tradePeriod: IImbalanceReport[] = [];
+                    resultFromJSON.forEach((trade: IImbalanceReport) => {
+                        let inRange = dayjs(trade.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
+                            && dayjs(trade.timestamp).isBefore(dayjs(period.endDate).endOf('day'));
+                        if (inRange) {
+                            tradePeriod.push(trade);
+                        }
+
+                    })
+                    return {
+                        context: tradePeriod,
+                    }
+                }
+            }
+
             return {
                 context: resultFromJSON
             };

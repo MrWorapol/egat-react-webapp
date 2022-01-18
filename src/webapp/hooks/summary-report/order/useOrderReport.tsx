@@ -34,9 +34,7 @@ export default function useOrderReport() {
         if (session !== null) { //check session before call api
             const userMeterInfos = await userMeterApi.getUserMeterInfo({ period, roles: roles, area: area, session })
             const req: IGetOrderTableRequest = {
-                startDate: dayjs(period.startDate).toString(),
-                endDate: dayjs(period.endDate).toString(),
-                region: period.region,
+                period,
                 roles,
                 buyerType,
                 tradeMarket,
@@ -142,7 +140,7 @@ export default function useOrderReport() {
         }
     }, [])
 
-    
+
     return {
         orderReport,
         refreshOrderReport,

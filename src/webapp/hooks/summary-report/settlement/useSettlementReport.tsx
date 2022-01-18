@@ -29,13 +29,11 @@ export function useSettlementReport() {
     const settlementAPI = new SettlementReportAPI();
     const userMeterApi = new UserAndEnergyReportAPI();
 
-    const refreshSettlementReport = useCallback(async (role: string, area: string, buyerType: string, tradeMarket: string, orderStatus: string) => {
+    const refreshSettlementReport = async (role: string, area: string, buyerType: string, tradeMarket: string, orderStatus: string) => {
         if (session) {
             const userMeterInfos = await userMeterApi.getUserMeterInfo({ period, roles: [role], area: area, session });
             const req = {
-                startDate: dayjs(period.startDate).toString(),
-                endDate: dayjs(period.endDate).toString(),
-                region: period.region,
+                period,
                 area,
                 role,
                 buyerType,
@@ -43,9 +41,14 @@ export function useSettlementReport() {
                 orderStatus,
                 session
             }
+            console.log(`log period settlemet`)
+            console.log(period);
             const traceContractReports = await settlementAPI.getTradeContractReport(req);
             const imbalanceReport = await settlementAPI.getTradeDataReport(req);
-
+            console.log(`get Settlement`);
+            console.log(traceContractReports?.context);
+            console.log(`get imbalance`);
+            console.log(imbalanceReport?.context);
             let summaryRole: ISummaryMap = { 'aggregator': 0, 'prosumer': 0, 'consumer': 0 };
             let summaryUserType: ISummaryMap = { 'seller': 0, 'buyer': 0 };
             let summaryTradeMarket: ISummaryMap = { 'bilateral': 0, 'pool': 0 };
@@ -76,8 +79,6 @@ export function useSettlementReport() {
                             contract.imbalanceStatus = "CONTRACT";
                         } else {
                             let imbalanceCase = imbalanceMapContractId.filter((imbalance) => { return imbalance.tradeType !== "SELLER_CONTRACT" && imbalance.tradeType !== "BUYER_CONTRACT" })
-                            // console.log(`Case Imbalance ${imbalanceCase?.tradeContractIds}`);
-                            // console.log(imbalanceCase);
                             if (imbalanceCase.length > 0) {
                                 imbalanceCase.forEach((imbalance) => {
                                     switch (imbalance.tradeType) {
@@ -114,29 +115,7 @@ export function useSettlementReport() {
                                     }
                                 })
                             }
-                            // if (imbalanceCase) {
-                            //
-                            //     switch (imbalanceCase.tradeType) {
-                            //         case "SELLER_IMBALANCE_OVERCOMMIT":
-                            //         case "BUYER_IMBALANCE_OVERCOMMIT":
-                            //             console.log(`OVER_COMMITT`);
-                            //             report.imbalanceStatus = "energyExcess";
-                            //             report.imbalance?.push(imbalanceCase);
 
-                            //             break;
-                            //         case "SELLER_IMBALANCE_UNDERCOMMIT":
-                            //         case "BUYER_IMBALANCE_UNDERCOMMIT":
-                            //             console.log(`UNDERCOMMIT`);
-                            //             report.imbalanceStatus = "energyShortfall";
-                            //             report.imbalance?.push(imbalanceCase);
-
-                            //             break;
-                            //         default:
-                            //             break;
-                            //     }
-                            //     console.log(report.imbalanceStatus)
-                            //
-                            // }
                         }
 
                     }
@@ -172,50 +151,55 @@ export function useSettlementReport() {
                     }
                 });
                 setSettlementReport(output);
-                setSettlementChart(
-                    {
-                        role: {
-                            aggregator: summaryRole.aggregator,
-                            prosumer: summaryRole.prosumer,
-                            consumer: summaryRole.consumer,
-                        },
-                        buyerType: {
-                            seller: summaryUserType.seller,
-                            buyer: summaryUserType.buyer,
-                        },
-                        trade: {
-                            bilateral: summaryTradeMarket.bilateral,
-                            pool: summaryTradeMarket.pool,
-                        },
-                        status: {
-                            energyExcess: summaryImbalance.energyExcess,
-                            energyShortfall: summaryImbalance.energyShortfall
-                        },
-                        netImbalanceAmount: {
-                            netSale: summaryNetAmount["netSale"],
-                            netBuy: summaryNetAmount["netBuy"],
-                            netAll: summaryNetAmount["netAll"],
-                        },
-                        netImbalanceAmountByStatus: {
-                            sellerOverCommit: summaryNetImbalnceAmount["sellerOverCommit"],
-                            sellerUnderCommit: summaryNetImbalnceAmount["sellerUnderCommit"],
-                            buyerOverCommit: summaryNetImbalnceAmount["buyerOverCommit"],
-                            buyerUnderCommit: summaryNetImbalnceAmount["buyerUnderCommit"],
-                        }
-                    }
-                );
+               
                 refreshSettlementDetail(output[0]);
+            }else{
+                setSettlementReport([]);
+                resetSettlementDetail();
             }
+
+            setSettlementChart(
+                {
+                    role: {
+                        aggregator: summaryRole.aggregator,
+                        prosumer: summaryRole.prosumer,
+                        consumer: summaryRole.consumer,
+                    },
+                    buyerType: {
+                        seller: summaryUserType.seller,
+                        buyer: summaryUserType.buyer,
+                    },
+                    trade: {
+                        bilateral: summaryTradeMarket.bilateral,
+                        pool: summaryTradeMarket.pool,
+                    },
+                    status: {
+                        energyExcess: summaryImbalance.energyExcess,
+                        energyShortfall: summaryImbalance.energyShortfall
+                    },
+                    netImbalanceAmount: {
+                        netSale: summaryNetAmount["netSale"],
+                        netBuy: summaryNetAmount["netBuy"],
+                        netAll: summaryNetAmount["netAll"],
+                    },
+                    netImbalanceAmountByStatus: {
+                        sellerOverCommit: summaryNetImbalnceAmount["sellerOverCommit"],
+                        sellerUnderCommit: summaryNetImbalnceAmount["sellerUnderCommit"],
+                        buyerOverCommit: summaryNetImbalnceAmount["buyerOverCommit"],
+                        buyerUnderCommit: summaryNetImbalnceAmount["buyerUnderCommit"],
+                    }
+                }
+            );
         }
-    }, [])
+    };
 
 
     const refreshSettlementDetail = useCallback(async (settlement: ISettlementReport) => {
         if (settlementDetail) { //clear state of detail 
             resetSettlementDetail();
         }
-        console.log(`refersh Settlement Detail`);
-        console.log(settlement);
+        // console.log(`refersh Settlement Detail`);
+        // console.log(settlement);
         let newSettlementDetail: ISettlementDetail = {
             contractId: settlement.contractId,
             userType: settlement.userType,

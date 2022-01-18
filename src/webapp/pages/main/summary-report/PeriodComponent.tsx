@@ -166,8 +166,6 @@ export default function PeriodComponent(props: PeriodProps) {
                             onChange={(newValue) => {
                                 if (newValue) {
                                     handleChangeMonth(newValue);
-                                    // console.log(`new Month Select${newValue.format('DD/MM/YYYY')}`);
-
                                 }
                             }}
 

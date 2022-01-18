@@ -19,7 +19,9 @@ export default function SummaryCharts(props: IProps) {
                         <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em', color: 'secondary.main' }}> Summary by Role </Typography>
                     </Grid>
                     <DoughnutChart
-                        labels={[`Aggregator ${role.aggregator} (${role.aggregator * 100 / (role.aggregator + role.prosumer + role.consumer)})%`, `Prosumer ${role.prosumer * 100 / (role.aggregator + role.prosumer + role.consumer)} %`, `Consumer ${role.consumer * 100 / (role.aggregator + role.prosumer + role.consumer)} %`]}
+                        labels={[`Aggregator ${role.aggregator} (${(role.aggregator * 100 / (role.aggregator + role.prosumer + role.consumer)) || 0})%`,
+                        `Prosumer ${role.prosumer} (${(role.prosumer * 100 / (role.aggregator + role.prosumer + role.consumer)) || 0}) %`,
+                        `Consumer ${role.consumer} (${(role.consumer * 100 / (role.aggregator + role.prosumer + role.consumer)) || 0}) %`]}
                         datasets={[
                             {
                                 data: [role.aggregator, role.prosumer, role.consumer],
@@ -40,7 +42,8 @@ export default function SummaryCharts(props: IProps) {
                         <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em', color: 'secondary.main' }}> Summary by Buyer/Seller </Typography>
                     </Grid>
                     <DoughnutChart
-                        labels={[`Seller ${buyerType.seller * 100 / (buyerType.seller + buyerType.buyer)} %`, `Buyer ${buyerType.buyer * 100 / (buyerType.seller + buyerType.buyer)}`]}
+                        labels={[`Seller ${buyerType.seller * 100 / (buyerType.seller + buyerType.buyer) || 0} %`,
+                        `Buyer ${buyerType.buyer * 100 / (buyerType.seller + buyerType.buyer) || 0} %`]}
                         datasets={[
                             {
                                 data: [buyerType.seller, buyerType.buyer],
@@ -59,7 +62,9 @@ export default function SummaryCharts(props: IProps) {
                         <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em', color: 'secondary.main' }}> Summary by Trade Market </Typography>
                     </Grid>
                     <DoughnutChart
-                        labels={[`Bilateral Trade ${Math.floor(trade.bilateral * 100 / (trade.bilateral + trade.pool))} %`, `Pool Market Trade ${Math.floor(trade.pool * 100 / (trade.bilateral + trade.pool))} %`]}
+                        labels={[
+                            `Bilateral Trade ${(Math.round(trade.bilateral * 100 / (trade.bilateral + trade.pool)) || 0).toFixed(2)} %`,
+                            `Pool Market Trade ${(Math.floor(trade.pool * 100 / (trade.bilateral + trade.pool)) || 0).toFixed(2)} %`]}
                         datasets={[
                             {
                                 data: [trade.bilateral, trade.pool],
@@ -85,11 +90,11 @@ export default function SummaryCharts(props: IProps) {
                         </Grid>
                         <Grid>
                             <DoughnutChart
-                                labels={[`Energy Excess ${Math.floor(status.energyExcess * 100 / (status.energyExcess + status.energyShortfall))} %`,
-                                `Energy Shortfall ${status.energyShortfall * 100 / (status.energyExcess + status.energyShortfall)} %`,]}
+                                labels={[`Energy Excess ${(Math.floor(status.energyExcess * 100 / (status.energyExcess + status.energyShortfall))|| 0).toFixed(2)} %`,
+                                `Energy Shortfall ${(status.energyShortfall * 100 / (status.energyExcess + status.energyShortfall)|| 0).toFixed(2) } %`,]}
                                 datasets={[
                                     {
-                                        data: [status.energyExcess, status.energyShortfall ],
+                                        data: [status.energyExcess, status.energyShortfall],
                                         backgroundColor: [
                                             '#FFBD59',
                                             '#B7A239',

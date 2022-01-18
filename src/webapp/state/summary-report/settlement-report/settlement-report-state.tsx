@@ -21,6 +21,7 @@ export interface ISettlementReport {
 }
 
 export interface IImbalanceReport {
+    timestamp: number,
     tradeContractIds: string,
     tradeDataId: string,
     tradeType: string, // CONTRACT | SELLER_IMBALANCE_UNDERCOMMIT | SELLER_IMBALANCE_OVERCOMMIT | BUYER_IMBALANCE_UNDERCOMMIT | BUYER_IMBALANCE_OVERCOMMIT

@@ -1,6 +1,7 @@
 import { druidHost, localDruidEndpoint } from '../../constanst';
 import { IOrderDetail } from '../../state/summary-report/order-report/order-detail-state';
 import { IOrderInfo } from '../../state/summary-report/order-report/order-report-state';
+import { IPeriod } from '../../state/summary-report/period-state';
 import { IUserSession } from '../../state/user-sessions';
 
 interface IGetOrderDetailRequest {
@@ -19,9 +20,7 @@ interface IGetDruidBody {
 
 export interface IGetOrderTableRequest {
     session: IUserSession,
-    startDate?: string,
-    endDate?: string,
-    region?: string,
+    period?: IPeriod,
     roles?: string[],
     buyerType?: string,
     tradeMarket?: string,
@@ -114,11 +113,8 @@ export class OrderReportAPI {
         }
     }
     async getOrderTable(req: IGetOrderTableRequest): Promise<IGetOrderTableResponse | null> {
-        let roles = '';
         let results: IGetOrderTableResponse = { context: [] };
-        // if (req.roles.length === 0) {
-        //     roles = 'all'
-        // }
+        
         let poolSellerOrders = await this.getPoolTradeOffer({ session: req.session });
         if (poolSellerOrders && poolSellerOrders.length > 0) {
             results.context.push(...poolSellerOrders);

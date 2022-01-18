@@ -52,12 +52,12 @@ export default function EnergyTradingChart(props: IProps) {
 function buildPaymentChart(paymentChart: IEnergyPaymentChart) {
     let sum = paymentChart.netSales + paymentChart.netBuys + paymentChart.netImbalance + paymentChart.appTransaction + paymentChart.vat + paymentChart.discountFees;
     let labels = [
-        `Net Sales : ${(Math.round(paymentChart.netSales * 100)/100).toFixed(2)} Baht ${Number(paymentChart.netSales * 100 / sum).toFixed(2)}%`,
-        `Net Buys : ${(Math.round(paymentChart.netBuys * 100)/100).toFixed(2)} Baht ${Number(paymentChart.netBuys * 100 / sum).toFixed(2)}%`,
-        `Net Imbalance : ${Number(paymentChart.netImbalance * 100).toFixed(2)} Baht ${Number(paymentChart.netImbalance * 100 / sum).toFixed(2)}%`,
-        `App Transaction Fees : ${Number(paymentChart.appTransaction * 100).toFixed(2)} Baht ${Number(paymentChart.appTransaction * 100 / sum).toFixed(2)}%`,
-        `VAT : ${Number(paymentChart.vat * 100).toFixed(2)} Baht ${Number(paymentChart.vat * 100 / sum).toFixed(2)}%`,
-        `Discount App Fees : ${Number(paymentChart.discountFees * 100).toFixed(2)} Baht${Number(paymentChart.discountFees * 100 / sum).toFixed(2)}%`,
+        `Net Sales : ${(Math.round(paymentChart.netSales * 100) / 100).toFixed(2)} Baht ${(Math.round(paymentChart.netSales * 100 / sum) || 0).toFixed(2)}%`,
+        `Net Buys : ${(Math.round(paymentChart.netBuys * 100) / 100).toFixed(2)} Baht ${(Math.round(paymentChart.netBuys * 100 / sum) || 0).toFixed(2)}%`,
+        `Net Imbalance : ${Number(paymentChart.netImbalance * 100).toFixed(2)} Baht ${(Math.round(paymentChart.netImbalance * 100 / sum) || 0).toFixed(2)}%`,
+        `App Transaction Fees : ${Number(paymentChart.appTransaction * 100).toFixed(2)} Baht ${(Math.round(paymentChart.appTransaction * 100 / sum) || 0).toFixed(2)}%`,
+        `VAT : ${Number(paymentChart.vat * 100).toFixed(2)} Baht ${(Math.round(paymentChart.vat * 100 / sum) || 0).toFixed(2)}%`,
+        `Discount App Fees : ${Number(paymentChart.discountFees * 100).toFixed(2)} Baht${(Math.round(paymentChart.discountFees * 100 / sum) || 0).toFixed(2)}%`,
 
     ];
 
@@ -85,10 +85,10 @@ function buildPaymentChart(paymentChart: IEnergyPaymentChart) {
 function buildNetImbalanceChart(netImbalanceChart: INetImbalanceSummaryChart) {
     let sum = netImbalanceChart.netSellerImbalanceOverCommited + netImbalanceChart.netSellerImbalanceUnderCommited + netImbalanceChart.netBuyerImbalanceOverCommited + netImbalanceChart.netBuyerImbalanceUnderCommited;
     let labels = [
-        `Net Seller Imbalance+ : ${Number(netImbalanceChart.netSellerImbalanceOverCommited * 100).toFixed(2)} Baht ${Number(netImbalanceChart.netSellerImbalanceOverCommited * 100 / sum).toFixed(2)}%`,
-        `Net Seller Imbalance- :${Number(netImbalanceChart.netSellerImbalanceUnderCommited * 100).toFixed(2)} Baht ${Number(netImbalanceChart.netSellerImbalanceUnderCommited * 100 / sum).toFixed(2)}%`,
-        `Net Buyer Imbalance+ :${Number(netImbalanceChart.netBuyerImbalanceOverCommited * 100).toFixed(2)} Baht ${Number(netImbalanceChart.netBuyerImbalanceOverCommited * 100 / sum).toFixed(2)}%`,
-        `Net Buyer Imbalance- : ${Number(netImbalanceChart.netBuyerImbalanceUnderCommited * 100).toFixed(2)} Baht ${Number(netImbalanceChart.netBuyerImbalanceUnderCommited * 100 / sum).toFixed(2)}%`,
+        `Net Seller Imbalance + : ${Number(netImbalanceChart.netSellerImbalanceOverCommited * 100).toFixed(2)} Baht ${(Math.round(netImbalanceChart.netSellerImbalanceOverCommited * 100 / sum) || 0).toFixed(2)}%`,
+        `Net Seller Imbalance - :${Number(netImbalanceChart.netSellerImbalanceUnderCommited * 100).toFixed(2)} Baht ${(Math.round(netImbalanceChart.netSellerImbalanceUnderCommited * 100 / sum) || 0).toFixed(2)}%`,
+        `Net Buyer Imbalance + :${Number(netImbalanceChart.netBuyerImbalanceOverCommited * 100).toFixed(2)} Baht ${(Math.round(netImbalanceChart.netBuyerImbalanceOverCommited * 100 / sum) || 0).toFixed(2)}%`,
+        `Net Buyer Imbalance - : ${Number(netImbalanceChart.netBuyerImbalanceUnderCommited * 100).toFixed(2)} Baht ${(Math.round(netImbalanceChart.netBuyerImbalanceUnderCommited * 100 / sum) || 0).toFixed(2)}%`,
     ];
 
     return (
@@ -113,10 +113,10 @@ function buildNetImbalanceChart(netImbalanceChart: INetImbalanceSummaryChart) {
 function buildAmountImbalanceChart(amountImbalanceChart: IAmountImbalanceSummaryChart) {
     let sum = amountImbalanceChart.amountSellerImbalanceOverCommited + amountImbalanceChart.amountSellerImbalanceUnderCommited + amountImbalanceChart.amountBuyerImbalanceOverCommited + amountImbalanceChart.amountBuyerImbalanceUnderCommited;
     let labels = [
-        `Net Seller Imbalance+ : ${Number(amountImbalanceChart.amountSellerImbalanceOverCommited * 100).toFixed(2)} kWh ${Number(amountImbalanceChart.amountSellerImbalanceOverCommited * 100 / sum).toFixed(2)}%`,
-        `Net Seller Imbalance- : ${Number(amountImbalanceChart.amountSellerImbalanceUnderCommited * 100).toFixed(2)} kWh ${Number(amountImbalanceChart.amountSellerImbalanceUnderCommited * 100 / sum).toFixed(2)}%`,
-        `Net Buyer Imbalance+ : ${Number(amountImbalanceChart.amountBuyerImbalanceOverCommited * 100).toFixed(2)} kWh ${Number(amountImbalanceChart.amountBuyerImbalanceOverCommited * 100 / sum).toFixed(2)}%`,
-        `Net Buyer Imbalance- : ${Number(amountImbalanceChart.amountBuyerImbalanceUnderCommited * 100).toFixed(2)} kWh ${Number(amountImbalanceChart.amountBuyerImbalanceUnderCommited * 100 / sum).toFixed(2)}%`,
+        `Amount Seller Imbalance + : ${Number(amountImbalanceChart.amountSellerImbalanceOverCommited * 100).toFixed(2)} kWh ${(Math.round(amountImbalanceChart.amountSellerImbalanceOverCommited * 100 / sum) || 0).toFixed(2)}%`,
+        `Amount Seller Imbalance - : ${Number(amountImbalanceChart.amountSellerImbalanceUnderCommited * 100).toFixed(2)} kWh ${(Math.round(amountImbalanceChart.amountSellerImbalanceUnderCommited * 100 / sum) || 0).toFixed(2)}%`,
+        `Amount Buyer Imbalance + : ${Number(amountImbalanceChart.amountBuyerImbalanceOverCommited * 100).toFixed(2)} kWh ${(Math.round(amountImbalanceChart.amountBuyerImbalanceOverCommited * 100 / sum) || 0).toFixed(2)}%`,
+        `Amount Buyer Imbalance - : ${Number(amountImbalanceChart.amountBuyerImbalanceUnderCommited * 100).toFixed(2)} kWh ${(Math.round(amountImbalanceChart.amountBuyerImbalanceUnderCommited * 100 / sum) || 0).toFixed(2)}%`,
     ];
 
     return (

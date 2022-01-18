@@ -64,7 +64,7 @@ export default function AllSettlementTable(props: IProps) {
         refreshSettlementDetail(row);
     }
     return (
-        <Paper sx={{ mb: 2 }} >
+        <Paper sx={{ width: 1, }}>
             <TableContainer >
                 <Table aria-label="">
                     <TableHead sx={{ bgcolor: '#E0E0E0', fontWeight: '400' }}>

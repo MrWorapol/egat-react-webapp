@@ -9,12 +9,14 @@ export interface IBillingReport {
 
 
 export interface IInvoice {
+    "timestamp": string,
     "expireTime": number,
     "invoiceId": string,
     "tradeId": string,
     "invoiceType": string,
     "issueToUserId": string,
     "price": number,
+    "discountAppFee": number,
     "discountGridUsed": number,
     "gridUsedFt": number,
     "tradingFee": number,

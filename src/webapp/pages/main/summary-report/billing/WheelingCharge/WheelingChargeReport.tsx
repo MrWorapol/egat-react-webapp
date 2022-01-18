@@ -29,7 +29,7 @@ export default function WheelingChargeReport(props: IProps) {
                     <FormControl variant='outlined' fullWidth>
                         <Select
                             fullWidth
-                            sx={{ height: '3em' }}
+                            sx={{ height: '2em' }}
                             name='gridUsed'
                             value={SelectedWheelingType}
                             onChange={(event: SelectChangeEvent) => { onSelectedDropdown(event) }}

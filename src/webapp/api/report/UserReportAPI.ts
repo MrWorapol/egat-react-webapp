@@ -166,8 +166,9 @@ export class UserAndEnergyReportAPI {
             } else { //case period time
 
                 rawData.forEach((row: IMeterAreaAndSite) => {
-                    console.log(row);
+                    // console.log(row);
                     let inRange = dayjs(row.registrationDate).isBefore(dayjs(period.endDate).endOf('day'));
+                    // console.log(` inrange:${inRange} registrationDate:${dayjs(row.registrationDate).format('DD/MM/YYYY')} :${dayjs(period.endDate).format('DD/MM/YYYY')}`)
                     if (inRange)
                         if (period.region === 'all' || period.region === row.regionName) {
 
@@ -264,7 +265,7 @@ export class UserAndEnergyReportAPI {
     }
 
     async getPowerInfos(req: IGetPowerInfosRequest): Promise<IGetPowerInfosResponse | null> {
-        let period = req?.period;
+        const period = req?.period;
         let headers = {
             "Content-Type": "application/json",
             "Accept": "application/json",
@@ -281,7 +282,7 @@ export class UserAndEnergyReportAPI {
             "payload.inSolar" as "inSolar", 
             "payload.load" as "load",
             "payload.meterId" as "meterId"
-            FROM "DirtyPowerOnEgat2"`,
+            FROM "PowerOnEgatF"`,
             resultFormat: "object",
         }
 
@@ -368,7 +369,7 @@ export class UserAndEnergyReportAPI {
                 "payload.inGrid" as "inGrid",
                 "payload.inSolar" as "inSolar",
                 "payload.load" as "load" 
-                FROM "DirtyForecastOnEgat2"
+                FROM "ForecastOnEgatF"
                 WHERE "payload.meterId" = ${+req.meterId}`,
             resultFormat: "object",
         }

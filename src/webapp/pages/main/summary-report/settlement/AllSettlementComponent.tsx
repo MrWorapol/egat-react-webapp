@@ -69,7 +69,7 @@ export default function AllSettlementComponent() {
     ) {
         return (
             <>
-                <Grid container item xs={3}>
+                <Grid container item xs={3} >
                     <FormControl variant='outlined' fullWidth>
                         <Select
                             fullWidth
@@ -124,7 +124,7 @@ export default function AllSettlementComponent() {
                         >
                             <MenuItem value='all'>All</MenuItem>
                             <MenuItem value={'energyShortfall'}>Energy Shortfall</MenuItem>
-                            {/* <MenuItem value={'open'}>Open</MenuItem> */}
+                            <MenuItem value={'energyExcess'}>Energy Excess</MenuItem>
                         </Select>
                     </FormControl>
                 </Grid>
@@ -143,12 +143,12 @@ export default function AllSettlementComponent() {
 
 
     return (
-        <Grid container direction='column' px={2} sx={{ minHeight: '50vh' }}>
-            <Grid item container direction='row' justifyContent='space-between' id='header' pt={2}>
-                <Grid item container xs={'auto'}>
+        <Grid container direction='column' sx={{ maxWidth: '100%' }} pb={3}>
+            <Grid item container direction='row' justifyContent='space-between' id='header' pt={2} px={2}>
+                <Grid item container xs={'auto'} >
                     <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em', color: 'secondary.main' }}>All Settlement</Typography>
                 </Grid>
-                <Grid item container xs={'auto'}>
+                <Grid item container xs={'auto'} >
                     <FormControl variant='outlined' >
                         <Select
                             labelId="demo-simple-select-label"
@@ -164,12 +164,14 @@ export default function AllSettlementComponent() {
                             <MenuItem value={'venueFlow'}>{'VENUE FLOW'}</MenuItem>
                             <MenuItem value={'perfectPark'}>{'Perfect Park'}</MenuItem>
                             <MenuItem value={'casaPermium'}>{'CASA Premium'}</MenuItem>
+                            <MenuItem value={'Srisangthum'}>{'Srisangthum'}</MenuItem>
+
                         </Select>
                     </FormControl>
                 </Grid>
 
             </Grid>
-            <Grid item container direction='row' spacing={1} id='table-selector' my={1}>
+            <Grid item container direction='row' spacing={1} id='table-selector' my={1} px={2}>
                 {buildTableSelecter()}
             </Grid>
             <Grid id="area-table">

@@ -185,6 +185,7 @@ export default function AllOrder() {
                             <MenuItem value={'venueFlow'}>{'VENUE FLOW'}</MenuItem>
                             <MenuItem value={'perfectPark'}>{'Perfect Park'}</MenuItem>
                             <MenuItem value={'casaPermium'}>{'CASA Premium'}</MenuItem>
+                            <MenuItem value={'Srisangthum'}>{'Srisangthum'}</MenuItem>
                         </Select>
                     </FormControl>
                 </Grid>
