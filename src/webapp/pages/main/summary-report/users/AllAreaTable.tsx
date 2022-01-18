@@ -94,9 +94,12 @@ export default function AllAreaTable(props: IProps) {
                     </TableHead>
                     <TableBody>
                         {props.data.length === 0 && /* case notfound data */
-                            <TableRow style={{ height: 53 * emptyRows }}>
-                                <TableCell colSpan={6} />
-                            </TableRow>
+                                <TableRow style={{ height: 53 * emptyRows }}>
+    
+                                    <TableCell colSpan={6}>
+                                        No Data Found
+                                    </TableCell>
+                                </TableRow>
                         }
                         {props.data.length !== 0 && (rowsPerPage > 0
                             ? props.data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)

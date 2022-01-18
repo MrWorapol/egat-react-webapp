@@ -22,17 +22,19 @@ export default function LocationSite() {
         let maximumPVUsed = 0;
         let averagePVUsed = 0;
         if (locationSite.powerUsed) {
-            averagePVUsed = locationSite.powerUsed.actual.length > 24 ? locationSite.energySummary.energyLoad / locationSite.powerUsed.actual.length : locationSite.energySummary.energyLoad;
-            locationSite.powerUsed.forecast.forEach((forecast) => {
+            averagePVUsed = locationSite.energySummary.energyLoad / locationSite.powerUsed.actual.length || 0; //if NaN return 0
 
-                console.log(`${locationSite.meterId}foreactPV: ${typeof(forecast.pv)}\t`);
-                summaryPVForecast += +forecast.pv;
+            locationSite.powerUsed.forecast.forEach((forecast) => {
+                // console.log(`${locationSite.meterId}foreactPV: ${forecast.pv}\t`);
+                if (forecast.grid < 0) {
+                    summaryPVForecast += +forecast.grid;
+                }
             });
             locationSite.powerUsed.actual.forEach((actual) => {
                 maximumPVUsed = maximumPVUsed < actual.pv ? actual.pv : maximumPVUsed; //check maximum Grid Us
             });
             if (locationSite.powerUsed.forecast.length > 24) {
-                summaryPVForecast = summaryPVForecast / (locationSite.powerUsed.forecast.length);
+                summaryPVForecast = summaryPVForecast / (locationSite.powerUsed.forecast.length) || 0; //if NaN return 0
             }
         }
 
@@ -62,17 +64,17 @@ export default function LocationSite() {
                         <Grid item container direction='row' sx={{ height: '20%' }}>
                             <Grid item container direction='column' alignItems='center' xs={4}>
                                 <Typography>ไฟที่จะขายได้ 1 วันล่วงหน้า</Typography>
-                                <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em' }}>{locationSite.powerUsed ? Math.round(summaryPVForecast * 100) / 100 : "Cannot Load ForecastData"}</Typography>
+                                <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em' }}>{locationSite.powerUsed ? Math.abs((Math.round(summaryPVForecast * 100) / 100)).toFixed(2) : "Cannot Load ForecastData"}</Typography>
                                 <Typography>kWh</Typography>
                             </Grid>
                             <Grid item container direction='column' alignItems='center' xs={4}>
                                 <Typography>กำลังไฟฟ้าใช้จริงสูงสุด</Typography>
-                                <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em' }}>{Math.round(maximumPVUsed * 100) / 100}</Typography>
+                                <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em' }}>{(Math.round(maximumPVUsed * 100) / 100).toFixed(2)}</Typography>
                                 <Typography>kW</Typography>
                             </Grid>
                             <Grid item container direction='column' alignItems='center' xs={4}>
                                 <Typography>กำลังไฟฟ้าใช้จริงโดยเฉลี่ย</Typography>
-                                <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em' }}>{Math.round(averagePVUsed * 100) / 100}</Typography>
+                                <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em' }}>{(Math.round(averagePVUsed * 100) / 100).toFixed(2)}</Typography>
                                 <Typography>kW</Typography>
                             </Grid>
                         </Grid>
@@ -167,30 +169,51 @@ function buildForecastChart( //,chartRef: React.MutableRefObject<any>
 ) {
     const { forecast, actual } = powerUsed;
     const labels = ["00:00-01:00", "01:00-02:00", "02:00-03:00", "03:00-04:00", "04:00-05:00", "05:00-06:00", "06:00-07:00", "07:00-08:00", "08:00-09:00", "09:00-10:00", "10:00-11:00", "11:00-12:00", "12:00-13:00", "13:00-14:00", "14:00-15:00", "15:00-16:00", "16:00-17:00", "17:00-18:00", "18:00-19:00", "19:00-20:00", "20:00-21:00", "21:00-22:00", "22:00-23:00", "23:00-23:59"];
-
-
-
+    let finalForecast: IPowerGraph[] = [];
+    let finalActual: IPowerGraph[] = [];
+    labels.forEach((hour: string) => {
+        finalForecast.push(sumPowerByHour(hour, forecast));
+        finalActual.push(sumPowerByHour(hour, actual));
+        // let sumForecastPowerByHour: IPowerGraph = { timestamp: hour, grid: 0, pv: 0 };
+        // forecast.forEach((power: IPowerGraph) => {
+        //     if (dayjs(power.timestamp).format('HH:mm') === hour.slice(0, 5)) {
+        //         sumForecastPowerByHour.grid += power.grid;
+        //         sumForecastPowerByHour.pv = power.pv;
+        //     }
+        // })
+        // finalForecast.push(sumForecastPowerByHour);
+        // actual.forEach((power: IPowerGraph) => {
+        //     if (dayjs(power.timestamp).format('HH:mm') === hour.slice(0, 5)) {
+        //         sumForecastPowerByHour.grid += power.grid;
+        //         sumForecastPowerByHour.pv = power.pv;
+        //     }
+        // })
+    })
+    console.log(`final Forecast `)
+    console.log(finalForecast);
+    console.log(`final Actual `)
+    console.log(finalActual);
     let excessPvForecast = {
         label: 'Excess PV Forecast',
-        data: forecast.slice(start, end).map((power: IPowerGraph) => { return power.pv }),
+        data: finalForecast.slice(start, end).map((power: IPowerGraph) => { return power.pv }),
         backgroundColor: '#7D6302',
         stack: "Stack 0",
     }
     let gridUsedForecast = {
         label: 'Grid Used Forecast',
-        data: forecast.slice(start, end).map((power: IPowerGraph) => { return -power.grid }),
+        data: finalForecast.slice(start, end).map((power: IPowerGraph) => { return -power.grid }),
         backgroundColor: '#760404',
         stack: "Stack 0",
     }
     let excessPvActual = {
         label: 'Excess PV Actual',
-        data: actual.slice(start, end).map((power: IPowerGraph) => { return power.pv }),
+        data: finalActual.slice(start, end).map((power: IPowerGraph) => { return power.pv }),
         backgroundColor: '#FEC908',
         stack: "Stack 1",
     }
     let gridUsedActual = {
         label: 'Grid Used Actual',
-        data: actual.slice(start, end).map((power: IPowerGraph) => { return -power.grid }),
+        data: finalActual.slice(start, end).map((power: IPowerGraph) => { return -power.grid }),
         backgroundColor: '#FF0000',
         stack: "Stack 1",
 
@@ -233,6 +256,13 @@ function buildForecastChart( //,chartRef: React.MutableRefObject<any>
 }
 
 
-function sumPowerInDay(inputData: IPowerGraph[]) {
-
+function sumPowerByHour(hour: string, inputData: IPowerGraph[]): IPowerGraph {
+    let result: IPowerGraph = { timestamp: hour, grid: 0, pv: 0 };
+    inputData.forEach((power: IPowerGraph) => {
+        if (dayjs(power.timestamp).format('HH:mm') === hour.slice(0, 5)) {
+            result.grid += power.grid ?? 0;
+            result.pv = power.pv ?? 0;
+        }
+    })
+    return result;
 }

@@ -6,6 +6,7 @@ import useUserReport from '../../../../hooks/summary-report/user/useUserReport'
 import { useNavigationGet } from '../../../../hooks/useNavigationGet'
 import { useNavigationSet } from '../../../../hooks/useNavigationSet'
 import { NavigationCurrentType } from '../../../../state/navigation-current-state'
+import { periodState } from '../../../../state/summary-report/period-state'
 import { userSessionState } from '../../../../state/user-sessions'
 import PeriodComponent from '../PeriodComponent'
 import AllArea from './AllArea'
@@ -17,20 +18,19 @@ export default function UserReport() {
     const { currentState } = useNavigationGet();
     const session = useRecoilValue(userSessionState);
     const { chartData, refreshUserData, refreshUserTable } = useUserReport();
-
-    const refreshData = useCallback(async () => {
+    let period = useRecoilValue(periodState);
+    const refreshData = async () => {
         console.log(`call refreshData Page`);
         refreshUserData();
-        refreshUserTable([], 'all');
-    }, [])
-
+        refreshUserTable(period, [], 'all');
+    }
 
     if (session && currentState === NavigationCurrentType.USER_REPORT) {
         return (
             <Box sx={{ width: `100%`, px: 2, pb: 2, maxWidth: '100%' }} key='user-report'>
                 <Grid container item direction="row" justifyContent='flex-end' id='period-zone' py={1}>
                     <Grid item >
-                        <PeriodComponent key='user-period' refreshPage={refreshData} />
+                        <PeriodComponent key='user-period' refreshPage={() => { refreshData() }} />
                     </Grid>
                 </Grid>
                 <Box sx={{ flexGrow: 1 }}>

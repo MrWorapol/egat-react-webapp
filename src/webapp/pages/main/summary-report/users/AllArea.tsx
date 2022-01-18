@@ -101,7 +101,6 @@ export default function AllArea() {
     useEffect(() => {
         showLoading(10);
         if (meterTable) {
-            console.log('call useEffect on All Area')
             setFilterData(meterTable)
         }
         //clean up 

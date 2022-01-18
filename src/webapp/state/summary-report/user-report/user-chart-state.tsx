@@ -22,5 +22,18 @@ export interface IUserChart {
 }
 export const userChartState = atom<IUserChart | null>({
     key: 'userChartState',
-    default: null,
+    default: {
+        energy: {
+            pv: 0,
+            energyStorage: 0,
+            grid: 0,
+            energyConsumptions: 0,
+        },
+        user: {
+            AGGREGATOR: 0,
+            CONSUMER: 0,
+            PROSUMER: 0,
+            noUser: 0
+        }
+    },
 })

@@ -134,7 +134,8 @@ export class BillingReportAPI {
                 body: JSON.stringify(body),
             })
             const jsonResponse: IInvoiceResponse[] = await response.json();
-            // console.log(jsonResponse);
+            console.log(`invoice Report API Response`);
+            console.log(jsonResponse);
             let data: IInvoice[] = jsonResponse.map((invoice: IInvoiceResponse) => {
                 return {
                     discountAppFee: invoice.discountAppFee,

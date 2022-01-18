@@ -18,9 +18,9 @@ export default function SettlementReport() {
     const session = useRecoilValue(userSessionState);
     const { refreshSettlementReport, settlementChart } = useSettlementReport();
 
-    const refreshPage = useCallback(async () => {
+    const refreshPage = async () => {
         refreshSettlementReport('all', 'all', 'all', 'all', 'all');
-    }, []);
+    };
 
     if (session && currentState === NavigationCurrentType.SETTLEMENT_REPORT) {
         return (

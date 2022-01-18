@@ -83,9 +83,12 @@ export default function AllSettlementTable(props: IProps) {
                     </TableHead>
                     <TableBody>
                         {data.length === 0 && /* case notfound data */
-                            <TableRow style={{ height: 53 * emptyRows }}>
-                                <TableCell colSpan={6} />
-                            </TableRow>
+                                <TableRow style={{ height: 53 * emptyRows }}>
+    
+                                    <TableCell colSpan={6}>
+                                        No Data Found
+                                    </TableCell>
+                                </TableRow>
                         }
                         {data.length !== 0 && (rowsPerPage > 0
                             ? data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
