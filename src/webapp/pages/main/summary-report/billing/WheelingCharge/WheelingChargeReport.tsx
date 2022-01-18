@@ -14,17 +14,10 @@ export default function WheelingChargeReport(props: IProps) {
     const [filterData, setFilterData] = useState(props.wheelingChargeReport.table);
 
     const refreshTable = useDebouncedCallback(() => {
-
         let tableFilter = [...props.wheelingChargeReport.table];
-        // console.log(`table Filter ${gridUsed}`);
-        // console.log(tableFilter);
-        // console.log(`role: ${role}\t buyer: ${userType}\t orderStatus: ${orderStatus}\t tradeMarket:${tradeMarket}\n area: ${area}`);
         if (SelectedWheelingType !== 'all') {
             tableFilter = tableFilter.filter((report) => { return report.wheelingCharge === SelectedWheelingType });
         }
-
-        console.log(`table filter fater check State`);
-        console.log(tableFilter);
         setFilterData(tableFilter);
     }, 0);
 
@@ -57,7 +50,6 @@ export default function WheelingChargeReport(props: IProps) {
     const onSelectedDropdown = (event: SelectChangeEvent) => {
 
         setSelectedWheelingType(event.target.value);
-        console.log(event.target.value);
         refreshTable();
     }
     return (

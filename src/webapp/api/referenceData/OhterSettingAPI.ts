@@ -6,7 +6,7 @@ import { IUserSession } from "../../state/user-sessions";
 
 
 interface IGetOtherSettingRequest {
-    token?: IUserSession,
+    session: IUserSession,
 }
 
 interface IGetOtherSettingResponse {
@@ -14,14 +14,14 @@ interface IGetOtherSettingResponse {
 }
 
 interface IGetOtherSettingLogsRequest {
-    token?: IUserSession,
+    session: IUserSession
 }
 
 interface IGetOtherSettingLogsResponse {
     context: IOtherSettingLog[],
 }
 interface IPutOtherSettingRequest {
-    token?: IUserSession,
+    session: IUserSession, 
     setting: IOtherSetting
 }
 
@@ -35,7 +35,7 @@ export class OtherSettingAPI {
         let token = 'token';
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${req.session.accessToken}`,
         }
         try {
             response = await fetch(api, {
@@ -85,7 +85,7 @@ export class OtherSettingAPI {
         // let token = 'token';
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${req.session.accessToken}`,
         }
         try {
             response = await fetch(api, {
@@ -134,7 +134,7 @@ export class OtherSettingAPI {
         let token = 'token';
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${req.session.accessToken}`,
         }
         let body = JSON.stringify(req.setting);
         try {

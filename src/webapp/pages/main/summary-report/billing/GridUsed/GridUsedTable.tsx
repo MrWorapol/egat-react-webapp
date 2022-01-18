@@ -116,7 +116,7 @@ export default function GridUsedTable(props: IProps) {
                                 <TableCell
                                     key={row.gridPrice + i}
                                 >
-                                    {row.gridPrice}
+                                    {(Math.round(row.gridPrice*100)/100).toFixed(2)}
                                 </TableCell>
 
                                 <TableCell

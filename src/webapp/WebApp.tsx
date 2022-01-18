@@ -3,7 +3,6 @@ import React from 'react'
 import Header from './components/Header'
 import Login from './pages/login/Login'
 import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
-import theme from './theme/Theme';
 import MainPage from './pages/main/MainPage';
 import { RecoilRoot, useRecoilValue } from 'recoil';
 import { Box } from '@mui/system';
@@ -13,7 +12,8 @@ import { useAuthGuard } from './hooks/useAuthGuard';
 import { CustomBackdrop } from './components/CustomLoadingBackdrop';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import DateAdapter from '@mui/lab/AdapterDayjs';
-import { userSessionState } from './state/user-sessions';
+
+import theme from './theme/Theme';
 
 export default function WebApp() {
     return (
@@ -45,7 +45,7 @@ function WebAdminRouting() {
                 <Route path='/login' exact>
                     <Login />
                 </Route>
-                <Route path={['/']} >
+                <Route >
                     <MainPage />
                 </Route>
             </Switch>

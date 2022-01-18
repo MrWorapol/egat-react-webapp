@@ -6,7 +6,7 @@ import { ITouTariff } from "../../state/reference-data/tou-traff/tou-tariff-stat
 import { IUserSession } from "../../state/user-sessions";
 
 interface IGetTOURequest {
-    token?: IUserSession,
+    session: IUserSession,
 }
 
 interface IGetTOUResponse {
@@ -14,48 +14,41 @@ interface IGetTOUResponse {
 }
 
 interface IGetServiceChargeRequest {
-    token?: IUserSession,
-    touType: string,
+    session: IUserSession, touType: string,
 }
 interface IGetServiceChargeResponse {
     context: IServiceCharge[],
 }
 
 interface IPutServiceChargeRequest {
-    token?: IUserSession,
-    serviceCharge: IServiceCharge,
+    session: IUserSession, serviceCharge: IServiceCharge,
 }
 
 interface IGetServiceChargeLogsRequest {
-    token?: IUserSession,
-    touType: string,
+    session: IUserSession, touType: string,
 }
 
 
 interface IGetTOULogsRequest {
-    token?: IUserSession,
-    touType: string,
+    session: IUserSession, touType: string,
     title: string,
 }
 
 interface IUpdateTOURequest {
-    token?: IUserSession,
-    tariff: ITouTariff
+    session: IUserSession, tariff: ITouTariff
 }
 
 interface IGetGridPackageResponse {
     context: IGridPackage,
 }
 
-interface IPutGridUsedPackageRequest{
-    token ?: IUserSession,
-    package: string,
+interface IPutGridUsedPackageRequest {
+    session: IUserSession, package: string,
 }
 
 
 interface IGetHolidayLogsRequest {
-    token?: IUserSession,
-    touType: string,
+    session: IUserSession, touType: string,
     year?: string,
 }
 
@@ -64,8 +57,7 @@ interface IGetHolidayLogsResponse {
 }
 
 interface IPutHolidayRequest {
-    token?: IUserSession,
-    touType: string,
+    session: IUserSession, touType: string,
     holidays: IHoliday[],
 }
 
@@ -79,7 +71,7 @@ export default class TOUTariffAPI {
         let token = 'token';
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${req.session.accessToken}`,
         }
         try {
             response = await fetch(api, {
@@ -189,7 +181,7 @@ export default class TOUTariffAPI {
         let token = 'token';
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${req.session.accessToken}`,
         }
 
         let body = JSON.stringify(req.tariff);
@@ -221,7 +213,7 @@ export default class TOUTariffAPI {
         let token = 'token';
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${req.session.accessToken}`,
         }
         try {
             response = await fetch(api, {
@@ -256,7 +248,7 @@ export default class TOUTariffAPI {
         let token = 'token';
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${req.session.accessToken}`,
         }
         try {
             response = await fetch(api, {
@@ -282,7 +274,7 @@ export default class TOUTariffAPI {
         let token = 'token';
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${req.session.accessToken}`,
         }
         let body = JSON.stringify(req.serviceCharge);
         try {
@@ -309,7 +301,7 @@ export default class TOUTariffAPI {
         let token = 'token';
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${req.session.accessToken}`,
         }
         try {
             response = await fetch(api, {
@@ -334,7 +326,7 @@ export default class TOUTariffAPI {
         let token = 'token';
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${req.session.accessToken}`,
         }
         try {
             response = await fetch(api, {
@@ -359,7 +351,7 @@ export default class TOUTariffAPI {
         let token = 'token';
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${req.session.accessToken}`,
         }
         try {
             response = await fetch(api, {
@@ -388,7 +380,7 @@ export default class TOUTariffAPI {
         let token = 'token';
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${req.session.accessToken}`,
         }
         try {
             response = await fetch(api.toString(), {
@@ -413,7 +405,7 @@ export default class TOUTariffAPI {
         let token = 'token';
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${req.session.accessToken}`,
         }
 
         let body = JSON.stringify({

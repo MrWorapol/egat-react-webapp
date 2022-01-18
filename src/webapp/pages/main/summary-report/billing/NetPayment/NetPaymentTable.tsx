@@ -102,7 +102,7 @@ export default function NetPaymentTable(props: IProps) {
                                 <TableCell
                                     key={row.netPrice + i}
                                 >
-                                    {row.netPrice}
+                                    {(Math.round(row.netPrice*100)/100).toFixed(2)}
                                 </TableCell>
                             </TableRow>
                         ))

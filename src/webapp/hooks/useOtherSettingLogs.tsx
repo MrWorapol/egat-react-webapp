@@ -9,15 +9,17 @@ import { userSessionState } from "../state/user-sessions";
 
 
 export function useOtherSettingLogs() {
-    const userSession = useRecoilValue(userSessionState);
+    const session = useRecoilValue(userSessionState);
     const [otherSettingLogs, setotherSettingLogs] = useRecoilState(otherSettingLogState);
     const api = new OtherSettingAPI();
     const refreshOtherSettingLogs = useCallback(async () => {
-        const response = await api.getOtherSettingLogs({});
-        console.log('call wheeling log api');
-        if (response !== null) {
-            console.info(response);
-            setotherSettingLogs(response.context);
+        if (session) {
+            const response = await api.getOtherSettingLogs({ session });
+            console.log('call wheeling log api');
+            if (response !== null) {
+                console.info(response);
+                setotherSettingLogs(response.context);
+            }
         }
     }, [])
 

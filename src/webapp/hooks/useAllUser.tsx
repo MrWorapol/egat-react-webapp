@@ -2,7 +2,6 @@ import { useCallback, useEffect } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { userInfo } from "../state/user-management/user-info";
 import UserManagementAPI from "../api/user/userManagementApi"
-import { useNavigationGet } from "./useNavigationGet";
 import { userSessionState } from "../state/user-sessions";
 
 interface ISearchField {
@@ -16,14 +15,13 @@ export function useAllUser() {
     const session = useRecoilValue(userSessionState);
 
     const refreshAllUser = useCallback(async (searchField?: ISearchField) => {
-        // console.log(`call get All User`);
         if (session) {
             if (!searchField) {//get without filter
                 const response = await api.getAllUser({ session });
                 if (response) {
-                    // console.log(`result from response${response.userInfos}`);
+
                     setUserInfoValue(response.userInfos);
-                    // console.log(userInfoDataValue);
+
                 } else {
                     setUserInfoValue([]);
                 }
@@ -52,13 +50,9 @@ export function useAllUser() {
 
 
     useEffect(() => {
-
-        console.log(`Use Effect userInfo  data from ${userInfoDataValue}`);
         if (!userInfoDataValue) {
             refreshAllUser();
         }
-
-        // await getUserInfo();
     }, [userInfoDataValue, refreshAllUser]
     )
     return {

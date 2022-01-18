@@ -4,14 +4,14 @@ import { Iimbalance } from "../../state/reference-data/imbalance/imbalance-state
 import { IUserSession } from "../../state/user-sessions";
 
 interface IGetImbalanceRequest {
-    token?: IUserSession,
+    session: IUserSession,
 }
 interface IGetImbalanceResponse {
     context: Iimbalance[],
 }
 
 interface IGetLogsRequest {
-    token?: IUserSession,
+    session: IUserSession,
     type: 'buyer' | 'seller',
     imbalance: 'Commited < Actual Energy' | 'Commited > Actual Energy',
 }
@@ -20,7 +20,7 @@ interface IGetLogsResponse {
 }
 
 interface IUpdateImbalanceRequest {
-    token?: IUserSession,
+    session: IUserSession,
     imbalance: Iimbalance
 }
 export class ImbalanceAPI {
@@ -30,10 +30,9 @@ export class ImbalanceAPI {
         const path = '/reference-data/imbalance-setting'
         const api = this.uri + path;
         let response: Response;
-        let token = 'token';
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${req.session.accessToken}`,
         }
         try {
             response = await fetch(api, {
@@ -83,10 +82,9 @@ export class ImbalanceAPI {
         const path = `/reference-data/imbalance-setting/${req.type}/${req.imbalance}/log`;
         const api = this.uri + path;
         let response: Response;
-        // let token = 'token';
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${req.session.accessToken}`,
         }
         try {
             response = await fetch(api, {
@@ -134,10 +132,9 @@ export class ImbalanceAPI {
         const path = '/reference-data/imbalance-setting';
         const api = this.uri + path;
         let response: Response;
-        let token = 'token';
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${req.session.accessToken}`,
         }
 
         let body = JSON.stringify(req.imbalance);

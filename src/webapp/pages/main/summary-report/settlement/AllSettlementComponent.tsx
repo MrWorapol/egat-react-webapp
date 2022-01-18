@@ -18,7 +18,6 @@ export default function AllSettlementComponent() {
     const refreshTable = useDebouncedCallback(() => {
         if (settlementReport) {
             let tableFilter = [...settlementReport];
-            // console.log(`role: ${role}\t buyer: ${userType}\t orderStatus: ${orderStatus}\t tradeMarket:${tradeMarket}\n area: ${area}`);
             if (role !== 'all') {
                 tableFilter = tableFilter.filter((report) => { return report.role === role });
             }
@@ -74,7 +73,7 @@ export default function AllSettlementComponent() {
                     <FormControl variant='outlined' fullWidth>
                         <Select
                             fullWidth
-                            sx={{ height: '3em' }}
+                            sx={{ height: '1.5em' }}
                             name='role'
                             value={role}
                             onChange={(event: SelectChangeEvent) => { onSelectedDropdown(event) }}
@@ -90,8 +89,7 @@ export default function AllSettlementComponent() {
                     <FormControl variant='outlined' fullWidth>
                         <Select
                             fullWidth
-                            sx={{ height: '3vh' }}
-                            name='buyerType'
+                            sx={{ height: '1.5em' }} name='buyerType'
                             value={userType}
                             onChange={(event: SelectChangeEvent) => { onSelectedDropdown(event) }}
                         >
@@ -105,8 +103,7 @@ export default function AllSettlementComponent() {
                     <FormControl variant='outlined' fullWidth>
                         <Select
                             fullWidth
-                            sx={{ height: '3vh' }}
-                            name='tradeMarket'
+                            sx={{ height: '1.5em' }} name='tradeMarket'
                             value={tradeMarket}
                             onChange={(event: SelectChangeEvent) => { onSelectedDropdown(event) }}
                         >
@@ -121,8 +118,7 @@ export default function AllSettlementComponent() {
                     <FormControl variant='outlined' fullWidth>
                         <Select
                             fullWidth
-                            sx={{ height: '3vh' }}
-                            name='imbalance'
+                            sx={{ height: '1.5em' }} name='imbalance'
                             value={imbalance}
                             onChange={(event: SelectChangeEvent) => { onSelectedDropdown(event) }}
                         >
@@ -160,7 +156,7 @@ export default function AllSettlementComponent() {
                             value={area}
                             name='area'
                             onChange={(event: SelectChangeEvent) => { onSelectedDropdown(event) }}
-                            sx={{ height: '3vh' }}
+                            sx={{ height: '1.5em' }}
                         >
                             <MenuItem value={'total'}> {'Total'}</MenuItem>
                             <MenuItem value={'3villages'}> {'3 Villages'}</MenuItem>

@@ -15,15 +15,9 @@ export default function GridUsed(props: IProps) {
     const refreshTable = useDebouncedCallback(() => {
 
         let tableFilter = [...props.gridUsedData.table];
-        // console.log(`table Filter ${gridUsed}`);
-        // console.log(tableFilter);
-        // console.log(`role: ${role}\t buyer: ${userType}\t orderStatus: ${orderStatus}\t tradeMarket:${tradeMarket}\n area: ${area}`);
         if (gridUsed !== 'all') {
             tableFilter = tableFilter.filter((report) => { return report.gridUsedType === gridUsed });
         }
-
-        console.log(`table filter fater check State`);
-        console.log(tableFilter);
         setFilterData(tableFilter);
     }, 0);
 
@@ -36,7 +30,7 @@ export default function GridUsed(props: IProps) {
                     <FormControl variant='outlined' fullWidth>
                         <Select
                             fullWidth
-                            sx={{ height: '3em' }}
+                            sx={{ height: '2em' }}
                             name='gridUsed'
                             value={gridUsed}
                             onChange={(event: SelectChangeEvent) => { onSelectedDropdown(event) }}
@@ -54,9 +48,7 @@ export default function GridUsed(props: IProps) {
     }
 
     const onSelectedDropdown = (event: SelectChangeEvent) => {
-
         setGridUsed(event.target.value);
-        console.log(event.target.value);
         refreshTable();
     }
 

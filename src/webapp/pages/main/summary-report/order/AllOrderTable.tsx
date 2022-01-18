@@ -88,7 +88,9 @@ export default function AllOrderTable(props: IProps) {
                     <TableBody>
                         {(props.data && props.data.length === 0) && /* case notfound data */
                             <TableRow style={{ height: 53 * emptyRows }}>
-                                <TableCell colSpan={6} />
+                                <TableCell colSpan={6}>
+                                    No Data Found
+                                </TableCell>
                             </TableRow>
                         }
                         {props.data && props.data.length !== 0 && (rowsPerPage > 0
@@ -111,7 +113,7 @@ export default function AllOrderTable(props: IProps) {
                                 >
                                     {row.userType}
                                 </TableCell>
-                                <TableCell
+                                <TableCell sx={{ color: "success.light" }}
                                 // key={row.phoneNumber + i}
                                 >
                                     {row.status}

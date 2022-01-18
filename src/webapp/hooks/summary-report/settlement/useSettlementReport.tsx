@@ -1,9 +1,8 @@
 import dayjs from "dayjs";
 import { useCallback, useEffect } from "react";
 import { useRecoilState, useRecoilValue, useResetRecoilState } from "recoil"
-import { IGetOrderTableRequest } from "../../../api/report/OrderReportAPI";
 import { SettlementReportAPI } from "../../../api/report/SettlementReportAPI";
-import { UserReportAPI } from "../../../api/report/UserReportAPI";
+import { UserAndEnergyReportAPI } from "../../../api/report/UserReportAPI";
 import { NavigationCurrentType } from "../../../state/navigation-current-state";
 import { settlementChartState } from "../../../state/summary-report/settlement-report/settlement-chart-state";
 import { ISettlementDetail, settlementDetailState } from "../../../state/summary-report/settlement-report/settlement-detail-state";
@@ -28,11 +27,11 @@ export function useSettlementReport() {
     const resetSettlementDetail = useResetRecoilState(settlementDetailState);
     const { period } = usePeriodTime();
     const settlementAPI = new SettlementReportAPI();
-    const userMeterApi = new UserReportAPI();
+    const userMeterApi = new UserAndEnergyReportAPI();
 
     const refreshSettlementReport = useCallback(async (role: string, area: string, buyerType: string, tradeMarket: string, orderStatus: string) => {
         if (session) {
-            const userMeterInfos = await userMeterApi.getUserMeterInfo({ startDate: dayjs(period.startDate).toString(), endDate: dayjs(period.endDate).toString(), region: period.region, roles: [role], area: area, session });
+            const userMeterInfos = await userMeterApi.getUserMeterInfo({ period, roles: [role], area: area, session });
             const req = {
                 startDate: dayjs(period.startDate).toString(),
                 endDate: dayjs(period.endDate).toString(),
@@ -66,7 +65,7 @@ export function useSettlementReport() {
 
             if ((traceContractReports && userMeterInfos && imbalanceReport) && traceContractReports.context.length > 0 && userMeterInfos.context.length > 0 && imbalanceReport.context.length > 0) {
                 let output: ISettlementReport[] = [];
-                traceContractReports.context.map((contract: ISettlementReport) => { //map tractContract 
+                traceContractReports.context.forEach((contract: ISettlementReport) => { //map tractContract 
                     contract.imbalance = []; //create array variable for insert imbalance Data
                     let imbalanceMapContractId: IImbalanceReport[] = imbalanceReport.context.filter((imbalance: IImbalanceReport) => {
                         return imbalance.tradeContractIds.toString() === contract.contractId.toString();
@@ -172,8 +171,6 @@ export function useSettlementReport() {
                         })
                     }
                 });
-                // console.log(`output from summary Imbalance With userMeter`);
-                // console.log(summaryImbalance);
                 setSettlementReport(output);
                 setSettlementChart(
                     {
@@ -209,8 +206,6 @@ export function useSettlementReport() {
                 );
                 refreshSettlementDetail(output[0]);
             }
-            // console.log(`get Settlement Report State Value`)
-            // console.log(settlementReport);
         }
     }, [])
 

@@ -109,7 +109,7 @@ export default function WheelingChargeTable(props: IProps) {
                                 <TableCell
                                     key={row.price + i}
                                 >
-                                    {row.price}
+                                    {(Math.round(row.price*100)/100).toFixed(2)}
                                 </TableCell>
                             </TableRow>
                         ))

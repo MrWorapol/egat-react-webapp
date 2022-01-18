@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { BillingReportAPI } from "../../../api/report/BillingReportAPI";
-import { UserReportAPI } from "../../../api/report/UserReportAPI";
+import { UserAndEnergyReportAPI } from "../../../api/report/UserReportAPI";
 import { NavigationCurrentType } from "../../../state/navigation-current-state";
 import { billingState, IInvoice } from "../../../state/summary-report/billing-report/billing-report-state"
 import { IUserSession, userSessionState } from "../../../state/user-sessions";
@@ -25,7 +25,7 @@ export default function useBillingReport() {
     const { period } = usePeriodTime();
     const { showLoading, hideLoading } = useLoadingScreen();
     const billingAPI = new BillingReportAPI();
-    const userMeterApi = new UserReportAPI();
+    const userMeterApi = new UserAndEnergyReportAPI();
     const settlementAPI = new SettlementReportAPI();
 
 
@@ -39,7 +39,7 @@ export default function useBillingReport() {
         showLoading(15);
         if (session !== null) {
             console.log(`call api`);
-            let userMeterInfos = await userMeterApi.getUserMeterInfo({ startDate: dayjs(period.startDate).toString(), endDate: dayjs(period.endDate).toString(), region: period.region, roles: ["roles"], area: "area", session })
+            let userMeterInfos = await userMeterApi.getUserMeterInfo({ period, roles: ["roles"], area: "area", session })
             let invoiceReports = await billingAPI.getInvoiceReport({ session });
             let tradeDatas = await settlementAPI.getTradeDataReport({ session });
             console.log(invoiceReports);

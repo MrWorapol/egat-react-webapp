@@ -167,7 +167,6 @@ export default function UserManagement() {
                     label="admin"
                 />
             </FormGroup>
-            <Button onClick={roleSearchDebounce}>Test SelectRoles</Button>
         </>
     }
 

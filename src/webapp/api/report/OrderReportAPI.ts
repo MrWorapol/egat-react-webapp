@@ -19,13 +19,13 @@ interface IGetDruidBody {
 
 export interface IGetOrderTableRequest {
     session: IUserSession,
-    startDate: string,
-    endDate: string,
-    region: string,
-    roles: string[],
-    buyerType: string,
-    tradeMarket: string,
-    orderStatus: string,
+    startDate?: string,
+    endDate?: string,
+    region?: string,
+    roles?: string[],
+    buyerType?: string,
+    tradeMarket?: string,
+    orderStatus?: string,
 }
 
 interface IGetOrderRequest {
@@ -50,11 +50,7 @@ interface IGetOrderResponse {
     targetAmount: string,
     targetPrice: string,
 }
-interface IGetPoolTradeOfferResponse {
-    context: {
 
-    }[]
-}
 interface IGetOrderTableResponse {
     context: IOrderInfo[],
 }
@@ -120,9 +116,9 @@ export class OrderReportAPI {
     async getOrderTable(req: IGetOrderTableRequest): Promise<IGetOrderTableResponse | null> {
         let roles = '';
         let results: IGetOrderTableResponse = { context: [] };
-        if (req.roles.length === 0) {
-            roles = 'all'
-        }
+        // if (req.roles.length === 0) {
+        //     roles = 'all'
+        // }
         let poolSellerOrders = await this.getPoolTradeOffer({ session: req.session });
         if (poolSellerOrders && poolSellerOrders.length > 0) {
             results.context.push(...poolSellerOrders);
@@ -300,7 +296,8 @@ export class OrderReportAPI {
             "payload.settlementTime" settlementTime,
             "payload.amount" as targetAmount,
             "payload.price" as targetPrice
-            FROM "BilateralSettlementOnEgat"`,
+            FROM "BilateralSettlementOnEgat"
+            WHERE "__time" > '2021-12-07T00:00:00.000Z'`,
             "resultFormat": "object"
         }
         let headers = {

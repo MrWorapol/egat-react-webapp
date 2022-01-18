@@ -1,8 +1,9 @@
 import dayjs from "dayjs";
 import { useCallback, useEffect } from "react";
 import { useRecoilState, useRecoilValue, useResetRecoilState } from "recoil"
-import { UserReportAPI } from "../../../api/report/UserReportAPI";
+import { UserAndEnergyReportAPI } from "../../../api/report/UserReportAPI";
 import { navigationCurrentState, NavigationCurrentType } from "../../../state/navigation-current-state";
+import { IPeriod, periodState } from "../../../state/summary-report/period-state";
 import { IPowerGraph, locationSiteState } from "../../../state/summary-report/user-report/location-site-state";
 import { IPowerData, powerDatastate } from "../../../state/summary-report/user-report/power-data-state";
 import { IUserSummary, userChartState } from "../../../state/summary-report/user-report/user-chart-state"
@@ -17,51 +18,43 @@ export default function useUserReport() {
     const [chartData, setChartData] = useRecoilState(userChartState);
     const [meterTable, setmeterTable] = useRecoilState(userReportState);
     const [locationSite, setLocationSite] = useRecoilState(locationSiteState);
-    const [powerData, setPowerData] = useRecoilState(powerDatastate);
+    const [actualPowers, setActualPowers] = useRecoilState(powerDatastate);
     const resetLocationSite = useResetRecoilState(locationSiteState);
-    const api = new UserReportAPI();
-    const { period } = usePeriodTime();
-    const session = useRecoilValue(userSessionState);
+    const api = new UserAndEnergyReportAPI();
+    let resetChartData = useResetRecoilState(userChartState);
+    let period = useRecoilValue(periodState);
+    let session = useRecoilValue(userSessionState);
 
     const { showLoading, hideLoading } = useLoadingScreen();
-    const getPowerDatas = useCallback(async () => {
+    const getPowerDatas = useCallback(async (period?: IPeriod) => {
         if (session) {
-            const result = await api.getPowerInfos({ session });
-            console.log(`callculate Power Data`)
-            console.log(result);
+            const result = await api.getPowerInfos({ period, session }); //period can be undefined because for support dashboard summary 
             if (result) {
-                setPowerData(result.powerData);
+                setActualPowers(result.powerData);
                 return result;
             }
         }
 
     }, []);
 
-    const refreshUserTable = useCallback(async (roles: string[], area: string) => {
-        console.log('refresh User Energy Table');
+    const refreshUserTable = async (period: IPeriod, roles: string[], area: string) => {
+        // console.log('refresh User Energy Table');
         if (session) {
             showLoading(10);
-            const userMeters = await api.getUserMeterInfo({ startDate: dayjs(period.startDate).toString(), endDate: dayjs(period.endDate).toString(), region: period.region, roles: roles, area: area, session })
-            if (userMeters) {
-                // console.log(`refresh user table`);
-                // console.log(result.context)
+            const userMeters = await api.getUserMeterInfo({ period, roles: roles, area: area, session })
+            if (userMeters && userMeters.context.length > 0) {
                 let userSummary: IUserSummary = { AGGREGATOR: 0, CONSUMER: 0, PROSUMER: 0, noUser: 0 };
-                userMeters.context.map((meter: IUserMeterInfo) => {
+                userMeters.context.forEach((meter: IUserMeterInfo) => {
                     userSummary[meter.role] += 1;
                 })
-                // console.log(`userSummary `);
-                // console.log(userSummary);
-                let powerData = await getPowerDatas();
+                let powerData = await getPowerDatas(period);
                 if (powerData) {
-                    console.log(`energySummary`);
-                    console.log(powerData);
                     setChartData({
                         energy: {
-                            pv: Math.floor(powerData.summaryPower.load + powerData.summaryPower.inSolar + powerData.summaryPower.inGrid + powerData.summaryPower.inBattery),
-                            energyStorage: Math.floor(powerData.summaryPower.inSolar + powerData.summaryPower.inBattery),
+                            pv: Math.floor(powerData.summaryPower.inSolar),
+                            energyStorage: Math.floor( powerData.summaryPower.inBattery),
                             energyConsumptions: Math.floor(powerData.summaryPower.load),
                             grid: Math.floor(powerData.summaryPower.inGrid)
-
                         },
                         user: {
                             AGGREGATOR: userSummary.AGGREGATOR,
@@ -70,29 +63,29 @@ export default function useUserReport() {
                             noUser: userSummary.noUser,
                         },
                     })
-                    setPowerData(powerData.powerData);
+                    setActualPowers(powerData.powerData);
                 }
-
+                refreshLocationSite(userMeters.context[0]);
                 setmeterTable(userMeters.context);
+            } else {//if not found reset State
+                setmeterTable([]);
+                resetChartData();
+                resetLocationSite();
             }
             hideLoading(10);
         }
-    }, []);
+    };
 
 
-    const refreshLocationSite = useCallback(async (meter: IUserMeterInfo) => {
-
+    const refreshLocationSite = async (meter: IUserMeterInfo) => {
         if (locationSite) {
-            // if (locationSite.meterId.toString() === meter.meterId.toString()) { //no need rerender when select same meter
-            // return;
-            // }
             resetLocationSite();
         }
         if (session) {
-            let forecastPower: IPowerGraph[] = await getForecastData(meter.meterId);
-            let actualPower: IPowerGraph[] = [];
-            if (powerData && forecastPower) {
-                let powerDataByMeterId = powerData.filter(
+            let forecastPowerByMeter: IPowerGraph[] = await getForecastData(meter.meterId);
+            let actualPowerByMeter: IPowerGraph[] = [];
+            if (actualPowers && forecastPowerByMeter) {
+                let powerDataByMeterId = actualPowers.filter(
                     (row: IPowerData) => {
                         return meter.meterId.toString() === row.meterId.toString()
                     });
@@ -104,14 +97,14 @@ export default function useUserReport() {
                 }
                 if (powerDataByMeterId.length > 0) {
                     powerDataByMeterId.map((row: IPowerData) => {
-                        energySummary.pv += Math.floor(+row.load + +row.inSolar + +row.inGrid + +row.inBattery);
-                        energySummary.energyStorage += Math.floor(+row.inSolar + +row.inBattery);
+                        energySummary.pv += Math.floor( +row.inSolar);
+                        energySummary.energyStorage += Math.floor(+row.inBattery);
                         energySummary.energyConsumptions += Math.floor(+row.load);
                         energySummary.grid += Math.floor(+row.inGrid);
-                        actualPower.push({ //insert actual power in array
+                        actualPowerByMeter.push({ //insert actual power in array
                             timestamp: row.timestamp,
                             grid: +row.inGrid,
-                            pv: +row.load + +row.inSolar + +row.inGrid + +row.inBattery
+                            pv: +row.inSolar 
                         })
                     })
                 }
@@ -131,8 +124,8 @@ export default function useUserReport() {
                         pv: energySummary.pv,
                     },
                     powerUsed: {
-                        actual: actualPower,
-                        forecast: forecastPower
+                        actual: actualPowerByMeter,
+                        forecast: forecastPowerByMeter
                     }
 
 
@@ -140,9 +133,9 @@ export default function useUserReport() {
 
             }
         };
-    }, [])
+    };
 
-    const getForecastData = useCallback(async (meterId: string): Promise<IPowerGraph[]> => {
+    const getForecastData = async (meterId: string): Promise<IPowerGraph[]> => {
         let powerGraph: IPowerGraph[] = [];
         if (session) {
             let forecastData = await api.getForecastData({ session, meterId });
@@ -151,30 +144,34 @@ export default function useUserReport() {
                     powerGraph.push({ //insert actual power in array
                         timestamp: row.timestamp,
                         grid: row.inGrid,
-                        pv: row.load + row.inSolar + row.inGrid + row.inBattery
+                        pv: row.inSolar 
                     }
                     )
                 })
             }
-
+            //load = row.inSolar + row.inGrid + row.inBattery
+            //พลังงานที่ใช้ทั้งหมด = พลังงานโซล่า + grid + แบต
         }
         return powerGraph;
-    }, [])
+    };
+
     useEffect(() => {
         if (session && currentState === NavigationCurrentType.USER_REPORT) {
             if (!meterTable) {
-                refreshUserTable([], 'all');
+                refreshUserTable(period, [], 'all');
 
             }
-            if (meterTable && !locationSite) {
-                refreshLocationSite(meterTable[0]);
-            }
+            // if (meterTable && !locationSite) {
+            //     if (meterTable.length > 0) {
+            //         refreshLocationSite(meterTable[0]);
+            //     }
+            // }
 
         }
         return () => {
 
         }
-    }, [])
+    }, [period])
 
     return {
         chartData,

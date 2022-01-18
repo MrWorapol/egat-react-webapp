@@ -94,8 +94,8 @@ function buildGridUsedChart(gridUsed: IGridUsedChart): JSX.Element {
     let labels = [
         `Grid Used : ${(Math.round(gridUsed.gridUsed * 100) / 100).toFixed(2)} Baht ${Number(gridUsed.gridUsed * 100 / sum).toFixed(2)}%`,
         `ค่าบริการ : ${(Math.round(gridUsed.serviceCharge* 100) / 100).toFixed(2)} Baht ${Number(gridUsed.serviceCharge * 100 / sum).toFixed(2)}%`,
-        `ค่าไฟฟ้าผันแปร(Ft) : ${Number(gridUsed.ft).toFixed(2)} Baht ${Number(gridUsed.ft * 100 / sum).toFixed(2)}%`,
-        `ร่วมค่าไฟฟ้าก่อนภาษีมูลค่าเพิ่ม :  ${Number(gridUsed.amount).toFixed(2)} Baht ${Number(gridUsed.amount * 100 / sum).toFixed(2)}%`,
+        `ค่าไฟฟ้าผันแปร(Ft) : ${(Math.round(gridUsed.ft*100)/100).toFixed(2)} Baht ${Number(Math.abs(gridUsed.ft) * 100 / sum).toFixed(2)}%`,
+        `ร่วมค่าไฟฟ้าก่อนภาษีมูลค่าเพิ่ม :  ${(Math.round(gridUsed.amount*100)/100).toFixed(2)} Baht ${Number(gridUsed.amount * 100 / sum).toFixed(2)}%`,
         `VAT :  ${Number(gridUsed.vat).toFixed(2)} Baht ${Number(gridUsed.vat * 100 / sum).toFixed(2)}%`,
         `ส่วนลดค่าพลังงานไฟฟ้า : ${Number(gridUsed.discount).toFixed(2)} Baht${Number(gridUsed.discount * 100 / sum).toFixed(2)}%`,
 

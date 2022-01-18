@@ -23,11 +23,10 @@ export function useWheelingCharge() {
 
     const updatedWheelingCharge = useCallback(async (wheelingCharge: IWheelingCharge) => {
         if (session) {
-            const response = await api.updatedWheelingCharge({ wheelingCharge: wheelingCharge, session });
+            const response = await api.updatedWheelingCharge({ wheelingCharge, session });
             console.info(wheelingCharge);
             if (response !== null) {
                 console.info(`updated is : ${response}`);
-
             }
         }
     }, [])

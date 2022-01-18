@@ -52,8 +52,8 @@ export default function EnergyTradingChart(props: IProps) {
 function buildPaymentChart(paymentChart: IEnergyPaymentChart) {
     let sum = paymentChart.netSales + paymentChart.netBuys + paymentChart.netImbalance + paymentChart.appTransaction + paymentChart.vat + paymentChart.discountFees;
     let labels = [
-        `Net Sales : ${Number(paymentChart.netSales * 100).toFixed(2)} Baht ${Number(paymentChart.netSales * 100 / sum).toFixed(2)}%`,
-        `Net Buys : ${Number(paymentChart.netBuys * 100).toFixed(2)} Baht ${Number(paymentChart.netBuys * 100 / sum).toFixed(2)}%`,
+        `Net Sales : ${(Math.round(paymentChart.netSales * 100)/100).toFixed(2)} Baht ${Number(paymentChart.netSales * 100 / sum).toFixed(2)}%`,
+        `Net Buys : ${(Math.round(paymentChart.netBuys * 100)/100).toFixed(2)} Baht ${Number(paymentChart.netBuys * 100 / sum).toFixed(2)}%`,
         `Net Imbalance : ${Number(paymentChart.netImbalance * 100).toFixed(2)} Baht ${Number(paymentChart.netImbalance * 100 / sum).toFixed(2)}%`,
         `App Transaction Fees : ${Number(paymentChart.appTransaction * 100).toFixed(2)} Baht ${Number(paymentChart.appTransaction * 100 / sum).toFixed(2)}%`,
         `VAT : ${Number(paymentChart.vat * 100).toFixed(2)} Baht ${Number(paymentChart.vat * 100 / sum).toFixed(2)}%`,

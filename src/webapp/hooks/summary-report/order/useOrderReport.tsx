@@ -2,9 +2,9 @@ import dayjs from "dayjs";
 import { useCallback, useEffect } from "react";
 import { useRecoilState, useRecoilValue, useResetRecoilState } from "recoil"
 import { IGetOrderTableRequest, OrderReportAPI } from "../../../api/report/OrderReportAPI";
-import { UserReportAPI } from "../../../api/report/UserReportAPI";
+import { UserAndEnergyReportAPI } from "../../../api/report/UserReportAPI";
 import { NavigationCurrentType } from "../../../state/navigation-current-state";
-import { IOrderChart, orderChartState } from "../../../state/summary-report/order-report/order-chart-state";
+import { orderChartState } from "../../../state/summary-report/order-report/order-chart-state";
 import { orderDetailState } from "../../../state/summary-report/order-report/order-detail-state";
 import { IOrderInfo, orderState } from "../../../state/summary-report/order-report/order-report-state";
 import { IUserMeterInfo } from "../../../state/summary-report/user-report/user-report-state";
@@ -17,7 +17,7 @@ interface ISummaryMap {
 }
 
 export default function useOrderReport() {
-    console.log(`call Use ORDER REPORT`);
+    // console.log(`call Use ORDER REPORT`);
     const session = useRecoilValue(userSessionState);
     const { currentState } = useNavigationGet();
     const [orderReport, setOrderReport] = useRecoilState(orderState)
@@ -26,13 +26,13 @@ export default function useOrderReport() {
     const resetOrderDetail = useResetRecoilState(orderDetailState);
     const { period } = usePeriodTime();
     const orderApi = new OrderReportAPI();
-    const userMeterApi = new UserReportAPI();
+    const userMeterApi = new UserAndEnergyReportAPI();
 
     const refreshOrderReport = useCallback(async (roles: string[], buyerType: string, tradeMarket: string, orderStatus: string, area: string) => {
         console.log(`call api`);
         console.log(session);
         if (session !== null) { //check session before call api
-            const userMeterInfos = await userMeterApi.getUserMeterInfo({ startDate: dayjs(period.startDate).toString(), endDate: dayjs(period.endDate).toString(), region: period.region, roles: roles, area: area, session })
+            const userMeterInfos = await userMeterApi.getUserMeterInfo({ period, roles: roles, area: area, session })
             const req: IGetOrderTableRequest = {
                 startDate: dayjs(period.startDate).toString(),
                 endDate: dayjs(period.endDate).toString(),

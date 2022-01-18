@@ -15,7 +15,7 @@ type LoginForm = {
 }
 
 export default function Login() {
-    const { register, handleSubmit, } = useForm();
+    const { register, handleSubmit, } = useForm<LoginForm>();
     const { login, session } = useLogin();
     const history = useHistory();
     const { showLoading, hideLoading } = useLoadingScreen();
