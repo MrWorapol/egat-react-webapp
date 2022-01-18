@@ -68,7 +68,8 @@ export function useAllNews() {
                 }
             }
             else{
-                if (searchField.text === 'string'){
+                if (typeof(searchField.text) === 'string'){
+                    console.log(searchField.text)
                     const response = await api.getNews({
                         keyword : searchField.text 
                         });

@@ -152,11 +152,11 @@ export default function NewsTableData() {
                         </TableRow>
                     </TableHead>
                     <TableBody sx={{width : "100%"}}>
-                        {newsInfoData.length === 0 && /* case notfound data */
+                        {newsInfoData.length === 0 && (/* case notfound data */
                             <TableRow style={{ height: 53 * emptyRows }}>
                                 <TableCell colSpan={6} />
                             </TableRow>
-                        }
+                        )}
                         {newsInfoData.length !== 0 && (rowsPerPage > 0
                             ? newsInfoData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             : newsInfoData

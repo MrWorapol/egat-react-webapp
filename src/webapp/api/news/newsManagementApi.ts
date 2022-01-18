@@ -42,8 +42,8 @@ interface IDeleteNewsResponse {
     status: string,
 }
 
-let accessToken = "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJBLWVFWExEU21pbFNwNU5ESjVyWmxnLS1FWDdRcEF4QVdRc3lsMHVPQU4wIn0.eyJleHAiOjE2NDI0MTI2OTMsImlhdCI6MTY0MjM5NDY5MywianRpIjoiMTE5YzcxYTYtM2JhYS00NmM4LTk5OWEtMWE5MjZmYzJlMjI3IiwiaXNzIjoiaHR0cHM6Ly9rZXljbG9hay5pa25vd3BsdXMuY28udGgvYXV0aC9yZWFsbXMvZWdhdCIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiJkYjA4MzI3MS04NmI5LTQwMDUtYTBjYS02ZTQ5ZTc0MjI2YzYiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJlZ2F0LXAycC10cmFkaW5nIiwic2Vzc2lvbl9zdGF0ZSI6Ijc2OWE1ZTgxLTI1MTgtNDJjMC1iMmQwLTI4NTE4NTkxOTE3MSIsImFjciI6IjEiLCJhbGxvd2VkLW9yaWdpbnMiOlsiaHR0cHM6Ly9lZ2F0LXAycC1sb2dpbi5kaS5pa25vd3BsdXMuY28udGgvIiwiaHR0cHM6Ly9lZ2F0LXAycC1yZWdpc3Rlci5kaS5pa25vd3BsdXMuY28udGgiLCJodHRwOi8vbG9jYWxob3N0OjMwMDAvKiIsImh0dHA6Ly9sb2NhbGhvc3Q6MzAwMCJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsiZGVmYXVsdC1yb2xlcy1lZ2F0Iiwib2ZmbGluZV9hY2Nlc3MiLCJhZG1pbiIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiZWdhdC1wMnAtdHJhZGluZyI6eyJyb2xlcyI6WyJhZG1pbiJdfSwiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJlbWFpbCBwcm9maWxlIiwic2lkIjoiNzY5YTVlODEtMjUxOC00MmMwLWIyZDAtMjg1MTg1OTE5MTcxIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJlZ2F0LXdlYi1hZG1pbiIsImVtYWlsIjoiZWdhdC13ZWItYWRtaW4ifQ.Ob-wzr4P3ced6xWJ_sTM-bcb2kinlmlQoyz-7LgN_XncI26JF38oDnWXROU4QaOehEyqJF2QTmh63sjIrLmTojD7vjDacn1dEEMlkrlkRbknAJbskqonDjip_ricSRBuUc4PZeS4TA9-scmJRnWYJASuKPm8eyVpdlqdsGM_AUUXYyzHm2R3iBQwY1fi8111JlWEKeSGRQ-R4B1AkqtSNLxsQc4xetHkAgudiIM-3NDJjHsISk3TG0zPSgGXT_1u1n01dAQSlZIrfPF4-22XT3ZxKsnrB8afL8yOAYi6YDAxFhCK_5ukXXoOf-O6yxIviup7ysK784MH1xC-sQHBXQ";
-        
+let accessToken = '';
+// "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJBLWVFWExEU21pbFNwNU5ESjVyWmxnLS1FWDdRcEF4QVdRc3lsMHVPQU4wIn0.eyJleHAiOjE2NDI1MDk3MjksImlhdCI6MTY0MjQ5MTcyOSwianRpIjoiYWI0NjVmMjUtMTU1Mi00MWRlLTk1NGEtMmUwMDRlNzM5ODBlIiwiaXNzIjoiaHR0cHM6Ly9rZXljbG9hay5pa25vd3BsdXMuY28udGgvYXV0aC9yZWFsbXMvZWdhdCIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiJkYjA4MzI3MS04NmI5LTQwMDUtYTBjYS02ZTQ5ZTc0MjI2YzYiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJlZ2F0LXAycC10cmFkaW5nIiwic2Vzc2lvbl9zdGF0ZSI6ImEwYmY0M2NjLTEzNDgtNGRlMC1hZDkxLTViODVjNDMzYzM0ZSIsImFjciI6IjEiLCJhbGxvd2VkLW9yaWdpbnMiOlsiaHR0cHM6Ly9lZ2F0LXAycC1sb2dpbi5kaS5pa25vd3BsdXMuY28udGgvIiwiaHR0cHM6Ly9lZ2F0LXAycC1yZWdpc3Rlci5kaS5pa25vd3BsdXMuY28udGgiLCJodHRwOi8vbG9jYWxob3N0OjMwMDAvKiIsImh0dHA6Ly9sb2NhbGhvc3Q6MzAwMCJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsiZGVmYXVsdC1yb2xlcy1lZ2F0Iiwib2ZmbGluZV9hY2Nlc3MiLCJhZG1pbiIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiZWdhdC1wMnAtdHJhZGluZyI6eyJyb2xlcyI6WyJhZG1pbiJdfSwiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJlbWFpbCBwcm9maWxlIiwic2lkIjoiYTBiZjQzY2MtMTM0OC00ZGUwLWFkOTEtNWI4NWM0MzNjMzRlIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJlZ2F0LXdlYi1hZG1pbiIsImVtYWlsIjoiZWdhdC13ZWItYWRtaW4ifQ.DZfXArNVcPL_ZGYKv2D0jeDUaZ42gHkT6K24ANuQOfiyMdWNjBsXDxZCbu06iYVTWgh22kIMvysoP6BQVZtZNE0gY3FAM1LF6ekTIzN5ssOQIfYCLrQ3u9ja_Bg9yTFGOY52y1--KhVR1ZngjHG4daj82CBXN4Og0MTRG5H4zCsX2npqLNmHlZgPoNVe-yey1uUmbtEU64iO1feEtDlTo0d0bt4Im9kJDP6Z7uR8Itt2NNOSzPJm2VDeoIvX3psY1Kl0aT1Gn4eZymg4iB5EV3PCzW65vSKnW9GZ1F4KUCSEeFe8tw7kdf5m0qu7mQKPepY5ftBJvPuqZXX6od_14g";
 
 export default class NewsManagementAPI {
     private host = newsApi;
@@ -64,6 +64,7 @@ export default class NewsManagementAPI {
                 method: "GET",
                 headers
             });
+            ///empty new
             
         } catch (e) {
             console.log(e);
@@ -71,14 +72,16 @@ export default class NewsManagementAPI {
             return null;
         }
 
-        ///empty new
-
+        if(!response.ok){
+            return null;
+        }
         let result = await response.json();
         console.log(result);
-        let content: IGetNewsResponse = {
-            newsInfos: result
-        }
-        return content;
+        console.log(result.statusCode);
+            let content: IGetNewsResponse = {
+                newsInfos: result
+            }
+            return content;
 
         // let res = await fetchWithTimeout(uri.toString(), {
         //     method: "GET",
@@ -91,11 +94,13 @@ export default class NewsManagementAPI {
     }
 
     async getNews(request: IGetNewsRequest): Promise<IGetNewsResponse | null> {
-        const path = '/web-admin/news'
-        const api = this.host + path;
+        const path = '/web-admin/news/search'
+        const api = new URL(this.host + path);
         let response: Response;
         let token = 'token';
         //let accessToken = "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJBLWVFWExEU21pbFNwNU5ESjVyWmxnLS1FWDdRcEF4QVdRc3lsMHVPQU4wIn0.eyJleHAiOjE2NDIxNzA2NTAsImlhdCI6MTY0MjE1MjY1MCwianRpIjoiM2ZhMWYwOTYtNjk3MC00OGExLThjNDctZmI4MzlhNzljNGU5IiwiaXNzIjoiaHR0cHM6Ly9rZXljbG9hay5pa25vd3BsdXMuY28udGgvYXV0aC9yZWFsbXMvZWdhdCIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiJkYjA4MzI3MS04NmI5LTQwMDUtYTBjYS02ZTQ5ZTc0MjI2YzYiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJlZ2F0LXAycC10cmFkaW5nIiwic2Vzc2lvbl9zdGF0ZSI6ImYzODViYjNjLTlhNTctNGJkMS1iZDMyLTQyZjZjOTg0OWRjZSIsImFjciI6IjEiLCJhbGxvd2VkLW9yaWdpbnMiOlsiaHR0cHM6Ly9lZ2F0LXAycC1sb2dpbi5kaS5pa25vd3BsdXMuY28udGgvIiwiaHR0cHM6Ly9lZ2F0LXAycC1yZWdpc3Rlci5kaS5pa25vd3BsdXMuY28udGgiLCJodHRwOi8vbG9jYWxob3N0OjMwMDAvKiIsImh0dHA6Ly9sb2NhbGhvc3Q6MzAwMCJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsiZGVmYXVsdC1yb2xlcy1lZ2F0Iiwib2ZmbGluZV9hY2Nlc3MiLCJhZG1pbiIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiZWdhdC1wMnAtdHJhZGluZyI6eyJyb2xlcyI6WyJhZG1pbiJdfSwiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJlbWFpbCBwcm9maWxlIiwic2lkIjoiZjM4NWJiM2MtOWE1Ny00YmQxLWJkMzItNDJmNmM5ODQ5ZGNlIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJlZ2F0LXdlYi1hZG1pbiIsImVtYWlsIjoiZWdhdC13ZWItYWRtaW4ifQ.fgeAUdZ7H9o5SWSecFt_BPEh5ju6181n-XGdMs9rUUFlL3W6Rp_PeWqBeEEKsHiGfOAUTh8lJ4-J0mklhn5QzyPm633Kph4LpRm3AIk7bS2k2iMiOT1rOJwV7p41purDBXe9m7f0k5bOCl70uPF47YkUNJOY3LrrgIEjMUTRDIG_FFNR5WPwbfCsRjddDgixz2jinwPubGMsbyzXjnSRHmxrJiMv8RzEHkbcuf9NE54cClX1SRLpYpOvEVQg1mORwe_vWxAF-6pN3AgMVnGXXjQo2WYxvs3VKgsygPJJnYiY1x7r6h8G8lOaz4YQFtI3xCRpxhND0hM-XQYUo5OcIQ";
+        api.searchParams.append('value', request.keyword);
+        console.log(`filter uri is : ${api.toString()}`);
         let headers = {
             "Content-Type": "application/json",
             // Authorization: `Bearer ${token}`,
@@ -114,13 +119,18 @@ export default class NewsManagementAPI {
         }
 
         ///empty new
-
+        if(!response.ok){
+            return null;
+        }
         let result = await response.json();
         console.log(result);
-        let content: IGetNewsResponse = {
-            newsInfos: result
-        }
-        return content;
+        console.log(result.statusCode);
+            let content: IGetNewsResponse = {
+                newsInfos: result
+            }
+            return content;
+        
+        
 
         // let res = await fetchWithTimeout(uri.toString(), {
         //     method: "GET",
