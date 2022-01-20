@@ -1,5 +1,6 @@
 import { Button, DialogActions, DialogContent, DialogTitle, FormControlLabel, Grid, MenuItem, Select, Switch, TextField, Typography } from '@mui/material';
 import { Box } from '@mui/system';
+import { DatePicker } from '@mui/lab';
 import React, { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form';
 import { useDialog } from '../../../../hooks/useDialog';
@@ -185,7 +186,7 @@ export default function ImbalanceSettingDialog(props: ISettingProps) {
                                 }
 
                                 <Grid container item sx={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', alignItems: 'center' }}>
-                                    <Grid container xs={6} direction="row" alignItems="center">
+                                    <Grid container xs={7} direction="row" alignItems="center">
                                         <Grid>
                                             <Typography >
                                                 Effective Date
@@ -194,72 +195,67 @@ export default function ImbalanceSettingDialog(props: ISettingProps) {
                                         <Grid>
 
                                             <Controller
-                                                render={({ field }) => (
-                                                    <TextField variant="outlined"
-                                                        margin="dense"
-
-                                                        size='small'
-                                                        sx={{ ml: 2, maxWidth: '7em', justifyContent: 'flex-end', textAlignLast: 'end', }}
-
-                                                        {...field}
-                                                    />)}
-                                                name="effectiveDate"
                                                 control={control}
-                                                defaultValue={dayjs(props.imbalance.effectiveDate).format('DD/MM/YYYY')}
+                                                name="effectiveDate"
+                                                defaultValue={dayjs().toString()}
                                                 rules={{
                                                     required: true,
                                                 }}
-
+                                                render={({ field: { onChange, onBlur, value, ref } }) =>
+                                                    <DatePicker
+                                                        views={['year', 'month', 'day']}
+                                                        minDate={dayjs()}
+                                                        maxDate={dayjs().add(5, 'year')}
+                                                        inputFormat='DD/MM/YYYY'
+                                                        value={value}
+                                                        onChange={onChange}
+                                                        renderInput={(params) => (
+                                                            <TextField size='small' {...params} sx={{ ml: 1, maxWidth: '10em', justifyContent: 'flex-end', textAlignLast: 'end', }} />
+                                                        )}
+                                                    />
+                                                }
                                             />
                                         </Grid>
                                     </Grid>
-                                    <Grid container xs={6} direction="row" alignItems="center" justifyContent="flex-end">
+                                    <Grid container xs={5} direction="row" alignItems="center" justifyContent="flex-end">
                                         <Typography >
                                             Effective Time
                                         </Typography>
                                         <Controller
-                                            name="effectiveTime"
                                             control={control}
-                                            // defaultValue={dayjs(props.imbalance.effectiveTime || props.imbalance.effectiveDate).format('HH:mm')}
+                                            name="effectiveTime"
+                                            // defaultValue={dayjs(props.wheelingCharge.effectiveTime).format('HH')}
                                             rules={{
                                                 required: true,
                                             }}
+                                            defaultValue={`0`}
+
                                             render={({ field }) => (
                                                 <Select variant="outlined"
                                                     {...field}
-                                                    size="small"
-                                                    sx={{ width: "6em", justifyContent: 'flex-end', }}
+                                                    margin="dense"
+                                                    size='small'
+                                                    sx={{ ml: 1, maxWidth: '5em', justifyContent: 'flex-end', textAlignLast: 'end', }}
                                                     MenuProps={{
                                                         PaperProps: {
                                                             style: {
-                                                                maxHeight: '30vh',
-                                                                // backgroundColor: ,
+                                                                maxHeight: '40vh',
+                                                                backgroundColor: '#fff',
                                                             }
                                                         }
                                                     }}
                                                 >
                                                     {
-                                                        Array.from(Array(24)).map((menu, i) => {
-                                                            // buildMenuItems(props.menuLength, props?.step).map((menu, i) => {
-                                                            return (
-                                                                <>
-                                                                    <MenuItem key={i + `${menu}:00`} value={`${i}`}> {(`00` + i).slice(-2)+`:00`}</MenuItem>
-                                                                    {/* <MenuItem key={i + `${menu}:30`} value={`${i}:30`}> {(`00` + i).slice(-2)+`:30`}</MenuItem> */}
-                                                                </>
-                                                            )
-                                                        })
+
                                                     }
-                                                </Select >
+                                                    {Array.from(Array(24)).map((e, i) => {
+                                                        return (
+                                                            <MenuItem key="i" value={`${i}`}> {(`00` + i).slice(-2) + `:00`}</MenuItem>
+
+                                                        )
+                                                    })}
+                                                </Select>
                                             )}
-                                        // <TextField variant="outlined"
-                                        //     margin="dense"
-
-                                        //     size='small'
-                                        //     sx={{ ml: 2, maxWidth: '5em', justifyContent: 'flex-end', textAlignLast: 'end', }}
-
-                                        //     {...field}
-                                        // />)}
-
                                         />
                                     </Grid>
                                 </Grid>

@@ -19,14 +19,14 @@ const NavigationMainPage = () => {
     const [openSummary, setOpenSummaryMenu] = useState(false);
 
     const referenceDataChildrenMenu: IChildrenMenu[] = [
-        { label: 'Wheeling Charge Setting', path: '/wheeling_charge', state: NavigationCurrentType.WHEELING_CHART },
+        { label: 'Wheeling Charge Setting', path: '/wheeling_charge', state: NavigationCurrentType.WHEELING_CHARGE },
         { label: 'Imbalance Setting', path: '/imbalance', state: NavigationCurrentType.IMBALANCE },
         { label: 'TOU Tariff Setting', path: '/tou_tariff', state: NavigationCurrentType.TOU_TARIFF },
         { label: 'Other Setting', path: '/other_setting', state: NavigationCurrentType.OTHER_SETTING },
     ];
 
     const summaryChildrenMenu: IChildrenMenu[] = [
-        { label: 'User & Energy Report', path: '/users_report', state: NavigationCurrentType.USER_REPORT },
+        { label: 'User & Energy Report', path: '/users_report', state: NavigationCurrentType.SUMMARY_REPORT },
         { label: 'Order Report', path: '/order_report', state: NavigationCurrentType.ORDER_REPORT },
         { label: 'Settlement Report', path: '/settlement_report', state: NavigationCurrentType.SETTLEMENT_REPORT },
         { label: 'Billing Report', path: '/billing_report', state: NavigationCurrentType.BILLING_REPORT },

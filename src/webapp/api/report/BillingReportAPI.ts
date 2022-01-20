@@ -133,6 +133,7 @@ export class BillingReportAPI {
             "Accept": "application/json",
             "Authorization": `Bearer ${req.session.accessToken}`,
         }
+
         try {
             const response = await fetch(this.host, {
                 headers,

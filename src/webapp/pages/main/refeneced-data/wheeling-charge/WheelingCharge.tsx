@@ -68,7 +68,7 @@ interface IMap {
 
 
 export default function WheelingCharge() {
-    useNavigationSet(NavigationCurrentType.WHEELING_CHART);
+    useNavigationSet(NavigationCurrentType.WHEELING_CHARGE);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const { currentState } = useNavigationGet();
     const [selectedColumn, setSelectedColumn] = useState({
@@ -81,8 +81,10 @@ export default function WheelingCharge() {
         paymentTo: true,
     });
 
-    useEffect(() => {
+    const [lastTimeUpdated, setLastTimeUpdated] = useState(dayjs().format('DD/MM/YYYY [at] HH:MM'));
 
+    useEffect(() => {
+        setLastTimeUpdated(dayjs().format('DD/MM/YYYY [at] HH:MM'));
         return () => {
 
         }
@@ -187,8 +189,7 @@ export default function WheelingCharge() {
         </>
     }
 
-    // let lastestUpdated = dayjs().format('DD/MM/YYYY [at] HH:MM');
-    console.log('')
+
     return (
         <Container sx={{ backgroundColor: '#fff' }}>
             <Grid container direction="column" pt={3} xs={12}>
@@ -200,7 +201,7 @@ export default function WheelingCharge() {
                 <Grid item container id="action-zone" direction="row" py={2} justifyContent='space-between'>
                     <Grid item >
                         <Typography >
-                            {`Last Time Updated: ${dayjs().format('DD/MM/YYYY [at] HH:MM')}`}
+                            {`Last Time Updated: ${lastTimeUpdated}`}
                         </Typography>
                     </Grid>
                     <Grid item >
@@ -208,7 +209,7 @@ export default function WheelingCharge() {
                     </Grid>
                 </Grid>
                 <Grid item container id="table">
-                    {currentState === NavigationCurrentType.WHEELING_CHART && <ChargeTableData columns={selectedColumn} />}
+                    {currentState === NavigationCurrentType.WHEELING_CHARGE && <ChargeTableData columns={selectedColumn} />}
 
                 </Grid>
             </Grid>

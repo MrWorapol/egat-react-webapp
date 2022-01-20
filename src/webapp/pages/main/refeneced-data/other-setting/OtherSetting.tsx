@@ -12,14 +12,10 @@ import OtherSettingLogsDialog from './OtherSettingLogsDialog';
 
 export default function OtherSetting() {
     useNavigationSet(NavigationCurrentType.OTHER_SETTING);
-    console.log('open other setting');
     const { otherSetting } = useOtherSetting();
     const { showDialog } = useDialog();
     const resetLogs = useResetRecoilState(otherSettingLogState);
-    // if (!otherSetting) {
-    //     return <></>;
-    // }
-
+   
     function openViewDialog() {
         resetLogs();
         showDialog(
@@ -88,7 +84,7 @@ export default function OtherSetting() {
                             Discount App Fees
                         </Typography>
                         <Typography>
-                            {`${otherSetting &&  otherSetting.energyTradingPayment.dicountAppFees} %`}
+                            {`${otherSetting &&  otherSetting.energyTradingPayment.dicountAppFees } %`}
                         </Typography>
                     </Grid>
                 </Grid>

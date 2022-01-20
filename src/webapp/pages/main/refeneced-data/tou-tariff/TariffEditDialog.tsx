@@ -39,10 +39,9 @@ export default function TariffEditDialog(props: ITariffEditProps) {
             touType: props.tariff.touType, title: props.tariff.title,
             effectiveTime: effectiveTime,
         }
+        await editTOUTariff(request);
+        
 
-        if (await editTOUTariff(request)) {
-            closeDialog();
-        }
 
     }
 

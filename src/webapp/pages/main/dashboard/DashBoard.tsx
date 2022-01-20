@@ -74,27 +74,27 @@ export default function DashBoard() {
                 <Sick>
                     <Grid container item direction="row" id="user-infos" pt={3} mx={"auto"}>
                         <ThemeProvider theme={header_name}>
-                            <Grid item id="title">
+                            <Grid item container id="title" ml={2}>
                                 <Typography>User</Typography>
                             </Grid>
                         </ThemeProvider>
                         <ThemeProvider theme={icon_name}>
                             <Grid item container id="actionzone" justifyContent='space-between' py={1} xs={12}>
-                                <Grid item container direction='column' justifyContent='space-between' xs={1}>
+                                <Grid item container direction='column' justifyContent='space-evenly' xs={1}>
                                     <Typography >All Meter</Typography>
                                     <Img src="/assets/icon/Member.png" />
                                     <Number>
                                         {userDashboard ? <Typography style={{ fontSize: 26 }} px={2}>{userDashboard.allmeter}</Typography> : "loading"}
                                     </Number>
                                 </Grid>
-                                <Grid item container direction='column' justifyContent='space-between' xs={1}>
+                                <Grid item container direction='column' justifyContent='space-evenly' xs={1}>
                                     <Typography >Registered User</Typography>
                                     <Img src="/assets/icon/Member.png" />
                                     <Number>
                                         {userDashboard ? <Typography style={{ fontSize: 26 }} px={2}>{userDashboard.registeredUser}</Typography> : "loading"}
                                     </Number>
                                 </Grid>
-                                <Grid item container direction='column' justifyContent='space-between' xs={1}>
+                                <Grid item container direction='column' justifyContent='space-evenly' xs={1}>
                                     <Typography >Today New Registered User</Typography>
                                     <Img src="/assets/icon/New-Member.png" />
                                     <Number>
@@ -152,41 +152,42 @@ export default function DashBoard() {
 
                     <Divider style={{ border: '1px solid #707070' }} variant="middle" />
 
-                    <Grid container item direction="row" id="energy-info" mx={"auto"}>
+                    <Grid container item direction="row" id="energy-info" mx={"auto"} >
                         <ThemeProvider theme={header_name}>
-                            <Grid item id="title">
+                            <Grid item id="title" ml={2}>
                                 <Typography >Energy</Typography>
                             </Grid>
                         </ThemeProvider>
                         <ThemeProvider theme={icon_name}>
-                            <Grid item container id="actionzone" justifyContent='space-between' mx={'auto'} py={1}>
+                            <Grid item container id="actionzone" justifyContent='space-around' mx={'auto'} py={1} flexGrow={1}>
 
-                                <Grid item container direction='column' justifyContent='space-between' xs={1}>
-
+                                <Grid item container direction='column' justifyContent='space-between' xs={3} width="100%">
                                     <Typography>Total PV Generate</Typography>
                                     <Img src="/assets/icon/311.png" />
                                     <Number>
                                         {energyDashboard ?
-                                            <Typography style={{ fontSize: 26 }} px={7}>
+                                            <Typography style={{ fontSize: 26 }}>
                                                 {(Math.round(energyDashboard.pv * 100) / 100).toFixed(2)}
                                                 <Typography style={{ fontSize: 20, color: '#707070' }} display="inline"> kWh</Typography>
                                             </Typography>
                                             : <>Loading...</>}
                                     </Number>
                                 </Grid>
-                                <Grid item container direction='column' justifyContent='space-between' xs={1}>
-                                    <Typography>Total Energy Storage Charge/Discharge</Typography>
+                                <Grid item container direction='column' justifyContent='space-between' xs={3} >
+                                    <Typography noWrap>Total Energy Storage
+                                    </Typography>
+                                    <Typography>Charge/Discharge</Typography>
                                     <Img src="/assets/icon/310.png" />
                                     <Number>
                                         {energyDashboard ?
-                                            <Typography style={{ fontSize: 26 }} px={11}>
+                                            <Typography style={{ fontSize: 26 }} >
                                                 {`${(Math.round(energyDashboard.storage * 100) / 100).toFixed(2)}/${(Math.round(energyDashboard.load * 100) / 100).toFixed(2)}`}
                                                 <Typography style={{ fontSize: 20, color: '#707070' }} display="inline"> kWh</Typography>
                                             </Typography> : <>Loading...</>}
                                     </Number>
                                 </Grid>
-                                <Grid item container direction='column' justifyContent='space-between' xs={1}>
-                                    <Typography px={12}>Total Grid Used</Typography>
+                                <Grid item container direction='column' justifyContent='space-between' xs={3}>
+                                    <Typography>Total Grid Used</Typography>
                                     <Img src="/assets/icon/312.png" />
                                     <Number>
                                         {energyDashboard ?
@@ -197,8 +198,8 @@ export default function DashBoard() {
                                             : <>Loading...</>}
                                     </Number>
                                 </Grid>
-                                <Grid item container direction='column' justifyContent='space-between' xs={1}>
-                                    <Typography px={6}>Total Energy Load</Typography>
+                                <Grid item container direction='column' justifyContent='space-between' xs={3} >
+                                    <Typography >Total Energy Load</Typography>
                                     <Img src="/assets/icon/313.png" />
                                     <Number>
                                         {energyDashboard ? <Typography style={{ fontSize: 26 }} >
@@ -209,8 +210,7 @@ export default function DashBoard() {
                                     </Number>
                                 </Grid>
 
-                                <Grid item justifyContent="flex-end">
-                                </Grid>
+
                             </Grid>
                         </ThemeProvider>
                     </Grid>

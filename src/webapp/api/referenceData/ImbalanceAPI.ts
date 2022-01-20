@@ -1,7 +1,8 @@
 import dayjs from "dayjs";
-import { egatHost } from "../../constanst";
+import { egatHost, localGateway } from "../../constanst";
 import { Iimbalance } from "../../state/reference-data/imbalance/imbalance-state";
 import { IUserSession } from "../../state/user-sessions";
+import { IImbalanceLog } from "../../state/reference-data/imbalance/imbalance-log";
 
 interface IGetImbalanceRequest {
     session: IUserSession,
@@ -24,7 +25,7 @@ interface IUpdateImbalanceRequest {
     imbalance: Iimbalance
 }
 export class ImbalanceAPI {
-    private uri = egatHost;
+    private uri = localGateway;
 
     async getImbalance(req: IGetImbalanceRequest): Promise<IGetImbalanceResponse | null> {
         const path = '/reference-data/imbalance-setting'
@@ -92,15 +93,19 @@ export class ImbalanceAPI {
                 headers
             });
         } catch (e) {
-            return null;
+            throw Error(`Unexpected Error `);
         }
+        if(response.status === 200) {
+            let result = await response.json();
+            console.log(result);
+            let content: IGetLogsResponse = {
+                context: result
+            }
+            return content;
 
-        let result = await response.json();
-        console.log(result);
-        let content: IGetLogsResponse = {
-            context: result
+        }else{
+            throw Error(`Error With Code:${response.status}`);
         }
-        return content;
         // const result: IGetLogsResponse = {
         //     context: [
         //         {
@@ -149,13 +154,13 @@ export class ImbalanceAPI {
         } catch (e) {
             return false;
         }
-
         if (response.status === 204) {
 
             console.warn(response);
             return true;
-        } else {
-            return false;
+        }
+        else {
+            throw Error(`Cannot updated Data \n ERROR CODE: ${response.status}`)
         }
 
     }

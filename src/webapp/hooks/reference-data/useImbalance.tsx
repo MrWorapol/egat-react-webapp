@@ -1,43 +1,62 @@
+import dayjs from "dayjs";
 import { useCallback, useEffect } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { ImbalanceAPI } from "../../api/referenceData/ImbalanceAPI";
 import { NavigationCurrentType } from "../../state/navigation-current-state";
 import { Iimbalance, imbalanceState } from "../../state/reference-data/imbalance/imbalance-state";
 import { userSessionState } from "../../state/user-sessions";
+import { useLoadingScreen } from "../useLoadingScreen";
 import { useNavigationGet } from "../useNavigationGet";
 import { useSnackBarNotification } from "../useSnackBarNotification";
 
 export function useImbalance() {
-    const session = useRecoilValue(userSessionState);
+    let session = useRecoilValue(userSessionState);
     const { currentState } = useNavigationGet();
     const [imbalance, setImbalance] = useRecoilState(imbalanceState);
     const api = new ImbalanceAPI();
     const { showSnackBar } = useSnackBarNotification();
-    const refreshImbalance = useCallback(async () => {
+    const { showLoading, hideLoading } = useLoadingScreen();
+    const refreshImbalance = async () => {
         if (session) {
-            const response = await api.getImbalance({ session: session });
-            console.log('call wheeling chart api');
-            if (response !== null) {
-                showSnackBar({
-                    serverity: "success",
-                    message: "Loading Successful"
-                })
-                console.info(response);
-                setImbalance(response.context);
+            try {
+                showLoading(10);
+                const response = await api.getImbalance({ session: session });
+                console.log('call wheeling chart api');
+                if (response !== null) {
+                    showSnackBar({
+                        serverity: "success",
+                        message: "Loading Successful"
+                    })
+                    console.info(response);
+                    setImbalance(response.context);
+                }
+                hideLoading(10)
+            } catch (e) {
+                hideLoading(10)
+                showSnackBar({ serverity: 'error', message: `${e}` })
+
             }
         }
-    }, [])
+    };
 
 
     const updateImbalance = useCallback(async (imbalance: Iimbalance) => {
         if (session) {
-            const response = await api.updateImbalance({ session: session, imbalance: imbalance });
-            if (response !== null) {
-                showSnackBar({
-                    serverity: "success",
-                    message: "update Successful"
-                })
-                console.info(`updated is : ${response}`);
+            try {
+                showLoading(10);
+                imbalance.effectiveTime = dayjs(imbalance.effectiveDate).hour(+imbalance.effectiveTime).minute(0).toISOString();
+                const response = await api.updateImbalance({ session: session, imbalance: imbalance });
+                if (response === true) {
+                    showSnackBar({
+                        serverity: "success",
+                        message: "update Successful"
+                    })
+                    console.info(`updated is : ${response}`);
+                }
+                hideLoading(10)
+            } catch (e) {
+                hideLoading(10)
+                showSnackBar({ serverity: 'error', message: `${e}` })
 
             }
         }

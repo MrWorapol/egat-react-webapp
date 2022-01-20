@@ -1,4 +1,4 @@
-import { egatHost } from "../../constanst";
+import { egatHost, localGateway } from "../../constanst";
 
 export interface LoginRequest {
     username: string;
@@ -10,7 +10,7 @@ export interface LoginResponse {
 }
 
 export default class KeycloakAdminApi {
-    private host = egatHost;
+    private host = localGateway;
 
 
     async login(request: LoginRequest): Promise<LoginResponse | null> {

@@ -17,9 +17,13 @@ export default function NewAdminDialog() {
     const onSubmitForm = async (data: IAdminRegistratoinState) => {
         if (data) {
             //wait for vaildate before call api
-            if (await createAdmin(data)) {
-                closeDialog();
+            try {
+                await createAdmin(data);
+            } catch (err) {
+
             }
+            closeDialog();
+
         }
         console.log(data)
     };

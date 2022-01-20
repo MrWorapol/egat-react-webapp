@@ -1,12 +1,6 @@
-import { Box, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography, useTheme } from '@mui/material'
-import React from 'react'
-import SearchIcon from '@mui/icons-material/Search';
+import { Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
+import React, { useEffect } from 'react'
 import IconButton from '@mui/material/IconButton';
-import FirstPageIcon from '@mui/icons-material/FirstPage';
-import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
-import LastPageIcon from '@mui/icons-material/LastPage';
-import { useHistory } from 'react-router-dom';
 
 
 import { useWheelingCharge } from '../../../../hooks/reference-data/useWheelingCharge';
@@ -34,79 +28,14 @@ interface IChargeColumns extends IMap {
 }
 
 
-interface TablePaginationActionsProps {
-    count: number,
-    page: number,
-    rowsPerPage: number;
-    onPageChange: (
-        event: React.MouseEvent<HTMLButtonElement>,
-        newPage: number,
-    ) => void;
-}
 
 
-function TablePaginationActions(props: TablePaginationActionsProps) {
-    const theme = useTheme();
-    const { count, page, rowsPerPage, onPageChange } = props;
-
-    const handleFirstPageButtonClick = (
-        event: React.MouseEvent<HTMLButtonElement>,
-    ) => {
-        onPageChange(event, 0);
-    };
-
-    const handleBackButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        onPageChange(event, page - 1);
-    };
-
-    const handleNextButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        onPageChange(event, page + 1);
-    };
-
-    const handleLastPageButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
-    };
-
-    return (
-        <Box sx={{ flexShrink: 0, ml: 2.5 }}>
-            <IconButton
-                onClick={handleFirstPageButtonClick}
-                disabled={page === 0}
-                aria-label="first page"
-            >
-                {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
-            </IconButton>
-            <IconButton
-                onClick={handleBackButtonClick}
-                disabled={page === 0}
-                aria-label="previous page"
-            >
-                {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-            </IconButton>
-            <IconButton
-                onClick={handleNextButtonClick}
-                disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-                aria-label="next page"
-            >
-                {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
-            </IconButton>
-            <IconButton
-                onClick={handleLastPageButtonClick}
-                disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-                aria-label="last page"
-            >
-                {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
-            </IconButton>
-        </Box>
-    );
-}
 
 interface inputProps {
     columns: IChargeColumns
 }
 export default function ChargeTableData(props: inputProps) {
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
     const { wheelingCharge, refreshWheelingCharge } = useWheelingCharge();
     const { showDialog } = useDialog();
     const columns: IChargeColumns = props.columns;
@@ -121,28 +50,22 @@ export default function ChargeTableData(props: inputProps) {
     }
     const resetLogsState = useResetRecoilState(wheelingLogsState);
 
+    useEffect(() => {
+        if (!wheelingCharge) {
+            refreshWheelingCharge();
+        }
+        return () => {
 
+        }
+    }, [wheelingCharge]);
     // Avoid a layout jump when reaching the last page with empty rows.
     if (!wheelingCharge) {
+        console.log(`call wheeling Charge`);
         return <> </>;
     }
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - wheelingCharge.length) : 0;
 
-    const handleChangePage = (
-        event: React.MouseEvent<HTMLButtonElement> | null,
-        newPage: number,
-    ) => {
-        setPage(newPage);
-    };
 
-    const handleChangeRowsPerPage = (
-        event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    ) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
 
-    // console.log(`user data on render ${userInfoData}`);
 
     function onClickSettingButton(no: number, selectedData: IWheelingCharge) {
         showDialog({
@@ -187,7 +110,6 @@ export default function ChargeTableData(props: inputProps) {
             })
         }
     }
-
     getTotalData(wheelingCharge);
     return (
         <Paper sx={{ width: '100%', mb: 2 }} >
@@ -227,15 +149,13 @@ export default function ChargeTableData(props: inputProps) {
                     <TableBody>
                         {
                             wheelingCharge.length === 0 && /* case notfound data */
-                            <TableRow style={{ height: 53 * emptyRows }}>
+                            <TableRow style={{ height: 53 }}>
                                 <TableCell colSpan={6} />
                             </TableRow>
                         }
                         {
-                            wheelingCharge.length !== 0 && (rowsPerPage > 0
-                                ? wheelingCharge.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                : wheelingCharge
-                            ).map((row, i) => (
+                            wheelingCharge.length > 0 && 
+                            wheelingCharge.map((row, i) => (
                                 < TableRow sx={{ alignContent: 'center' }}>
                                     <TableCell
                                     >
@@ -249,42 +169,42 @@ export default function ChargeTableData(props: inputProps) {
                                         columns['baht'] &&
                                         <TableCell
                                         >
-                                            {row.bahtPerKWh}
+                                            {(Math.round(row.bahtPerKWh * 1000) / 1000).toFixed(3)}
                                         </TableCell>
                                     }
                                     {
                                         columns['mea'] &&
                                         <TableCell
                                         >
-                                            {row.mea}
+                                            {(Math.round(row.mea * 1000) / 1000).toFixed(3)}
                                         </TableCell>
                                     }
                                     {
                                         columns['pea'] &&
                                         <TableCell
                                         >
-                                            {row.pea}
+                                            {(Math.round(row.pea * 1000) / 1000).toFixed(3)}
                                         </TableCell>
                                     }
                                     {
                                         columns['meaegat'] &&
                                         <TableCell
                                         >
-                                            {row.meaEgat}
+                                            {(Math.round(row.meaEgat * 1000) / 1000).toFixed(3)}
                                         </TableCell>
                                     }
                                     {
                                         columns['peaegat'] &&
                                         <TableCell
                                         >
-                                            {row.peaEgat}
+                                            {(Math.round(row.peaEgat * 1000) / 1000).toFixed(3)}
                                         </TableCell>
                                     }
                                     {
                                         columns['meapeaegat'] &&
                                         <TableCell
                                         >
-                                            {row.meaPeaEgat}
+                                            {(Math.round(row.meaPeaEgat * 1000) / 1000).toFixed(3)}
                                         </TableCell>
                                     }
                                     {
@@ -325,37 +245,37 @@ export default function ChargeTableData(props: inputProps) {
                             {
                                 columns['baht'] &&
                                 <TableCell >
-                                    {total.bahtPerKWh}
+                                    {(Math.round(total.bahtPerKWh * 1000) / 1000).toFixed(3)}
                                 </TableCell>
                             }
                             {
                                 columns['mea'] &&
                                 <TableCell >
-                                    {total.mea}
+                                    {(Math.round(total.mea * 1000) / 1000).toFixed(3)}
                                 </TableCell>
                             }
                             {
                                 columns['pea'] &&
                                 <TableCell>
-                                    {total.pea}
+                                    {(Math.round(total.pea * 1000) / 1000).toFixed(3)}
                                 </TableCell>
                             }
                             {
                                 columns['meaegat'] &&
                                 <TableCell >
-                                    {total.meaEgat}
+                                    {(Math.round(total.meaEgat * 1000) / 1000).toFixed(3)}
                                 </TableCell>
                             }
                             {
                                 columns['peaegat'] &&
                                 <TableCell>
-                                    {total.peaEgat}
+                                    {(Math.round(total.peaEgat * 1000) / 1000).toFixed(3)}
                                 </TableCell>
                             }
                             {
                                 columns['meapeaegat'] &&
                                 <TableCell>
-                                    {total.meaPeaEgat}
+                                    {(Math.round(total.meaPeaEgat * 1000) / 1000).toFixed(3)}
                                 </TableCell>
                             }
                             {
@@ -366,34 +286,11 @@ export default function ChargeTableData(props: inputProps) {
                             < TableCell >
                             </TableCell>
                         </TableRow>
-                        {emptyRows > 0 && (
-                            <TableRow style={{ height: 53 * emptyRows }}>
-                                <TableCell colSpan={6} />
-                            </TableRow>
-                        )}
-
                     </TableBody>
                 </Table>
 
             </TableContainer >
-            <TablePagination
-                component='div'
-                sx={{ right: 0 }}
-                rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-                colSpan={3}
-                count={wheelingCharge.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                SelectProps={{
-                    inputProps: {
-                        'aria-label': 'Item per page',
-                    },
-                    native: true,
-                }}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-                ActionsComponent={TablePaginationActions}
-            />
+
         </Paper >
     );
 

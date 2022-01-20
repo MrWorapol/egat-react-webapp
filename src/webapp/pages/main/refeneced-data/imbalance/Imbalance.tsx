@@ -77,55 +77,65 @@ export default function Imbalance() {
                     </TableHead>
 
                     <TableBody>
-                        {(imbalance && imbalance.length !== 0) &&
-                            imbalance.map((row: Iimbalance, i) => {
-                                console.info(row);
-                                if (row.type === type) {
+                        {(imbalance && imbalance.length === 0) &&
+                            <TableRow>
+                                <TableCell>
+                                    <Typography>
+                                        {`No Data `}
+                                    </Typography>
+                                </TableCell>
+                            </TableRow>
+                        }
+                        {imbalance && imbalance.length > 0 && imbalance.map((row: Iimbalance, i) => {
+                            console.info(row);
+                            if (row.type === type) {
 
-                                    return (
-                                        <TableRow>
-                                            <TableCell>
-                                                <Typography>
-                                                    {row.imbalance}
-                                                </Typography>
-                                            </TableCell>
-                                            <TableCell sx={{ maxWidth: '30%' }}>
-                                                <Typography component="div">
-                                                    {row.scenario}
-                                                </Typography>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Typography>
-                                                    {row.imbalanceClearing}
-                                                </Typography>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Typography>
-                                                    {row.bahtPerKWh}
-                                                </Typography>
-                                            </TableCell>
-                                            <TableCell
-                                                key={i + row.id}
-                                            >
-                                                <Grid container direction="row">
-                                                    <Grid item>
-                                                        <IconButton onClick={() => onClickSettingButton(i + 1, row)}>
-                                                            <SettingsIcon />
-                                                        </IconButton>
-                                                    </Grid>
-                                                    <Grid item>
-                                                        <IconButton onClick={() => onClickLogButton(i + 1, row)}>
-                                                            <ContentPasteIcon />
-                                                        </IconButton>
-                                                    </Grid>
+                                return (
+                                    <TableRow>
+                                        <TableCell>
+                                            <Typography>
+                                                {row.imbalance}
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell sx={{ maxWidth: '30%' }}>
+                                            <Typography component="div">
+                                                {row.scenario}
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Typography>
+                                                {row.imbalanceClearing}
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Typography>
+                                                {row.bahtPerKWh}
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell
+                                            key={i + row.id}
+                                        >
+                                            <Grid container direction="row">
+                                                <Grid item>
+                                                    <IconButton onClick={() => onClickSettingButton(i + 1, row)}>
+                                                        <SettingsIcon />
+                                                    </IconButton>
                                                 </Grid>
+                                                <Grid item>
+                                                    <IconButton onClick={() => onClickLogButton(i + 1, row)}>
+                                                        <ContentPasteIcon />
+                                                    </IconButton>
+                                                </Grid>
+                                            </Grid>
 
-                                            </TableCell>
-                                        </TableRow>
+                                        </TableCell>
+                                    </TableRow>
 
-                                    )
-                                }
-                            })}
+                                )
+                            }
+                        })
+
+                        }
                     </TableBody>
                 </Table>
             </TableContainer>
@@ -133,9 +143,9 @@ export default function Imbalance() {
     }
 
     useEffect(() => {
-        
+
         return () => {
-        
+
         }
     }, [])
 

@@ -1,4 +1,4 @@
-import { egatHost } from "../../constanst";
+import { egatHost, localGateway } from "../../constanst";
 import { IPackage, IGridPackage } from "../../state/reference-data/tou-traff/grid-package-state";
 import { IHoliday, IHolidayLogs } from "../../state/reference-data/tou-traff/holiday-state";
 import { IServiceCharge, IServiceChargeLog } from "../../state/reference-data/tou-traff/tou-service-charge-state";
@@ -76,7 +76,7 @@ interface IPutHolidayRequest {
 }
 
 export default class TOUTariffAPI {
-    private uri = egatHost;
+    private uri = localGateway;
 
     async getTOUtariff(req: IGetTOURequest): Promise<IGetTOUResponse | null> {
         const path = '/reference-data/tou-tariff-setting'
@@ -102,92 +102,9 @@ export default class TOUTariffAPI {
             context: result
         }
         return content;
-        // const result: IGetTOUResponse = {
-        //     context: [
-        //         {
-        //             id: "tou-1-off-peak-holiday",
-        //             touType: "tou-1",
-        //             title: "Off Peak (วันหยุด)",
-        //             startTime: "0:00",
-        //             endTime: "24:00",
-        //             bahtPerKWh: 2.6037,
-        //             effectiveDate: "25/08/2021",
-        //             effectiveTime: "00:00",
-        //         },
-        //         {
-        //             id: "tou-1-off-peak-mon-fri",
-        //             touType: "tou-1",
-        //             title: "Off Peak (Mon-Fri)",
-        //             startTime: "22:00",
-        //             endTime: "9:00",
-        //             bahtPerKWh: 2.6037,
-        //             effectiveDate: "25/08/2021",
-        //             effectiveTime: "00:00",
-        //         },
-        //         {
-        //             id: "tou-1-off-peak-sat-sun",
-        //             touType: "tou-1",
-        //             title: "Off Peak (Sat-Sun)",
-        //             startTime: "0:00",
-        //             endTime: "24:00",
-        //             bahtPerKWh: 2.6037,
-        //             effectiveDate: "25/08/2021",
-        //             effectiveTime: "00:00",
-        //         },
-        //         {
-        //             id: "tou-1-peak-mon-fri",
-        //             touType: "tou-1",
-        //             title: "Peak (Mon-Fri)",
-        //             startTime: "9:00",
-        //             endTime: "22:00",
-        //             bahtPerKWh: 5.1135,
-        //             effectiveDate: "25/08/2021",
-        //             effectiveTime: "00:00",
-        //         },
-        //         {
-        //             id: "tou-2-off-peak-holiday",
-        //             touType: "tou-2",
-        //             title: "Off Peak (วันหยุด)",
-        //             startTime: "0:00",
-        //             endTime: "24:00",
-        //             bahtPerKWh: 2.6369,
-        //             effectiveDate: "25/08/2021",
-        //             effectiveTime: "00:00",
-        //         },
-        //         {
-        //             id: "tou-2-off-peak-mon-fri",
-        //             touType: "tou-2",
-        //             title: "Off Peak (Mon-Fri)",
-        //             startTime: "22:00",
-        //             endTime: "9:00",
-        //             bahtPerKWh: 2.636,
-        //             effectiveDate: "25/08/2021",
-        //             effectiveTime: "00:00",
-        //         },
-        //         {
-        //             id: "tou-2-off-peak-sat-sun",
-        //             touType: "tou-2",
-        //             title: "Off Peak (Sat-Sun)",
-        //             startTime: "0:00",
-        //             endTime: "24:00",
-        //             bahtPerKWh: 2.6369,
-        //             effectiveDate: "25/08/2021",
-        //             effectiveTime: "00:00",
-        //         },
-        //         {
-        //             id: "tou-2-peak-mon-fri",
-        //             touType: "tou-2",
-        //             title: "Peak (Mon-Fri)",
-        //             startTime: "9:00",
-        //             endTime: "22:00",
-        //             bahtPerKWh: 5.7982,
-        //             effectiveDate: "25/08/2021",
-        //             effectiveTime: "00:00",
-        //         }
-        //     ]
-        // }
-        // return result;
+
     }
+
     async putTOUTariff(req: IUpdateTOURequest): Promise<boolean> {
         const path = '/reference-data/tou-tariff-setting';
         const api = this.uri + path;
@@ -208,15 +125,14 @@ export default class TOUTariffAPI {
                 body
             });
         } catch (e) {
-            return false;
+            throw Error(`UnExpected Handler Error`);
         }
 
         if (response.status === 204) {
 
-            console.warn(response);
             return true;
         } else {
-            return false;
+            throw Error(`Error With Code: ${response.status}`);
         }
 
     }
@@ -298,14 +214,14 @@ export default class TOUTariffAPI {
                 body
             });
         } catch (e) {
-            return false;
+            throw Error(`UnExpected Handler Error`);
         }
 
         if (response.status === 204) {
 
             return true;
         } else {
-            return false;
+            throw Error(`Error With Code: ${response.status}`);
         }
     }
     async getServiceChargeLog(req: IGetServiceChargeLogsRequest): Promise<IGetServiceChargeLogsResponse | null> {
@@ -373,16 +289,17 @@ export default class TOUTariffAPI {
                 headers,
             });
         } catch (e) {
-            return false;
+            throw Error(`UnExpected Handler Error`);
         }
 
         if (response.status === 204) {
 
             return true;
         } else {
-            return false;
+            throw Error(`Error With Code: ${response.status}`);
         }
     }
+
     async getHolidaysLog(req: IGetHolidayLogsRequest): Promise<IGetHolidayLogsResponse | null> {
         const path = `/reference-data/tou-tariff-setting/${req.touType}/holidays`;
         const api = new URL(this.uri + path);

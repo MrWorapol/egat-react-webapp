@@ -23,10 +23,11 @@ export default function SettingDialog(props: ISettingProps) {
     const { closeDialog } = useDialog();
     const { register, handleSubmit, watch, formState: { errors }, control } = useForm<IWheelingCharge>();
     const { updatedWheelingCharge } = useWheelingCharge();
+
     const onSubmitForm = (data: IWheelingCharge) => {
         let effectiveTime = '';
-        if (data.effectiveHour && data.effectiveMinute) {
-            effectiveTime = dayjs(data.effectiveDate).hour(+data.effectiveHour).minute(+data.effectiveMinute).toISOString();
+        if (data.effectiveTime) {
+            effectiveTime = dayjs(data.effectiveDate).hour(+data.effectiveTime).minute(0).toISOString();
         }
         let request: IWheelingCharge = {
             ...data,
@@ -190,7 +191,7 @@ export default function SettingDialog(props: ISettingProps) {
                             <Controller
                                 control={control}
                                 name="effectiveDate"
-                                defaultValue={dayjs(props.wheelingCharge.effectiveDate).format('DD/MM/YYYY')}
+                                defaultValue={dayjs().toString()}
                                 rules={{
                                     required: true,
                                 }}
@@ -213,82 +214,43 @@ export default function SettingDialog(props: ISettingProps) {
                             <Typography>
                                 Effective Time
                             </Typography>
-                            <Box sx={{ display: 'flex', justifyContent: 'flex-start', flexWrap: 'wrap', alignItems: 'center', mt: 1 }}>
-                                <Controller
-                                    control={control}
-                                    name="effectiveHour"
-                                    // defaultValue={dayjs(props.wheelingCharge.effectiveTime).format('HH')}
-                                    rules={{
-                                        required: true,
-                                    }}
-                                    defaultValue={`0`}
 
-                                    render={({ field }) => (
-                                        <Select variant="outlined"
-                                            {...field}
-                                            margin="dense"
-                                            size='small'
-                                            sx={{ ml: 2, maxWidth: '10em', justifyContent: 'flex-end', textAlignLast: 'end', }}
-                                            MenuProps={{
-                                                PaperProps: {
-                                                    style: {
-                                                        maxHeight: '40vh',
-                                                        backgroundColor: '#fff',
-                                                    }
+                            <Controller
+                                control={control}
+                                name="effectiveTime"
+                                // defaultValue={dayjs(props.wheelingCharge.effectiveTime).format('HH')}
+                                rules={{
+                                    required: true,
+                                }}
+                                defaultValue={`0`}
+
+                                render={({ field }) => (
+                                    <Select variant="outlined"
+                                        {...field}
+                                        margin="dense"
+                                        size='small'
+                                        sx={{ ml: 1, maxWidth: '8em', justifyContent: 'flex-end', textAlignLast: 'end', }}
+                                        MenuProps={{
+                                            PaperProps: {
+                                                style: {
+                                                    maxHeight: '40vh',
+                                                    backgroundColor: '#fff',
                                                 }
-                                            }}
-                                        >
-                                            {
-
                                             }
-                                            {Array.from(Array(24)).map((e, i) => {
-                                                console.log(e);
-                                                return (
-                                                    <MenuItem value={`${i}`}> {(`00` + i).slice(-2)}</MenuItem>
+                                        }}
+                                    >
+                                        {
 
-                                                )
-                                            })}
-                                        </Select>
-                                    )}
-                                />
-                                <Typography mx={1}>:</Typography>
-                                <Controller
-                                    control={control}
-                                    name="effectiveMinute"
-                                    // defaultValue={dayjs(props.wheelingCharge.effectiveTime).format('HH')}
-                                    rules={{
-                                        required: true,
-                                    }}
-                                    defaultValue={`0`}
-                                    render={({ field }) => (
+                                        }
+                                        {Array.from(Array(24)).map((e, i) => {
+                                            return (
+                                                <MenuItem key="i" value={`${i}`}> {(`00` + i).slice(-2) + `:00`}</MenuItem>
 
-                                        <Select variant="outlined"
-                                            {...field}
-                                            margin="dense"
-                                            size='small'
-                                            sx={{ maxWidth: '10em', justifyContent: 'flex-end', textAlignLast: 'end', }}
-                                            MenuProps={{
-                                                PaperProps: {
-                                                    style: {
-                                                        maxHeight: '40vh',
-                                                        backgroundColor: '#fff',
-                                                    }
-                                                }
-                                            }}
-                                        >
-                                            {
-
-                                            }
-                                            {Array.from(Array(60)).map((e, i) => {
-                                                return (
-                                                    <MenuItem value={`${i}`}> {(`00` + i).slice(-2)}</MenuItem>
-
-                                                )
-                                            })}
-                                        </Select>
-                                    )}
-                                />
-                            </Box>
+                                            )
+                                        })}
+                                    </Select>
+                                )}
+                            />
                         </Box>
                     </DialogContent>
                     <DialogActions>
