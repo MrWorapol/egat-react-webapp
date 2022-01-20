@@ -11,12 +11,12 @@ export interface LoginResponse {
 
 export default class KeycloakAdminApi {
     private host = egatHost;
-    
+
 
     async login(request: LoginRequest): Promise<LoginResponse | null> {
-    
+
         const path = '/web-admin/login';
-    
+
         const api = this.host + path;
 
         const body = JSON.stringify({ username: request.username, password: request.password });
@@ -33,22 +33,23 @@ export default class KeycloakAdminApi {
             });
         } catch (e) {
             console.log(e);
-            return null;
+            throw Error(`Unexpected Error`);
         }
         if (response.status === 401) {
-
+            throw Error(`Username or Password incorrect`)
+        }
+        if (response.status === 504) {
+            throw Error(`Gateway timeout`)
         }
         if (response.status !== 200) {
-
-            return null;
+            throw Error(`Username or Password incorrect`)
+            
         }
-
-        console.log(`from api method`);
         return response.json();
     }
 
     async logout() {
-        
+
         return;
     }
 

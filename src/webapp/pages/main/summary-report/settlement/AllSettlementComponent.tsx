@@ -42,8 +42,6 @@ export default function AllSettlementComponent() {
                     }
                 })
             }
-            console.log(`settlement filter area`);
-            console.log(tableFilter)
             setFilterData(tableFilter);
         }
     }, 0)
@@ -71,13 +69,11 @@ export default function AllSettlementComponent() {
                 break;
             }
         }
-
         refreshTable();
     }
 
 
-    function buildTableSelecter(// onCheckedRole: (event: React.ChangeEvent<HTMLInputElement>) => void
-    ) {
+    function buildTableSelecter() {
         return (
             <>
                 <Grid container item xs={3} >
@@ -177,7 +173,6 @@ export default function AllSettlementComponent() {
                             <MenuItem value={'perfectPark'}>{'Perfect Park'}</MenuItem>
                             <MenuItem value={'casaPermium'}>{'CASA Premium'}</MenuItem>
                             <MenuItem value={'Srisangthum'}>{'Srisangthum'}</MenuItem>
-
                         </Select>
                     </FormControl>
                 </Grid>
@@ -190,7 +185,5 @@ export default function AllSettlementComponent() {
                 {filterData && <AllSettlementTable data={filterData} page={0} />}
             </Grid>
         </Grid >
-        // </Box>
-
     )
 }

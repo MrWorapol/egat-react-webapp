@@ -41,14 +41,9 @@ export function useSettlementReport() {
                 orderStatus,
                 session
             }
-            console.log(`log period settlemet`)
-            console.log(period);
             const traceContractReports = await settlementAPI.getTradeContractReport(req);
             const imbalanceReport = await settlementAPI.getTradeDataReport(req);
-            console.log(`get Settlement`);
-            console.log(traceContractReports?.context);
-            console.log(`get imbalance`);
-            console.log(imbalanceReport?.context);
+
             let summaryRole: ISummaryMap = { 'aggregator': 0, 'prosumer': 0, 'consumer': 0 };
             let summaryUserType: ISummaryMap = { 'seller': 0, 'buyer': 0 };
             let summaryTradeMarket: ISummaryMap = { 'bilateral': 0, 'pool': 0 };
@@ -64,7 +59,6 @@ export function useSettlementReport() {
                 netBuy: 0,
                 netAll: 0
             };
-            //wait for summary Imbalance
 
             if ((traceContractReports && userMeterInfos && imbalanceReport) && traceContractReports.context.length > 0 && userMeterInfos.context.length > 0 && imbalanceReport.context.length > 0) {
                 let output: ITradeContractReport[] = [];
@@ -151,9 +145,9 @@ export function useSettlementReport() {
                     }
                 });
                 setSettlementReport(output);
-               
+
                 refreshSettlementDetail(output[0]);
-            }else{
+            } else {
                 setSettlementReport([]);
                 resetSettlementDetail();
             }
@@ -194,12 +188,10 @@ export function useSettlementReport() {
     };
 
 
-    const refreshSettlementDetail = useCallback(async (settlement: ITradeContractReport) => {
+    const refreshSettlementDetail = async (settlement: ITradeContractReport) => {
         if (settlementDetail) { //clear state of detail 
             resetSettlementDetail();
         }
-        // console.log(`refersh Settlement Detail`);
-        // console.log(settlement);
         let newSettlementDetail: ISettlementDetail = {
             contractId: settlement.contractId,
             userType: settlement.userType,
@@ -240,33 +232,21 @@ export function useSettlementReport() {
                     break;
                 default: break;
             }
-            // if (settlement.imbalanceStatus === "energyShortfall") { //case shortfall user have to buy DSO to commit imbalance amount
-            //     if (settlement.imbalance) {
 
-            //         settlement.imbalance.find((tradeData: IImbalanceReport) => {
-            //             return tradeData.buyerId && tradeData.buyerId === settlement.userType
-            //         })
-            //     }
-            // }
         }
-        // const result = await api.getSettlementDetail({ contractId });
-        // if (result) {
+
         setSettlementDetail(newSettlementDetail);
-        // }
-    }, []);
+
+    };
 
 
     useEffect(() => {
         if (session && currentState === NavigationCurrentType.SETTLEMENT_REPORT) {
-
             if (!settlementReport) {
                 refreshSettlementReport('all', 'all', 'all', 'all', 'all');
             }
-            // if (orderReport && !orderDetail) { //table has data and automatic get detail from first row in table
-            // refreshOrderDetail(orderReport[0].orderId);
-            // }
-            return () => {
 
+            return () => {
             }
         }
     }, [])

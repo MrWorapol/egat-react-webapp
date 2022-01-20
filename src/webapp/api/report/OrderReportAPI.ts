@@ -84,61 +84,7 @@ interface IGetMathOrderResponse {
 export class OrderReportAPI {
     private endpoint = druidHost;
     private tradeContractAPI = new SettlementReportAPI();
-    async getOderDetail(req: IGetOrderDetailRequest): Promise<IGetOrderDetailResponse | null> {
 
-        const body: IGetDruidBody = {
-            "query": `SELECT DISTINCT "__time", 
-            "payload.amount",
-            "payload.buyerId",
-            "payload.id",
-            "payload.price",
-            "payload.priceRuleApplied", 
-            "payload.reference.bilateralTradeSettlementId",
-            "payload.reference.marketType",
-            "payload.sellerId",
-            "payload.settlementTime",
-            "payload.timestamp",
-            "payload.tradingFee",
-            "payload.wheelingChargeFee"
-            FROM "TradeContractOnEgat"
-            WHERE "payload.id" = '61ad40610cf1ac18b2e25c1a'`,
-            "resultFormat": "object"
-        }
-        let headers = {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            "Authorization": `Bearer ${req.session.accessToken}`,
-        }
-        try {
-            const response = await fetch(this.endpoint, {
-                headers,
-                method: "POST",
-                body: JSON.stringify(body),
-            })
-            const detailFromJSON = await response.json();
-            const results: IGetOrderResponse[] = detailFromJSON.map((order: IOrderResponseFromJSON) => {
-                return {
-                    orderId: order[`payload.id`],
-                    userId: order.userId,
-                    status: order.status,
-                    targetAmount: order.targetAmount,
-                    targetPrice: order.targetPrice,
-                    userType: "SELLER",
-                    tradeMarket: "POOL",
-                    settlementTime: order.settlementTime
-
-                }
-            })
-            console.log(`get Order Detail`);
-            console.log(detailFromJSON);
-            // return results;
-            return null;
-        } catch (e) {
-            console.log(e);
-
-            return null;
-        }
-    }
     async getOrderTable(req: IGetOrderTableRequest): Promise<IGetOrderTableResponse | null> {
 
         let results: IGetOrderTableResponse = { context: [] };
@@ -164,55 +110,6 @@ export class OrderReportAPI {
         return results;
     }
 
-
-    // async getPoolTradeOffer(req: IGetOrderRequest): Promise<IGetOrderResponse[] | null> {
-    //     const body: IGetDruidBody = {
-    //         "query": `SELECT 
-            
-    //         "payload.id" , 
-    //         LATEST("payload.sellerId",50)FILTER(WHERE "payload.sellerId" IS NOT NULL) as userId, 
-    //         LATEST("payload.status",10) FILTER (WHERE "payload.status" is not null) status,
-    //         LATEST(CAST("__time" as VARCHAR) ,50 ) FILTER(WHERE "__time" is not null) settlementTime,
-    //         LATEST(CAST("payload.targetPrice" as VARCHAR),10 ) FILTER(WHERE "payload.targetPrice" is not null) targetPrice,
-    //         LATEST(CAST("payload.targetAmount" as VARCHAR),10 ) FILTER(WHERE "payload.targetAmount" is not null) targetAmount
-    //         FROM "PoolMarketOfferOnEgatF"
-    //         WHERE status = "OPEN"
-    //         GROUP BY "payload.id"`,
-    //         "resultFormat": "object"
-    //     }
-    //     let headers = {
-    //         "Content-Type": "application/json",
-    //         "Accept": "application/json",
-    //         "Authorization": `Bearer ${req.session.accessToken}`,
-    //     }
-    //     try {
-    //         const response = await fetch(this.endpoint, {
-    //             headers,
-    //             method: "POST",
-    //             body: JSON.stringify(body),
-    //         })
-    //         const ordersFromJSON: IOrderResponseFromJSON[] = await response.json();
-    //         const results: IGetOrderResponse[] = ordersFromJSON.map((order: IOrderResponseFromJSON) => {
-    //             return {
-    //                 timestamp: order.timestamp,
-    //                 orderId: order[`payload.id`],
-    //                 userId: order.userId,
-    //                 status: order.status,
-    //                 targetAmount: order.targetAmount,
-    //                 targetPrice: order.targetPrice,
-    //                 userType: "SELLER",
-    //                 tradeMarket: "POOL",
-    //                 settlementTime: order.settlementTime
-
-    //             }
-    //         })
-    //         return results;
-    //     } catch (e) {
-    //         console.log(e);
-
-    //         return null;
-    //     }
-    // }
 
     async getPoolTradeOffer(req: IGetOrderRequest): Promise<IGetOrderResponse[] | null> {
         const period = req.period;
@@ -246,7 +143,6 @@ export class OrderReportAPI {
                 if (period) {
                     let inRange = dayjs(order.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
                         && dayjs(order.timestamp).isBefore(dayjs(period.endDate).endOf('day'))
-                    console.log(`is ${dayjs(order.timestamp).toDate()} inRange:${inRange} of :${dayjs(period.startDate).startOf('day')}\t to ${dayjs(period.endDate).endOf('day')}`);
                     if (inRange) {
                         results.push({
                             timestamp: order.timestamp,
@@ -260,24 +156,24 @@ export class OrderReportAPI {
                             settlementTime: order.settlementTime
 
                         })
-                    } else {
-                        results.push({
-                            timestamp: order.timestamp,
-                            orderId: order[`payload.id`],
-                            userId: order.userId,
-                            status: order.status,
-                            targetAmount: order.targetAmount,
-                            targetPrice: order.targetPrice,
-                            userType: "SELLER",
-                            tradeMarket: "POOL",
-                            settlementTime: order.settlementTime
-
-                        })
                     }
+                } else {
+                    results.push({
+                        timestamp: order.timestamp,
+                        orderId: order[`payload.id`],
+                        userId: order.userId,
+                        status: order.status,
+                        targetAmount: order.targetAmount,
+                        targetPrice: order.targetPrice,
+                        userType: "SELLER",
+                        tradeMarket: "POOL",
+                        settlementTime: order.settlementTime
+
+                    })
                 }
+
             })
-            // console.log(`result from pool trade Offer`);
-            // console.log(results);
+
             return results;
         } catch (e) {
             console.log(e);
@@ -346,14 +242,11 @@ export class OrderReportAPI {
                     })
                 }
             })
-
-            console.log(`Get Pool Market Bid`);
-            console.log(results);
             return results;
         } catch (e) {
             console.log(e);
 
-            return null;
+            throw Error(`การเชื่อมต่อเซิฟเวอร์ขัดข้อง `);
         }
     }
 
@@ -384,8 +277,7 @@ export class OrderReportAPI {
                 body: JSON.stringify(body),
             })
             const ordersFromJSON: IOrderResponseFromJSON[] = await response.json();
-            console.log(`response offer bilateral`)
-            console.log(ordersFromJSON);
+
             let results: IGetOrderResponse[] = [];
             ordersFromJSON.forEach((order: IOrderResponseFromJSON) => {
                 if (period) {
@@ -419,116 +311,12 @@ export class OrderReportAPI {
                     })
                 }
             })
-            console.log(`get seller bilateral`)
-            console.log(results);
             return results;
         } catch (e) {
             console.log(e);
-            return null;
+            throw Error(`การเชื่อมต่อเซิฟเวอร์ขัดข้อง`);
         }
     }
-
-    // async getBilateralTradeSettlement(req: IGetOrderRequest): Promise<IGetOrderResponse[] | null> {
-    //     const period = req.period;
-    //     const body: IGetDruidBody = {
-    //         "query": `SELECT "payload.id", 
-    //         "payload.buyerId" as userId, 
-    //         "payload.settlementTime" settlementTime,
-    //         "payload.amount" as targetAmount,
-    //         "payload.price" as targetPrice
-    //         FROM "BilateralSettlementOnEgat"
-    //         WHERE "__time" > '2021-12-07T00:00:00.000Z'`,
-    //         "resultFormat": "object"
-    //     }
-    //     let headers = {
-    //         "Content-Type": "application/json",
-    //         "Accept": "application/json",
-    //         "Authorization": `Bearer ${req.session.accessToken}`,
-    //     }
-    //     try {
-    //         const response = await fetch(this.endpoint, {
-    //             headers,
-    //             method: "POST",
-    //             body: JSON.stringify(body),
-    //         })
-    //         const ordersFromJSON: IOrderResponseFromJSON[] = await response.json();
-    //         let results: IGetOrderResponse[] = [];
-    //         ordersFromJSON.forEach((order: IOrderResponseFromJSON) => {
-    //             if (period) {
-    //                 let inRange = dayjs(order.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
-    //                     && dayjs(order.timestamp).isBefore(dayjs(period.endDate).endOf('day'))
-    //                 if (inRange) {
-    //                     results.push({
-    //                         timestamp: order.timestamp,
-    //                         orderId: order[`payload.id`],
-    //                         userId: order.userId,
-    //                         status: order.status,
-    //                         targetAmount: order.targetAmount,
-    //                         targetPrice: order.targetPrice,
-    //                         userType: "BUYER",
-    //                         tradeMarket: "BILATERAL",
-    //                         settlementTime: order.settlementTime
-    //                     })
-    //                 }
-    //             } else {
-    //                 results.push({
-    //                     timestamp: order.timestamp,
-    //                     orderId: order[`payload.id`],
-    //                     userId: order.userId,
-    //                     status: order.status,
-    //                     targetAmount: order.targetAmount,
-    //                     targetPrice: order.targetPrice,
-    //                     userType: "BUYER",
-    //                     tradeMarket: "BILATERAL",
-    //                     settlementTime: order.settlementTime
-    //                 })
-    //             }
-    //         })
-
-    //         return results;
-    //     } catch (e) {
-    //         console.log(e);
-
-    //         return null;
-    //     }
-    // }
-    // async getBilateralSettlement(req: IGetOrderRequest) {
-
-    //     const period = req.period;
-    //     const body: IGetDruidBody = {
-    //         "query": `SELECT 
-
-    //         "payload.id" , 
-    //         LATEST("payload.sellerId",50)FILTER(WHERE "payload.sellerId" IS NOT NULL) as userId, 
-    //         LATEST("payload.status",10) FILTER (WHERE "payload.status" is not null) status,
-    //         LATEST(CAST("__time" as VARCHAR) ,50 ) FILTER(WHERE "__time" is not null) settlementTime,
-    //         LATEST(CAST("payload.targetPrice" as VARCHAR),10 ) FILTER(WHERE "payload.targetPrice" is not null) targetPrice,
-    //         LATEST(CAST("payload.targetAmount" as VARCHAR),10 ) FILTER(WHERE "payload.targetAmount" is not null) targetAmount
-    //         FROM "PoolMarketOfferOnEgat"
-    //         WHERE status = "OPEN"
-    //         GROUP BY "payload.id"`,
-    //         "resultFormat": "object"
-    //     }
-    //     let headers = {
-    //         "Content-Type": "application/json",
-    //         "Accept": "application/json",
-    //         "Authorization": `Bearer ${req.session.accessToken}`,
-    //     }
-    //     try {
-    //         const response = await fetch(this.endpoint, {
-    //             headers,
-    //             method: "POST",
-    //             body: JSON.stringify(body),
-    //         })
-    //         const ordersFromJSON: IOrderResponseFromJSON[] = await response.json();
-    //         if (ordersFromJSON) {
-
-    //         }
-    //     } catch (e) {
-    //         throw e;
-    //     }
-    // }
-
     async getMatchedOrder(req: IGetOrderRequest): Promise<IGetMathOrderResponse | null> {
         const contracts = await this.tradeContractAPI.getTradeContractReport({ ...req });
         const period = req.period;

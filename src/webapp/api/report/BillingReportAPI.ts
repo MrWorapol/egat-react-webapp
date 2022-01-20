@@ -200,7 +200,6 @@ export class BillingReportAPI {
                     }
                 })
             } else { // no period use for dashboard
-                console.log(`get invoice no period`)
                 invoices = jsonResponse.map((invoice: IInvoiceResponse) => {
                     return {
                         timestamp: invoice.timestamp,
@@ -259,8 +258,7 @@ export class BillingReportAPI {
             };
         } catch (e) {
             console.log(e);
-
-            return null;
+            throw Error(`การเชื่อมต่อเซิฟเวอร์ขัดข้อง`);
         }
     }
 

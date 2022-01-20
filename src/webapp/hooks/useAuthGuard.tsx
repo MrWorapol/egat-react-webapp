@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { useRecoilState, useRecoilValue, useResetRecoilState } from "recoil";
+import { useRecoilState, useResetRecoilState } from "recoil";
 import { NavigationCurrentType } from "../state/navigation-current-state";
 import { userSessionState, IUserSession } from "../state/user-sessions";
 import { useNavigationGet } from "./useNavigationGet";
@@ -12,16 +12,12 @@ import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-interface allowNavigationScope {
-    fallbackRoute: string;
 
-
-}
 interface SessionDecode extends JwtPayload {
 
 }
+
 export function useAuthGuard() {
-    // let count = 0;
     const [init, setInit] = useState(true);
     const previousRoute = window.location.pathname;
     const [sessionValue, setSessionValue] = useRecoilState(userSessionState);
@@ -67,8 +63,8 @@ export function useAuthGuard() {
         }
     }
     useEffect(() => {
-        // count++;
-        if (init === true) { //changeto  !init when integration
+        
+        if (init === true) { 
             console.log('call auth Initial');
             loadLocalStorage();
         } else {

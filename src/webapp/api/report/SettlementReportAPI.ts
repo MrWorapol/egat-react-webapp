@@ -15,6 +15,7 @@ interface IGetDruidBody {
     query: string,
     resultFormat: string,
 }
+
 interface IGetSettlementReportRequest {
     session: IUserSession,
     period?: IPeriod,
@@ -34,14 +35,6 @@ interface IGetImbalanceReport {
     context: IImbalanceReport[]
 }
 
-interface IGetSettlementDetailRequest {
-    session?: IUserSession,
-    contractId: string,
-}
-
-interface IGetSettlementDetailResponse {
-    context: ISettlementDetail,
-}
 
 export class SettlementReportAPI {
     private endpoint = druidHost;
@@ -62,7 +55,7 @@ export class SettlementReportAPI {
             "payload.tradingFee" as "tradingFee",
             "payload.wheelingChargeFee" as "wheelingChargeFee",
             "payload.priceRuleApplied" as "priceRuleApplied"
-            FROM "TradeContractOnEgat"`,
+            FROM "TradeContractOnEgatF"`,
             "resultFormat": "object"
         }
         let headers = {
@@ -80,35 +73,28 @@ export class SettlementReportAPI {
                 return null;
             }
 
-            const detailFromJSON: ITradeContractReport[] = await response.json();
+            const reponseJSON: ITradeContractReport[] = await response.json();
 
             if (period !== undefined) {
-                let settlementPeriod: ITradeContractReport[] = [];
-                detailFromJSON.forEach((settlement: ITradeContractReport) => {
+                let tradeContractPeriod: ITradeContractReport[] = [];
+                reponseJSON.forEach((settlement: ITradeContractReport) => {
                     let inRange = dayjs(settlement.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
                         && dayjs(settlement.timestamp).isBefore(dayjs(period.endDate).endOf('day'));
                     if (inRange) {
-                        // if(settlement.bilateralTradeSettlementId){
-
-                        // }
-                        settlementPeriod.push(settlement);
+                        tradeContractPeriod.push(settlement);
                     }
 
                 })
                 return {
-                    context: settlementPeriod,
+                    context: tradeContractPeriod,
                 }
-
             }
-
             return {
-                context: detailFromJSON
+                context: reponseJSON
             };
-            // return null;
         } catch (e) {
             console.log(e);
-
-            return null;
+            throw Error(`การเชื่อมต่อเซิฟเวอร์ขัดข้อง`);
         }
 
     }
@@ -151,46 +137,34 @@ export class SettlementReportAPI {
                 body: JSON.stringify(body),
             })
             const resultFromJSON: IImbalanceReport[] = await response.json();
-            if (response.status !== 200) {
-                return null;
-            }
+            // if (response.status !== 200) {
+            //     return null;
+            // }
 
             if (period !== undefined) {
-                if (dayjs(period.endDate).startOf('day').isSame(dayjs(period.startDate).startOf('day')) // if start and end date is same day
-                    && dayjs(period.startDate).startOf('day').isSame(dayjs().startOf('day'))) {//and is same today 
-                    return {
-                        context: resultFromJSON
-                    };
-
-                } else {
-                    let tradePeriod: IImbalanceReport[] = [];
-                    resultFromJSON.forEach((trade: IImbalanceReport) => {
-                        let inRange = dayjs(trade.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
-                            && dayjs(trade.timestamp).isBefore(dayjs(period.endDate).endOf('day'));
-                        if (inRange) {
-                            tradePeriod.push(trade);
-                        }
-
-                    })
-                    return {
-                        context: tradePeriod,
+                let tradePeriod: IImbalanceReport[] = [];
+                resultFromJSON.forEach((trade: IImbalanceReport) => {
+                    let inRange = dayjs(trade.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
+                        && dayjs(trade.timestamp).isBefore(dayjs(period.endDate).endOf('day'));
+                    if (inRange) {
+                        tradePeriod.push(trade);
                     }
+
+                })
+                return {
+                    context: tradePeriod,
                 }
             }
 
             return {
                 context: resultFromJSON
             };
-            // return null;
+
         } catch (e) {
             console.log(e);
-
-            return null;
+            throw Error(`การเชื่อมต่อเซิฟเวอร์ขัดข้อง`);
         }
     }
 
-    // async getSettlementDetail(req: IGetSettlementDetailRequest): Promise<IGetSettlementDetailResponse> {
-    //     return { context: {} as ISettlementDetail };
-    // }
 
 }
