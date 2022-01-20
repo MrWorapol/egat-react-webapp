@@ -1,48 +1,78 @@
 import { useCallback, useEffect } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { OtherSettingAPI } from "../../api/referenceData/OhterSettingAPI";
+import { NavigationCurrentType } from "../../state/navigation-current-state";
 import { IOtherSetting, otherSettingState } from "../../state/reference-data/other-setting/othersetting-state";
 import { userSessionState } from "../../state/user-sessions";
+import { useAuthGuard } from "../useAuthGuard";
+import { useLoadingScreen } from "../useLoadingScreen";
+import { useNavigationGet } from "../useNavigationGet";
+import { useSnackBarNotification } from "../useSnackBarNotification";
 
 
 export function useOtherSetting() {
     const [otherSetting, setOtherSetting] = useRecoilState(otherSettingState);
-    const userSession = useRecoilValue(userSessionState);
-
+    let { session } = useAuthGuard();
     const api = new OtherSettingAPI();
-    const refreshOtherSetting = useCallback(async () => {
-        if (userSession) {
-            console.warn('Call refresh Other Setting');
-            const result = await api.getOtherSetting({ session: userSession });
-            if (result !== null) {
-                console.info(result.context);
-                setOtherSetting(result.context);
+    const { currentState } = useNavigationGet();
+    const { showSnackBar } = useSnackBarNotification();
+    const { showLoading, hideLoading } = useLoadingScreen();
+
+    const refreshOtherSetting = async () => {
+        if (session) {
+            try {
+                showLoading(10);
+                const result = await api.getOtherSetting({ session: session });
+                if (result !== null) {
+                    console.info(result.context);
+                    setOtherSetting(result.context);
+                }
+                hideLoading(10);
+
+            } catch (e) {
+                hideLoading(10)
+                showSnackBar({ serverity: 'error', message: `${e}` })
+
             }
         }
-    }, [])
+    };
 
     const putOtherSetting = useCallback(async (data: IOtherSetting) => {
-        if (userSession) {
-            const result = await api.putOtherSetting({ session: userSession, setting: data });
-            if (result) {
-                refreshOtherSetting();
-                return true;
-            } else {
-                console.error(`cannot update setting`);
-                return false;
+        if (session) {
+            try {
+                showLoading(10);
+                const result = await api.putOtherSetting({ session: session, setting: data });
+                if (result) {
+                    refreshOtherSetting();
+                    showSnackBar({
+                        serverity: "success",
+                        message: "update Successful"
+                    })
+                    hideLoading(10)
+                    return true;
+                } else {
+                    console.error(`cannot update setting`);
+                    hideLoading(10)
+                    return false;
+                }
+            } catch (e) {
+                hideLoading(10)
+                showSnackBar({ serverity: 'error', message: `${e}` })
+
             }
         }
     }, [])
 
     useEffect(() => {
-        console.warn(userSession);
-        if (!otherSetting) {
-            refreshOtherSetting();
-            console.debug('call get other setting');
-            // console.info(wheelingCharge);
-        }
+       
+        if (session && currentState === NavigationCurrentType.OTHER_SETTING) {
+            if (!otherSetting) {
+                refreshOtherSetting();  
+            }
+        } 
+    }, [session]);
 
-    }, [otherSetting, refreshOtherSetting])
+
     return {
         otherSetting,
         refreshOtherSetting,

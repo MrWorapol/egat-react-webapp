@@ -1,9 +1,16 @@
 import { Button, DialogContent, DialogTitle, Divider, Grid, MenuItem, Select, TextField, Typography } from '@mui/material';
-import React from 'react'
+import { DatePicker } from '@mui/lab';
 import { Controller, useForm } from 'react-hook-form';
 import { useDialog } from '../../../../hooks/useDialog';
 import { useOtherSetting } from '../../../../hooks/reference-data/useOtherSetting';
 import { IOtherSetting } from '../../../../state/reference-data/other-setting/othersetting-state';
+
+import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
 
 export default function OtherSettingEditDialog() {
     const { closeDialog } = useDialog();
@@ -30,6 +37,7 @@ export default function OtherSettingEditDialog() {
         data.gridUsed.discountGridUsed = convertToNumber(data.gridUsed.discountGridUsed + '');
         data.energyTradingPayment.dicountAppFees = convertToNumber(data.energyTradingPayment.dicountAppFees + '');
         data.energyTradingPayment.transactionFees = convertToNumber(data.energyTradingPayment.transactionFees + '');
+        data.effectiveTime = dayjs(data.effectiveDate).startOf('hour').set('hour',+data.effectiveTime).toISOString();
         if (otherSetting) {
             data.id = otherSetting.id;
         }
@@ -73,7 +81,7 @@ export default function OtherSettingEditDialog() {
                                                     margin="dense"
 
                                                     size='small'
-                                                    sx={{ maxWidth: '7em', justifyContent: 'flex-end', textAlignLast: 'end', }}
+                                                    sx={{ width: '10em', justifyContent: 'flex-end', textAlignLast: 'end', }}
 
                                                     {...field}
                                                 />)}
@@ -107,7 +115,7 @@ export default function OtherSettingEditDialog() {
                                                     margin="dense"
 
                                                     size='small'
-                                                    sx={{ maxWidth: '7em', justifyContent: 'flex-end', textAlignLast: 'end', }}
+                                                    sx={{ width: '10em', justifyContent: 'flex-end', textAlignLast: 'end', }}
 
                                                     {...field}
                                                 />)}
@@ -149,7 +157,7 @@ export default function OtherSettingEditDialog() {
                                                     margin="dense"
 
                                                     size='small'
-                                                    sx={{ maxWidth: '7em', justifyContent: 'flex-end', textAlignLast: 'end', }}
+                                                    sx={{ width: '10em', justifyContent: 'flex-end', textAlignLast: 'end', }}
 
                                                     {...field}
                                                 />)}
@@ -183,7 +191,7 @@ export default function OtherSettingEditDialog() {
                                                     margin="dense"
 
                                                     size='small'
-                                                    sx={{ maxWidth: '7em', justifyContent: 'flex-end', textAlignLast: 'end', }}
+                                                    sx={{ width: '10em', justifyContent: 'flex-end', textAlignLast: 'end', }}
 
                                                     {...field}
                                                 />)}
@@ -222,7 +230,7 @@ export default function OtherSettingEditDialog() {
                                                     margin="dense"
 
                                                     size='small'
-                                                    sx={{ maxWidth: '7em', justifyContent: 'flex-end', textAlignLast: 'end', }}
+                                                    sx={{ width: '10em', justifyContent: 'flex-end', textAlignLast: 'end', }}
 
                                                     {...field}
                                                 />)}
@@ -249,24 +257,27 @@ export default function OtherSettingEditDialog() {
                                     </Typography>
                                 </Grid>
                                 <Grid item container xs={4} direction="row" justifyContent="flex-end" alignItems="center">
-                                    <Grid item container justifyContent="flex-end" xs={'auto'}>
+                                    <Grid item container justifyContent="flex-end" xs={'auto'} my={1}>
                                         <Controller
-                                            render={({ field }) => (
-                                                <TextField variant="outlined"
-                                                    margin="dense"
-
-                                                    size='small'
-                                                    sx={{ maxWidth: '7em', justifyContent: 'flex-end', textAlignLast: 'end', }}
-
-                                                    {...field}
-                                                />)}
-                                            name="effectiveDate"
                                             control={control}
-                                            defaultValue={otherSetting.effectiveDate}
+                                            name="effectiveDate"
+                                            defaultValue={dayjs().toString()}
                                             rules={{
                                                 required: true,
                                             }}
-
+                                            render={({ field: { onChange, onBlur, value, ref } }) =>
+                                                <DatePicker
+                                                    views={['year', 'month', 'day']}
+                                                    minDate={dayjs()}
+                                                    maxDate={dayjs().add(5, 'year')}
+                                                    inputFormat='DD/MM/YYYY'
+                                                    value={value}
+                                                    onChange={onChange}
+                                                    renderInput={(params) => (
+                                                        <TextField size='small' {...params} sx={{ width: '10em', justifyContent: 'flex-end', textAlignLast: 'end', }} />
+                                                    )}
+                                                />
+                                            }
                                         />
                                     </Grid>
                                     <Grid container xs={5} pl={1}  >
@@ -281,7 +292,7 @@ export default function OtherSettingEditDialog() {
                                     </Typography>
                                 </Grid>
                                 <Grid item container xs={4} direction="row" justifyContent="flex-end" alignItems="center">
-                                <Grid item container justifyContent="flex-end" xs={'auto'}>
+                                    <Grid item container justifyContent="flex-end" xs={'auto'}>
                                         <Controller
                                             control={control}
                                             name="effectiveTime"
@@ -296,8 +307,8 @@ export default function OtherSettingEditDialog() {
                                                     {...field}
                                                     margin="dense"
                                                     size='small'
-                                                    fullWidth
-                                                    sx={{ justifyContent: 'flex-end', textAlignLast: 'end', }}
+
+                                                    sx={{ width: '10em', justifyContent: 'flex-end', textAlignLast: 'end', }}
                                                     MenuProps={{
                                                         PaperProps: {
                                                             style: {

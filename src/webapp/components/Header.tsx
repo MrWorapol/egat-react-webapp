@@ -40,10 +40,8 @@ export default function Header() {
                 xs={2}
                 justifyContent='center'
                 alignItems="center" style={{ backgroundColor: "#707070" }}>
+                <img src={'/assets/images/logo_1x.png'} alt="p2pweb-logo"></img>
 
-                <Typography>
-                    LOGO EGAT
-                </Typography>
             </Grid>
             <Grid container item xs={10} justifyContent="flex-end" style={{ backgroundColor: "white" }} pr={2}>
                 {/* <Typography>Main Menu </Typography> */}

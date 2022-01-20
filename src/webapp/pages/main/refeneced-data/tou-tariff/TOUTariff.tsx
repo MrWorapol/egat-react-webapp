@@ -162,7 +162,7 @@ export default function TOUTariff() {
                     </TableHead>
 
                     <TableBody>
-                        {touTariff !== null && touTariff.length !== 0 &&
+                        {touTariff !== null && touTariff.length > 0 &&
                             touTariff.map((row: ITouTariff, i: number) => {
                                 if (row.touType === touType) {
                                     return (

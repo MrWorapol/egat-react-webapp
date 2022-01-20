@@ -15,6 +15,7 @@ import OrderReport from './summary-report/order/OrderReport'
 import SettlementReport from './summary-report/settlement/SettlementReport'
 import BillingReport from './summary-report/billing/BillingReport'
 import NewManagement from './news-management/NewManagement'
+import { useAuthGuard } from '../../hooks/useAuthGuard'
 
 export default function MainPage() {
 
@@ -36,6 +37,10 @@ export default function MainPage() {
 }
 
 export function PageRouting() {
+    let { session } = useAuthGuard();
+    if (!session) {
+        return;
+    }
     return (
         <>
             <Switch>
@@ -60,7 +65,7 @@ export function PageRouting() {
                 <Route path="/tou_tariff">
                     <TOUTariff />
                 </Route>
-                
+
                 <Route path="/users_report">
                     <UserReport />
                 </Route>

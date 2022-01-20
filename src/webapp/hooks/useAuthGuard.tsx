@@ -20,7 +20,7 @@ interface SessionDecode extends JwtPayload {
 export function useAuthGuard() {
     const [init, setInit] = useState(true);
     const previousRoute = window.location.pathname;
-    const [sessionValue, setSessionValue] = useRecoilState(userSessionState);
+    let [sessionValue, setSessionValue] = useRecoilState(userSessionState);
     const { currentState } = useNavigationGet();
     const history = useHistory();
     const resetSessionState = useResetRecoilState(userSessionState);

@@ -160,7 +160,7 @@ export default function UserTableData() {
                                 <TableCell colSpan={6} />
                             </TableRow>
                             }
-                        {userInfoData.length !== 0 && (rowsPerPage > 0
+                        {userInfoData.length > 0 && (rowsPerPage > 0
                             ? userInfoData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             : userInfoData
                         ).map((row, i) => (

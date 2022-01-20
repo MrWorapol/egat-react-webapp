@@ -1,6 +1,6 @@
 import React from 'react'
 import Login from './pages/login/Login'
-import {  ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import MainPage from './pages/main/MainPage';
 import { RecoilRoot } from 'recoil';
 import { Box } from '@mui/system';
@@ -25,7 +25,7 @@ export default function WebApp() {
                         </Router>
                         <CustomDialog />
                         <CustomBackdrop />
-                        <SnackBarNotification/>
+                        <SnackBarNotification />
                     </React.Suspense>
 
                 </RecoilRoot>
@@ -35,12 +35,10 @@ export default function WebApp() {
 }
 
 function WebAdminRouting() {
-    useAuthGuard();
-    // const sessionValue = useRecoilValue(userSessionState);
+
     return (
         <Box>
             <Switch>
-
                 <Route path='/login' exact>
                     <Login />
                 </Route>

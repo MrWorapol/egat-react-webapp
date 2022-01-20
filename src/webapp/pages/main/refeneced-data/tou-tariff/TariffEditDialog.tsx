@@ -20,7 +20,6 @@ interface ITariffEditProps {
     tariff: ITouTariff
 }
 
-const time = ['00', '']
 
 
 export default function TariffEditDialog(props: ITariffEditProps) {
@@ -29,19 +28,17 @@ export default function TariffEditDialog(props: ITariffEditProps) {
     const { editTOUTariff } = useTOUTariff();
 
     const onSubmitForm = async (data: ITouTariff) => {
-        let effectiveTime = '';
-        if (data.effectiveHour && data.effectiveMinute) {
-            effectiveTime = dayjs(data.effectiveDate).hour(+data.effectiveHour).minute(+data.effectiveMinute).toISOString();
-        }
-        data.bahtPerKWh = Number.parseFloat(data.bahtPerKWh + '');
-        let request: ITouTariff = {
-            ...data,
-            id: props.tariff.id,
-            touType: props.tariff.touType, title: props.tariff.title,
-            effectiveTime: effectiveTime,
-        }
-        await editTOUTariff(request);
+        if (data.effectiveTime) {
+            data.effectiveTime = dayjs(data.effectiveDate).startOf('hour').set('hour', +data.effectiveTime).toISOString();
 
+            data.bahtPerKWh = Number.parseFloat(data.bahtPerKWh + '');
+            let request: ITouTariff = {
+                ...data,
+                id: props.tariff.id,
+                touType: props.tariff.touType, title: props.tariff.title,
+            }
+            await editTOUTariff(request);
+        }
 
 
     }

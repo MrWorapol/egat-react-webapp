@@ -27,7 +27,7 @@ export default function SettingDialog(props: ISettingProps) {
     const onSubmitForm = (data: IWheelingCharge) => {
         let effectiveTime = '';
         if (data.effectiveTime) {
-            effectiveTime = dayjs(data.effectiveDate).hour(+data.effectiveTime).minute(0).toISOString();
+            effectiveTime = dayjs(data.effectiveDate).startOf('hour').set('hour',+data.effectiveTime).toISOString();
         }
         let request: IWheelingCharge = {
             ...data,

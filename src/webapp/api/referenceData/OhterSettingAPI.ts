@@ -43,39 +43,18 @@ export class OtherSettingAPI {
                 headers
             });
         } catch (e) {
-            return null;
+            throw Error(`Unexpected handle error:${e}`);
         }
-
-        let result = await response.json();
-        console.log(result);
-        let content: IGetOtherSettingResponse = {
-            context: result
+        if (response.status === 200) {
+            let result = await response.json();
+            console.log(result);
+            let content: IGetOtherSettingResponse = {
+                context: result
+            }
+            return content;
+        } else {
+            throw Error(`Error Code: ${response.status}`)
         }
-        return content;
-        // const result: IGetOtherSettingResponse = {
-        //     context:
-
-        //     {
-        //         id: "other-setting",
-        //         energyTradingPayment: {
-        //             transactionFees: 0.015,
-        //             dicountAppFees: 0
-        //         },
-        //         gridUsed: {
-        //             ft: -0.1532,
-        //             discountGridUsed: 0
-        //         },
-        //         other: {
-        //             vat: 7
-        //         },
-        //         effectiveDate: "25/08/2021",
-        //         effectiveTime: "00:00",
-        //         effectiveDateTime: "2021-08-24T17:00:00.000Z"
-        //     }
-
-
-        // }
-        // return result;
     }
 
     async getOtherSettingLogs(req: IGetOtherSettingLogsRequest): Promise<IGetOtherSettingLogsResponse | null> {
@@ -95,37 +74,16 @@ export class OtherSettingAPI {
         } catch (e) {
             return null;
         }
-
-        let result = await response.json();
-        console.log(result);
-        let content: IGetOtherSettingLogsResponse = {
-            context: result
+        if (response.status === 200) {
+            let result = await response.json();
+            console.log(result);
+            let content: IGetOtherSettingLogsResponse = {
+                context: result
+            }
+            return content;
+        } else {
+            throw Error(`Error Code: ${response.status}`)
         }
-        return content;
-        // const result: IGetOtherSettingLogsResponse = {
-        //     context:
-
-        //         [{
-        //             id: "other-setting",
-        //             energyTradingPayment: {
-        //                 transactionFees: 0.015,
-        //                 dicountAppFees: 0
-        //             },
-        //             gridUsed: {
-        //                 ft: -0.1532,
-        //                 discountGridUsed: 0
-        //             },
-        //             other: {
-        //                 vat: 7
-        //             },
-        //             effectiveDate: "25/08/2021",
-        //             effectiveTime: "00:00",
-        //             effectiveDateTime: "2021-08-24T17:00:00.000Z"
-        //         }]
-
-
-        // }
-        // return result;
     }
     async putOtherSetting(req: IPutOtherSettingRequest): Promise<boolean> {
         const path = `/reference-data/other-setting`;
@@ -144,14 +102,14 @@ export class OtherSettingAPI {
                 body
             });
         } catch (e) {
-            return false;
+            throw Error(`Unexpected Handler Error`);
         }
 
         if (response.status === 204) {
 
             return true;
-        } else {
-            return false;
+        } else{
+            throw Error(`Error Code: ${response.status}`)
         }
 
     }

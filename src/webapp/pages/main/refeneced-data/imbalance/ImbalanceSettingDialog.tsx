@@ -44,6 +44,7 @@ export default function ImbalanceSettingDialog(props: ISettingProps) {
         setCustomGridChecked(event.target.checked);
     };
     const onSubmitForm = (data: Iimbalance) => {
+        data.effectiveTime = dayjs(data.effectiveDate).startOf('hour').set('hour', +data.effectiveTime).toISOString();
         const requestData: Iimbalance = { ...data, id: props.imbalance.id, type: props.imbalance.type, imbalance: props.imbalance.imbalance };
         console.info(requestData);
         updateImbalance(requestData);
