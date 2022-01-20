@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-#1 stage
-# select node version
-=======
->>>>>>> features/summary-report
 FROM node:14.16
 RUN mkdir  /usr/src/app
 WORKDIR /usr/src/app
@@ -13,23 +8,16 @@ COPY package.json /usr/src/app/package.json
 RUN npm install
 RUN npm install react-scripts@4.0.3
 
-<<<<<<< HEAD
-=======
 ###########build sourceCode container#####################
 # # start app
 # CMD ["npm", "start"]
 ############################################################
 
 ###########build production container#####################
->>>>>>> features/summary-report
 COPY . .
 
 RUN npm run build 
 
-<<<<<<< HEAD
-=======
-
->>>>>>> features/summary-report
 #2 staged
 FROM nginx:1.14.2-alpine
 COPY ./default.conf /etc/nginx/conf.d/default.conf
@@ -38,7 +26,4 @@ WORKDIR /usr/share/nginx/html
 
 EXPOSE 3004
 CMD ["nginx","-g", "daemon off;"]
-<<<<<<< HEAD
-=======
 ##########################################################
->>>>>>> features/summary-report
