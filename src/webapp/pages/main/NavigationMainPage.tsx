@@ -1,12 +1,16 @@
-import React, { useEffect, useState } from 'react'
-import { Grid, Icon, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material'
-import GridViewIcon from '@mui/icons-material/GridView';
+import { useEffect, useState } from 'react'
+import { Grid, List } from '@mui/material'
 import NavigationMenuItem from '../../components/NavigationMenuItem';
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import { useHistory } from 'react-router-dom';
 import { useNavigationGet } from '../../hooks/useNavigationGet';
 import { NavigationCurrentType } from '../../state/navigation-current-state';
 import NavigationNestedItem, { IChildrenMenu } from '../../components/NavigationNestedItem';
+
+import GridViewIcon from '@mui/icons-material/GridView';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import NoteAltOutlinedIcon from '@mui/icons-material/NoteAltOutlined';
+import AssessmentOutlinedIcon from '@mui/icons-material/AssessmentOutlined';
+import CampaignOutlinedIcon from '@mui/icons-material/CampaignOutlined';
 
 const NavigationMainPage = () => {
     const { currentState } = useNavigationGet();
@@ -15,50 +19,32 @@ const NavigationMainPage = () => {
     const [openSummary, setOpenSummaryMenu] = useState(false);
 
     const referenceDataChildrenMenu: IChildrenMenu[] = [
-        { label: 'Wheeling Charge Setting', path: '/wheeling_chart', state: NavigationCurrentType.WHEELING_CHART },
+        { label: 'Wheeling Charge Setting', path: '/wheeling_charge', state: NavigationCurrentType.WHEELING_CHART },
         { label: 'Imbalance Setting', path: '/imbalance', state: NavigationCurrentType.IMBALANCE },
         { label: 'TOU Tariff Setting', path: '/tou_tariff', state: NavigationCurrentType.TOU_TARIFF },
         { label: 'Other Setting', path: '/other_setting', state: NavigationCurrentType.OTHER_SETTING },
     ];
 
-    const summaryChildrenMenu : IChildrenMenu[] = [
-        { label: 'User & Energy Report', path: '/users_report', state: NavigationCurrentType.USER_ENEGERY },
-        { label: 'Order Report', path: '/order_report', state: NavigationCurrentType.ORDER_REPORT},
+    const summaryChildrenMenu: IChildrenMenu[] = [
+        { label: 'User & Energy Report', path: '/users_report', state: NavigationCurrentType.USER_REPORT },
+        { label: 'Order Report', path: '/order_report', state: NavigationCurrentType.ORDER_REPORT },
         { label: 'Settlement Report', path: '/settlement_report', state: NavigationCurrentType.SETTLEMENT_REPORT },
-        { label: 'Billing Report', path: '/billing_report', state: NavigationCurrentType.BILLING_REPORT},
+        { label: 'Billing Report', path: '/billing_report', state: NavigationCurrentType.BILLING_REPORT },
     ]
     useEffect(() => {
-        console.log(`call use Effect on rerender navigation`);
-        // setOpenRefMenu(false);
         referenceDataChildrenMenu.forEach(menu => {
             if (menu.state === currentState) {
-
                 setOpenRefMenu(true);
-                console.log(`call use Effect on reference data true`);
-                return ;
+                return;
             }
         });
         summaryChildrenMenu.forEach(menu => {
             if (menu.state === currentState) {
-
                 setOpenSummaryMenu(true);
-                console.log(`call use Effect on summary true`);
-                return ;
+                return;
             }
         });
-        // if(!openRefMenu){
-        //     referenceDataChildrenMenu.forEach(menu => {
-        //         if (menu.state === currentState) {
-    
-        //             setOpenRefMenu(true);
-        //             console.log(`call use Effect on rerender true`);
-        //             return ;
-        //         }
-        //     });
-        // }
-        
-        console.log(`call use Effect on rerender fa`);
-        return ()=> {
+        return () => {
             setOpenRefMenu(false);
             setOpenSummaryMenu(false);
         };
@@ -111,29 +97,23 @@ const NavigationMainPage = () => {
 
         return (
             <NavigationNestedItem
-                icon={<GridViewIcon />}
-                label='Reference Database'
+                key="reference-data-menu"
+                icon={<NoteAltOutlinedIcon />}
+                label='Reference Data'
                 open={openRefMenu}
                 setOpenMenu={() => {
                     setOpenRefMenu(!openRefMenu);
                 }}
                 menus={childrenMenu}
             />
-            // <NavigationMenuItem
-            //     icon={<GridViewIcon />}
-            //     label='Reference Database'
-            //     selected={currentState === NavigationCurrentType.REFENRENCE_DATA}
-            //     onClick={() => {
-            //         history.push('/reference_database');
-            //     }}
-            // />
         )
     }
 
     function buildSummaryReport(childrenMenu: IChildrenMenu[]) {
         return (
             <NavigationNestedItem
-                icon={<GridViewIcon />}
+                key="summary-repory-menu"
+                icon={<AssessmentOutlinedIcon />}
                 label='Summary Report'
                 open={openSummary}
                 setOpenMenu={() => {
@@ -147,7 +127,7 @@ const NavigationMainPage = () => {
     function buildNews() {
         return (
             <NavigationMenuItem
-                icon={<GridViewIcon />}
+                icon={<CampaignOutlinedIcon />}
                 label='News Management'
                 selected={currentState === NavigationCurrentType.NEWS_MANAGEMENT}
                 onClick={() => {
@@ -159,6 +139,5 @@ const NavigationMainPage = () => {
     }
 
 }
-
 
 export default NavigationMainPage;

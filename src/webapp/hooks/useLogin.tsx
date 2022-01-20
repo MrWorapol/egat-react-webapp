@@ -1,49 +1,63 @@
 import { useCallback } from "react";
-import { useRecoilState } from "recoil";
+import { useHistory } from "react-router";
+import { useRecoilState, useResetRecoilState } from "recoil";
 import KeycloakAdminApi from "../api/keycloak/keycloakAdminApi";
 import { userProfile } from "../state/user-profile";
 import { userSessionState } from "../state/user-sessions";
+import { useLoadingScreen } from "./useLoadingScreen";
 
 
 export function useLogin() {
     const [, setProfile] = useRecoilState(userProfile);
     const [sessionValue, setSession] = useRecoilState(userSessionState);
     const api = new KeycloakAdminApi();
-
+    const resetSession = useResetRecoilState(userSessionState);
+    const { showLoading, hideLoading } = useLoadingScreen();
+    const history = useHistory();
     const login = useCallback(async (username: string, password: string) => {
+        try {
+            showLoading(10);
+            const response = await api.login({
+                username: username,
+                password: password,
+            });
 
-        // console.log(`after set session value`);
-        // console.log(sessionValue)
-        // console.log('`');
-        // setSession({
-        //     accessToken: 'accessToken',
-        //     refreshToken: 'refreshToken',
-        //     lasttimeLogIn: new Date(),
-        // })
-        console.log(`username: ${username}, password: ${password}`);
-        const response = await api.login({
-            username: username,
-            password: password,
-            // username: 'egat-p2p-admin@gmail.com',
-            // password: 'P@ssw0rd',
-        }
-        );
-        // console.log(response);
-        if (response) {
-            const session = {
-                accessToken: response.accessToken,
-                refreshToken: response.refreshToken,
-                lasttimeLogIn: new Date(),
+            if (response) {
+                const session = {
+                    accessToken: response.accessToken,
+                    refreshToken: response.refreshToken,
+                    lasttimeLogIn: new Date(),
+                }
+                localStorage.setItem('session', JSON.stringify(session));
+                setSession(session);
+                history.push('/dashboard');
+
             }
-            localStorage.setItem('session', JSON.stringify(session));
-            setSession(session);
+
+            hideLoading(10);
+        } catch (err: any) {
+            let error: Error = err;
+            console.log(error);
+            hideLoading(10);
         }
+
     }, [setSession, sessionValue])
 
     const logout = useCallback(() => {
+        //clear local storage
+        if (localStorage.getItem('session')) {
+            localStorage.removeItem('session');
+            resetSession();
+        }
+        if (sessionValue) {
+            // localStorage.removeItem('session');
+            resetSession();
+        }
+
     }, [])
     return {
         login,
+        logout,
         session: sessionValue,
     }
 }

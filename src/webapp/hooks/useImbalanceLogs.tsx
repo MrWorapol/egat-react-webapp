@@ -1,19 +1,24 @@
 import { useCallback, useEffect } from "react";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { ImbalanceAPI } from "../api/referenceData/ImbalanceAPI";
 import { imbalanceLogsState } from "../state/reference-data/imbalance/imbalance-log";
 import { Iimbalance } from "../state/reference-data/imbalance/imbalance-state";
+import { userSessionState } from "../state/user-sessions";
 
 
 export function useImbalanceLogs(data: Iimbalance) {
     const [imbalanceLogs, setImbalanceLogs] = useRecoilState(imbalanceLogsState);
     const api = new ImbalanceAPI();
+    const session = useRecoilValue(userSessionState);
+
     const refreshImbalanceLogs = useCallback(async () => {
-        const response = await api.getLogsImbalance({ imbalance: data.imbalance, type: data.type });
-        console.log('call wheeling log api');
-        if (response !== null) {
-            console.info(response);
-            setImbalanceLogs(response.context);
+        if (session) {
+            const response = await api.getLogsImbalance({ imbalance: data.imbalance, type: data.type,session });
+            console.log('call wheeling log api');
+            if (response !== null) {
+                console.info(response);
+                setImbalanceLogs(response.context);
+            }
         }
     }, [])
 

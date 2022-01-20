@@ -2,7 +2,7 @@ import { Box, Button, Container, Grid, TextField, Typography } from '@mui/materi
 import React from 'react'
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { useParams } from 'react-router';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import UserManagementAPI from '../../../api/user/userManagementApi';
 import { useLoadingScreen } from '../../../hooks/useLoadingScreen';
 import { useNavigationSet } from '../../../hooks/useNavigationSet';
@@ -66,13 +66,11 @@ export default function UserDetail() {
     useNavigationSet(NavigationCurrentType.USER_DETAIL);
     const api = new UserManagementAPI();
     const { id } = useParams<MeterParams>();
-    const { userDetail, meterDetail, refreshUserDetailData } = useUserDetail(id);
-    const { register, handleSubmit, formState: { errors }, control } = useForm<IFormTextFieldInput>();
+    const { userDetail, meterDetail } = useUserDetail(id);
+    const { handleSubmit, formState: { errors }, control } = useForm<IFormTextFieldInput>();
     const [edit, setEdit] = React.useState(false);
-    const [userSession, setUserSessionValue] = useRecoilState(userSessionState);
+    const session = useRecoilValue(userSessionState);
     const { showLoading, hideLoading } = useLoadingScreen();
-
-
     const onSetEditable = () => {
         setEdit(!edit);
     }
@@ -80,24 +78,24 @@ export default function UserDetail() {
     const onEditUser = async (data: IFormTextFieldInput) => {
 
         // if (userSession && data.userDetail && data.meterDetail) {
-        // showLoading();
-        try {
-            //insert meter Id to userDetail before send to api
-            let userDetailInput = data.userDetail;
-            userDetailInput.meterId = data.meterDetail.meterId
-            await api.editUser({
-                // token: userSession,
+        showLoading();
+        if (session) {
+            try {
+                //insert meter Id to userDetail before send to api
+                let userDetailInput = data.userDetail;
+                userDetailInput.meterId = data.meterDetail.meterId
+                await api.editUser({
+                    session,
+                    meterDetail: data.meterDetail,
+                    userDetail: userDetailInput,
+                });
+            } catch (e) {
 
-                meterDetail: data.meterDetail,
-                userDetail: userDetailInput,
-            });
-        } catch (e) {
+                // hideLoading();
+            }
+            console.log(`back from api`);
 
-            // hideLoading();
         }
-        console.log(`back from api`);
-
-        // }
     }
     const onSubmit: SubmitHandler<IFormTextFieldInput> = data => {
         console.log(data);

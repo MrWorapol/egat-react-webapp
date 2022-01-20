@@ -1,4 +1,5 @@
 import { DatePicker } from '@mui/lab'
+import { DatePickerView } from '@mui/lab/DatePicker/shared'
 import { TextField } from '@mui/material'
 import dayjs from 'dayjs'
 import React from 'react'
@@ -11,6 +12,7 @@ interface CustomDatePickerProps {
     minDate?: Date,
     maxDate?: Date,
     format ?: string 
+    views?: DatePickerView[],
 }
 export default function CustomDatePicker(props: CustomDatePickerProps) {
 
@@ -20,6 +22,7 @@ export default function CustomDatePicker(props: CustomDatePickerProps) {
             name={props.name}
             render={({ field: { onChange, onBlur, value, ref } }) =>
                 <DatePicker
+                    views = {props.views }
                     minDate={dayjs()}
                     maxDate={dayjs().add(5, 'year')}
                     inputFormat='DD/MM/YYYY'

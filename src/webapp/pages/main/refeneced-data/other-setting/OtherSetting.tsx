@@ -1,6 +1,6 @@
 import { Button, Container, Divider, Grid, Typography } from '@mui/material';
 import dayjs from 'dayjs';
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useResetRecoilState } from 'recoil';
 import { useDialog } from '../../../../hooks/useDialog';
 import { useNavigationSet } from '../../../../hooks/useNavigationSet';
@@ -15,9 +15,9 @@ export default function OtherSetting() {
     const { otherSetting } = useOtherSetting();
     const { showDialog } = useDialog();
     const resetLogs = useResetRecoilState(otherSettingLogState);
-    if (!otherSetting) {
-        return <></>;
-    }
+    // if (!otherSetting) {
+    //     return <></>;
+    // }
 
     function openViewDialog() {
         resetLogs();
@@ -47,6 +47,13 @@ export default function OtherSetting() {
         )
         // throw new Error('Function not implemented.');
     }
+    useEffect(() => {
+        
+        return () => {
+        
+        }
+    }, [])
+
     return (
         <Container sx={{ backgroundColor: '#fff', width: '691px', px: 2, py: 2 }}>
 
@@ -58,7 +65,7 @@ export default function OtherSetting() {
                 </Grid>
                 <Grid item alignItems="end">
                     <Typography sx={{ fontSize: '1em', }}>
-                        {`Effective Date From: ${dayjs(otherSetting.effectiveDateTime).format('DD/MM/YYYY HH:mm')}`}
+                        {`Effective Date From: ${otherSetting && dayjs(otherSetting.effectiveDateTime).format('DD/MM/YYYY HH:mm')}`}
                     </Typography>
                 </Grid>
             </Grid>
@@ -72,7 +79,7 @@ export default function OtherSetting() {
                             (App) Transaction Fees
                         </Typography>
                         <Typography>
-                            {`${otherSetting.energyTradingPayment.transactionFees} Baht/kWh`}
+                            {`${otherSetting &&  otherSetting.energyTradingPayment.transactionFees} Baht/kWh`}
                         </Typography>
                     </Grid>
                     <Grid container direction='row' justifyContent="space-between">
@@ -80,7 +87,7 @@ export default function OtherSetting() {
                             Discount App Fees
                         </Typography>
                         <Typography>
-                            {`${otherSetting.energyTradingPayment.dicountAppFees} %`}
+                            {`${otherSetting &&  otherSetting.energyTradingPayment.dicountAppFees} %`}
                         </Typography>
                     </Grid>
                 </Grid>
@@ -96,7 +103,7 @@ export default function OtherSetting() {
                             Ft
                         </Typography>
                         <Typography>
-                            {`${otherSetting.gridUsed.ft} Baht/kWh`}
+                            {`${otherSetting &&  otherSetting.gridUsed.ft} Baht/kWh`}
                         </Typography>
                     </Grid>
                     <Grid container direction='row' justifyContent="space-between">
@@ -104,7 +111,7 @@ export default function OtherSetting() {
                             Discount Grid Used
                         </Typography>
                         <Typography>
-                            {`${otherSetting.gridUsed.discountGridUsed} %`}
+                            {`${otherSetting &&  otherSetting.gridUsed.discountGridUsed} %`}
                         </Typography>
                     </Grid>
                 </Grid>
@@ -120,7 +127,7 @@ export default function OtherSetting() {
                             Vat
                         </Typography>
                         <Typography>
-                            {`${otherSetting.other.vat} %`}
+                            {`${otherSetting &&  otherSetting.other.vat} %`}
                         </Typography>
                     </Grid>
                 </Grid>

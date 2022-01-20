@@ -233,7 +233,6 @@ export default function TOUTariff() {
                                     labelId="demo-simple-select-label"
                                     id="demo-simple-select"
                                     value={packageState}
-                                    label="Age"
                                     onChange={handleChangeCurrentPackage}
                                 >
                                     <MenuItem value={gridUsedPackage.packages[0].id}> {gridUsedPackage.packages[0].title}</MenuItem>

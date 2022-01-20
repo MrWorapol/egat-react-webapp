@@ -13,7 +13,6 @@ export default function CustomDialog() {
             closeDialog();
         }
     }
-    console.log(`get width dialog : ${dialogContent?.width}, fullWidth: ${dialogContent?.fullWidth}`);
     return (
         <Dialog open={dialogContent !== null} onClose={onClose} maxWidth={dialogContent?.width} fullWidth={dialogContent?.fullWidth ?? false}>
             {dialogContent?.content}

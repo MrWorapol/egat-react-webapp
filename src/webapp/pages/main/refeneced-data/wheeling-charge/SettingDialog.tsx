@@ -22,6 +22,7 @@ export default function SettingDialog(props: ISettingProps) {
             ...data,
             id: props.wheelingCharge.id,
             wheelingType: props.wheelingCharge.wheelingType,
+
         }
         console.info(request);
         updatedWheelingCharge(request);
@@ -211,7 +212,7 @@ export default function SettingDialog(props: ISettingProps) {
                                     />)}
                                 name="effectiveTime"
                                 control={control}
-                                defaultValue={dayjs(props.wheelingCharge.effectiveTime).format('HH:mm')}
+                                defaultValue={dayjs(props.wheelingCharge.effectiveDate).format('HH:mm')}
                                 rules={{
                                     required: true,
                                 }}

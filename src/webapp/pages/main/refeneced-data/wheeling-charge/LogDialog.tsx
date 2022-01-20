@@ -75,7 +75,7 @@ export default function LogDialog(props: ILogProps) {
                                 <Grid container direction='row' xs={'auto'}>
 
                                     <Typography> Effective Time : </Typography>
-                                    <Typography> {dayjs(props.wheelingCharge.effectiveTime).format('HH:mm')}</Typography>
+                                    <Typography> {dayjs(props.wheelingCharge.effectiveDate).format('HH:mm')}</Typography>
                                 </Grid>
                             </Grid>
 

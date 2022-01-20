@@ -1,20 +1,25 @@
 import { useCallback, useEffect } from "react";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import TOUTariffAPI from "../api/referenceData/TOUtariffAPI";
 import { IServiceCharge, serviceChargeLogsState } from "../state/reference-data/tou-traff/tou-service-charge-state";
 import { touTariffLogState } from "../state/reference-data/tou-traff/tou-tariff-log";
 import { ITouTariff } from "../state/reference-data/tou-traff/tou-tariff-state";
+import { userSessionState } from "../state/user-sessions";
 
 
 export function useServiceChargeLogs(serviceCharge: IServiceCharge) {
     const [serviceChargeLogs, setserviceChargeLogs] = useRecoilState(serviceChargeLogsState);
     const api = new TOUTariffAPI();
+    const session = useRecoilValue(userSessionState);
+
     const refreshServiceChargeLogs = useCallback(async () => {
-        const result = await api.getServiceChargeLog({ touType: serviceCharge.touType });
-        // console.log('call tariff log api');
-        if (result !== null) {
-            console.info(result.context);
-            setserviceChargeLogs(result.context);
+        if (session) {
+            const result = await api.getServiceChargeLog({ touType: serviceCharge.touType, session });
+            // console.log('call tariff log api');
+            if (result !== null) {
+                console.info(result.context);
+                setserviceChargeLogs(result.context);
+            }
         }
     }, [])
 
@@ -27,5 +32,5 @@ export function useServiceChargeLogs(serviceCharge: IServiceCharge) {
 
     }, [serviceChargeLogs, refreshServiceChargeLogs])
 
-    return { serviceChargeLogs,  refreshServiceChargeLogs }
+    return { serviceChargeLogs, refreshServiceChargeLogs }
 }

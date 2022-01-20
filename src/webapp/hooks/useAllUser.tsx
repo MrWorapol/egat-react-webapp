@@ -2,7 +2,6 @@ import { useCallback, useEffect } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { userInfo } from "../state/user-management/user-info";
 import UserManagementAPI from "../api/user/userManagementApi"
-import { useNavigationGet } from "./useNavigationGet";
 import { userSessionState } from "../state/user-sessions";
 
 interface ISearchField {
@@ -13,23 +12,22 @@ interface ISearchField {
 export function useAllUser() {
     const api = new UserManagementAPI();
     const [userInfoDataValue, setUserInfoValue] = useRecoilState(userInfo);
-    const sessionUser = useRecoilValue(userSessionState);
+    const session = useRecoilValue(userSessionState);
 
     const refreshAllUser = useCallback(async (searchField?: ISearchField) => {
-        // console.log(`call get All User`);
-        // if (sessionUser) {
+        if (session) {
             if (!searchField) {//get without filter
-                const response = await api.getAllUser();
+                const response = await api.getAllUser({ session });
                 if (response) {
-                    // console.log(`result from response${response.userInfos}`);
+
                     setUserInfoValue(response.userInfos);
-                    // console.log(userInfoDataValue);
+
                 } else {
                     setUserInfoValue([]);
                 }
             } else { //get with filter
                 if (searchField.text) { //case search by text
-                    const response = await api.getUserByFilter({  text: searchField.text });
+                    const response = await api.getUserByFilter({ text: searchField.text,session });
                     if (response) {
                         setUserInfoValue(response.userInfos);
                     } else {
@@ -38,7 +36,7 @@ export function useAllUser() {
                     return;
                 }
                 if (searchField.roles) { //case search by roles
-                    const response = await api.getUsersByRoles({ roles: searchField.roles });
+                    const response = await api.getUsersByRoles({ roles: searchField.roles,session });
                     if (response) {
                         setUserInfoValue(response.userInfos);
                     } else {
@@ -47,18 +45,14 @@ export function useAllUser() {
                     return;
                 }
             }
-        // }
+        }
     }, [setUserInfoValue]);
 
 
     useEffect(() => {
-
-        console.log(`Use Effect userInfo  data from ${userInfoDataValue}`);
         if (!userInfoDataValue) {
             refreshAllUser();
         }
-
-        // await getUserInfo();
     }, [userInfoDataValue, refreshAllUser]
     )
     return {

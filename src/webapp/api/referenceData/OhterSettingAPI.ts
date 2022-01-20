@@ -1,4 +1,4 @@
-import { refApi } from "../../constanst";
+import { egatHost } from "../../constanst";
 import { IOtherSettingLog } from "../../state/reference-data/other-setting/othersetting-log";
 import { IOtherSetting } from "../../state/reference-data/other-setting/othersetting-state";
 import { IUserSession } from "../../state/user-sessions";
@@ -6,7 +6,7 @@ import { IUserSession } from "../../state/user-sessions";
 
 
 interface IGetOtherSettingRequest {
-    token?: IUserSession,
+    session: IUserSession,
 }
 
 interface IGetOtherSettingResponse {
@@ -14,28 +14,28 @@ interface IGetOtherSettingResponse {
 }
 
 interface IGetOtherSettingLogsRequest {
-    token?: IUserSession,
+    session: IUserSession
 }
 
 interface IGetOtherSettingLogsResponse {
     context: IOtherSettingLog[],
 }
 interface IPutOtherSettingRequest {
-    token?: IUserSession,
+    session: IUserSession, 
     setting: IOtherSetting
 }
 
 export class OtherSettingAPI {
-    private host = refApi;
+    private uri = egatHost;
 
     async getOtherSetting(req: IGetOtherSettingRequest): Promise<IGetOtherSettingResponse | null> {
         const path = '/reference-data/other-setting'
-        const api = this.host + path;
+        const api = this.uri + path;
         let response: Response;
         let token = 'token';
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${req.session.accessToken}`,
         }
         try {
             response = await fetch(api, {
@@ -80,12 +80,12 @@ export class OtherSettingAPI {
 
     async getOtherSettingLogs(req: IGetOtherSettingLogsRequest): Promise<IGetOtherSettingLogsResponse | null> {
         const path = `/reference-data/other-setting/log`;
-        const api = this.host + path;
+        const api = this.uri + path;
         let response: Response;
         // let token = 'token';
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${req.session.accessToken}`,
         }
         try {
             response = await fetch(api, {
@@ -129,12 +129,12 @@ export class OtherSettingAPI {
     }
     async putOtherSetting(req: IPutOtherSettingRequest): Promise<boolean> {
         const path = `/reference-data/other-setting`;
-        const api = this.host + path;
+        const api = this.uri + path;
         let response: Response;
         let token = 'token';
         let headers = {
             "Content-Type": "application/json",
-            //     // Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${req.session.accessToken}`,
         }
         let body = JSON.stringify(req.setting);
         try {

@@ -1,5 +1,5 @@
 import { Container, Grid, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, } from '@mui/material';
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useDialog } from '../../../../hooks/useDialog';
 import { useImbalance } from '../../../../hooks/useImbalance';
 import { useNavigationSet } from '../../../../hooks/useNavigationSet';
@@ -132,6 +132,12 @@ export default function Imbalance() {
         )
     }
 
+    useEffect(() => {
+        
+        return () => {
+        
+        }
+    }, [])
 
     return (
         <Container sx={{ backgroundColor: '#FFF', width: 1 }}>

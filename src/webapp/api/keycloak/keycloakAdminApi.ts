@@ -1,3 +1,4 @@
+import { egatHost } from "../../constanst";
 
 export interface LoginRequest {
     username: string;
@@ -9,41 +10,46 @@ export interface LoginResponse {
 }
 
 export default class KeycloakAdminApi {
-    private host = 'https://egat-p2p-webadmin-login.di.iknowplus.co.th';
-    // username -> egat-p2p-admin@gmail.com
-    // password -> P@ssw0rd
+    private host = egatHost;
+
 
     async login(request: LoginRequest): Promise<LoginResponse | null> {
-        console.log(`call login API`);
-        const path = '/login';
-        // let header = new Headers({ 'Content-Type': 'application/'})
+
+        const path = '/web-admin/login';
+
         const api = this.host + path;
 
-        const body = JSON.stringify(request);
+        const body = JSON.stringify({ username: request.username, password: request.password });
         let response: Response;
 
         try {
             response = await fetch(api, {
                 method: "POST",
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Basic ZWdhdDpmYjIyN2ZlMS1mNWNhLTRjOTItYmE2My03NTg1NjQ5MTU2NTg=',
                 },
                 body: body
             });
         } catch (e) {
-            return null;
+            console.log(e);
+            throw Error(`Unexpected Error`);
         }
-
+        if (response.status === 401) {
+            throw Error(`Username or Password incorrect`)
+        }
+        if (response.status === 504) {
+            throw Error(`Gateway timeout`)
+        }
         if (response.status !== 200) {
-            return null;
+            throw Error(`Username or Password incorrect`)
+            
         }
-
-        console.log(`from api method`);
-        // console.log(response.json());
         return response.json();
     }
 
     async logout() {
+
         return;
     }
 
