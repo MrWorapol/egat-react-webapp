@@ -77,13 +77,8 @@ export default class UserManagementAPI {
             userInfos: result
         }
         return content;
-        // let res = await fetchWithTimeout(uri.toString(), {
-        //     method: "GET",
-        //     headers,
-        // })
-        //mocking Data
-        // const content: IGetUsersResponse = createMockData();
-        // return Promise.resolve(content);
+      
+       
     }
 
     async getUserByMeterID(req: IGetUserByIDRequest): Promise<IGetUserByIDResponse | null> {
@@ -194,7 +189,6 @@ export default class UserManagementAPI {
         // https://egat-p2p-webadmin-profile.di.iknowplus.co.th/users/filter?roles=admin
 
         const rolesParams = request.roles.join('+');
-
         console.log(`hello from getUserByRoles API`);
         console.log(rolesParams);
         const path = '/users/filter'
@@ -214,7 +208,6 @@ export default class UserManagementAPI {
         } catch (e) {
             return null;
         }
-
         let result = await response.json();
         console.log(result);
         let content: IGetUsersResponse = {
@@ -234,7 +227,6 @@ export default class UserManagementAPI {
             Authorization: `Bearer ${accessToken}`,
         }
         const body = JSON.stringify(request.admin);
-
         console.log(`----------------body context--------------`);
         console.log(body);
         console.log(`----------------body context END----------`);

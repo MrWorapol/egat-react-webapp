@@ -2,6 +2,7 @@ export const userApi = 'https://ercapip2p.egat.co.th';//https://egat-p2p-webadmi
 // export const refApi = 'https://egat-p2p-webadmin-ref-data.di.iknowplus.co.th';
 export const summaryApi = '';
 
+export const newsApi = 'https://ercapip2p.egat.co.th';
 
 export const egatHost = 'https://ercapip2p.egat.co.th';
 export const localGateway = 'https://egat-p2p-api.di.iknowplus.co.th'

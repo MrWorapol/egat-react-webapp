@@ -1,22 +1,23 @@
-import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography, useTheme } from '@mui/material'
-import React from 'react'
-import { useAllUser } from '../../../hooks/useAllUser';
-import SearchIcon from '@mui/icons-material/Search';
+import {
+    Box, Paper, Table, TableBody, TableCell, TableContainer, 
+    TableHead, TablePagination,TableRow, Typography, useTheme
+} from '@mui/material'
+
 import IconButton from '@mui/material/IconButton';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
-import { UserInfo } from '../../../state/user-management/user-info';
+
+import React from 'react'
+import { useAllNews } from '../../../hooks/useAllNews';
 import { useHistory } from 'react-router-dom';
-import { userDetail } from '../../../state/user-management/user-detail';
-import { useResetRecoilState } from 'recoil';
-
-
+import MarkdownPreview from '@uiw/react-markdown-preview';//https://github.com/uiwjs/react-markdown-preview
+import BasicMenu from './BasicMenu';
+//table limit
 interface Column {
-    id: 'MeterID' | 'FullName' | 'Email' | 'PhoneNumber' | 'Role' | 'Action',
+    id: 'id' | 'title' | 'date' | 'content' | 'status' | 'action',
     label: string,
-
 
 }
 
@@ -29,7 +30,6 @@ interface TablePaginationActionsProps {
         newPage: number,
     ) => void;
 }
-
 
 function TablePaginationActions(props: TablePaginationActionsProps) {
     const theme = useTheme();
@@ -87,31 +87,34 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
     );
 }
 
-export default function UserTableData() {
+
+export default function NewsTableData() {
     console.log(`call userTable Data`);
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    // const { showDialog } = useDialog();
     const history = useHistory();
-    const { userInfoData, refreshAllUser } = useAllUser();//
-    const resetUserDetailData = useResetRecoilState(userDetail);
-
+    
+    /////set recoil
+    const { NewsInfoData: newsInfoData, refreshAllNews,
+        putRecentsNews, } = useAllNews();
     const columns: Column[] = [
-        { id: 'MeterID', label: 'Meter ID' },
-        { id: 'FullName', label: 'Full Name' },
-        { id: 'Email', label: 'Email' },
-        { id: 'PhoneNumber', label: 'Phone Number' },
-        { id: 'Role', label: 'Role' },
-        { id: 'Action', label: '' }
+        { id: 'id', label: 'ID' },
+        { id: 'title', label: 'Title' },
+        { id: 'date', label: 'Date' },
+        { id: 'content', label: 'Content' },
+        { id: 'status', label: 'Status' },
+        { id: 'action', label: '' }
     ];
-    if (userInfoData === null || userInfoData === undefined) {
-        console.log(`WTF : ${userInfoData}`);
+    if (newsInfoData === null || newsInfoData === undefined) {
+        console.log(`Error : ${newsInfoData}`);
         return <></>;
     }
     // if (userInfoData.length === 0) {
     //     return <div><Typography variant="h1">Not found</Typography></div>;
     // }
     // Avoid a layout jump when reaching the last page with empty rows.
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - userInfoData.length) : 0;
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - newsInfoData.length) : 0;
 
 
     const handleChangePage = (
@@ -128,73 +131,69 @@ export default function UserTableData() {
         setPage(0);
     };
 
-    console.log(`user data on render ${userInfoData}`);
+    console.log(`user data on render ${newsInfoData}`);
 
-    function onClickViewButton(userInfo: UserInfo) {
-        if (userInfo.role !== 'admin ') {
-            resetUserDetailData();
-            history.push(`/user_management/${userInfo.meterId}`);
-        }
-    }
+    //set minwidth ,theme
     return (
         <Paper sx={{ width: '100%', mb: 2 }} >
             <TableContainer >
-                <Table aria-label="">
-                    <TableHead sx={{ bgcolor: 'primary.main', fontWeight: '400' }}>
+                <Table aria-label="" >
+                    <TableHead sx={{ bgcolor: '#E0E0E0', fontWeight: '400' }}>
                         <TableRow>
                             {columns.map((column) => (
                                 <TableCell
                                     key={column.id}
                                 >
-                                    <Typography sx={{ fontWeight: 'bold' }}>
+                                    <Typography >
                                         {column.label}
                                     </Typography>
                                 </TableCell>
-
                             ))}
                         </TableRow>
                     </TableHead>
-                    <TableBody>
-                        {userInfoData.length === 0 && /* case notfound data */
+                    <TableBody sx={{width : "100%"}}>
+                        {newsInfoData.length === 0 && (/* case notfound data */
                             <TableRow style={{ height: 53 * emptyRows }}>
                                 <TableCell colSpan={6} />
                             </TableRow>
-                            }
-                        {userInfoData.length !== 0 && (rowsPerPage > 0
-                            ? userInfoData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                            : userInfoData
+                        )}
+                        {newsInfoData.length !== 0 && (rowsPerPage > 0
+                            ? newsInfoData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            : newsInfoData
                         ).map((row, i) => (
                             <TableRow>
                                 <TableCell
+                                sx={{maxWidth:'sm'}} 
                                 // key={row.meterId}
                                 >
-                                    {row.role !== 'ADMIN' && row.meterId}
+                                    {row.id}
                                 </TableCell>
                                 <TableCell
                                 // key={row.fullName + i}
                                 >
-                                    {row.fullName}
+                                    {row.title}
                                 </TableCell>
                                 <TableCell
+                                // key={row.fullName + i}
+                                >
+                                    {row.date}
+                                </TableCell>
+                                <TableCell sx={{maxWidth:'sm'}} 
                                 // key={row.email + i}
                                 >
-                                    {row.email}
+                                    <MarkdownPreview source={row.content} />
                                 </TableCell>
-                                <TableCell
+                                <TableCell 
+                                sx={{ color: row.status === 'PUBLISHED'?'success.light':'error.light'  }}
                                 // key={row.phoneNumber + i}
                                 >
-                                    {row.phoneNumber}
+                                        {row.status}
                                 </TableCell>
                                 <TableCell
-                                // key={row.role + i}
                                 >
-                                    {row.role}
-                                </TableCell>
-                                <TableCell
-                                    key={row.meterId + row.role + i}
-                                >
-                                    {row.role !== 'ADMIN' && <IconButton onClick={() => onClickViewButton(row)}>
-                                        <SearchIcon />
+                                    {
+                                    <IconButton >
+                                        <BasicMenu data={row} />
                                     </IconButton>
                                     }
                                 </TableCell>
@@ -210,12 +209,13 @@ export default function UserTableData() {
                 </Table>
 
             </TableContainer>
+
             <TablePagination
                 component='div'
                 sx={{ right: 0 }}
                 rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
                 colSpan={3}
-                count={userInfoData.length}
+                count={newsInfoData.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 SelectProps={{
@@ -228,9 +228,11 @@ export default function UserTableData() {
                 onRowsPerPageChange={handleChangeRowsPerPage}
                 ActionsComponent={TablePaginationActions}
             />
+        
         </Paper>
     );
 
 }
 
 
+  

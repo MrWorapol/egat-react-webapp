@@ -14,6 +14,7 @@ import UserReport from './summary-report/users/UserReport'
 import OrderReport from './summary-report/order/OrderReport'
 import SettlementReport from './summary-report/settlement/SettlementReport'
 import BillingReport from './summary-report/billing/BillingReport'
+import NewManagement from './news-management/NewManagement'
 
 export default function MainPage() {
 
@@ -59,6 +60,7 @@ export function PageRouting() {
                 <Route path="/tou_tariff">
                     <TOUTariff />
                 </Route>
+                
                 <Route path="/users_report">
                     <UserReport />
                 </Route>
@@ -70,6 +72,9 @@ export function PageRouting() {
                 </Route>
                 <Route path="/billing_report">
                     <BillingReport />
+                </Route>
+                <Route path='/news'>
+                    <NewManagement />
                 </Route>
             </Switch>
         </>

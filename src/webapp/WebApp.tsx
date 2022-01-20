@@ -1,10 +1,8 @@
-import { Grid } from '@mui/material'
 import React from 'react'
-import Header from './components/Header'
 import Login from './pages/login/Login'
-import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
+import {  ThemeProvider } from '@mui/material/styles';
 import MainPage from './pages/main/MainPage';
-import { RecoilRoot, useRecoilValue } from 'recoil';
+import { RecoilRoot } from 'recoil';
 import { Box } from '@mui/system';
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import CustomDialog from './components/CustomDialog';
@@ -12,7 +10,7 @@ import { useAuthGuard } from './hooks/useAuthGuard';
 import { CustomBackdrop } from './components/CustomLoadingBackdrop';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import DateAdapter from '@mui/lab/AdapterDayjs';
-import SnackBarNotification from './components/SnakBarNotification';
+import SnackBarNotification from './components/SnackBarNotification';
 
 import theme from './theme/Theme';
 

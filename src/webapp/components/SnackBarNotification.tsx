@@ -27,6 +27,7 @@ export default function SnackBarNotification() {
             <Alert onClose={closeSnackBar} severity={snackBarValue?.serverity || "info"} sx={{ width: '100%' }}>
                 {snackBarValue !== null && snackBarValue.message}
             </Alert>
+
         </Snackbar>
     )
 }
