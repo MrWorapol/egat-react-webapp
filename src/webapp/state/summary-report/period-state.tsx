@@ -17,7 +17,7 @@ export interface IPeriod {
 export const periodState = atom<IPeriod>({
     key: 'periodState',
     default: {
-        startDate: dayjs().tz('Asia/Bangkok').toDate(),
+        startDate: dayjs().tz('Asia/Bangkok').date(1).toDate(),
         endDate: dayjs().tz('Asia/Bangkok').toDate(),
         region: 'all',
     }

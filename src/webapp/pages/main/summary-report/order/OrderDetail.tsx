@@ -17,14 +17,18 @@ export default function OrderDetail() {
     const { orderDetail } = useOrderReport();
 
     if (orderDetail) {
-        if (!orderDetail.contractId) {
+        console.log(`order detail page`);
+        console.log(orderDetail)
+        if (orderDetail.tradeContractId === undefined) {
+
             return buildOpenOrder(orderDetail);
         } else {
-            console.log(`orderDEtail is found`)
             if (orderDetail.userType.toLowerCase() === 'buyer') {
+                console.log(`orderDEtail is found case buyer`)
                 return buildChooseToBuy(orderDetail);
             }
             else {
+                console.log(`orderDEtail is found case seller`)
                 return buildOfferToSell(orderDetail);
 
             }
@@ -36,7 +40,6 @@ export default function OrderDetail() {
                 <Grid item >
                     <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em', color: 'secondary.main' }}>Order Detail</Typography>
                 </Grid>
-
             </Grid>
         )
 
@@ -65,7 +68,7 @@ function buildChooseToBuy(orderDetail: IOrderDetail) {
                     {`Choose to Buy`}
                 </Typography>
                 <Typography sx={{ fontWeight: 'bold', fontSize: '1.3em' }} pl={2}>
-                    {`Contract ID : #${orderDetail.contractId}`}
+                    {`Contract ID : #${orderDetail.tradeContractId}`}
                 </Typography>
             </Grid>
             <Grid item py={1}>
@@ -102,7 +105,7 @@ function buildOfferToSell(orderDetail: IOrderDetail) {
                     {`Offer To Sell`}
                 </Typography>
                 <Typography sx={{ fontWeight: 'bold', fontSize: '1.3em' }} pl={2}>
-                    {`Contract ID : #1485434482`}
+                    {`Contract ID : #${orderDetail.tradeContractId}`}
                 </Typography>
             </Grid>
             <Grid item py={1}>
@@ -111,34 +114,42 @@ function buildOfferToSell(orderDetail: IOrderDetail) {
             <Grid item container id='energy-info'>
                 <Grid container item justifyContent='space-between' px={4} >
                     <Typography>
-                        {`PV`}
+                        {`Deliverd Time`}
                     </Typography>
                     <Typography >
-                        {`37.9kWh`}
+                        {`${dayjs.unix(orderDetail.orderDetail.deliverdTime).tz('Asia/Bangkok').format(`HH:mm`)}-${dayjs.unix(orderDetail.orderDetail.deliverdTime).tz('Asia/Bangkok').add(1, 'hour').format(`HH:mm`)}`}
                     </Typography>
                 </Grid>
                 <Grid container item justifyContent='space-between' px={4} >
                     <Typography>
-                        {`Energy Storage`}
+                        {`Committed Amount`}
                     </Typography>
                     <Typography >
-                        {`37.9kWh`}
+                        {`${orderDetail.orderDetail.commitedAmount} kWh`}
                     </Typography>
                 </Grid>
                 <Grid container item justifyContent='space-between' px={4} >
                     <Typography>
-                        {`Grid`}
+                        {`Offer To Sell`}
                     </Typography>
                     <Typography >
-                        {`37.9kWh`}
+                        {`${orderDetail.orderDetail.offerToSell} Baht/kWh`}
                     </Typography>
                 </Grid>
                 <Grid container item justifyContent='space-between' px={4} >
                     <Typography>
-                        {`Energy Load`}
+                        {`Trading Fee`}
                     </Typography>
                     <Typography >
-                        {`37.9kWh`}
+                        {`(${orderDetail.orderDetail.tradingFee}) Baht`}
+                    </Typography>
+                </Grid>
+                <Grid container item justifyContent='space-between' px={4} >
+                    <Typography>
+                        {`Estimated Sales`}
+                    </Typography>
+                    <Typography >
+                        {`${orderDetail.orderDetail.estimatedSales + orderDetail.orderDetail.tradingFee} Baht`}
                     </Typography>
                 </Grid>
             </Grid>
@@ -148,23 +159,18 @@ function buildOfferToSell(orderDetail: IOrderDetail) {
 }
 
 function buildOpenOrder(orderDetail: IOrderDetail) {
+    console.log(orderDetail);
     return (
         <Grid container px={2} py={2} sx={{ minHeight: '25vh' }}>
             <Grid item >
                 <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em', color: 'secondary.main' }}>Order Detail</Typography>
             </Grid>
             <Grid container item direction='row' alignItems='center' pt={2}>
-                {orderDetail.userType.toLowerCase() === "seller" &&
-                    <Typography sx={{ fontWeight: 'bold', fontSize: '1.3em', color: 'success.light' }}>
-                        {`Offer To Sell`}
-                    </Typography>
-                }
-                {orderDetail.userType.toLowerCase() === "buyer" &&
+                <Typography sx={{ fontWeight: 'bold', fontSize: '1.3em', color: 'success.light' }}>
+                    {orderDetail.userType.toLowerCase() === "seller" && `Offer To Sell`}
+                    {orderDetail.userType.toLowerCase() === "buyer" && `Bid To Buy`}
+                </Typography>
 
-                    <Typography sx={{ fontWeight: 'bold', fontSize: '1.3em', color: 'success.light' }}>
-                        {`Bid To Buy`}
-                    </Typography>
-                }
             </Grid>
             <Grid item py={1}>
                 <Typography sx={{ fontSize: '1.2em' }}>{orderDetail.tradeMarket.toLowerCase() === 'pool' ? 'Pool Market Trade' : 'Bilateral Trade'}</Typography>
@@ -175,7 +181,7 @@ function buildOpenOrder(orderDetail: IOrderDetail) {
                         {`Deliverd Time`}
                     </Typography>
                     <Typography >
-                        {`${dayjs(orderDetail.orderDetail.settlementTime).format(`HH:mm`)}-${dayjs(orderDetail.orderDetail.settlementTime).add(1, 'hour').format(`HH:mm`)}`}
+                        {`${dayjs.unix(orderDetail.orderDetail.deliverdTime).tz('Asia/Bangkok').format(`HH:mm`)}-${dayjs.unix(orderDetail.orderDetail.deliverdTime).tz('Asia/Bangkok').add(1, 'hour').format(`HH:mm`)}`}
                     </Typography>
                 </Grid>
                 <Grid container item justifyContent='space-between' px={4} >

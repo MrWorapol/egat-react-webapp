@@ -1,7 +1,7 @@
 import { druidHost, localDruidEndpoint, summaryApi } from "../../constanst";
 import { IPeriod } from "../../state/summary-report/period-state";
 import { ISettlementDetail } from "../../state/summary-report/settlement-report/settlement-detail-state";
-import { IImbalanceReport, ISettlementReport } from "../../state/summary-report/settlement-report/settlement-report-state";
+import { IImbalanceReport, ITradeContractReport } from "../../state/summary-report/settlement-report/settlement-report-state";
 
 import { IUserSession } from "../../state/user-sessions";
 
@@ -25,8 +25,8 @@ interface IGetSettlementReportRequest {
     orderStatus?: string,
 }
 
-interface IGetSettlementReportResponse {
-    context: ISettlementReport[],
+interface IGetTradeContractResponse {
+    context: ITradeContractReport[],
 }
 
 
@@ -46,7 +46,7 @@ interface IGetSettlementDetailResponse {
 export class SettlementReportAPI {
     private endpoint = druidHost;
 
-    async getTradeContractReport(req: IGetSettlementReportRequest): Promise<IGetSettlementReportResponse | null> {
+    async getTradeContractReport(req: IGetSettlementReportRequest): Promise<IGetTradeContractResponse | null> {
         const period = req.period;
         const body: IGetDruidBody = {
             "query": `SELECT DISTINCT "__time" as "timestamp", 
@@ -54,7 +54,7 @@ export class SettlementReportAPI {
             "payload.amount" as "energyCommitted",
             "payload.price" as "priceCommitted",
             "payload.priceRuleApplied" as "priceRule", 
-            "payload.reference.bilateralTradeSettlementId",
+            "payload.reference.bilateralTradeSettlementId" as "bilateralTradeSettlementId",
             "payload.reference.marketType" as "tradeMarket",
             "payload.buyerId" as "buyerId",
             "payload.sellerId" as "sellerId",
@@ -80,29 +80,25 @@ export class SettlementReportAPI {
                 return null;
             }
 
-            const detailFromJSON: ISettlementReport[] = await response.json();
-            
+            const detailFromJSON: ITradeContractReport[] = await response.json();
+
             if (period !== undefined) {
-                if (dayjs(period.endDate).startOf('day').isSame(dayjs(period.startDate).startOf('day')) // if start and end date is same day
-                    && dayjs(period.startDate).startOf('day').isSame(dayjs().startOf('day'))) {//and is same today 
-                    return {
-                        context: detailFromJSON
-                    };
+                let settlementPeriod: ITradeContractReport[] = [];
+                detailFromJSON.forEach((settlement: ITradeContractReport) => {
+                    let inRange = dayjs(settlement.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
+                        && dayjs(settlement.timestamp).isBefore(dayjs(period.endDate).endOf('day'));
+                    if (inRange) {
+                        // if(settlement.bilateralTradeSettlementId){
 
-                } else {
-                    let settlementPeriod: ISettlementReport[] = [];
-                    detailFromJSON.forEach((settlement: ISettlementReport) => {
-                        let inRange = dayjs(settlement.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
-                            && dayjs(settlement.timestamp).isBefore(dayjs(period.endDate).endOf('day'));
-                        if (inRange) {
-                            settlementPeriod.push(settlement);
-                        }
-
-                    })
-                    return {
-                        context: settlementPeriod,
+                        // }
+                        settlementPeriod.push(settlement);
                     }
+
+                })
+                return {
+                    context: settlementPeriod,
                 }
+
             }
 
             return {
@@ -158,7 +154,7 @@ export class SettlementReportAPI {
             if (response.status !== 200) {
                 return null;
             }
-            
+
             if (period !== undefined) {
                 if (dayjs(period.endDate).startOf('day').isSame(dayjs(period.startDate).startOf('day')) // if start and end date is same day
                     && dayjs(period.startDate).startOf('day').isSame(dayjs().startOf('day'))) {//and is same today 

@@ -41,6 +41,7 @@ export default function useUserReport() {
         // console.log('refresh User Energy Table');
         if (session) {
             showLoading(10);
+            
             const userMeters = await api.getUserMeterInfo({ period, roles: roles, area: area, session })
             if (userMeters && userMeters.context.length > 0) {
                 let userSummary: IUserSummary = { AGGREGATOR: 0, CONSUMER: 0, PROSUMER: 0, noUser: 0 };
@@ -49,6 +50,7 @@ export default function useUserReport() {
                 })
                 let powerData = await getPowerDatas(period);
                 if (powerData) {
+                    resetChartData();
                     setChartData({
                         energy: {
                             pv: Math.floor(powerData.summaryPower.inSolar),

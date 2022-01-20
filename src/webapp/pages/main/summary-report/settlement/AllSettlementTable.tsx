@@ -10,7 +10,7 @@ import { useHistory } from 'react-router-dom';
 import { useResetRecoilState } from 'recoil';
 import TablePaginationActionsComponent from '../../../../components/TablePaginationActions';
 import { useSettlementReport } from '../../../../hooks/summary-report/settlement/useSettlementReport';
-import { ISettlementReport } from '../../../../state/summary-report/settlement-report/settlement-report-state';
+import { ITradeContractReport } from '../../../../state/summary-report/settlement-report/settlement-report-state';
 
 
 interface Column {
@@ -20,7 +20,7 @@ interface Column {
 
 }
 interface IProps {
-    data: ISettlementReport[],
+    data: ITradeContractReport[],
     page: number,
 }
 export default function AllSettlementTable(props: IProps) {
@@ -60,7 +60,7 @@ export default function AllSettlementTable(props: IProps) {
     };
 
 
-    function onClickViewButton(row: ISettlementReport) {
+    function onClickViewButton(row: ITradeContractReport) {
         refreshSettlementDetail(row);
     }
     return (

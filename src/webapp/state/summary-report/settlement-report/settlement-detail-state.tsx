@@ -1,5 +1,5 @@
 import { atom } from "recoil";
-import { ISettlementReport } from "./settlement-report-state";
+import { ITradeContractReport } from "./settlement-report-state";
 
 export interface ISettlementDetail {
     contractId: string,

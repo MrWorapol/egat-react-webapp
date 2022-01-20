@@ -1,7 +1,9 @@
 import { atom } from "recoil";
 
-export interface ISettlementReport {
+export interface ITradeContractReport {
     contractId: string,
+    bilateralTradeSettlementId?: string, // trade ID
+    poolTradeSettlementId?: string, // trade ID
     userType: string, //buyer| seller
     tradeMarket: string, //short term, long term,pool market
     role?: string,
@@ -18,6 +20,7 @@ export interface ISettlementReport {
     imbalance?: IImbalanceReport[]
     imbalanceStatus: string,
     priceRuleApplied: string,
+    
 }
 
 export interface IImbalanceReport {
@@ -39,7 +42,7 @@ export interface IImbalanceReport {
     imbalanceSellerUnderCommit: number
 }
 
-export const settlementReportState = atom<ISettlementReport[] | null>({
+export const settlementReportState = atom<ITradeContractReport[] | null>({
     key: 'settlementReportState',
     default: null,
 })

@@ -59,7 +59,9 @@ export default function DashBoard() {
     const { currentState } = useNavigationGet();
 
     useEffect(() => {
-
+        if (!session) {
+            return;
+        }
         return () => {
 
         }

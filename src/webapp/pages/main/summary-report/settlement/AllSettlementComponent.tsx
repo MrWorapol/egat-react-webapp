@@ -3,7 +3,7 @@ import { FormControl, Grid, MenuItem, Select, SelectChangeEvent, Typography } fr
 import { useDebouncedCallback } from 'use-debounce/lib';
 import AllSettlementTable from './AllSettlementTable';
 import { useSettlementReport } from '../../../../hooks/summary-report/settlement/useSettlementReport';
-import { ISettlementReport } from '../../../../state/summary-report/settlement-report/settlement-report-state';
+import { ITradeContractReport } from '../../../../state/summary-report/settlement-report/settlement-report-state';
 
 export default function AllSettlementComponent() {
     const [area, setArea] = useState('total');
@@ -13,7 +13,7 @@ export default function AllSettlementComponent() {
     const [imbalance, setImbalance] = useState('all');
 
     const { settlementReport } = useSettlementReport();
-    const [filterData, setFilterData] = useState<ISettlementReport[] | null>(settlementReport);
+    const [filterData, setFilterData] = useState<ITradeContractReport[] | null>(settlementReport);
 
     const refreshTable = useDebouncedCallback(() => {
         if (settlementReport) {
@@ -33,6 +33,17 @@ export default function AllSettlementComponent() {
                     return report.imbalanceStatus === imbalance
                 });
             }
+            if (area !== 'total') {
+                tableFilter = tableFilter.filter((report) => {
+                    if (area.includes('VENUE FLOW') || area.includes('Perfect Park') || area.includes('CASA Premium')) {
+                        return (area === report.area);
+                    } else {
+                        return (area === report.area || area === 'total');
+                    }
+                })
+            }
+            console.log(`settlement filter area`);
+            console.log(tableFilter)
             setFilterData(tableFilter);
         }
     }, 0)
@@ -109,6 +120,7 @@ export default function AllSettlementComponent() {
                         >
                             <MenuItem value='all'>All</MenuItem>
                             <MenuItem value={'BILATERAL'}>Short Term Bilateral Trade</MenuItem>
+                            <MenuItem value={'BILATERAL_LONGTERM'}>Long Term Bilateral Trade</MenuItem>
                             <MenuItem value={'POOL'}>Pool Market Trade</MenuItem>
                         </Select>
 

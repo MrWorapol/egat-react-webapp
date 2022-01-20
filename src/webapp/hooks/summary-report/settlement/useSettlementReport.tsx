@@ -6,7 +6,7 @@ import { UserAndEnergyReportAPI } from "../../../api/report/UserReportAPI";
 import { NavigationCurrentType } from "../../../state/navigation-current-state";
 import { settlementChartState } from "../../../state/summary-report/settlement-report/settlement-chart-state";
 import { ISettlementDetail, settlementDetailState } from "../../../state/summary-report/settlement-report/settlement-detail-state";
-import { IImbalanceReport, ISettlementReport, settlementReportState } from "../../../state/summary-report/settlement-report/settlement-report-state";
+import { IImbalanceReport, ITradeContractReport, settlementReportState } from "../../../state/summary-report/settlement-report/settlement-report-state";
 import { IUserMeterInfo } from "../../../state/summary-report/user-report/user-report-state";
 import { userSessionState } from "../../../state/user-sessions";
 import { useNavigationGet } from "../../useNavigationGet";
@@ -67,8 +67,8 @@ export function useSettlementReport() {
             //wait for summary Imbalance
 
             if ((traceContractReports && userMeterInfos && imbalanceReport) && traceContractReports.context.length > 0 && userMeterInfos.context.length > 0 && imbalanceReport.context.length > 0) {
-                let output: ISettlementReport[] = [];
-                traceContractReports.context.forEach((contract: ISettlementReport) => { //map tractContract 
+                let output: ITradeContractReport[] = [];
+                traceContractReports.context.forEach((contract: ITradeContractReport) => { //map tractContract 
                     contract.imbalance = []; //create array variable for insert imbalance Data
                     let imbalanceMapContractId: IImbalanceReport[] = imbalanceReport.context.filter((imbalance: IImbalanceReport) => {
                         return imbalance.tradeContractIds.toString() === contract.contractId.toString();
@@ -194,7 +194,7 @@ export function useSettlementReport() {
     };
 
 
-    const refreshSettlementDetail = useCallback(async (settlement: ISettlementReport) => {
+    const refreshSettlementDetail = useCallback(async (settlement: ITradeContractReport) => {
         if (settlementDetail) { //clear state of detail 
             resetSettlementDetail();
         }

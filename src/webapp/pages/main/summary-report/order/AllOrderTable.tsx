@@ -64,6 +64,8 @@ export default function AllOrderTable(props: IProps) {
         //     resetUserDetailData();
         //     history.push(`/user_management/${userInfo.meterId}`);
         // }
+        console.log(`click view`);
+        console.log(row)
         refreshOrderDetail(row)
     }
 
@@ -113,7 +115,7 @@ export default function AllOrderTable(props: IProps) {
                                 >
                                     {row.userType}
                                 </TableCell>
-                                <TableCell sx={{ color: "success.light" }}
+                                <TableCell sx={{ color: row.status === "OPEN" ? "success.light": "error.light" }}
                                 // key={row.phoneNumber + i}
                                 >
                                     {row.status}

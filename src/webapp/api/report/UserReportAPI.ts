@@ -141,10 +141,38 @@ export class UserAndEnergyReportAPI {
             // console.log(`diff Date select Call ${dayjs(period.startDate).startOf('day').toDate()}\t${(dayjs(period.endDate).startOf('day').toDate())}`);
             // console.log(`diff start and end ${dayjs(period.endDate).startOf('day').isSame(dayjs(period.startDate).startOf('day'))}`);
             // console.log(`case today query ${dayjs(period.startDate).startOf('day').isSame(dayjs().startOf('day'))}`);
-            if (dayjs(period.endDate).startOf('day').isSame(dayjs(period.startDate).startOf('day')) // if same day
-                && dayjs(period.startDate).startOf('day').isSame(dayjs().startOf('day'))) {//and today get all users
-                rawData.forEach((row: IMeterAreaAndSite) => {
+
+            // if (dayjs(period.endDate).startOf('day').isSame(dayjs(period.startDate).startOf('day')) // if same day
+            //     && dayjs(period.startDate).startOf('day').isSame(dayjs().startOf('day'))) {//and today get all users
+            //     rawData.forEach((row: IMeterAreaAndSite) => {
+            //         if (period.region === 'all' || period.region === row.regionName) {
+            //             result.push({
+            //                 id: row.userId,
+            //                 meterId: row.meterId,
+            //                 area: row.area,
+            //                 locationCode: row.locationCode,
+            //                 meterName: row.meterName,
+            //                 role: row.role,
+            //                 siteName: row.siteName,
+            //                 region: row.regionName,
+            //                 address: {
+            //                     lat: row.lat,
+            //                     lng: row.lng,
+            //                 },
+            //                 peameaSubstation: row.substationPeaMea,
+            //                 egatSubStation: row.substationEgat,
+            //             })
+            //         }
+            //     })
+            // } else { //case period time
+
+            rawData.forEach((row: IMeterAreaAndSite) => {
+                // console.log(row);
+                let inRange = dayjs(row.registrationDate).isBefore(dayjs(period.endDate).endOf('day'));
+                // console.log(` inrange:${inRange} registrationDate:${dayjs(row.registrationDate).format('DD/MM/YYYY')} :${dayjs(period.endDate).format('DD/MM/YYYY')}`)
+                if (inRange)
                     if (period.region === 'all' || period.region === row.regionName) {
+
                         result.push({
                             id: row.userId,
                             meterId: row.meterId,
@@ -162,35 +190,8 @@ export class UserAndEnergyReportAPI {
                             egatSubStation: row.substationEgat,
                         })
                     }
-                })
-            } else { //case period time
-
-                rawData.forEach((row: IMeterAreaAndSite) => {
-                    // console.log(row);
-                    let inRange = dayjs(row.registrationDate).isBefore(dayjs(period.endDate).endOf('day'));
-                    // console.log(` inrange:${inRange} registrationDate:${dayjs(row.registrationDate).format('DD/MM/YYYY')} :${dayjs(period.endDate).format('DD/MM/YYYY')}`)
-                    if (inRange)
-                        if (period.region === 'all' || period.region === row.regionName) {
-
-                            result.push({
-                                id: row.userId,
-                                meterId: row.meterId,
-                                area: row.area,
-                                locationCode: row.locationCode,
-                                meterName: row.meterName,
-                                role: row.role,
-                                siteName: row.siteName,
-                                region: row.regionName,
-                                address: {
-                                    lat: row.lat,
-                                    lng: row.lng,
-                                },
-                                peameaSubstation: row.substationPeaMea,
-                                egatSubStation: row.substationEgat,
-                            })
-                        }
-                })
-            }
+            })
+            // }
             return {
                 context: result
             };
@@ -312,10 +313,9 @@ export class UserAndEnergyReportAPI {
                     })
                     powerArray = [...rawData];
                 } else { //case from start day at 00:00 to end day at 23:59
-                    let scopeRange = period;
                     rawData.forEach((power: IPowerData) => {
-                        let inRange = dayjs(power.timestamp).isAfter(dayjs(scopeRange.startDate).startOf('day'))
-                            && dayjs(power.timestamp).isBefore(dayjs(scopeRange.endDate).endOf('day'))
+                        let inRange = dayjs(power.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
+                            && dayjs(power.timestamp).isBefore(dayjs(period.endDate).endOf('day'))
                         if (inRange) {
                             powerArray.push(power);
                             summaryPower.inBattery += +power.inBattery;
@@ -354,7 +354,7 @@ export class UserAndEnergyReportAPI {
     }
 
     async getForecastData(req: IGetForecastDataRequest): Promise<IGetForecastDataResponse | null> {
-        let period = req?.period;
+        const period = req?.period;
         let headers = {
             "Content-Type": "application/json",
             "Accept": "application/json",
@@ -370,7 +370,7 @@ export class UserAndEnergyReportAPI {
                 "payload.inSolar" as "inSolar",
                 "payload.load" as "load" 
                 FROM "ForecastOnEgatF"
-                WHERE "payload.meterId" = ${+req.meterId}`,
+                WHERE "payload.meterId" = ${req.meterId}`,
             resultFormat: "object",
         }
 
@@ -386,20 +386,14 @@ export class UserAndEnergyReportAPI {
             // console.log(resultFromJSON);
             if (period !== undefined) { //case query with period time
                 let powerArray: IPowerData[] = [];
-
-                if (dayjs(period.endDate).startOf('day').isSame(dayjs(period.startDate).startOf('day')) // if start = end  and isToday return all 
-                    && dayjs(period.startDate).startOf('day').isSame(dayjs().startOf('day'))) {//is startday = Today
-                    powerArray = [...rawData];
-                } else { //case from start day at 00:00 to end day at 23:59
-                    let scopeRange = period;
-                    rawData.forEach((power: IPowerData) => {
-                        let inRange = dayjs(power.timestamp).isAfter(dayjs(scopeRange.startDate).startOf('day'))
-                            && dayjs(power.timestamp).isBefore(dayjs(scopeRange.endDate).endOf('day'))
-                        if (inRange) {
-                            powerArray.push(power);
-                        }
-                    })
-                }
+                let scopeRange = period;
+                rawData.forEach((power: IPowerData) => {
+                    let inRange = dayjs(power.timestamp).isAfter(dayjs(scopeRange.startDate).startOf('day'))
+                        && dayjs(power.timestamp).isBefore(dayjs(scopeRange.endDate).endOf('day'))
+                    if (inRange) {
+                        powerArray.push(power);
+                    }
+                })
                 return {
                     context: powerArray, //return array of power with all user meter. incase of period will return array power in range of date with all user meter
 

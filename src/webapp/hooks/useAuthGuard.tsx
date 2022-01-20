@@ -29,7 +29,7 @@ export function useAuthGuard() {
     const history = useHistory();
     const resetSessionState = useResetRecoilState(userSessionState);
 
-    const loadLocalStorage = useCallback(async () => {
+    const loadLocalStorage = async () => {
         const localStore = localStorage.getItem('session');
         if (localStore) { //if user has sessions
             // console.log(`get localStorage Successful`)
@@ -46,9 +46,9 @@ export function useAuthGuard() {
             return;
         }
         setInit(false);
-    }, []);
+    };
 
-    const checkRefreshToken = useCallback(async () => {
+    const checkRefreshToken = async () => {
         console.log(`checkRefreshToken`);
         let localSession = localStorage.getItem("session");
         if (localSession) {
@@ -65,7 +65,7 @@ export function useAuthGuard() {
                 }
             }
         }
-    }, [])
+    }
     useEffect(() => {
         // count++;
         if (init === true) { //changeto  !init when integration

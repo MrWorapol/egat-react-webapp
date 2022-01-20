@@ -15,9 +15,9 @@ export default function PeriodComponent(props: PeriodProps) {
     const { period, updatedPeriod } = usePeriodTime();
     const [region, setRegion] = useState('all');
     const [startDay, setStartDay] = useState(dayjs(period.startDate).date().toString());
-    const [endDay, setEndDay] = useState(dayjs(period.startDate).date().toString());
+    const [endDay, setEndDay] = useState(dayjs(period.endDate).date().toString());
     const startDayslist = buildDaylist(period.startDate);
-    const endDayslist = buildDaylist(period.startDate);
+    const endDayslist = buildDaylist(period.endDate);
     const { showLoading, hideLoading } = useLoadingScreen();
 
     let isCurrentMonth = dayjs().diff(period.startDate, 'month') === 0 && dayjs().diff(period.startDate, 'year') === 0 ? true : false;

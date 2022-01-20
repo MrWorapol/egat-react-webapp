@@ -19,17 +19,17 @@ export default function OrderReport() {
     const session = useRecoilValue(userSessionState);
 
     const { refreshOrderReport, orderChart } = useOrderReport();
-    
-    const refreshPage = useCallback(async () => {
+
+    const refreshPage = async () => {
         refreshOrderReport([], 'all', 'all', 'all', 'all');
-    }, []);
+    }
 
     if (session && currentState === NavigationCurrentType.ORDER_REPORT) {
         return (
             <Box sx={{ width: `100%`, px: 2, py: 2, maxWidth: '100%' }}>
                 <Grid container item direction="row" justifyContent='flex-end' id='period-zone' mb={1}>
                     <Grid item >
-                        <PeriodComponent key='order-period' refreshPage={refreshPage} />
+                        <PeriodComponent key='order-period' refreshPage={() => { refreshPage() }} />
                     </Grid>
                 </Grid>
                 <Box sx={{ flexGrow: 1 }}>

@@ -82,11 +82,11 @@ export default function SummaryChart(props: IProps) {
 
 function buildEnergyChart(data: IEnergySummary): JSX.Element {
 
-    let sum = data.pv + data.energyStorage + data.grid + data.energyConsumptions;
-    let labels = [`PV : ${data.pv} kWh (${Number(data.pv * 100 / sum).toFixed(2)}%)`,
-    `Energy Storage : ${data.energyStorage} kWh (${Number(data.energyStorage * 100 / sum).toFixed(2)}%)`,
-    `Grid : ${data.grid} kWh (${Number(data.grid * 100 / sum).toFixed(2)}%)`,
-    `Energy Consumption : ${data.energyConsumptions} kWh (${Number(data.energyConsumptions * 100 / sum).toFixed(2)}%)`];
+    let sum = Math.abs(data.pv) + Math.abs(data.energyStorage) + Math.abs(data.grid) + Math.abs(data.energyConsumptions);
+    let labels = [`PV : ${data.pv} kWh (${Number((Math.abs(data.pv) * 100 / sum)).toFixed(2)}%)`,
+    `Energy Storage : ${data.energyStorage} kWh (${Number(Math.abs(data.energyStorage) * 100 / sum).toFixed(2)}%)`,
+    `Grid : ${data.grid} kWh (${Number(Math.abs(data.grid) * 100 / sum).toFixed(2)}%)`,
+    `Energy Consumption : ${data.energyConsumptions} kWh (${Math.abs((Math.abs(data.energyConsumptions) * 100 / sum)).toFixed(2)}%)`];
     return (
         <DoughnutChart
             labels={labels}

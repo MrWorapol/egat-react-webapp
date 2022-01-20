@@ -79,7 +79,7 @@ export default function SummaryComponents(props: IProps) {
                     </Grid>
                     <DoughnutChart
                         labels={[`Matched ${Math.round(status.matched * 100 / (status.matched + status.open) * 100 / 100).toFixed(2)} %`, 
-                                `Open ${Math.round(status.matched * 100 / (status.matched + status.open)*100/100).toFixed(2)} %`,]}
+                                `Open ${Math.round(status.open * 100 / (status.matched + status.open)*100/100).toFixed(2)} %`,]}
                         datasets={[
                             {
                                 data: [status.matched, status.open],

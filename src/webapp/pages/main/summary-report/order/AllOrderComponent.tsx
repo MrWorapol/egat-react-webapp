@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import {  FormControl, Grid, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material'
+import { FormControl, Grid, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material'
 import { useDebouncedCallback } from 'use-debounce/lib';
 import AllOrderTable from './AllOrderTable';
 
@@ -48,6 +48,16 @@ export default function AllOrder() {
             if (orderStatus !== 'all') {
                 tableFilter = tableFilter.filter((order) => { return order.status.toLowerCase() === orderStatus.toLowerCase() });
             }
+            if (area !== 'total') {
+                tableFilter = tableFilter.filter((order) => {
+                    if (area.includes('VENUE FLOW') || area.includes('Perfect Park') || area.includes('CASA Premium')) {
+                        return (area === order.area);
+                    } else {
+                        return (area === order.area || area === 'total');
+                    }
+                })
+            }
+
             setFilterData(tableFilter);
 
         }
@@ -88,7 +98,7 @@ export default function AllOrder() {
                     <FormControl variant='outlined' fullWidth>
                         <Select
                             fullWidth
-                            sx={{ height: '3vh' }}
+                            sx={{ height: '1.5em' }}
                             name='role'
                             value={role}
                             onChange={(event: SelectChangeEvent) => { onSelectedDropdown(event) }}
@@ -104,8 +114,7 @@ export default function AllOrder() {
                     <FormControl variant='outlined' fullWidth>
                         <Select
                             fullWidth
-                            sx={{ height: '3vh' }}
-                            name='buyerType'
+                            sx={{ height: '1.5em' }} name='buyerType'
                             value={userType}
                             onChange={(event: SelectChangeEvent) => { onSelectedDropdown(event) }}
                         >
@@ -119,8 +128,7 @@ export default function AllOrder() {
                     <FormControl variant='outlined' fullWidth>
                         <Select
                             fullWidth
-                            sx={{ height: '3vh' }}
-                            name='tradeMarket'
+                            sx={{ height: '1.5em' }} name='tradeMarket'
                             value={tradeMarket}
                             onChange={(event: SelectChangeEvent) => { onSelectedDropdown(event) }}
                         >
@@ -135,8 +143,7 @@ export default function AllOrder() {
                     <FormControl variant='outlined' fullWidth>
                         <Select
                             fullWidth
-                            sx={{ height: '3vh' }}
-                            name='orderStatus'
+                            sx={{ height: '1.5em' }} name='orderStatus'
                             value={orderStatus}
                             onChange={(event: SelectChangeEvent) => { onSelectedDropdown(event) }}
                         >
@@ -177,7 +184,7 @@ export default function AllOrder() {
                             value={area}
                             name='area'
                             onChange={(event: SelectChangeEvent) => { onSelectedDropdown(event) }}
-                            sx={{ height: '3vh' }}
+                            sx={{ height: '1.5em' }}
                         >
                             <MenuItem value={'total'}> {'Total'}</MenuItem>
                             <MenuItem value={'3villages'}> {'3 Villages'}</MenuItem>

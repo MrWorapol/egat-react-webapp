@@ -1,4 +1,5 @@
 import { atom } from "recoil";
+import { IBuyDetail, ISellDetail } from "./order-detail-state";
 
 export interface IOrderInfo {
     orderId: string,
@@ -7,12 +8,13 @@ export interface IOrderInfo {
     status: string,
     userId: string,
     settlementTime: string,
-    targetPrice: string,
-    targetAmount: string,
+    targetPrice: number,
+    targetAmount: number,
     role?: string, //Aggregator | Prosumer | Consumer
     area?: string, //3 Villages | Thammasat University | VENUE FLOW | Perfect Park | CASA Premium
     regionName?: string,
-    contractId?: string,
+    tradeContractId?: string,
+    orderDetail?: IBuyDetail | ISellDetail,
 }
 
 export interface IOrderContract {

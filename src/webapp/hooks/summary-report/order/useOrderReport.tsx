@@ -9,6 +9,8 @@ import { orderDetailState } from "../../../state/summary-report/order-report/ord
 import { IOrderInfo, orderState } from "../../../state/summary-report/order-report/order-report-state";
 import { IUserMeterInfo } from "../../../state/summary-report/user-report/user-report-state";
 import { userSessionState } from "../../../state/user-sessions";
+import { useAuthGuard } from "../../useAuthGuard";
+import { useLoadingScreen } from "../../useLoadingScreen";
 import { useNavigationGet } from "../../useNavigationGet";
 import usePeriodTime from "../usePeriodTime";
 interface ISummaryMap {
@@ -18,35 +20,38 @@ interface ISummaryMap {
 
 export default function useOrderReport() {
     // console.log(`call Use ORDER REPORT`);
-    const session = useRecoilValue(userSessionState);
+    const { session } = useAuthGuard();
     const { currentState } = useNavigationGet();
     const [orderReport, setOrderReport] = useRecoilState(orderState)
     const [orderDetail, setOrderDetail] = useRecoilState(orderDetailState);
     const [orderChart, setOrderChart] = useRecoilState(orderChartState);
     const resetOrderDetail = useResetRecoilState(orderDetailState);
+    const resetOrderReport = useResetRecoilState(orderState);
+    const resetChart = useResetRecoilState(orderChartState);
     const { period } = usePeriodTime();
     const orderApi = new OrderReportAPI();
     const userMeterApi = new UserAndEnergyReportAPI();
+    const { showLoading, hideLoading } = useLoadingScreen();
 
-    const refreshOrderReport = useCallback(async (roles: string[], buyerType: string, tradeMarket: string, orderStatus: string, area: string) => {
+    const refreshOrderReport = async (roles: string[], buyerType: string, tradeMarket: string, orderStatus: string, area: string) => {
         console.log(`call api`);
         console.log(session);
         if (session !== null) { //check session before call api
+            resetOrderReport();
+            resetOrderDetail();
+            resetChart();
+            showLoading(10);
             const userMeterInfos = await userMeterApi.getUserMeterInfo({ period, roles: roles, area: area, session })
             const req: IGetOrderTableRequest = {
-                period,
-                roles,
-                buyerType,
-                tradeMarket,
-                orderStatus,
                 session,
+                period,
             }
             let allOrder = await orderApi.getOrderTable(req);
             let summaryRole: ISummaryMap = { 'aggregator': 0, 'prosumer': 0, 'consumer': 0 };
             let summaryUserType: ISummaryMap = { 'seller': 0, 'buyer': 0 };
             let summaryTradeMarket: ISummaryMap = { 'bilateral': 0, 'pool': 0 };
             let summaryStatus: ISummaryMap = { 'open': 0, 'matched': 0 }
-            if (allOrder && userMeterInfos) {
+            if (allOrder && allOrder.context.length > 0 && userMeterInfos) {
                 console.log(`user Meter Infos`);
                 console.log(userMeterInfos);
                 let output: IOrderInfo[] = [];
@@ -69,7 +74,7 @@ export default function useOrderReport() {
 
                     }
                 })
-                console.log(summaryRole);
+                console.log(summaryStatus);
                 setOrderChart(
                     {
                         role: {
@@ -91,40 +96,42 @@ export default function useOrderReport() {
                         }
                     })
                 setOrderReport(output);
+                
                 refreshOrderDetail(allOrder.context[0]);
 
             }
+            hideLoading(10);
         }
-    }, [])
+    };
 
 
-    const refreshOrderDetail = useCallback(async (orderInfo: IOrderInfo) => {
+    const refreshOrderDetail = async (orderInfo: IOrderInfo) => {
 
         if (orderDetail) { //clear state of detail 
             resetOrderDetail();
         }
-        if (orderInfo.status.toLowerCase() === 'open') {
+        if (orderInfo.orderDetail === undefined) {//case open order
+            console.log(`order Detail`)
+            console.log(orderInfo);
             setOrderDetail({
                 userType: orderInfo.userType,
                 tradeMarket: orderInfo.tradeMarket,
                 orderDetail: {
-                    settlementTime: orderInfo.settlementTime,
+                    deliverdTime: orderInfo.settlementTime,
                     price: orderInfo.targetPrice,
                     commitedAmount: orderInfo.targetAmount
                 }
             })
+        } else {
+            setOrderDetail({
+                userType: orderInfo.userType,
+                tradeMarket: orderInfo.tradeMarket,
+                tradeContractId: orderInfo.tradeContractId,
+                orderDetail: orderInfo.orderDetail
+            })
         }
-        // if (session) {
 
-        //     const result = await orderApi.getOderDetail({ session: session, traceContractId: orderInfo.userId });
-        //     // if (result) {
-        //     //     setOrderDetail(result.context);
-        //     // }
-        //     // setOrderDetail({
-
-        //     // })
-        // }
-    }, []);
+    };
 
     useEffect(() => {
         if (session && currentState === NavigationCurrentType.ORDER_REPORT) {

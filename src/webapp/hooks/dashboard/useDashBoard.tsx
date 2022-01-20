@@ -79,10 +79,10 @@ export default function useDashBoard() {
 
         if (response) {
             setEnergyDashboard({
-                pv: response.summaryPower.inBattery + response.summaryPower.inGrid + response.summaryPower.inSolar + response.summaryPower.load,
+                pv: response.summaryPower.inSolar ,
                 gridUsed: response.summaryPower.inGrid,
                 load: response.summaryPower.load,
-                storage: response.summaryPower.inBattery + response.summaryPower.inSolar
+                storage: response.summaryPower.inBattery
             })
 
         }
