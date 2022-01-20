@@ -4,7 +4,7 @@ import React, { useEffect } from 'react'
 import { useResetRecoilState } from 'recoil';
 import { useDialog } from '../../../../hooks/useDialog';
 import { useNavigationSet } from '../../../../hooks/useNavigationSet';
-import { useOtherSetting } from '../../../../hooks/useOtherSetting';
+import { useOtherSetting } from '../../../../hooks/reference-data/useOtherSetting';
 import { NavigationCurrentType } from '../../../../state/navigation-current-state';
 import { otherSettingLogState } from '../../../../state/reference-data/other-setting/othersetting-log';
 import OtherSettingEditDialog from './OtherSettingEditDialog';
@@ -12,6 +12,7 @@ import OtherSettingLogsDialog from './OtherSettingLogsDialog';
 
 export default function OtherSetting() {
     useNavigationSet(NavigationCurrentType.OTHER_SETTING);
+    console.log('open other setting');
     const { otherSetting } = useOtherSetting();
     const { showDialog } = useDialog();
     const resetLogs = useResetRecoilState(otherSettingLogState);

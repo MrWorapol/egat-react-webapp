@@ -1,7 +1,7 @@
 import { Container, Grid, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, } from '@mui/material';
 import React, { useEffect } from 'react'
 import { useDialog } from '../../../../hooks/useDialog';
-import { useImbalance } from '../../../../hooks/useImbalance';
+import { useImbalance } from '../../../../hooks/reference-data/useImbalance';
 import { useNavigationSet } from '../../../../hooks/useNavigationSet';
 import { NavigationCurrentType } from '../../../../state/navigation-current-state';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -77,7 +77,7 @@ export default function Imbalance() {
                     </TableHead>
 
                     <TableBody>
-                        {imbalance && imbalance.length !== 0 &&
+                        {(imbalance && imbalance.length !== 0) &&
                             imbalance.map((row: Iimbalance, i) => {
                                 console.info(row);
                                 if (row.type === type) {

@@ -1,5 +1,8 @@
 import { useCallback } from "react";
+<<<<<<< HEAD
 import { useHistory } from "react-router";
+=======
+>>>>>>> features/reference-data
 import { useRecoilState, useResetRecoilState } from "recoil";
 import KeycloakAdminApi from "../api/keycloak/keycloakAdminApi";
 import { userProfile } from "../state/user-profile";
@@ -12,6 +15,7 @@ export function useLogin() {
     const [sessionValue, setSession] = useRecoilState(userSessionState);
     const api = new KeycloakAdminApi();
     const resetSession = useResetRecoilState(userSessionState);
+<<<<<<< HEAD
     const { showLoading, hideLoading } = useLoadingScreen();
     const history = useHistory();
     const login = useCallback(async (username: string, password: string) => {
@@ -54,11 +58,38 @@ export function useLogin() {
             resetSession();
         }
 
+=======
+    const login = useCallback(async (username: string, password: string) => {
+        const response = await api.login({
+            username: username,
+            password: password,
+        }
+        );
+        if (response) {
+            const session = {
+                accessToken: response.accessToken,
+                refreshToken: response.refreshToken,
+                lasttimeLogIn: new Date(),
+            }
+            localStorage.setItem('session', JSON.stringify(session));
+            setSession(session);
+            return true;
+        }
+        return false;
+    }, [setSession, sessionValue])
+
+    const logout = useCallback(() => {
+        if (sessionValue) {
+            localStorage.removeItem('session');
+            resetSession();
+        }
+>>>>>>> features/reference-data
     }, [])
     return {
         login,
         logout,
         session: sessionValue,
+        logout,
     }
 }
 

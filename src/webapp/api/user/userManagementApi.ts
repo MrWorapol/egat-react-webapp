@@ -5,6 +5,7 @@ import { IUserSession } from "../../state/user-sessions";
 import { egatHost, userApi } from '../../constanst';
 import { IUserRoles } from "../../pages/main/user-management/UserManagement";
 import { IAdminRegistratoinState } from "../../state/user-management/admin-registration-state";
+import fetchWithTimeout from "../../utils/fetchWithTimeout";
 
 
 interface IGetUsersByRolesRequest {
@@ -36,6 +37,7 @@ interface IGetUserRequest {
     session: IUserSession
 }
 interface IGetUsersResponse {
+    
     userInfos: UserInfo[],
 }
 
@@ -237,11 +239,16 @@ export default class UserManagementAPI {
         console.log(body);
         console.log(`----------------body context END----------`);
         try {
-            response = await fetch(api.toString(), {
+            response = await fetchWithTimeout(api.toString(), {
                 method: "POST",
                 headers,
                 body: body
             });
+            // response = await fetch(api.toString(), {
+            //     method: "POST",
+            //     headers,
+            //     body: body
+            // });
             let result = await response.json();
             console.log(result);
             let content: ICreateAdminResponse = {
@@ -339,7 +346,7 @@ function createMockData(): IGetUsersResponse {
                 fullName: 'user5',
                 email: 'user5@email.com',
                 phoneNumber: '1234567899',
-                role: 'Agregator    '
+                role: 'Aggregator'
             }, {
                 meterId: '0006',
                 fullName: 'user6',
@@ -363,7 +370,7 @@ function createMockData(): IGetUsersResponse {
                 fullName: 'user9',
                 email: 'user9@email.com',
                 phoneNumber: '1234567899',
-                role: 'Agregator'
+                role: 'Aggregator'
             }, {
                 meterId: '0010',
                 fullName: 'user10',
@@ -401,7 +408,7 @@ function createMockData(): IGetUsersResponse {
                 fullName: 'user5',
                 email: 'user5@email.com',
                 phoneNumber: '1234567899',
-                role: 'Agregator    '
+                role: 'Aggregator'
             }, {
                 meterId: '0016',
                 fullName: 'user6',
@@ -425,7 +432,7 @@ function createMockData(): IGetUsersResponse {
                 fullName: 'user9',
                 email: 'user9@email.com',
                 phoneNumber: '1234567899',
-                role: 'Agregator'
+                role: 'Aggregator'
             }, {
                 meterId: '0020',
                 fullName: 'user10',
@@ -463,7 +470,7 @@ function createMockData(): IGetUsersResponse {
                 fullName: 'user5',
                 email: 'user5@email.com',
                 phoneNumber: '1234567899',
-                role: 'Agregator    '
+                role: 'Aggregator'
             }, {
                 meterId: '0026',
                 fullName: 'user6',
@@ -487,7 +494,7 @@ function createMockData(): IGetUsersResponse {
                 fullName: 'user9',
                 email: 'user9@email.com',
                 phoneNumber: '1234567899',
-                role: 'Agregator'
+                role: 'Aggregator'
             }, {
                 meterId: '0030',
                 fullName: 'user10',

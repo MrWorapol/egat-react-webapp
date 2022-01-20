@@ -5,7 +5,8 @@ import React, { useEffect } from 'react'
 import { useDialog } from '../../../../hooks/useDialog';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Iimbalance } from '../../../../state/reference-data/imbalance/imbalance-state';
-import { useImbalanceLogs } from '../../../../hooks/useImbalanceLogs';
+import { useImbalanceLogs } from '../../../../hooks/reference-data/useImbalanceLogs';
+import { IImbalanceLog } from '../../../../state/reference-data/imbalance/imbalance-log';
 
 interface ILogProps {
     no: number,
@@ -39,7 +40,7 @@ export default function ImbalanceLogDialog(props: ILogProps) {
             <DialogContent>
                 <Box >
                     {
-                        imbalanceLogs.map((log: Iimbalance, i) => {
+                        imbalanceLogs.map((log: IImbalanceLog, i) => {
                             return buildList(i, log);
                         })
                     }
@@ -53,7 +54,7 @@ export default function ImbalanceLogDialog(props: ILogProps) {
         </>
     )
 
-    function buildList(index: number, log: Iimbalance): JSX.Element {
+    function buildList(index: number, log: IImbalanceLog): JSX.Element {
         return (
             <>
                 <Accordion expanded={expanded === `logs-${index}`}
@@ -64,17 +65,17 @@ export default function ImbalanceLogDialog(props: ILogProps) {
                             <Grid container direction='row' justifyContent='space-between' px={2} >
                                 <Grid container item direction="row" xs={'auto'}>
                                     <Typography> Edit Date : </Typography>
-                                    <Typography> {dayjs(props.imbalance.editDate).format('DD/MM/YYYY')}</Typography>
+                                    <Typography> {dayjs(log.editDate).format('DD/MM/YYYY')}</Typography>
                                 </Grid>
                                 <Grid container direction='row' xs={'auto'}>
 
                                     <Typography> Effective Date : </Typography>
-                                    <Typography> {dayjs(props.imbalance.effectiveDate).format('DD/MM/YYYY')}</Typography>
+                                    <Typography> {dayjs(log.effectiveDateTime).format('DD/MM/YYYY')}</Typography>
                                 </Grid>
                                 <Grid container direction='row' xs={'auto'}>
 
                                     <Typography> Effective Time : </Typography>
-                                    <Typography> {dayjs(props.imbalance.effectiveDate).format('HH:mm')}</Typography>
+                                    <Typography> {dayjs(log.effectiveDateTime).format('HH:mm')}</Typography>
                                 </Grid>
                             </Grid>
 
@@ -85,17 +86,17 @@ export default function ImbalanceLogDialog(props: ILogProps) {
                             <Grid container direction='column' justifyContent="space-between" px={3} xs={'auto'} alignContent="center">
                                 <Grid container item direction="row" xs={'auto'} alignItems='center' justifyContent="center" >
                                     <Typography> Scenario :</Typography>
-                                    <Typography sx={{ alignItems: 'center' }}> {log.scenario}</Typography>
+                                    <Typography sx={{ alignItems: 'center' }}> {log.imbalanceSetting.scenario}</Typography>
                                 </Grid>
                                 <Grid container direction='row' xs={'auto'} alignItems='center'>
 
                                     <Typography> Imbalance Clearing :</Typography>
-                                    <Typography> {log.imbalance}</Typography>
+                                    <Typography> {log.imbalanceSetting.imbalanceClearing}</Typography>
                                 </Grid>
                                 <Grid container direction='row' xs={'auto'} alignItems='center'>
 
                                     <Typography> Baht/kWh: </Typography>
-                                    <Typography> {log.bahtPerKWh}</Typography>
+                                    <Typography> {log.imbalanceSetting.bahtPerKWh}</Typography>
                                 </Grid>
 
                             </Grid>

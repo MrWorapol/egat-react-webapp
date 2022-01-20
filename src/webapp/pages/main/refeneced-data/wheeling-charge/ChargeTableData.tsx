@@ -9,7 +9,7 @@ import LastPageIcon from '@mui/icons-material/LastPage';
 import { useHistory } from 'react-router-dom';
 
 
-import { useWheelingCharge } from '../../../../hooks/useWheelingCharge';
+import { useWheelingCharge } from '../../../../hooks/reference-data/useWheelingCharge';
 
 import SettingsIcon from '@mui/icons-material/Settings';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
@@ -123,7 +123,6 @@ export default function ChargeTableData(props: inputProps) {
 
 
     // Avoid a layout jump when reaching the last page with empty rows.
-    //userInfoData.length
     if (!wheelingCharge) {
         return <> </>;
     }
@@ -175,16 +174,18 @@ export default function ChargeTableData(props: inputProps) {
         meaPeaEgat: 0,
     };
 
-    function getTotalData(wheelingChart: IWheelingCharge[]) {
-        wheelingChart.forEach((row) => {
-            total.no += 1;
-            total.bahtPerKWh += row.bahtPerKWh;
-            total.mea += row.mea;
-            total.pea += row.pea;
-            total.meaEgat += row.meaEgat;
-            total.peaEgat += row.peaEgat;
-            total.meaPeaEgat += row.meaPeaEgat;
-        })
+    function getTotalData(wheelingCharge: IWheelingCharge[]) {
+        if (wheelingCharge.length > 0) {
+            wheelingCharge.forEach((row) => {
+                total.no += 1;
+                total.bahtPerKWh += row.bahtPerKWh;
+                total.mea += row.mea;
+                total.pea += row.pea;
+                total.meaEgat += row.meaEgat;
+                total.peaEgat += row.peaEgat;
+                total.meaPeaEgat += row.meaPeaEgat;
+            })
+        }
     }
 
     getTotalData(wheelingCharge);

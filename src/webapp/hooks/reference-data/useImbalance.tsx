@@ -1,0 +1,60 @@
+import { useCallback, useEffect } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { ImbalanceAPI } from "../../api/referenceData/ImbalanceAPI";
+import { NavigationCurrentType } from "../../state/navigation-current-state";
+import { Iimbalance, imbalanceState } from "../../state/reference-data/imbalance/imbalance-state";
+import { userSessionState } from "../../state/user-sessions";
+import { useNavigationGet } from "../useNavigationGet";
+import { useSnackBarNotification } from "../useSnackBarNotification";
+
+export function useImbalance() {
+    const session = useRecoilValue(userSessionState);
+    const { currentState } = useNavigationGet();
+    const [imbalance, setImbalance] = useRecoilState(imbalanceState);
+    const api = new ImbalanceAPI();
+    const { showSnackBar } = useSnackBarNotification();
+    const refreshImbalance = useCallback(async () => {
+        if (session) {
+            const response = await api.getImbalance({ session: session });
+            console.log('call wheeling chart api');
+            if (response !== null) {
+                showSnackBar({
+                    serverity: "success",
+                    message: "Loading Successful"
+                })
+                console.info(response);
+                setImbalance(response.context);
+            }
+        }
+    }, [])
+
+
+    const updateImbalance = useCallback(async (imbalance: Iimbalance) => {
+        if (session) {
+            const response = await api.updateImbalance({ session: session, imbalance: imbalance });
+            if (response !== null) {
+                showSnackBar({
+                    serverity: "success",
+                    message: "update Successful"
+                })
+                console.info(`updated is : ${response}`);
+
+            }
+        }
+    }, [])
+    useEffect(() => {
+        if (session && currentState === NavigationCurrentType.IMBALANCE) {
+            if (!imbalance) {
+                refreshImbalance();
+                console.debug('call ge wheelingChart');
+                console.info(imbalance);
+            }
+        }
+    }, [imbalance, refreshImbalance])
+    return {
+        imbalance,
+        refreshImbalance,
+        updateImbalance,
+    }
+
+}

@@ -16,7 +16,6 @@ import SettlementReport from './summary-report/settlement/SettlementReport'
 import BillingReport from './summary-report/billing/BillingReport'
 
 export default function MainPage() {
-    // const [sessionValue] = useRecoilState(session);
 
     return (
         <Grid container direction="column" style={{ minHeight: '100vh', backgroundColor: '#E9EDF2' }}>

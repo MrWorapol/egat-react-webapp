@@ -1,11 +1,18 @@
 import { Button, DialogActions, DialogContent, DialogTitle, FormControlLabel, Grid, MenuItem, Select, Switch, TextField, Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import dayjs from 'dayjs';
 import React, { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form';
 import { useDialog } from '../../../../hooks/useDialog';
-import { useImbalance } from '../../../../hooks/useImbalance';
+import { useImbalance } from '../../../../hooks/reference-data/useImbalance';
 import { Iimbalance } from '../../../../state/reference-data/imbalance/imbalance-state';
+// import CustomTimeSelect from '../../../../components/CustomTimeSelect';
+
+import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
 
 interface ISettingProps {
     no: number,
@@ -28,7 +35,7 @@ const clearing = [
 
 export default function ImbalanceSettingDialog(props: ISettingProps) {
     const { closeDialog } = useDialog();
-    const {  handleSubmit, watch, formState: { errors }, control } = useForm<Iimbalance>();
+    const { handleSubmit, watch, formState: { errors }, control } = useForm<Iimbalance>();
     const watchClearing = watch("imbalanceClearing");
     const [customGridChecked, setCustomGridChecked] = useState(false);
     const { updateImbalance } = useImbalance();
@@ -211,21 +218,47 @@ export default function ImbalanceSettingDialog(props: ISettingProps) {
                                             Effective Time
                                         </Typography>
                                         <Controller
-                                            render={({ field }) => (
-                                                <TextField variant="outlined"
-                                                    margin="dense"
-
-                                                    size='small'
-                                                    sx={{ ml: 2, maxWidth: '5em', justifyContent: 'flex-end', textAlignLast: 'end', }}
-
-                                                    {...field}
-                                                />)}
                                             name="effectiveTime"
                                             control={control}
-                                            defaultValue={dayjs(props.imbalance.effectiveTime || props.imbalance.effectiveDate).format('HH:mm')}
+                                            // defaultValue={dayjs(props.imbalance.effectiveTime || props.imbalance.effectiveDate).format('HH:mm')}
                                             rules={{
                                                 required: true,
                                             }}
+                                            render={({ field }) => (
+                                                <Select variant="outlined"
+                                                    {...field}
+                                                    size="small"
+                                                    sx={{ width: "6em", justifyContent: 'flex-end', }}
+                                                    MenuProps={{
+                                                        PaperProps: {
+                                                            style: {
+                                                                maxHeight: '30vh',
+                                                                // backgroundColor: ,
+                                                            }
+                                                        }
+                                                    }}
+                                                >
+                                                    {
+                                                        Array.from(Array(24)).map((menu, i) => {
+                                                            // buildMenuItems(props.menuLength, props?.step).map((menu, i) => {
+                                                            return (
+                                                                <>
+                                                                    <MenuItem key={i + `${menu}:00`} value={`${i}`}> {(`00` + i).slice(-2)+`:00`}</MenuItem>
+                                                                    {/* <MenuItem key={i + `${menu}:30`} value={`${i}:30`}> {(`00` + i).slice(-2)+`:30`}</MenuItem> */}
+                                                                </>
+                                                            )
+                                                        })
+                                                    }
+                                                </Select >
+                                            )}
+                                        // <TextField variant="outlined"
+                                        //     margin="dense"
+
+                                        //     size='small'
+                                        //     sx={{ ml: 2, maxWidth: '5em', justifyContent: 'flex-end', textAlignLast: 'end', }}
+
+                                        //     {...field}
+                                        // />)}
 
                                         />
                                     </Grid>

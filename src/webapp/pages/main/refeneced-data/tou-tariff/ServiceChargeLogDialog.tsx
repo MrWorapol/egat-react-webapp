@@ -4,13 +4,13 @@ import { Box } from '@mui/system';
 import dayjs from 'dayjs';
 
 import { useDialog } from '../../../../hooks/useDialog';
-import { useTOUTariffLogs } from '../../../../hooks/useTOUTariffLogs';
+import { useTOUTariffLogs } from '../../../../hooks/reference-data/useTOUTariffLogs';
 import { ITouTariff } from '../../../../state/reference-data/tou-traff/tou-tariff-state';
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { touTypeLabel } from './TOUTariff';
-import { IServiceCharge } from '../../../../state/reference-data/tou-traff/tou-service-charge-state';
-import { useServiceChargeLogs } from '../../../../hooks/useServiceChargeLogs';
+import { IServiceCharge, IServiceChargeLog } from '../../../../state/reference-data/tou-traff/tou-service-charge-state';
+import { useServiceChargeLogs } from '../../../../hooks/reference-data/useServiceChargeLogs';
 
 interface IServiceChargeProps {
     serviceCharge: IServiceCharge,
@@ -27,7 +27,7 @@ export default function ServiceChargeLogDialog(props: IServiceChargeProps) {
         };
 
 
-    function buildList(index: number, log: IServiceCharge): JSX.Element {
+    function buildList(index: number, log: IServiceChargeLog): JSX.Element {
         return (
             <>
                 <Accordion expanded={expanded === `logs-${index}`}
@@ -43,12 +43,12 @@ export default function ServiceChargeLogDialog(props: IServiceChargeProps) {
                                 <Grid container direction='row' xs={'auto'}>
 
                                     <Typography> Effective Date : </Typography>
-                                    <Typography> {log.effectiveDate}</Typography>
+                                    <Typography> {dayjs(log.effectiveDateTime).format('DD/MM/YYYY')}</Typography>
                                 </Grid>
                                 <Grid container direction='row' xs={'auto'}>
 
                                     <Typography> Effective Time : </Typography>
-                                    <Typography> {log.effectiveTime}</Typography>
+                                    <Typography> {dayjs(log.effectiveDateTime).format('HH:mm')}</Typography>
                                 </Grid>
                             </Grid>
 
@@ -58,7 +58,7 @@ export default function ServiceChargeLogDialog(props: IServiceChargeProps) {
                         <Box sx={{}}>
                             <Grid container direction='row' justifyContent="center" px={3} xs={'auto'} alignContent="center">
                                 <Grid item >
-                                    <Typography> ค่าบริการรายเดือน(Baht/Month) {log.bahtPerMonth}</Typography>
+                                    <Typography> ค่าบริการรายเดือน(Baht/Month) {log.serviceCharge.bahtPerMonth}</Typography>
                                 </Grid>
 
                             </Grid>
@@ -79,7 +79,7 @@ export default function ServiceChargeLogDialog(props: IServiceChargeProps) {
             <DialogContent>
                 <Box >
                     {
-                        serviceChargeLogs && serviceChargeLogs.map((log: IServiceCharge, i: number) => {
+                        serviceChargeLogs && serviceChargeLogs.map((log: IServiceChargeLog, i: number) => {
                             return buildList(i, log);
                         })
                     }

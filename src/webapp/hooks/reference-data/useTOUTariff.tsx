@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil"
-import TOUTariffAPI from "../api/referenceData/TOUtariffAPI";
-import { gridUsedPackageState, IGridPackage, IPackage } from "../state/reference-data/tou-traff/grid-package-state";
-import { IServiceCharge, serviceChargeType1State, serviceChargeType2State } from "../state/reference-data/tou-traff/tou-service-charge-state";
-import { ITouTariff, touTariffState } from "../state/reference-data/tou-traff/tou-tariff-state"
-import { userSessionState } from "../state/user-sessions";
+import TOUTariffAPI from "../../api/referenceData/TOUtariffAPI";
+import { gridUsedPackageState, IGridPackage, IPackage } from "../../state/reference-data/tou-traff/grid-package-state";
+import { IServiceCharge, serviceChargeType1State, serviceChargeType2State } from "../../state/reference-data/tou-traff/tou-service-charge-state";
+import { ITouTariff, touTariffState } from "../../state/reference-data/tou-traff/tou-tariff-state"
+import { userSessionState } from "../../state/user-sessions";
 
 
 
@@ -15,40 +15,38 @@ export function useTOUTariff() {
     const [serviceChargeType2, setServiceChargeType2] = useRecoilState(serviceChargeType2State);
     const [gridUsedPackage, setGridUsedPackage] = useRecoilState(gridUsedPackageState);
     const api = new TOUTariffAPI();
-    const session = useRecoilValue(userSessionState);
+    const userSession = useRecoilValue(userSessionState);
 
     const refreshTOUTariff = useCallback(async () => {
-        if (session) {
-            const result = await api.getTOUtariff({session});
-            console.log('call wheeling chart api');
+        if (userSession) {
+            const result = await api.getTOUtariff({ session: userSession });
             if (result !== null) {
                 console.info(result.context);
                 setTOUTariffState(result.context);
             }
 
-
-
-            const getChargeType1 = await api.getServiceCharge({ touType: 'tou-1', session });
-            const getChargeType2 = await api.getServiceCharge({ touType: 'tou-2', session });
+            const getChargeType1 = await api.getServiceCharge({ session: userSession, touType: 'tou-1' });
+            const getChargeType2 = await api.getServiceCharge({ session: userSession, touType: 'tou-2' });
+            const getGridPackage = await api.getGridPackage({ session: userSession });
             if (getChargeType1 !== null) {
-                setServiceChargeType1(getChargeType1.context[0]);
+                setServiceChargeType1(getChargeType1.context);
             }
             if (getChargeType2 !== null) {
-                setServiceChargeType2(getChargeType2.context[0]);
+                setServiceChargeType2(getChargeType2.context);
             }
 
-            const getGridPackage = await api.getGridPackage({session});
             if (getGridPackage) {
                 console.log(`get Grid Package result: `);
                 console.info(getGridPackage)
                 setGridUsedPackage(getGridPackage.context);
             }
+            setOnLoad(false);
         }
     }, [])
 
     const editTOUTariff = useCallback(async (data: ITouTariff) => {
-        if (session) {
-            const result = await api.putTOUTariff({ tariff: data, session });
+        if (userSession) {
+            const result = await api.putTOUTariff({ session: userSession, tariff: data });
             if (!result) {
                 console.error(`cannot update setting`);
                 return false;
@@ -60,8 +58,8 @@ export function useTOUTariff() {
     }, [])
 
     const editServiceCharge = useCallback(async (data: IServiceCharge) => {
-        if (session) {
-            const result = await api.putServiceCharge({ serviceCharge: data, session });
+        if (userSession) {
+            const result = await api.putServiceCharge({ session: userSession, serviceCharge: data });
             if (result) {
                 refreshTOUTariff();
                 return true;
@@ -72,9 +70,8 @@ export function useTOUTariff() {
     }, [])
 
     const editGridUsedPackage = useCallback(async (id: string) => {
-
-        if (session) {
-            const result = await api.putGridUsedPackage({ package: id,session });
+        if (userSession) {
+            const result = await api.putGridUsedPackage({ session: userSession, package: id });
             if (result) {
                 refreshTOUTariff();
                 return true;
@@ -84,10 +81,9 @@ export function useTOUTariff() {
         }
     }, [])
     useEffect(() => {
-        if (onLoad) {
+        if (!touTariff) {
             refreshTOUTariff();
-            setOnLoad(false)
-            console.debug('call ge wheelingChart');
+            console.debug('call get tou tariff');
             // console.info(wheelingCharge);
         }
 

@@ -5,6 +5,7 @@ import { useHistory, useParams } from 'react-router';
 import { useRecoilState } from 'recoil';
 import { useLoadingScreen } from '../../hooks/useLoadingScreen';
 import { useLogin } from '../../hooks/useLogin';
+import { useSnackBarNotification } from '../../hooks/useSnackBarNotification';
 import { userProfile } from '../../state/user-profile';
 
 
@@ -17,20 +18,31 @@ type LoginForm = {
 export default function Login() {
     const { register, handleSubmit, } = useForm<LoginForm>();
     const { login, session } = useLogin();
+    const { showSnackBar } = useSnackBarNotification();
     const history = useHistory();
     const { showLoading, hideLoading } = useLoadingScreen();
     const [loadingButton, setLoadingButton] = React.useState(false);
+    // const  params = useParams();
+    // console.log(`params is`);
+    // console.log(params);
 
     if (session) {
-        
+
         history.push('/dashboard');
     }
 
     const onSubmitLogin = async (data: LoginForm) => {
-        setLoadingButton(true);
-        await login(data.username, data.password);
-        setLoadingButton(false);
-        console.log(`before check accessToken`);
+        try {
+            await login(data.username, data.password);
+            console.log(`before check accessToken`);
+            // if (session) {
+            showSnackBar({
+                serverity: "success",
+                message: "login successful",
+            })
+            history.push('/dashboard');
+        } catch (e) {
+        }
     }
     return (
         <>

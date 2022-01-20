@@ -4,13 +4,13 @@ import GridViewIcon from '@mui/icons-material/GridView';
 import { AccountCircle } from '@mui/icons-material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useLogin } from '../hooks/useLogin';
-// import { useSnackBarNotification } from '../hooks/useSnackBarNotification';
+import { useSnackBarNotification } from '../hooks/useSnackBarNotification';
 
 export default function Header() {
     const [auth, setAuth] = React.useState(true);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const { logout } = useLogin();
-    // const { showSnackBar } = useSnackBarNotification();
+    const { showSnackBar } = useSnackBarNotification();
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setAuth(event.target.checked);
     };
@@ -21,10 +21,10 @@ export default function Header() {
 
     const handleClose = () => {
         setAnchorEl(null);
-        // showSnackBar({
-        //     serverity: 'success',
-        //     message: 'test snackbar',
-        // })
+        showSnackBar({
+            serverity: 'success',
+            message: 'test snackbar',
+        })
     };
 
     const handleLogOut = () => {

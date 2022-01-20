@@ -10,6 +10,8 @@ export interface ITouTariff {
     bahtPerKWh: number,
     effectiveDate: string,
     effectiveTime: string,
+    effectiveHour: string,
+    effectiveMinute: string,
     editDate?: string,
 }
 

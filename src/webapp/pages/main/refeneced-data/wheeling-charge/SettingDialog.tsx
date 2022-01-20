@@ -1,11 +1,17 @@
-import { Button, DialogActions, DialogContent, DialogTitle, TextField, Typography } from '@mui/material';
+import { DatePicker } from '@mui/lab';
+import { Button, DialogActions, DialogContent, DialogTitle, Grid, MenuItem, Select, TextField, Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import dayjs from 'dayjs';
 import React from 'react'
 import { Controller, useForm } from 'react-hook-form';
 import { useDialog } from '../../../../hooks/useDialog';
-import { useWheelingCharge } from '../../../../hooks/useWheelingCharge';
+import { useWheelingCharge } from '../../../../hooks/reference-data/useWheelingCharge';
 import { IWheelingCharge } from '../../../../state/reference-data/wheeling-chart/wheeling-charge-state';
+
+import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 interface ISettingProps {
     no: number,
@@ -18,11 +24,15 @@ export default function SettingDialog(props: ISettingProps) {
     const { register, handleSubmit, watch, formState: { errors }, control } = useForm<IWheelingCharge>();
     const { updatedWheelingCharge } = useWheelingCharge();
     const onSubmitForm = (data: IWheelingCharge) => {
+        let effectiveTime = '';
+        if (data.effectiveHour && data.effectiveMinute) {
+            effectiveTime = dayjs(data.effectiveDate).hour(+data.effectiveHour).minute(+data.effectiveMinute).toISOString();
+        }
         let request: IWheelingCharge = {
             ...data,
             id: props.wheelingCharge.id,
             wheelingType: props.wheelingCharge.wheelingType,
-
+            effectiveTime: effectiveTime,
         }
         console.info(request);
         updatedWheelingCharge(request);
@@ -31,7 +41,7 @@ export default function SettingDialog(props: ISettingProps) {
         <>
             <DialogTitle>
                 <Typography color="secondary.main" variant="h6" sx={{ fontWeight: "bold" }}>
-                    {`No.${props.no+1} ${props.wheelingCharge.title}`}
+                    {`No.${props.no + 1} ${props.wheelingCharge.title}`}
                 </Typography>
             </DialogTitle>
             <DialogContent>
@@ -46,7 +56,7 @@ export default function SettingDialog(props: ISettingProps) {
                                     <TextField variant="outlined"
                                         margin="dense"
                                         size='small'
-                                        sx={{ ml: 2, maxWidth: '7em', justifyContent: 'flex-end', textAlignLast: 'end', }}
+                                        sx={{ ml: 2, maxWidth: '10em', justifyContent: 'flex-end', textAlignLast: 'end', }}
 
                                         {...field}
                                     />)}
@@ -69,7 +79,7 @@ export default function SettingDialog(props: ISettingProps) {
                                         margin="dense"
 
                                         size='small'
-                                        sx={{ ml: 2, maxWidth: '7em', justifyContent: 'flex-end', textAlignLast: 'end', }}
+                                        sx={{ ml: 2, maxWidth: '10em', justifyContent: 'flex-end', textAlignLast: 'end', }}
 
                                         {...field}
                                     />)}
@@ -91,7 +101,7 @@ export default function SettingDialog(props: ISettingProps) {
                                         margin="dense"
 
                                         size='small'
-                                        sx={{ ml: 2, maxWidth: '7em', justifyContent: 'flex-end', textAlignLast: 'end', }}
+                                        sx={{ ml: 2, maxWidth: '10em', justifyContent: 'flex-end', textAlignLast: 'end', }}
 
                                         {...field}
                                     />)}
@@ -114,7 +124,7 @@ export default function SettingDialog(props: ISettingProps) {
                                         margin="dense"
 
                                         size='small'
-                                        sx={{ ml: 2, maxWidth: '7em', justifyContent: 'flex-end', textAlignLast: 'end', }}
+                                        sx={{ ml: 2, maxWidth: '10em', justifyContent: 'flex-end', textAlignLast: 'end', }}
 
                                         {...field}
                                     />)}
@@ -137,7 +147,7 @@ export default function SettingDialog(props: ISettingProps) {
                                         margin="dense"
 
                                         size='small'
-                                        sx={{ ml: 2, maxWidth: '7em', justifyContent: 'flex-end', textAlignLast: 'end', }}
+                                        sx={{ ml: 2, maxWidth: '10em', justifyContent: 'flex-end', textAlignLast: 'end', }}
 
                                         {...field}
                                     />)}
@@ -160,7 +170,7 @@ export default function SettingDialog(props: ISettingProps) {
                                         margin="dense"
 
                                         size='small'
-                                        sx={{ ml: 2, maxWidth: '7em', justifyContent: 'flex-end', textAlignLast: 'end', }}
+                                        sx={{ ml: 2, maxWidth: '10em', justifyContent: 'flex-end', textAlignLast: 'end', }}
 
                                         {...field}
                                     />)}
@@ -173,51 +183,112 @@ export default function SettingDialog(props: ISettingProps) {
 
                             />
                         </Box>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', alignItems: 'center' }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', alignItems: 'center', mt: 1, }}>
                             <Typography>
                                 Effective Date
                             </Typography>
                             <Controller
-                                render={({ field }) => (
-                                    <TextField variant="outlined"
-                                        margin="dense"
-
-                                        size='small'
-                                        sx={{ ml: 2, maxWidth: '7em', justifyContent: 'flex-end', textAlignLast: 'end', }}
-
-                                        {...field}
-                                    />)}
-                                name="effectiveDate"
                                 control={control}
+                                name="effectiveDate"
                                 defaultValue={dayjs(props.wheelingCharge.effectiveDate).format('DD/MM/YYYY')}
                                 rules={{
                                     required: true,
                                 }}
-
+                                render={({ field: { onChange, onBlur, value, ref } }) =>
+                                    <DatePicker
+                                        views={['year', 'month', 'day']}
+                                        minDate={dayjs()}
+                                        maxDate={dayjs().add(5, 'year')}
+                                        inputFormat='DD/MM/YYYY'
+                                        value={value}
+                                        onChange={onChange}
+                                        renderInput={(params) => (
+                                            <TextField size='small' {...params} sx={{ ml: 10, maxWidth: '10em', justifyContent: 'flex-end', textAlignLast: 'end', }} />
+                                        )}
+                                    />
+                                }
                             />
                         </Box>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', alignItems: 'center' }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', alignItems: 'center', mt: 1 }}>
                             <Typography>
                                 Effective Time
                             </Typography>
-                            <Controller
-                                render={({ field }) => (
-                                    <TextField variant="outlined"
-                                        margin="dense"
+                            <Box sx={{ display: 'flex', justifyContent: 'flex-start', flexWrap: 'wrap', alignItems: 'center', mt: 1 }}>
+                                <Controller
+                                    control={control}
+                                    name="effectiveHour"
+                                    // defaultValue={dayjs(props.wheelingCharge.effectiveTime).format('HH')}
+                                    rules={{
+                                        required: true,
+                                    }}
+                                    defaultValue={`0`}
 
-                                        size='small'
-                                        sx={{ ml: 2, maxWidth: '7em', justifyContent: 'flex-end', textAlignLast: 'end', }}
+                                    render={({ field }) => (
+                                        <Select variant="outlined"
+                                            {...field}
+                                            margin="dense"
+                                            size='small'
+                                            sx={{ ml: 2, maxWidth: '10em', justifyContent: 'flex-end', textAlignLast: 'end', }}
+                                            MenuProps={{
+                                                PaperProps: {
+                                                    style: {
+                                                        maxHeight: '40vh',
+                                                        backgroundColor: '#fff',
+                                                    }
+                                                }
+                                            }}
+                                        >
+                                            {
 
-                                        {...field}
-                                    />)}
-                                name="effectiveTime"
-                                control={control}
-                                defaultValue={dayjs(props.wheelingCharge.effectiveDate).format('HH:mm')}
-                                rules={{
-                                    required: true,
-                                }}
+                                            }
+                                            {Array.from(Array(24)).map((e, i) => {
+                                                console.log(e);
+                                                return (
+                                                    <MenuItem value={`${i}`}> {(`00` + i).slice(-2)}</MenuItem>
 
-                            />
+                                                )
+                                            })}
+                                        </Select>
+                                    )}
+                                />
+                                <Typography mx={1}>:</Typography>
+                                <Controller
+                                    control={control}
+                                    name="effectiveMinute"
+                                    // defaultValue={dayjs(props.wheelingCharge.effectiveTime).format('HH')}
+                                    rules={{
+                                        required: true,
+                                    }}
+                                    defaultValue={`0`}
+                                    render={({ field }) => (
+
+                                        <Select variant="outlined"
+                                            {...field}
+                                            margin="dense"
+                                            size='small'
+                                            sx={{ maxWidth: '10em', justifyContent: 'flex-end', textAlignLast: 'end', }}
+                                            MenuProps={{
+                                                PaperProps: {
+                                                    style: {
+                                                        maxHeight: '40vh',
+                                                        backgroundColor: '#fff',
+                                                    }
+                                                }
+                                            }}
+                                        >
+                                            {
+
+                                            }
+                                            {Array.from(Array(60)).map((e, i) => {
+                                                return (
+                                                    <MenuItem value={`${i}`}> {(`00` + i).slice(-2)}</MenuItem>
+
+                                                )
+                                            })}
+                                        </Select>
+                                    )}
+                                />
+                            </Box>
                         </Box>
                     </DialogContent>
                     <DialogActions>
@@ -233,3 +304,5 @@ export default function SettingDialog(props: ISettingProps) {
         </>
     )
 }
+
+

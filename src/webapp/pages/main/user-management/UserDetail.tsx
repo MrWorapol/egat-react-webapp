@@ -11,6 +11,11 @@ import { useUserDetail } from '../../../hooks/useUserDetail';
 import { NavigationCurrentType } from '../../../state/navigation-current-state';
 import { userSessionState } from '../../../state/user-sessions';
 
+import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 type MeterParams = {
     id: string;
@@ -139,7 +144,7 @@ export default function UserDetail() {
                                     <TextField
                                         variant="standard"
                                         sx={{ ml: 2 }}
-                                        disabled={!edit}
+                                        disabled={true}
                                         {...field}
                                     />
                                 )}
@@ -355,7 +360,7 @@ export default function UserDetail() {
                                     <TextField variant="standard"
                                         sx={{ ml: 2, width: '10em' }}
                                         size="small"
-                                        disabled={!edit}
+                                        disabled={true}
                                         {...field}
                                     />)}
                             />
@@ -370,7 +375,7 @@ export default function UserDetail() {
                                 control={control}
                                 render={({ field }) => (
                                     <TextField variant="standard"
-                                        sx={{ ml: 2, width: '5em' }}
+                                        sx={{ ml: 2, width: '10em' }}
                                         size="small"
                                         disabled={!edit}
                                         {...field}
@@ -383,7 +388,7 @@ export default function UserDetail() {
                                 control={control}
                                 render={({ field }) => (
                                     <TextField variant="standard"
-                                        sx={{ ml: 2, width: '5em' }}
+                                        sx={{ ml: 2, width: '10em' }}
                                         size="small"
                                         disabled={!edit}
                                         {...field}
@@ -594,7 +599,7 @@ export default function UserDetail() {
                         <GridDetailsComponent size={'6'}>
                             <Typography >วันที่คาดว่าจะเริ่มจ่ายไฟฟ้าเข้าระบบ: </Typography>
                             <Controller
-                                defaultValue={meterDetail.expectedDate}
+                                defaultValue={dayjs(meterDetail.expectedDate).format('DD/MM/YYYY')}
                                 name="meterDetail.expectedDate"
                                 control={control}
                                 render={({ field }) => (

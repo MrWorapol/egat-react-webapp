@@ -16,7 +16,7 @@ interface IGetLogsRequest {
     imbalance: 'Commited < Actual Energy' | 'Commited > Actual Energy',
 }
 interface IGetLogsResponse {
-    context: Iimbalance[],
+    context: IImbalanceLog[],
 }
 
 interface IUpdateImbalanceRequest {
