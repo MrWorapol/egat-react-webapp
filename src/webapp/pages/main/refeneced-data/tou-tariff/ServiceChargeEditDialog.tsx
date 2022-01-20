@@ -1,5 +1,7 @@
 import { Button, DialogContent, DialogTitle, Grid, MenuItem, Select, TextField, Typography } from '@mui/material';
 import { Box } from '@mui/system';
+import { DatePicker } from '@mui/lab';
+
 import React from 'react'
 import { Controller, useForm } from 'react-hook-form';
 import { useDialog } from '../../../../hooks/useDialog';
@@ -95,21 +97,25 @@ export default function ServiceChargeDialog(props: IServiceChargeEditProps) {
                                 </Grid>
                                 <Grid item xs={5}>
                                     <Controller
-                                        render={({ field }) => (
-                                            <TextField variant="outlined"
-                                                margin="dense"
-
-                                                size='small'
-                                                sx={{ textAlignLast: 'end' }}
-                                                fullWidth={true}
-                                                {...field}
-                                            />)}
-                                        name="effectiveDate"
                                         control={control}
-                                        defaultValue={props.serviceCharge.effectiveDate}
+                                        name="effectiveDate"
+                                        defaultValue={dayjs().toString()}
                                         rules={{
                                             required: true,
                                         }}
+                                        render={({ field: { onChange, onBlur, value, ref } }) =>
+                                            <DatePicker
+                                                views={['year', 'month', 'day']}
+                                                minDate={dayjs()}
+                                                maxDate={dayjs().add(5, 'year')}
+                                                inputFormat='DD/MM/YYYY'
+                                                value={value}
+                                                onChange={onChange}
+                                                renderInput={(params) => (
+                                                    <TextField size='small' {...params} sx={{ justifyContent: 'flex-end', textAlignLast: 'end', }} />
+                                                )}
+                                            />
+                                        }
                                     />
                                 </Grid>
                             </Grid>
@@ -120,81 +126,42 @@ export default function ServiceChargeDialog(props: IServiceChargeEditProps) {
                                     </Typography>
                                 </Grid>
                                 <Grid item xs={5}>
-                                    <Box sx={{ display: 'flex', justifyContent: 'flex-start', flexWrap: 'wrap', alignItems: 'center', mt: 1 }}>
-                                        <Controller
-                                            control={control}
-                                            name="effectiveHour"
-                                            // defaultValue={dayjs(props.wheelingCharge.effectiveTime).format('HH')}
-                                            rules={{
-                                                required: true,
-                                            }}
-                                            defaultValue={`0`}
+                                    <Controller
+                                        control={control}
+                                        name="effectiveTime"
+                                        // defaultValue={dayjs(props.wheelingCharge.effectiveTime).format('HH')}
+                                        rules={{
+                                            required: true,
+                                        }}
+                                        defaultValue={`0`}
 
-                                            render={({ field }) => (
-                                                <Select variant="outlined"
-                                                    {...field}
-                                                    margin="dense"
-                                                    size='small'
-                                                    sx={{ ml: 2, maxWidth: '10em', justifyContent: 'flex-end', textAlignLast: 'end', }}
-                                                    MenuProps={{
-                                                        PaperProps: {
-                                                            style: {
-                                                                maxHeight: '40vh',
-                                                                backgroundColor: '#fff',
-                                                            }
+                                        render={({ field }) => (
+                                            <Select variant="outlined"
+                                                {...field}
+                                                margin="dense"
+                                                size='small'
+                                                fullWidth={true}
+                                                sx={{ justifyContent: 'flex-end', textAlignLast: 'end', }}
+                                                MenuProps={{
+                                                    PaperProps: {
+                                                        style: {
+                                                            backgroundColor: '#fff',
                                                         }
-                                                    }}
-                                                >
-                                                    {
-
                                                     }
-                                                    {Array.from(Array(24)).map((e, i) => {
-                                                        return (
-                                                            <MenuItem value={`${i}`}> {(`00` + i).slice(-2)}</MenuItem>
+                                                }}
+                                            >
+                                                {
 
-                                                        )
-                                                    })}
-                                                </Select>
-                                            )}
-                                        />
-                                        <Typography mx={1}>:</Typography>
-                                        <Controller
-                                            control={control}
-                                            name="effectiveMinute"
-                                            // defaultValue={dayjs(props.wheelingCharge.effectiveTime).format('HH')}
-                                            rules={{
-                                                required: true,
-                                            }}
-                                            defaultValue={`0`}
-                                            render={({ field }) => (
+                                                }
+                                                {Array.from(Array(24)).map((e, i) => {
+                                                    return (
+                                                        <MenuItem key="i" value={`${i}`}> {(`00` + i).slice(-2) + `:00`}</MenuItem>
 
-                                                <Select variant="outlined"
-                                                    {...field}
-                                                    margin="dense"
-                                                    size='small'
-                                                    sx={{ maxWidth: '10em', justifyContent: 'flex-end', textAlignLast: 'end', }}
-                                                    MenuProps={{
-                                                        PaperProps: {
-                                                            style: {
-                                                                maxHeight: '40vh',
-                                                                backgroundColor: '#fff',
-                                                            }
-                                                        }
-                                                    }}
-                                                >
-                                                    {
-
-                                                    }
-                                                    {Array.from(Array(60)).map((e, i) => {
-                                                        return (
-                                                            <MenuItem value={`${i}`}> {(`00` + i).slice(-2)}</MenuItem>
-
-                                                        )
-                                                    })}
-                                                </Select>
-                                            )}
-                                        />
-                                    </Box>
+                                                    )
+                                                })}
+                                            </Select>
+                                        )}
+                                    />
                                 </Grid>
                             </Grid>
                         </Grid>

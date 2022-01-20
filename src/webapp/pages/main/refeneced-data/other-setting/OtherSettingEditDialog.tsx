@@ -1,4 +1,4 @@
-import { Button, DialogContent, DialogTitle, Divider, Grid, TextField, Typography } from '@mui/material';
+import { Button, DialogContent, DialogTitle, Divider, Grid, MenuItem, Select, TextField, Typography } from '@mui/material';
 import React from 'react'
 import { Controller, useForm } from 'react-hook-form';
 import { useDialog } from '../../../../hooks/useDialog';
@@ -281,24 +281,42 @@ export default function OtherSettingEditDialog() {
                                     </Typography>
                                 </Grid>
                                 <Grid item container xs={4} direction="row" justifyContent="flex-end" alignItems="center">
-                                    <Grid item container justifyContent="flex-end" xs={'auto'}>
+                                <Grid item container justifyContent="flex-end" xs={'auto'}>
                                         <Controller
-                                            render={({ field }) => (
-                                                <TextField variant="outlined"
-                                                    margin="dense"
-
-                                                    size='small'
-                                                    sx={{ maxWidth: '7em', justifyContent: 'flex-end', textAlignLast: 'end', }}
-
-                                                    {...field}
-                                                />)}
-                                            name="effectiveTime"
                                             control={control}
-                                            defaultValue={otherSetting.effectiveTime}
+                                            name="effectiveTime"
+                                            // defaultValue={dayjs(props.wheelingCharge.effectiveTime).format('HH')}
                                             rules={{
                                                 required: true,
                                             }}
+                                            defaultValue={`0`}
 
+                                            render={({ field }) => (
+                                                <Select variant="outlined"
+                                                    {...field}
+                                                    margin="dense"
+                                                    size='small'
+                                                    fullWidth
+                                                    sx={{ justifyContent: 'flex-end', textAlignLast: 'end', }}
+                                                    MenuProps={{
+                                                        PaperProps: {
+                                                            style: {
+                                                                backgroundColor: '#fff',
+                                                            }
+                                                        }
+                                                    }}
+                                                >
+                                                    {
+
+                                                    }
+                                                    {Array.from(Array(24)).map((e, i) => {
+                                                        return (
+                                                            <MenuItem key="i" value={`${i}`}> {(`00` + i).slice(-2) + `:00`}</MenuItem>
+
+                                                        )
+                                                    })}
+                                                </Select>
+                                            )}
                                         />
                                     </Grid>
                                     <Grid container xs={5} pl={1}  >

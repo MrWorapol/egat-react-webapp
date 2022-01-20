@@ -1,4 +1,4 @@
-import { egatHost } from "../../constanst";
+import { egatHost, localGateway } from "../../constanst";
 import { IOtherSettingLog } from "../../state/reference-data/other-setting/othersetting-log";
 import { IOtherSetting } from "../../state/reference-data/other-setting/othersetting-state";
 import { IUserSession } from "../../state/user-sessions";
@@ -26,7 +26,7 @@ interface IPutOtherSettingRequest {
 }
 
 export class OtherSettingAPI {
-    private uri = egatHost;
+    private uri = localGateway;
 
     async getOtherSetting(req: IGetOtherSettingRequest): Promise<IGetOtherSettingResponse | null> {
         const path = '/reference-data/other-setting'
