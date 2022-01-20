@@ -13,6 +13,7 @@ import { DatePicker } from '@mui/lab';
 import dayjs from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
+import { useSnackBarNotification } from '../../../../hooks/useSnackBarNotification';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -27,6 +28,7 @@ interface IHolidayForm {
 }
 export default function CreateHolidaysDialog(props: IServiceChargeProps) {
     const { closeDialog } = useDialog();
+    const { showSnackBar } = useSnackBarNotification();
     // const[holiday,setHolidayState] = useState<IHoliday[]>([]);
 
     const { register, handleSubmit, control, watch } = useForm<IHolidayForm>({
@@ -53,16 +55,27 @@ export default function CreateHolidaysDialog(props: IServiceChargeProps) {
         closeDialog();
     }
     const onSubmit = (data: IHolidayForm) => {
-        let requestData = data.holiday.filter((row: IHoliday, i: number) => {
-            if (row.setDate !== '' || row.description !== '') {
-                row.setDate = dayjs(row.setDate).format('DD/MM/YYYY').toString();
-                return {
-                    ...row,
+        let requestData: IHoliday[] = [];
+        if (data.holiday.length > 0) {
+            data.holiday.forEach((row: IHoliday, i: number) => {
+                if (row.setDate !== null) {
+                    if (!dayjs(row.setDate).isValid()) { //validate date format
+                        requestData = [];
+                        showSnackBar({ serverity: 'error', message: `${row.setDate} row number: ${i + 1}` });
+                        return;
+                    }
+                    row.setDate = dayjs(row.setDate).toISOString();
+                    requestData.push({
+                        ...row,
+                    })
                 }
+            })
+
+            if (requestData.length > 0) {
+
+                createHoliday(requestData);
             }
-        })
-        console.log(requestData);
-        createHoliday(requestData);
+        }
     }
     return (
         <>
@@ -95,7 +108,7 @@ export default function CreateHolidaysDialog(props: IServiceChargeProps) {
                                 <TableBody>
                                     {controlledFields.map((field, index) => {
                                         return (
-                                            <TableRow>
+                                            <TableRow key={`${index}`}>
                                                 <TableCell>
                                                     <Controller
                                                         control={control}
@@ -108,7 +121,7 @@ export default function CreateHolidaysDialog(props: IServiceChargeProps) {
                                                                 value={value}
                                                                 onChange={onChange}
                                                                 renderInput={(params) => (
-                                                                    <TextField {...params} helperText={'DD/MM/YYYY'} />
+                                                                    <TextField {...params}  />
                                                                 )}
                                                             />
                                                         }
@@ -141,7 +154,7 @@ export default function CreateHolidaysDialog(props: IServiceChargeProps) {
                         <Button variant="contained" endIcon={<AddCircleOutlineIcon />}
                             onClick={() => {
                                 append({
-                                    setDate: "",
+                                    setDate: dayjs().toString(),
                                     description: "",
                                 })
                             }}
@@ -157,7 +170,7 @@ export default function CreateHolidaysDialog(props: IServiceChargeProps) {
                             </Button>
                         </Grid>
                         <Grid>
-                            <Button variant='contained' type="submit">
+                            <Button variant='contained' type="submit" disabled={watchFieldArray.length < 1}>
                                 Set
                             </Button>
                         </Grid>

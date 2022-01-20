@@ -23,7 +23,7 @@ interface ISettingProps {
 const scenario = [
     { value: `Grid (DSO/EGAT) รับซื้อด้วยอัตรา` },
     { value: `ได้รับเงินจากผู้ซื้อเต็มจำนวนตามปริมาณที่ได้ตกลงซื้อขายไว้ แต่ต้องซื้อไฟจาก Grid เข้าไปชดเชยส่วนที่ขาดส่ง (อัตรา TOU)` },
-    { value: `ซื้อไฟฟ้าส่วนที่ใช้เกินจาก Grid(อัตรา TOU)` },
+    { value: `ซื้อไฟฟ้าส่วนที่ใช้เกินจาก Grid (อัตรา TOU)` },
     { value: `จ่ายเงินให้ผู้ขายตามจำนวนที่ใช้จริง + บทลงโทษเท่ากับค่าไฟส่วนต่างระหว่างค่าไฟที่ตกลงซื้อขายกัน - ค่าไฟที่ Grid (DSO/EGAT) ต้องรับซื้อไฟส่วนเกินที่ใช้ไม่ครบนั้น` },
 ]
 
@@ -43,7 +43,10 @@ export default function ImbalanceSettingDialog(props: ISettingProps) {
     const handleCheckSwitch = (event: React.ChangeEvent<HTMLInputElement>) => {
         setCustomGridChecked(event.target.checked);
     };
-    const onSubmitForm = (data: Iimbalance) => {
+    const onSubmitForm = (data: Iimbalance) => 
+    {
+        console.log(`onSubmit edit imbalcne ${data.effectiveTime}`);
+        data.effectiveDate = dayjs(data.effectiveDate).startOf('day').toISOString();
         data.effectiveTime = dayjs(data.effectiveDate).startOf('hour').set('hour', +data.effectiveTime).toISOString();
         const requestData: Iimbalance = { ...data, id: props.imbalance.id, type: props.imbalance.type, imbalance: props.imbalance.imbalance };
         console.info(requestData);
@@ -225,7 +228,6 @@ export default function ImbalanceSettingDialog(props: ISettingProps) {
                                         <Controller
                                             control={control}
                                             name="effectiveTime"
-                                            // defaultValue={dayjs(props.wheelingCharge.effectiveTime).format('HH')}
                                             rules={{
                                                 required: true,
                                             }}
@@ -251,7 +253,7 @@ export default function ImbalanceSettingDialog(props: ISettingProps) {
                                                     }
                                                     {Array.from(Array(24)).map((e, i) => {
                                                         return (
-                                                            <MenuItem key="i" value={`${i}`}> {(`00` + i).slice(-2) + `:00`}</MenuItem>
+                                                            <MenuItem key={`${i}-${props.no}`} value={`${i}`}> {(`00` + i).slice(-2) + `:00`}</MenuItem>
 
                                                         )
                                                     })}

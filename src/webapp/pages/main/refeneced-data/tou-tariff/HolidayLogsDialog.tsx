@@ -48,7 +48,7 @@ export default function HolidayLogsDialog(props: IServiceChargeProps) {
                 </TableCell>
                 <TableCell>
                     <Typography >
-                        {row.setDate}
+                        {dayjs(row.setDate).format('DD/MM/YYYY')}
                     </Typography>
                 </TableCell>
                 <TableCell>

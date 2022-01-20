@@ -22,6 +22,7 @@ export function useWheelingLogs(wheelingType: 'AS' | 'T' | 'D' | 'RE') {
                 if (response !== null) {
                     console.info(response);
                     setWheelingLogs(response.context);
+                    hideLoading(10);
                 }
                 hideLoading(10);
             }catch(e){

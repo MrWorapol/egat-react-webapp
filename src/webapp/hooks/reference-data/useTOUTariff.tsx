@@ -65,7 +65,7 @@ export function useTOUTariff() {
             try {
                 const result = await api.putTOUTariff({ session, tariff: data });
                 if (result === true) {
-                    showSnackBar({ serverity: "error", message: `Updated TOU${data.title} successful` });
+                    showSnackBar({ serverity: "success", message: `Updated TOU ${data.title} successful` });
                     if (dialogContent) {
                         closeDialog();
                     }
@@ -132,12 +132,12 @@ export function useTOUTariff() {
     }, [])
     useEffect(() => {
         if (session && currentState === NavigationCurrentType.TOU_TARIFF) {
-            console.log()
-            if (!touTariff) {
+            if (!touTariff && onLoad===true) {
                 refreshTOUTariff();
-                console.debug('call get tou tariff');
                 // console.info(wheelingCharge);
             }
+        }return ()=>{
+            setOnLoad(false);
         }
     }, [touTariff, refreshTOUTariff, onLoad])
     return { onLoad, touTariff, refreshTOUTariff, editTOUTariff, gridUsedPackage, editGridUsedPackage, serviceChargeType1, serviceChargeType2, editServiceCharge }

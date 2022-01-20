@@ -36,8 +36,8 @@ export default function ServiceChargeDialog(props: IServiceChargeEditProps) {
     const onSubmitForm = async (data: IServiceCharge) => {
         data.bahtPerMonth = Number.parseFloat(data.bahtPerMonth + '');
         let effectiveTime = '';
-        if (data.effectiveHour && data.effectiveMinute) {
-            effectiveTime = dayjs(data.effectiveDate).hour(+data.effectiveHour).minute(+data.effectiveMinute).toISOString();
+        if (data.effectiveTime) {
+            effectiveTime = dayjs(data.effectiveDate).startOf('day').set('hour', +data.effectiveTime).toISOString();
         }
         let request: IServiceCharge = {
             ...data,

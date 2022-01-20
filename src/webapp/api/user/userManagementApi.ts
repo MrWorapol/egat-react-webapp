@@ -2,7 +2,7 @@ import { MeterDetail } from "../../state/user-management/meter-detail";
 import { IUserDetail } from "../../state/user-management/user-detail";
 import { UserInfo } from "../../state/user-management/user-info";
 import { IUserSession } from "../../state/user-sessions";
-import { egatHost, userApi } from '../../constanst';
+import { egatHost, localGateway, userApi } from '../../constanst';
 import { IUserRoles } from "../../pages/main/user-management/UserManagement";
 import { IAdminRegistratoinState } from "../../state/user-management/admin-registration-state";
 import fetchWithTimeout from "../../utils/fetchWithTimeout";
@@ -51,7 +51,7 @@ interface IGetUserByIDResponse {
 }
 
 export default class UserManagementAPI {
-    private host = egatHost;
+    private host = localGateway;
     // let response: Response;  
     async getAllUser(req: IGetUserRequest): Promise<IGetUsersResponse | null> {
         const path = '/web-admin/users'
@@ -121,7 +121,7 @@ export default class UserManagementAPI {
     async getUserByFilter(request: IGetSearchUserRequest): Promise<IGetUsersResponse | null> {
         // https://egat-p2p-webadmin-profile.di.iknowplus.co.th/users/search?value=0123456789
         const text = request.text;
-        const path = '/web-admin/users/filter'
+        const path = '/web-admin/users/search'
         const api = new URL(this.host + path);
         api.searchParams.append('value', text);
         console.log(`filter uri is : ${api.toString()}`);
@@ -151,7 +151,7 @@ export default class UserManagementAPI {
     }
 
     async editUser(request: IEditUserRequest): Promise<boolean> {
-        const path = '/users/detail/';
+        const path = '/web-admin/users/detail/';
         const api = new URL(this.host + path + request.meterDetail.meterId);
         let response: Response;
         let accessToken = request.session.accessToken;
@@ -191,7 +191,7 @@ export default class UserManagementAPI {
         const rolesParams = request.roles.join('+');
         console.log(`hello from getUserByRoles API`);
         console.log(rolesParams);
-        const path = '/users/filter'
+        const path = '/web-admin/users/filter'
         const api = new URL(this.host + path);
         api.searchParams.append('roles', rolesParams);
         let response: Response;
@@ -218,7 +218,7 @@ export default class UserManagementAPI {
 
 
     async createAdmin(request: ICreateAdminRequest): Promise<ICreateAdminResponse | null> {
-        const path = '/users/admin';
+        const path = '/web-admin/users/admin';
         const api = new URL(this.host + path);
         let response: Response;
         let accessToken = request.session.accessToken ;

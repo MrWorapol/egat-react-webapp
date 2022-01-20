@@ -24,8 +24,9 @@ export default function MainPage() {
             <Grid container item id="header" sx={{ height: '4em' }}>
                 <Header />
             </Grid>
-            <Grid container item id="navigation-tab" direction="row" sx={{ minHeight: '100vh-4em' }}>
-                <Grid container item xs={2}>
+            <Grid container  id="navigation-tab" direction="row" sx={{ minHeight: '100vh-5em' }}>
+                
+                <Grid container item xs={2} >
                     <NavigationMainPage />
                 </Grid>
                 <Grid container item xs={10} id="content" pt={3} px={4} width='100%'>

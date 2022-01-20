@@ -43,8 +43,7 @@ export function useImbalance() {
     const updateImbalance = useCallback(async (imbalance: Iimbalance) => {
         if (session) {
             try {
-                showLoading(10);
-                imbalance.effectiveTime = dayjs(imbalance.effectiveDate).hour(+imbalance.effectiveTime).minute(0).toISOString();
+                showLoading(10);    
                 const response = await api.updateImbalance({ session: session, imbalance: imbalance });
                 if (response === true) {
                     showSnackBar({

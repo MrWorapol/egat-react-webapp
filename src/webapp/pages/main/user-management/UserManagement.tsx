@@ -31,31 +31,13 @@ export default function UserManagement() {
         consumer: false,
         admin: false,
     });
-    // let debounceFn: NodeJS.Timeout;
-    // useEffect(() => {
-    //     const searchUserByText = setTimeout(() => {
-    //         console.log(searchText);
-    //         if (searchText === '') {
-    //             refreshAllUser();
-    //         }
-    //         refreshAllUser({ text: searchText });
-
-    //         // Send Axios request here
-    //     }, 1000)
-
-    //     return () => clearTimeout(searchUserByText)
-    // }, [searchText])
 
     const roleSearchDebounce = useDebouncedCallback(
         () => {
             const selectedRoles = Object.keys(roleState).filter((key: string) => {
                 return roleState[key] === true;
             });
-            // if(selectedRoles.length >0){
             refreshAllUser({ roles: [...selectedRoles] });
-            // }
-            console.log(`get roles select`);
-            console.log(selectedRoles);
         }, 2000
     )
 

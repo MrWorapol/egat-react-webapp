@@ -18,6 +18,7 @@ import ArchiveIcon from '@mui/icons-material/Archive';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import { useWheelingCharge } from '../../../../hooks/reference-data/useWheelingCharge';
 
 const StyledMenu = styled((props: MenuProps) => (
     <Menu
@@ -80,15 +81,13 @@ export default function WheelingCharge() {
         meapeaegat: true,
         paymentTo: true,
     });
-
-    const [lastTimeUpdated, setLastTimeUpdated] = useState(dayjs().format('DD/MM/YYYY [at] HH:MM'));
+    const { lastestUpdated } = useWheelingCharge();
 
     useEffect(() => {
-        setLastTimeUpdated(dayjs().format('DD/MM/YYYY [at] HH:MM'));
-        return () => {
 
+        return () => {
         }
-    }, [selectedColumn]);
+    }, [lastestUpdated]);
 
     function CustomizedMenus(): JSX.Element {
 
@@ -201,7 +200,7 @@ export default function WheelingCharge() {
                 <Grid item container id="action-zone" direction="row" py={2} justifyContent='space-between'>
                     <Grid item >
                         <Typography >
-                            {`Last Time Updated: ${lastTimeUpdated}`}
+                            {`Last Time Updated: ${dayjs(lastestUpdated).format('DD/MM/YYYY [at] HH:MM')}`}
                         </Typography>
                     </Grid>
                     <Grid item >

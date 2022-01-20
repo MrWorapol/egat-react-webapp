@@ -62,7 +62,7 @@ export default function OtherSetting() {
                 </Grid>
                 <Grid item alignItems="end">
                     <Typography sx={{ fontSize: '1em', }}>
-                        {`Effective Date From: ${otherSetting && dayjs(otherSetting.effectiveDateTime).format('DD/MM/YYYY HH:mm')}`}
+                        {`Effective Date From: ${otherSetting && otherSetting.effectiveDate} : ${otherSetting && otherSetting.effectiveTime}`}
                     </Typography>
                 </Grid>
             </Grid>

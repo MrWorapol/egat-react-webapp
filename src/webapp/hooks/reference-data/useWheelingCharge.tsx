@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { WheelingChargeAPI } from "../../api/referenceData/WheelingChargeAPI";
 import { NavigationCurrentType } from "../../state/navigation-current-state";
@@ -13,6 +13,7 @@ export function useWheelingCharge() {
     const session = useRecoilValue(userSessionState);
     const { currentState } = useNavigationGet();
     const [wheelingCharge, setWheelingCharge] = useRecoilState(wheelingChargeState);
+    let [lastestUpdated, setLastestUpdated] = useState(dayjs().toDate().toString());
     const api = new WheelingChargeAPI();
     const { showSnackBar } = useSnackBarNotification();
     const { showLoading, hideLoading } = useLoadingScreen();
@@ -25,6 +26,7 @@ export function useWheelingCharge() {
                 if (response !== null) {
                     console.info(response);
                     setWheelingCharge(response.context);
+                    setLastestUpdated(dayjs().toDate().toString());
                     hideLoading(10);
                 }
             } catch (e) {
@@ -57,7 +59,7 @@ export function useWheelingCharge() {
                 });
                 hideLoading(10);
                 if (response === true) {
-                    showSnackBar({ serverity: "success", message: `Updated Successful` });
+                    showSnackBar({ serverity: "success", message: `Edit Successful.` });
                 }
             } catch (err) {
                 hideLoading(10);
@@ -70,7 +72,7 @@ export function useWheelingCharge() {
     };
 
     useEffect(() => {
-        if (session && currentState === NavigationCurrentType.WHEELING_CHARGE) {
+        if (session && session.accessToken && currentState === NavigationCurrentType.WHEELING_CHARGE) {
             if (!wheelingCharge) {
                 refreshWheelingCharge();
                 console.debug('call ge wheelingChart');
@@ -80,6 +82,7 @@ export function useWheelingCharge() {
 
     }, [wheelingCharge, refreshWheelingCharge])
     return {
+        lastestUpdated,
         wheelingCharge,
         refreshWheelingCharge,
         updatedWheelingCharge

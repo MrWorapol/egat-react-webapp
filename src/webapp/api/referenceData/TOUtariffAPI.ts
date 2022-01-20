@@ -93,15 +93,18 @@ export default class TOUTariffAPI {
                 headers
             });
         } catch (e) {
-            return null;
+            throw Error(`UnExpected Handler Error`);
         }
-
-        let result = await response.json();
-        console.log(result);
-        let content: IGetTOUResponse = {
-            context: result
+        if (response.status === 200) {
+            let result = await response.json();
+            console.log(result);
+            let content: IGetTOUResponse = {
+                context: result
+            }
+            return content;
+        } else {
+            throw Error(`Error Code: ${response.status}`);
         }
-        return content;
 
     }
 
@@ -151,27 +154,22 @@ export default class TOUTariffAPI {
                 headers
             });
         } catch (e) {
-            return null;
+            throw Error(`UnExpected Handler Error`);
         }
-
-        let result = await response.json();
-        console.log(`get tariff logs`);
-        console.log(result);
-        let content: IGetTOULogsResponse = {
-            context: result
+        if (response.status === 200) {
+            let result = await response.json();
+            console.log(`get tariff logs`);
+            console.log(result);
+            let content: IGetTOULogsResponse = {
+                context: result
+            }
+            return content;
+        } else {
+            throw Error(`Error With Code: ${response.status}`);
         }
-        return content;
     }
     async getServiceCharge(req: IGetServiceChargeRequest): Promise<IGetServiceChargeResponse | null> {
-        // return {
-        //     context: [{
-        //         touType: "tou-1",
-        //         bahtPerMonth: 83730010.18856233,
-        //         effectiveDate: "occaecat aute fugiat culpa",
-        //         effectiveTime: "reprehenderit nisi laboris sed sint"
 
-        //     }]
-        // }
         const path = `/reference-data/tou-tariff-setting/${req.touType}/service-charge`;
         const api = this.uri + path;
         let response: Response;
@@ -186,15 +184,18 @@ export default class TOUTariffAPI {
                 headers
             });
         } catch (e) {
-            return null;
+            throw Error(`UnExpected Handler Error`);
         }
-
-        let result = await response.json();
-        // console.log(result);
-        let content: IGetServiceChargeResponse = {
-            context: result
+        if (response.status === 200) {
+            let result = await response.json();
+            // console.log(result);
+            let content: IGetServiceChargeResponse = {
+                context: result
+            }
+            return content;
+        } else {
+            throw Error(`Error With Code: ${response.status}`);
         }
-        return content;
     }
 
     async putServiceCharge(req: IPutServiceChargeRequest): Promise<boolean> {
@@ -239,15 +240,19 @@ export default class TOUTariffAPI {
                 headers
             });
         } catch (e) {
-            return null;
+            throw Error(`UnExpected Handler Error`);
         }
+        if (response.status === 200) {
+            let result = await response.json();
 
-        let result = await response.json();
+            let content: IGetServiceChargeLogsResponse = {
+                context: result
+            }
+            return content;
+        } else {
+            throw Error(`Error With Code: ${response.status}`);
 
-        let content: IGetServiceChargeLogsResponse = {
-            context: result
         }
-        return content;
     }
     async getGridPackage(req: IGetTOURequest): Promise<IGetGridPackageResponse | null> {
         const path = '/reference-data/tou-tariff-setting/grid-used-package'
@@ -264,14 +269,19 @@ export default class TOUTariffAPI {
                 headers
             });
         } catch (e) {
-            return null;
+            throw Error(`UnExpected Handler Error`);
         }
+        if (response.status === 200) {
 
-        let result = await response.json();
-        let content: IGetGridPackageResponse = {
-            context: result
+            let result = await response.json();
+            let content: IGetGridPackageResponse = {
+                context: result
+            }
+            return content;
+        } else {
+            throw Error(`Error With Code: ${response.status}`);
+
         }
-        return content;
     }
 
     async putGridUsedPackage(req: IPutGridUsedPackageRequest): Promise<boolean> {
@@ -319,15 +329,19 @@ export default class TOUTariffAPI {
                 headers
             });
         } catch (e) {
-            return null;
+            throw Error(`UnExpected Handler Error`);
         }
+        if (response.status === 200) {
+            let result = await response.json();
 
-        let result = await response.json();
+            let content: IGetHolidayLogsResponse = {
+                context: result
+            }
+            return content;
+        } else {
+            throw Error(`Error With Code: ${response.status}`);
 
-        let content: IGetHolidayLogsResponse = {
-            context: result
         }
-        return content;
     }
     async putHolidays(req: IPutHolidayRequest): Promise<boolean> {
         const path = `/reference-data/tou-tariff-setting/${req.touType}/holidays`;
@@ -351,15 +365,14 @@ export default class TOUTariffAPI {
                 body
             });
         } catch (e) {
-            return false;
+            throw Error(`UnExpected Handler Error`);
         }
 
         if (response.status === 204) {
 
-            console.warn(response);
             return true;
         } else {
-            return false;
+            throw Error(`Error With Code: ${response.status}`);
         }
     }
 }

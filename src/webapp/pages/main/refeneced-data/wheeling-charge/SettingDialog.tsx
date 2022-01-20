@@ -27,13 +27,21 @@ export default function SettingDialog(props: ISettingProps) {
     const onSubmitForm = (data: IWheelingCharge) => {
         let effectiveTime = '';
         if (data.effectiveTime) {
-            effectiveTime = dayjs(data.effectiveDate).startOf('hour').set('hour',+data.effectiveTime).toISOString();
+            effectiveTime = dayjs(data.effectiveDate).startOf('hour').set('hour', +data.effectiveTime).toISOString();
         }
         let request: IWheelingCharge = {
-            ...data,
             id: props.wheelingCharge.id,
+            title: props.wheelingCharge.title,
             wheelingType: props.wheelingCharge.wheelingType,
+            effectiveDate: dayjs(data.effectiveDate).startOf('hour').toISOString(),
             effectiveTime: effectiveTime,
+            note: props.wheelingCharge.note,
+            bahtPerKWh: +data.bahtPerKWh || 0,
+            mea: +data.mea || 0,
+            pea: +data.pea || 0,
+            meaEgat: +data.meaEgat || 0,
+            peaEgat: +data.peaEgat || 0,
+            meaPeaEgat: +data.meaPeaEgat || 0,
         }
         console.info(request);
         updatedWheelingCharge(request);

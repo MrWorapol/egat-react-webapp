@@ -32,21 +32,38 @@ export default function OtherSettingEditDialog() {
         //     id: props.wheelingCharge.id,
         //     wheelingType: props.wheelingCharge.wheelingType,
         // }
-        data.other.vat = convertToNumber(data.other.vat + '');
-        data.gridUsed.ft = convertToNumber(data.gridUsed.ft + '');
-        data.gridUsed.discountGridUsed = convertToNumber(data.gridUsed.discountGridUsed + '');
-        data.energyTradingPayment.dicountAppFees = convertToNumber(data.energyTradingPayment.dicountAppFees + '');
-        data.energyTradingPayment.transactionFees = convertToNumber(data.energyTradingPayment.transactionFees + '');
-        data.effectiveTime = dayjs(data.effectiveDate).startOf('hour').set('hour',+data.effectiveTime).toISOString();
         if (otherSetting) {
-            data.id = otherSetting.id;
-        }
-        console.info(data);
-        if (await putOtherSetting(data)) {
+            let request: IOtherSetting = {
+                id: otherSetting.id,
+                effectiveDate: dayjs(data.effectiveDate).startOf('hour').toISOString(),
+                effectiveTime: dayjs(data.effectiveDate).startOf('hour').set('hour', +data.effectiveTime).toISOString(),
+                energyTradingPayment: {
+                    dicountAppFees: +data.energyTradingPayment.dicountAppFees,
+                    transactionFees: +data.energyTradingPayment.transactionFees
+                },
+                other: {
+                    vat: +data.other.vat,
+                },
+                gridUsed: {
+                    discountGridUsed: +data.gridUsed.discountGridUsed,
+                    ft: +data.gridUsed.ft
+                }
+            }
+            // data.other.vat = +data.other.vat;
+            // data.gridUsed.ft = +data.gridUsed.ft;
+            // data.gridUsed.discountGridUsed = +data.gridUsed.discountGridUsed;
+            // data.energyTradingPayment.dicountAppFees = +data.energyTradingPayment.dicountAppFees;
+            // data.energyTradingPayment.transactionFees = +data.energyTradingPayment.transactionFees;
+            // data.effectiveTime = dayjs(data.effectiveDate).startOf('hour').set('hour', +data.effectiveTime).toISOString();
+            // data.effectiveDate = dayjs(data.effectiveDate).startOf('hour').toISOString();
 
-            refreshOtherSetting();
-            closeDialog();
-        };
+            console.info(data);
+            if (await putOtherSetting(request)) {
+
+                refreshOtherSetting();
+                closeDialog();
+            };
+        }
     }
 
     if (!otherSetting) {//guard 

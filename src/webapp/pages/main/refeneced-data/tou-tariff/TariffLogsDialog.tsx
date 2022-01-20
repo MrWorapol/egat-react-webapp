@@ -84,10 +84,12 @@ export default function TariffLogsDialog(props: ITariffLogProps) {
             <DialogTitle>
                 <Typography sx={{ fontSize: '1.2em' }}>
                     {`Log : ${touTypeLabel[props.tariff.touType]}`}
+                    <Typography sx={{ fontSize: '1.1em' }}>
+                        {`Title : ${props.tariff.title}`}
+                    </Typography>
                 </Typography>
-                <Typography sx={{ fontSize: '1.2em' }}>
-                    {`Title : ${props.tariff.title}`}
-                </Typography>
+                {/* <Typography sx={{ fontSize: '1.2em' }}>
+                </Typography> */}
             </DialogTitle>
             <DialogContent>
                 <Box >

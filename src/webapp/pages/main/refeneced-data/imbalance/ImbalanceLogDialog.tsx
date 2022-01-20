@@ -85,17 +85,17 @@ export default function ImbalanceLogDialog(props: ILogProps) {
                         <Box sx={{}}>
                             <Grid container direction='column' justifyContent="space-between" px={3} xs={'auto'} alignContent="center">
                                 <Grid container item direction="row" xs={'auto'} alignItems='center' justifyContent="center" >
-                                    <Typography> Scenario :</Typography>
+                                    <Typography> {`Scenario : `}</Typography>
                                     <Typography sx={{ alignItems: 'center' }}> {log.imbalanceSetting.scenario}</Typography>
                                 </Grid>
                                 <Grid container direction='row' xs={'auto'} alignItems='center'>
 
-                                    <Typography> Imbalance Clearing :</Typography>
+                                    <Typography>{` Imbalance Clearing : `}</Typography>
                                     <Typography> {log.imbalanceSetting.imbalanceClearing}</Typography>
                                 </Grid>
                                 <Grid container direction='row' xs={'auto'} alignItems='center'>
 
-                                    <Typography> Baht/kWh: </Typography>
+                                    <Typography> {`Baht/kWh : `} </Typography>
                                     <Typography> {log.imbalanceSetting.bahtPerKWh}</Typography>
                                 </Grid>
 

@@ -41,14 +41,13 @@ export class WheelingChargeAPI {
                 headers
             });
         } catch (e) {
-            return null;
+            throw Error(`Unexpected handle error`);
+
         }
         if (response.status === 401) {
             throw Error(`Unauthorization`);
         }
-        if (response.status > 500) {
-            throw Error(`Unexpected Error Code >500: ${response.status}`);
-        }
+
         if (response.status === 200) {
             let result = await response.json();
             console.log(result);
@@ -76,15 +75,24 @@ export class WheelingChargeAPI {
                 headers
             });
         } catch (e) {
-            return null;
+            throw Error(`Unexpected handle error`);
+
+        }
+        if (response.status === 401) {
+            throw Error(`Unauthorization`);
         }
 
-        let result = await response.json();
-        console.info(result);
-        let content: IGetLogsResponse = {
-            context: result
+        if (response.status === 200) {
+            let result = await response.json();
+            console.info(result);
+            let content: IGetLogsResponse = {
+                context: result
+            }
+            return content;
+        } else {
+            throw Error(`Unexpected Error Code: ${response.status}`);
+
         }
-        return content;
     }
 
     async updatedWheelingCharge(req: IPutWheelingChargeRequest): Promise<boolean> {

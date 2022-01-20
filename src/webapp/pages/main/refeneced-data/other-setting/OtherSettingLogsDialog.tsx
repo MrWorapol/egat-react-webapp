@@ -120,7 +120,7 @@ export default function OtherSettingLogsDialog() {
     return (
         <>
             <DialogTitle>
-                <Typography color="secondary.main" variant="h6" sx={{ fontWeight: 'bold' }}>
+                <Typography  variant="h6" sx={{ fontWeight: 'bold' }}>
                     {`Log: Other Setting`}
                 </Typography>
             </DialogTitle>

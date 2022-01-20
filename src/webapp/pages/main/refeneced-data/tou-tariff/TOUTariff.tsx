@@ -14,28 +14,12 @@ import TariffLogsDialog from './TariffLogsDialog';
 import { useDialog } from '../../../../hooks/useDialog';
 import TariffEditDialog from './TariffEditDialog';
 import ServiceChargeDialog from './ServiceChargeEditDialog';
-import { IServiceCharge } from '../../../../state/reference-data/tou-traff/tou-service-charge-state';
+import { IServiceCharge, serviceChargeLogsState } from '../../../../state/reference-data/tou-traff/tou-service-charge-state';
 import ServiceChargeLogDialog from './ServiceChargeLogDialog';
 import HolidayLogsDialog from './HolidayLogsDialog';
 import CreateHolidaysDialog from './CreateHolidaysDialog';
 import { useTOUTariff } from '../../../../hooks/reference-data/useTOUTariff';
 
-// const pk: IPackage[] = [
-//     {
-//         label: 'อัตรา 22-33 kV, 12-24 kV',
-//         value: '1',
-//         bahtPerKWh: 312.57,
-//         effectiveDate: '22/12/2021',
-//         effectiveTime: '9:00',
-//     },
-//     {
-//         label: 'อัตรา <22 kV, <12 kV',
-//         value: '2',
-//         bahtPerKWh: 231.57,
-//         effectiveDate: '22/12/2021',
-//         effectiveTime: '9:00',
-//     },
-// ]
 interface IMap {
     [key: string]: string,
 }
@@ -51,6 +35,7 @@ export default function TOUTariff() {
     const { showDialog } = useDialog();
     const { onLoad, touTariff, refreshTOUTariff, serviceChargeType1, serviceChargeType2, gridUsedPackage,editGridUsedPackage } = useTOUTariff();
     const resetLogs = useResetRecoilState(touTariffLogState);
+    const resetServiceChargeLogs = useResetRecoilState(serviceChargeLogsState);
     const [packageState, setPackageState] = useState('');
 
     useEffect(() => {
@@ -84,7 +69,7 @@ export default function TOUTariff() {
     }
     function onClickLogButton(selectedData: ITouTariff) {
         resetLogs();
-        console.log(`open log ${selectedData}`)
+        console.log(`open log ${selectedData.title}`)
         showDialog({
             content: <TariffLogsDialog tariff={selectedData} />,
             onClose: () => false,
@@ -104,6 +89,7 @@ export default function TOUTariff() {
     }
 
     function onClickServiceChargeLogButton(selectedData: IServiceCharge) {
+        resetServiceChargeLogs();
         showDialog({
             content: <ServiceChargeLogDialog serviceCharge={selectedData} />,
             onClose: () => false,

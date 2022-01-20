@@ -30,7 +30,8 @@ export default function TariffEditDialog(props: ITariffEditProps) {
     const onSubmitForm = async (data: ITouTariff) => {
         if (data.effectiveTime) {
             data.effectiveTime = dayjs(data.effectiveDate).startOf('hour').set('hour', +data.effectiveTime).toISOString();
-
+            data.startTime = (`00` + data.startTime).slice(-2)+`:00`;
+            data.endTime = (`00` + data.endTime).slice(-2)+`:00`;
             data.bahtPerKWh = Number.parseFloat(data.bahtPerKWh + '');
             let request: ITouTariff = {
                 ...data,
