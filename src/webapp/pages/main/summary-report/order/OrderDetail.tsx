@@ -133,7 +133,7 @@ function buildOfferToSell(orderDetail: IOrderDetail) {
                         {`Offer To Sell`}
                     </Typography>
                     <Typography >
-                        {`${orderDetail.orderDetail.offerToSell} Baht/kWh`}
+                        {`${(Math.round(orderDetail.orderDetail.offerToSell*100)/100).toFixed(2)} Baht/kWh`}
                     </Typography>
                 </Grid>
                 <Grid container item justifyContent='space-between' px={4} >
@@ -141,7 +141,7 @@ function buildOfferToSell(orderDetail: IOrderDetail) {
                         {`Trading Fee`}
                     </Typography>
                     <Typography >
-                        {`(${orderDetail.orderDetail.tradingFee}) Baht`}
+                        {`(${(Math.round(orderDetail.orderDetail.tradingFee*100)/100).toFixed(2)}) Baht`}
                     </Typography>
                 </Grid>
                 <Grid container item justifyContent='space-between' px={4} >
@@ -149,7 +149,8 @@ function buildOfferToSell(orderDetail: IOrderDetail) {
                         {`Estimated Sales`}
                     </Typography>
                     <Typography >
-                        {`${orderDetail.orderDetail.estimatedSales + orderDetail.orderDetail.tradingFee} Baht`}
+                        
+                        {`${(Math.round((orderDetail.orderDetail.estimatedSales + orderDetail.orderDetail.tradingFee)*100)/100).toFixed(2)} Baht`}
                     </Typography>
                 </Grid>
             </Grid>
@@ -204,7 +205,7 @@ function buildOpenOrder(orderDetail: IOrderDetail) {
                         </Typography>
                     }
                     <Typography >
-                        {`${orderDetail.orderDetail.price} Baht/kWh`}
+                        {`${(Math.round(orderDetail.orderDetail.price*1000)/1000).toFixed(3)} Baht/kWh`}
                     </Typography>
                 </Grid>
             </Grid>

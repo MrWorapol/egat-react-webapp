@@ -40,7 +40,7 @@ export function useImbalance() {
     };
 
 
-    const updateImbalance = useCallback(async (imbalance: Iimbalance) => {
+    const updateImbalance = async (imbalance: Iimbalance) => {
         if (session) {
             try {
                 showLoading(10);    
@@ -59,7 +59,7 @@ export function useImbalance() {
 
             }
         }
-    }, [])
+    };
     useEffect(() => {
         if (session && currentState === NavigationCurrentType.IMBALANCE) {
             if (!imbalance) {
@@ -68,7 +68,8 @@ export function useImbalance() {
                 console.info(imbalance);
             }
         }
-    }, [imbalance, refreshImbalance])
+    }, [session,currentState])
+    
     return {
         imbalance,
         refreshImbalance,

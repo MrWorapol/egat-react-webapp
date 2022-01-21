@@ -27,7 +27,7 @@ const NavigationMainPage = () => {
     ];
 
     const summaryChildrenMenu: IChildrenMenu[] = [
-        { label: 'User & Energy Report', path: '/users_report', state: NavigationCurrentType.SUMMARY_REPORT },
+        { label: 'User & Energy Report', path: '/users_report', state: NavigationCurrentType.USER_REPORT },
         { label: 'Order Report', path: '/order_report', state: NavigationCurrentType.ORDER_REPORT },
         { label: 'Settlement Report', path: '/settlement_report', state: NavigationCurrentType.SETTLEMENT_REPORT },
         { label: 'Billing Report', path: '/billing_report', state: NavigationCurrentType.BILLING_REPORT },

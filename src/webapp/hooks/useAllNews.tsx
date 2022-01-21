@@ -3,12 +3,11 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { newsInfo, NewsInfo } from "../state/news-management/news-info";
 import { NewsCreationState, newscreation } from '../state/news-management/news-creation-state';
 import NewsManagementAPI from "../api/news/newsManagementApi";
-import { ApiTwoTone } from "@mui/icons-material";
-import { useAuthGuard } from "./useAuthGuard";
 import { NavigationCurrentType } from "../state/navigation-current-state";
 import { useNavigationGet } from "./useNavigationGet";
 import { useLoadingScreen } from "./useLoadingScreen";
 import { useSnackBarNotification } from "./useSnackBarNotification";
+import { userSessionState } from "../state/user-sessions";
 
 interface ISearchField {
     text?: string,
@@ -19,7 +18,7 @@ export function useAllNews() {
     const [newsInfoDataValue, setNewsInfoValue] = useRecoilState(newsInfo);
     const [RecentNews, setRecentNews] = useRecoilState(newscreation);
     let { currentState } = useNavigationGet();
-    let { session } = useAuthGuard();
+    let session  = useRecoilValue(userSessionState);
     let mocknewsdata: NewsInfo;
     const { showLoading, hideLoading } = useLoadingScreen();
     const { showSnackBar } = useSnackBarNotification();

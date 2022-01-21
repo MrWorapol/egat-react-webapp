@@ -2,8 +2,7 @@ import { MeterDetail } from "../../state/user-management/meter-detail";
 import { IUserDetail } from "../../state/user-management/user-detail";
 import { UserInfo } from "../../state/user-management/user-info";
 import { IUserSession } from "../../state/user-sessions";
-import { egatHost, localGateway, userApi } from '../../constanst';
-import { IUserRoles } from "../../pages/main/user-management/UserManagement";
+import { egatGateway, localGateway } from '../../constanst';
 import { IAdminRegistratoinState } from "../../state/user-management/admin-registration-state";
 import fetchWithTimeout from "../../utils/fetchWithTimeout";
 
@@ -51,8 +50,8 @@ interface IGetUserByIDResponse {
 }
 
 export default class UserManagementAPI {
-    private host = localGateway;
-    // let response: Response;  
+    private host = egatGateway;
+
     async getAllUser(req: IGetUserRequest): Promise<IGetUsersResponse | null> {
         const path = '/web-admin/users'
         const api = this.host + path;

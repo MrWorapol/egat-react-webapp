@@ -4,7 +4,6 @@ import { OtherSettingAPI } from "../../api/referenceData/OhterSettingAPI";
 import { NavigationCurrentType } from "../../state/navigation-current-state";
 import { IOtherSetting, otherSettingState } from "../../state/reference-data/other-setting/othersetting-state";
 import { userSessionState } from "../../state/user-sessions";
-import { useAuthGuard } from "../useAuthGuard";
 import { useLoadingScreen } from "../useLoadingScreen";
 import { useNavigationGet } from "../useNavigationGet";
 import { useSnackBarNotification } from "../useSnackBarNotification";
@@ -12,7 +11,7 @@ import { useSnackBarNotification } from "../useSnackBarNotification";
 
 export function useOtherSetting() {
     const [otherSetting, setOtherSetting] = useRecoilState(otherSettingState);
-    let { session } = useAuthGuard();
+    let session = useRecoilValue(userSessionState);
     const api = new OtherSettingAPI();
     const { currentState } = useNavigationGet();
     const { showSnackBar } = useSnackBarNotification();
@@ -37,7 +36,7 @@ export function useOtherSetting() {
         }
     };
 
-    const putOtherSetting = useCallback(async (data: IOtherSetting) => {
+    const putOtherSetting = async (data: IOtherSetting) => {
         if (session) {
             try {
                 showLoading(10);
@@ -61,16 +60,16 @@ export function useOtherSetting() {
 
             }
         }
-    }, [])
+    };
 
     useEffect(() => {
-       
+
         if (session && currentState === NavigationCurrentType.OTHER_SETTING) {
             if (!otherSetting) {
-                refreshOtherSetting();  
+                refreshOtherSetting();
             }
-        } 
-    }, [session]);
+        }
+    }, [session, currentState]);
 
 
     return {

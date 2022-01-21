@@ -55,7 +55,7 @@ export class SettlementReportAPI {
             "payload.tradingFee" as "tradingFee",
             "payload.wheelingChargeFee" as "wheelingChargeFee",
             "payload.priceRuleApplied" as "priceRuleApplied"
-            FROM "TradeContractOnEgatF"`,
+            FROM "TradeContractFinal"`,
             "resultFormat": "object"
         }
         let headers = {
@@ -121,7 +121,7 @@ export class SettlementReportAPI {
             "payload.reference.imbalanceBuyerUnderCommit" as "imbalanceBuyerUnderCommit", 
             "payload.reference.imbalanceSellerOverCommit"as "imbalanceSellerOverCommit", 
             "payload.reference.imbalanceSellerUnderCommit" as "imbalanceSellerUnderCommit"
-            FROM "TradeOnEgat2"`,
+            FROM "TradeFinal"`,
             "resultFormat": "object"
 
         }
@@ -136,33 +136,33 @@ export class SettlementReportAPI {
                 method: "POST",
                 body: JSON.stringify(body),
             })
-            const resultFromJSON: IImbalanceReport[] = await response.json();
-            // if (response.status !== 200) {
-            //     return null;
-            // }
+            if (response.status === 200) {
+                const resultFromJSON: IImbalanceReport[] = await response.json();
 
-            if (period !== undefined) {
-                let tradePeriod: IImbalanceReport[] = [];
-                resultFromJSON.forEach((trade: IImbalanceReport) => {
-                    let inRange = dayjs(trade.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
-                        && dayjs(trade.timestamp).isBefore(dayjs(period.endDate).endOf('day'));
-                    if (inRange) {
-                        tradePeriod.push(trade);
+                if (period !== undefined) {
+                    let tradePeriod: IImbalanceReport[] = [];
+                    resultFromJSON.forEach((trade: IImbalanceReport) => {
+                        let inRange = dayjs(trade.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
+                            && dayjs(trade.timestamp).isBefore(dayjs(period.endDate).endOf('day'));
+                        if (inRange) {
+                            tradePeriod.push(trade);
+                        }
+
+                    })
+                    return {
+                        context: tradePeriod,
                     }
-
-                })
-                return {
-                    context: tradePeriod,
                 }
+
+                return {
+                    context: resultFromJSON
+                };
+            } else {
+                throw Error(`ERROR WITH CODE:${response.status}`);
             }
-
-            return {
-                context: resultFromJSON
-            };
-
         } catch (e) {
             console.log(e);
-            throw Error(`การเชื่อมต่อเซิฟเวอร์ขัดข้อง`);
+            throw Error(`Unexpected handle error`);
         }
     }
 

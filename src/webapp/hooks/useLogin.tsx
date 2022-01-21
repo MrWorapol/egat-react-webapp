@@ -62,11 +62,3 @@ export function useLogin() {
     }
 }
 
-//load token from localstorage
-//jwt decode check refresh token exp
-//if
-//interval check refresh onLoad and every 1 minute 
-//  if(onExpired < 1 min){
-// call refreshToken to api 
-//}
-//

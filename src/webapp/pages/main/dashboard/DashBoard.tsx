@@ -7,8 +7,9 @@ import theme from '../../../theme/Theme';
 
 import Divider from '@mui/material/Divider';
 import useDashBoard from '../../../hooks/dashboard/useDashBoard';
-import { useAuthGuard } from '../../../hooks/useAuthGuard';
 import { useNavigationGet } from '../../../hooks/useNavigationGet';
+import { useRecoilValue } from 'recoil';
+import { userSessionState } from '../../../state/user-sessions';
 
 
 const Img = styled('img')({
@@ -56,7 +57,7 @@ export default function DashBoard() {
     useNavigationSet(NavigationCurrentType.DASHBOARD);
 
     const { userDashboard, energyDashboard, tradingDashboard } = useDashBoard();
-    const { session } = useAuthGuard();
+    let session = useRecoilValue(userSessionState);
     const { currentState } = useNavigationGet();
 
     useEffect(() => {
@@ -66,7 +67,7 @@ export default function DashBoard() {
         return () => {
 
         }
-    }, [userDashboard, energyDashboard, tradingDashboard])
+    }, [session,userDashboard, energyDashboard, tradingDashboard])
 
     if (session && currentState === NavigationCurrentType.DASHBOARD) {
         return (
@@ -79,66 +80,79 @@ export default function DashBoard() {
                             </Grid>
                         </ThemeProvider>
                         <ThemeProvider theme={icon_name}>
-                            <Grid item container id="actionzone" justifyContent='space-between' py={1} xs={12}>
-                                <Grid item container direction='column' justifyContent='space-evenly' xs={1}>
-                                    <Typography >All Meter</Typography>
-                                    <Img src="/assets/icon/Member.png" />
-                                    <Number>
-                                        {userDashboard ? <Typography style={{ fontSize: 26 }} px={2}>{userDashboard.allmeter}</Typography> : "loading"}
-                                    </Number>
-                                </Grid>
-                                <Grid item container direction='column' justifyContent='space-evenly' xs={1}>
-                                    <Typography >Registered User</Typography>
-                                    <Img src="/assets/icon/Member.png" />
-                                    <Number>
-                                        {userDashboard ? <Typography style={{ fontSize: 26 }} px={2}>{userDashboard.registeredUser}</Typography> : "loading"}
-                                    </Number>
-                                </Grid>
-                                <Grid item container direction='column' justifyContent='space-evenly' xs={1}>
-                                    <Typography >Today New Registered User</Typography>
-                                    <Img src="/assets/icon/New-Member.png" />
-                                    <Number>
-                                        {userDashboard ? <Typography style={{ fontSize: 26 }} px={2}>{userDashboard.newRegister}</Typography> : "loading"}
-                                    </Number>
-                                </Grid>
+                            <Grid item container id="actionzone" justifyContent='space-between' py={1} columns={15}>
+                                <Grid item container direction='column' justifyContent='space-between' xs={2}>
+                                    <Grid item justifyContent="start">
+                                        <Typography >All Meter</Typography>
+                                    </Grid>
 
+                                    <Grid item justifyContent="end">
+                                        <Img src="/assets/icon/Member.png" />
+                                        <Number>
+                                            {userDashboard ? <Typography style={{ fontSize: 26 }} px={2}>{userDashboard.allmeter}</Typography> : "loading"}
+                                        </Number>
+                                    </Grid>
+                                </Grid>
+                                <Grid item container direction='column' justifyContent='space-between' xs={2}>
+                                    <Typography >Registered User</Typography>
+                                    <Grid item justifyContent="end">
+
+                                        <Img src="/assets/icon/Member.png" />
+                                        <Number>
+                                            {userDashboard ? <Typography style={{ fontSize: 26 }} px={2}>{userDashboard.registeredUser}</Typography> : "loading"}
+                                        </Number>
+                                    </Grid>
+                                </Grid>
+                                <Grid item container direction='column' justifyContent='space-between' xs={2}>
+                                    <Typography >Today New Registered User</Typography>
+                                    <Grid item justifyContent="end">
+
+                                        <Img src="/assets/icon/New-Member.png" />
+                                        <Number>
+                                            {userDashboard ? <Typography style={{ fontSize: 26 }} px={2}>{userDashboard.newRegister}</Typography> : "loading"}
+                                        </Number>
+                                    </Grid>
+                                </Grid>
                                 <Divider style={{ border: '1px solid #707070' }} orientation="vertical" />
 
-                                <Grid item container direction='column' justifyContent='space-between' xs={1}>
+                                <Grid item container direction='column' justifyContent='space-between' xs={2}>
                                     <Grid item>
                                         <Typography>Aggregator</Typography>
                                     </Grid>
-                                    <Grid item>
+                                    <Grid item justifyContent="end">
+
                                         <Img src="/assets/icon/Member.png" />
-                                    </Grid>
-                                    <Grid>
                                         <Number>
                                             {userDashboard ? <Typography style={{ fontSize: 26 }} px={2}>{userDashboard.aggregator}</Typography> : "loading"}
                                         </Number>
                                     </Grid>
                                 </Grid>
-                                <Grid item container direction='column' justifyContent='space-between' xs={1}>
+                                <Grid item container direction='column' justifyContent='space-between' xs={2}>
                                     <Typography>Prosumer</Typography>
-                                    <Img src="/assets/icon/Member.png" />
-                                    <Number>
-                                        {userDashboard ? <Typography style={{ fontSize: 26 }} px={2}>{userDashboard.prosumer}</Typography> : "loading"}
-                                    </Number>
+                                    <Grid item justifyContent="end">
+
+                                        <Img src="/assets/icon/Member.png" />
+                                        <Number>
+                                            {userDashboard ? <Typography style={{ fontSize: 26 }} px={2}>{userDashboard.prosumer}</Typography> : "loading"}
+                                        </Number>
+                                    </Grid>
                                 </Grid>
-                                <Grid item container direction='column' justifyContent='space-between' xs={1}>
+                                <Grid item container direction='column' justifyContent='space-between' xs={2}>
                                     <Typography>Consumer</Typography>
+
+                                    <Grid item justifyContent="end">
                                     <Img src="/assets/icon/Member.png" />
                                     <Number>
                                         {userDashboard ? <Typography style={{ fontSize: 26 }} px={2}>{userDashboard.consumer}</Typography> : "loading"}
                                     </Number>
                                 </Grid>
-                                <Grid item container direction='column' justifyContent='space-between' xs={1}>
+                                </Grid>
+                                <Grid item container direction='column' justifyContent='space-between' xs={2}>
                                     <Grid item>
                                         <Typography>No User</Typography>
                                     </Grid>
-                                    <Grid item>
+                                    <Grid item justifyContent="end">
                                         <Img src="/assets/icon/325.png" />
-                                    </Grid>
-                                    <Grid item>
                                         <Number>
                                             {userDashboard ? <Typography style={{ fontSize: 26 }} px={3}>{userDashboard.noUser}</Typography> : "loading"}
                                         </Number>
@@ -159,7 +173,7 @@ export default function DashBoard() {
                             </Grid>
                         </ThemeProvider>
                         <ThemeProvider theme={icon_name}>
-                            <Grid item container id="actionzone" justifyContent='space-around' mx={'auto'} py={1} flexGrow={1}>
+                            <Grid item container id="actionzone" justifyContent='space-around' mx={'auto'} py={1} flexGrow={1} height="200px">
 
                                 <Grid item container direction='column' justifyContent='space-between' xs={3} width="100%">
                                     <Typography>Total PV Generate</Typography>
@@ -217,62 +231,62 @@ export default function DashBoard() {
 
                     <Divider style={{ border: '1px solid #707070' }} variant="middle" />
 
-                    <Grid container item direction="row" >
+                    <Grid container item direction="row" height='400px' >
 
                         <ThemeProvider theme={header_name}>
-                            <Grid item id="title">
+                            <Grid item id="title" pl={2}>
                                 <Typography>Trading</Typography>
                             </Grid>
                         </ThemeProvider>
 
                         <ThemeProvider theme={icon_name}>
-                            <Grid item container id="actionzone" justifyContent='space-between' py={1}>
-                                <Grid justifyContent='center' item xs={2} >
+                            <Grid item container id="actionzone" justifyContent='space-around' py={1} columns={15}>
+                                <Grid item container direction='column' justifyContent='space-between' xs={2}>
                                     <Typography px={1}>Total No. Order</Typography>
                                     <Img src="/assets/icon/256.png" />
                                     <Number>
                                         {tradingDashboard ?
-                                            <Typography style={{ fontSize: 26 }} px={2}>{tradingDashboard.totalOrder}</Typography>
+                                            <Typography style={{ fontSize: 26 }}>{tradingDashboard.totalOrder}</Typography>
                                             : <>...Loading</>}
                                     </Number>
                                 </Grid>
 
-                                <Grid item direction='row' justifyContent='center' xs={3} style={{ textAlign: 'center' }}>
+                                <Grid item container direction='column' justifyContent='space-between' xs={3} style={{ textAlign: 'center' }}>
                                     <Typography >Total No. Contract</Typography>
                                     <Img src="/assets/icon/320.png" />
                                     <Number>
                                         {tradingDashboard ?
-                                            <Typography style={{ fontSize: 26 }} px={2}>{tradingDashboard.totalContract}</Typography>
+                                            <Typography style={{ fontSize: 26 }} >{tradingDashboard.totalContract}</Typography>
                                             : <>...Loading</>
                                         }
                                     </Number>
                                 </Grid>
-                                <Grid item direction='row' justifyContent='center' xs={2} style={{ textAlign: 'center' }}>
+                                <Grid item container direction='column' justifyContent='space-between' xs={3} style={{ textAlign: 'center' }}>
                                     <Typography >Total Energy Sales (Net)</Typography>
                                     <Img src="/assets/icon/321.png" />
                                     <Number>
                                         {tradingDashboard ?
-                                            <Typography style={{ fontSize: 26 }} px={2} py={3}>{`${(Math.round(tradingDashboard.netSale * 100) / 100).toFixed(2)} kWh`}</Typography>
+                                            <Typography style={{ fontSize: 26 }} >{`${(Math.round(tradingDashboard.netSale * 100) / 100).toFixed(2)} kWh`}</Typography>
                                             : <>...Loading</>
                                         }
                                     </Number>
                                 </Grid>
-                                <Grid item direction='row' justifyContent='center' xs={3} style={{ textAlign: 'center' }}>
+                                <Grid item container direction='column' justifyContent='space-between' xs={3} style={{ textAlign: 'center' }}>
                                     <Typography >Total Energy Buys (Amount)</Typography>
                                     <Img src="/assets/icon/322.png" />
                                     <Number>
                                         {tradingDashboard ?
-                                            <Typography style={{ fontSize: 26 }} py={3} px={2}>{`${(Math.round(tradingDashboard.netBuy * 100) / 100).toFixed(2)} kWh`}</Typography>
+                                            <Typography style={{ fontSize: 26 }} >{`${(Math.round(tradingDashboard.netBuy * 100) / 100).toFixed(2)} kWh`}</Typography>
                                             : <>...Loading</>
                                         }
                                     </Number>
                                 </Grid>
-                                <Grid item direction='row' justifyContent='center' xs={2} style={{ textAlign: 'center' }}>
+                                <Grid item container direction='column' justifyContent='space-between' xs={4} style={{ textAlign: 'center' }}>
                                     <Typography >Total Energy Imbalance (Amount)</Typography>
                                     <Img src="/assets/icon/323.png" />
                                     <Number>
                                         {tradingDashboard ?
-                                            <Typography style={{ fontSize: 26 }} px={2} py={2}>{`${(Math.round(tradingDashboard.netImbalance * 100) / 100).toFixed(2)} kWh`}</Typography>
+                                            <Typography style={{ fontSize: 26 }} >{`${(Math.round(tradingDashboard.netImbalance * 100) / 100).toFixed(2)} kWh`}</Typography>
                                             : <>...Loading</>
                                         }
                                     </Number>
@@ -282,8 +296,8 @@ export default function DashBoard() {
                         </ThemeProvider>
 
                         <ThemeProvider theme={icon_name}>
-                            <Grid item container id="actionzone" justifyContent='space-between'>
-                                <Grid item direction='row' justifyContent='center' xs={2}>
+                            <Grid item container id="actionzone" justifyContent='space-around' pb={2} columns={15}>
+                                <Grid item container direction='column' justifyContent='space-between' xs={2}>
                                     <Typography >Total Net Payment</Typography>
                                     <Img src="/assets/icon/receipt-1.png" />
                                     <Number>
@@ -296,40 +310,39 @@ export default function DashBoard() {
                                         }
                                     </Number>
                                 </Grid>
-                                <Grid item container direction='row' justifyContent='center' xs={2}>
+                                <Grid item container direction='column' justifyContent='space-between' xs={3}>
                                     <Typography >Total Energy Trading (Net)</Typography>
                                     <Img src="/assets/icon/318.png" />
                                     <Number>
                                         {tradingDashboard ?
                                             <>
-                                                <Typography style={{ fontSize: 26 }} px={2}>{`${(Math.round(tradingDashboard.totalEnergyNet * 100) / 100).toFixed(2)} `}</Typography>
+                                                <Typography style={{ fontSize: 26 }} >{`${(Math.round(tradingDashboard.totalEnergyNet * 100) / 100).toFixed(2)} `}</Typography>
                                                 <Typography style={{ fontSize: 20 }} >Baht</Typography>
                                             </>
                                             : <>...Loading</>
                                         }
                                     </Number>
                                 </Grid>
-                                <Grid item container direction='row' justifyContent='center' xs={2}>
-
-                                    <Typography px={5} >Total Grid Used</Typography>
+                                <Grid item container direction='column' justifyContent='space-between' xs={3}>
+                                    <Typography  >Total Grid Used</Typography>
                                     <Img src="/assets/icon/317.png" />
                                     <Number>
                                         {tradingDashboard ?
                                             <>
-                                                <Typography style={{ fontSize: 26 }} px={2}>{`${(Math.round(tradingDashboard.totalGridNet * 100) / 100).toFixed(2)} `}</Typography>
+                                                <Typography style={{ fontSize: 26 }} >{`${(Math.round(tradingDashboard.totalGridNet * 100) / 100).toFixed(2)} `}</Typography>
                                                 <Typography style={{ fontSize: 20 }} >Baht</Typography>
                                             </>
                                             : <>...Loading</>
                                         }
                                     </Number>
                                 </Grid>
-                                <Grid item container direction='row' justifyContent='center' xs={3} px={1}>
-                                    <Typography px={7} >Total Wheeling Charge</Typography>
+                                <Grid item container direction='column' justifyContent='space-between' xs={3}>
+                                    <Typography  >Total Wheeling Charge</Typography>
                                     <Img src="/assets/icon/294.png" />
                                     <Number>
                                         {tradingDashboard ?
                                             <>
-                                                <Typography style={{ fontSize: 26 }} px={20}>{`${(Math.round(tradingDashboard.netPayment * 100) / 100).toFixed(2)} `}</Typography>
+                                                <Typography style={{ fontSize: 26 }} >{`${(Math.round(tradingDashboard.netPayment * 100) / 100).toFixed(2)} `}</Typography>
                                                 <Typography style={{ fontSize: 20 }} >Baht</Typography>
                                             </>
                                             : <>...Loading</>
@@ -337,21 +350,18 @@ export default function DashBoard() {
 
                                     </Number>
                                 </Grid>
-                                <Grid item container direction='row' justifyContent='center' xs={1}>
-                                    <Typography px={3} >Acc. REC</Typography>
+                                <Grid item container direction='column' justifyContent='space-between' xs={4}>
+                                    <Typography  >Acc. REC</Typography>
                                     <Img src="/assets/icon/319.png" />
                                     <Number>
                                         {tradingDashboard ?
                                             <>
-                                                <Typography style={{ fontSize: 26 }} px={9}>{`${(Math.round((tradingDashboard.accREC / 1000) * 1000) / 1000).toFixed(4)}`}</Typography>
+                                                <Typography style={{ fontSize: 26 }} >{`${(Math.round((tradingDashboard.accREC / 1000) * 1000) / 1000).toFixed(4)}`}</Typography>
                                                 <Typography style={{ fontSize: 20 }} >MWh</Typography>
                                             </>
                                             : <>...Loading</>
                                         }
                                     </Number>
-                                </Grid>
-                                <Grid item justifyContent="flex-end">
-
                                 </Grid>
                             </Grid>
                         </ThemeProvider>

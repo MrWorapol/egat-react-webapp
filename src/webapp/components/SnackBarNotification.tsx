@@ -1,4 +1,4 @@
-import { Alert, Snackbar, SnackbarOrigin } from '@mui/material'
+import { Alert, Snackbar, SnackbarOrigin, Typography } from '@mui/material'
 import React from 'react'
 import { useSnackBarNotification } from '../hooks/useSnackBarNotification';
 
@@ -21,11 +21,12 @@ export default function SnackBarNotification() {
             open={snackBarValue !== null}
             onClose={closeSnackBar}
             message={snackBarValue !== null && snackBarValue.message}
-            autoHideDuration={3000}
+            autoHideDuration={3500}
             key={'buttom-center-snackbar' + snackBarValue?.message}
         >
             <Alert onClose={closeSnackBar} severity={snackBarValue?.serverity || "info"} sx={{ width: '100%' }}>
-                {snackBarValue !== null && snackBarValue.message}
+                {snackBarValue !== null &&
+                    <Typography>{snackBarValue.message}</Typography>}
             </Alert>
 
         </Snackbar>

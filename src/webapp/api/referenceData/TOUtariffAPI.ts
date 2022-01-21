@@ -1,4 +1,4 @@
-import { egatHost, localGateway } from "../../constanst";
+import { egatGateway, localGateway } from "../../constanst";
 import { IPackage, IGridPackage } from "../../state/reference-data/tou-traff/grid-package-state";
 import { IHoliday, IHolidayLogs } from "../../state/reference-data/tou-traff/holiday-state";
 import { IServiceCharge, IServiceChargeLog } from "../../state/reference-data/tou-traff/tou-service-charge-state";
@@ -76,7 +76,7 @@ interface IPutHolidayRequest {
 }
 
 export default class TOUTariffAPI {
-    private uri = localGateway;
+    private uri = egatGateway;
 
     async getTOUtariff(req: IGetTOURequest): Promise<IGetTOUResponse | null> {
         const path = '/reference-data/tou-tariff-setting'

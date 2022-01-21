@@ -277,14 +277,27 @@ export class OrderReportAPI {
                 body: JSON.stringify(body),
             })
             const ordersFromJSON: IOrderResponseFromJSON[] = await response.json();
-
-            let results: IGetOrderResponse[] = [];
-            ordersFromJSON.forEach((order: IOrderResponseFromJSON) => {
-                if (period) {
-                    let inRange = dayjs(order.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
-                        && dayjs(order.timestamp).isBefore(dayjs(period.endDate).endOf('day'))
-                    console.log(`is ${dayjs(order.timestamp).toDate()} inRange:${inRange} of :${dayjs(period.startDate).startOf('day')}\t to ${dayjs(period.endDate).endOf('day')}`);
-                    if (inRange) {
+            if (response.status === 200) {
+                let results: IGetOrderResponse[] = [];
+                ordersFromJSON.forEach((order: IOrderResponseFromJSON) => {
+                    if (period) {
+                        let inRange = dayjs(order.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
+                            && dayjs(order.timestamp).isBefore(dayjs(period.endDate).endOf('day'))
+                        console.log(`is ${dayjs(order.timestamp).toDate()} inRange:${inRange} of :${dayjs(period.startDate).startOf('day')}\t to ${dayjs(period.endDate).endOf('day')}`);
+                        if (inRange) {
+                            results.push({
+                                timestamp: order.timestamp,
+                                orderId: order[`payload.id`],
+                                userId: order.userId,
+                                status: order.status,
+                                targetAmount: order.targetAmount,
+                                targetPrice: order.targetPrice,
+                                userType: "SELLER",
+                                tradeMarket: "BILATERAL",
+                                settlementTime: order.settlementTime
+                            })
+                        }
+                    } else {
                         results.push({
                             timestamp: order.timestamp,
                             orderId: order[`payload.id`],
@@ -297,37 +310,72 @@ export class OrderReportAPI {
                             settlementTime: order.settlementTime
                         })
                     }
-                } else {
-                    results.push({
-                        timestamp: order.timestamp,
-                        orderId: order[`payload.id`],
-                        userId: order.userId,
-                        status: order.status,
-                        targetAmount: order.targetAmount,
-                        targetPrice: order.targetPrice,
-                        userType: "SELLER",
-                        tradeMarket: "BILATERAL",
-                        settlementTime: order.settlementTime
-                    })
-                }
-            })
-            return results;
+                })
+                return results;
+            } else {
+                throw Error(`ERROR WITH CODE: ${response.status}`)
+            }
         } catch (e) {
             console.log(e);
             throw Error(`การเชื่อมต่อเซิฟเวอร์ขัดข้อง`);
         }
     }
     async getMatchedOrder(req: IGetOrderRequest): Promise<IGetMathOrderResponse | null> {
-        const contracts = await this.tradeContractAPI.getTradeContractReport({ ...req });
-        const period = req.period;
-        let results: IGetMathOrderResponse = { context: [] };
+        try {
+            const contracts = await this.tradeContractAPI.getTradeContractReport({ ...req });
 
-        if (contracts && contracts.context.length > 0) {
-            contracts.context.forEach((contract: ITradeContractReport) => {
-                if (period) {
-                    let inRange = dayjs(contract.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
-                        && dayjs(contract.timestamp).isBefore(dayjs(period.endDate).endOf('day'))
-                    if (inRange) {
+            const period = req.period;
+            let results: IGetMathOrderResponse = { context: [] };
+
+            if (contracts && contracts.context.length > 0) {
+                contracts.context.forEach((contract: ITradeContractReport) => {
+                    if (period) {
+                        let inRange = dayjs(contract.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
+                            && dayjs(contract.timestamp).isBefore(dayjs(period.endDate).endOf('day'))
+                        if (inRange) {
+                            results.context.push({ // insert seller Matched
+                                orderId: contract.contractId,
+                                userId: contract.sellerId,
+                                status: "MATCHED",
+                                targetAmount: contract.energyCommitted,
+                                targetPrice: contract.priceCommitted,
+                                userType: "SELLER",
+                                tradeMarket: contract.tradeMarket,
+                                settlementTime: contract.settlementTime,
+                                tradeContractId: contract.contractId,
+                                orderDetail: {
+                                    deliverdTime: contract.settlementTime,
+                                    commitedAmount: contract.energyCommitted,
+                                    offerToSell: contract.priceCommitted,
+                                    tradingFee: contract.tradingFee,
+                                    estimatedSales: contract.priceCommitted
+                                }
+                            })
+                            results.context.push({//insert buyer Matched
+                                orderId: contract.contractId,
+                                userId: contract.buyerId,
+                                status: "MATCHED",
+                                targetAmount: contract.energyCommitted,
+                                targetPrice: contract.priceCommitted,
+                                userType: "BUYER",
+                                tradeMarket: contract.tradeMarket,
+                                settlementTime: contract.settlementTime,
+                                tradeContractId: contract.contractId,
+                                orderDetail: {
+                                    amount: contract.energyCommitted,
+                                    netBuy: contract.priceCommitted + contract.wheelingChargeFee + contract.tradingFee, //sum of Data
+                                    netEnergyPrice: contract.priceCommitted,
+                                    energyToBuy: contract.energyCommitted,
+                                    energyTariff: Math.round(contract.energyCommitted / contract.priceCommitted), //dont sure
+                                    energyPrice: (contract.priceCommitted * contract.energyCommitted), // dont sure
+                                    wheelingChargeTariff: Math.round((contract.wheelingChargeFee / contract.energyCommitted)), //dont sure
+                                    wheelingCharge: contract.wheelingChargeFee,
+                                    tradingFee: contract.tradingFee,
+                                }
+                            })
+                        }
+
+                    } else {
                         results.context.push({ // insert seller Matched
                             orderId: contract.contractId,
                             userId: contract.sellerId,
@@ -370,53 +418,13 @@ export class OrderReportAPI {
                         })
                     }
 
-                } else {
-                    results.context.push({ // insert seller Matched
-                        orderId: contract.contractId,
-                        userId: contract.sellerId,
-                        status: "MATCHED",
-                        targetAmount: contract.energyCommitted,
-                        targetPrice: contract.priceCommitted,
-                        userType: "SELLER",
-                        tradeMarket: contract.tradeMarket,
-                        settlementTime: contract.settlementTime,
-                        tradeContractId: contract.contractId,
-                        orderDetail: {
-                            deliverdTime: contract.settlementTime,
-                            commitedAmount: contract.energyCommitted,
-                            offerToSell: contract.priceCommitted,
-                            tradingFee: contract.tradingFee,
-                            estimatedSales: contract.priceCommitted
-                        }
-                    })
-                    results.context.push({//insert buyer Matched
-                        orderId: contract.contractId,
-                        userId: contract.buyerId,
-                        status: "MATCHED",
-                        targetAmount: contract.energyCommitted,
-                        targetPrice: contract.priceCommitted,
-                        userType: "BUYER",
-                        tradeMarket: contract.tradeMarket,
-                        settlementTime: contract.settlementTime,
-                        tradeContractId: contract.contractId,
-                        orderDetail: {
-                            amount: contract.energyCommitted,
-                            netBuy: contract.priceCommitted + contract.wheelingChargeFee + contract.tradingFee, //sum of Data
-                            netEnergyPrice: contract.priceCommitted,
-                            energyToBuy: contract.energyCommitted,
-                            energyTariff: Math.round(contract.energyCommitted / contract.priceCommitted), //dont sure
-                            energyPrice: (contract.priceCommitted * contract.energyCommitted), // dont sure
-                            wheelingChargeTariff: Math.round((contract.wheelingChargeFee / contract.energyCommitted)), //dont sure
-                            wheelingCharge: contract.wheelingChargeFee,
-                            tradingFee: contract.tradingFee,
-                        }
-                    })
-                }
+                })
+            }
 
-            })
+            return results;
+        } catch (err) {
+            throw err;
         }
-
-        return results;
     }
 
 }

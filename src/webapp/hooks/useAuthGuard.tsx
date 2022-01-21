@@ -9,6 +9,8 @@ import jwt_decode, { JwtPayload } from "jwt-decode";
 import dayjs from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
+import { setInterval } from "timers";
+import KeycloakAdminApi from "../api/keycloak/keycloakAdminApi";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -23,6 +25,7 @@ export function useAuthGuard() {
     let [sessionValue, setSessionValue] = useRecoilState(userSessionState);
     const { currentState } = useNavigationGet();
     const history = useHistory();
+    const api = new KeycloakAdminApi();
     const resetSessionState = useResetRecoilState(userSessionState);
 
     const loadLocalStorage = async () => {
@@ -44,38 +47,54 @@ export function useAuthGuard() {
         setInit(false);
     };
 
-    const checkRefreshToken = async () => {
-        console.log(`checkRefreshToken`);
-        let localSession = localStorage.getItem("session");
-        if (localSession) {
-            let decodeToken: SessionDecode = jwt_decode(localSession);
-            if (decodeToken) {
-                let expireUnixTime = decodeToken.exp;
-                if (expireUnixTime) {
-                    // console.log(`expire on sesion:${dayjs(expireUnixTime).unix()}\n now unix${dayjs().unix()}`);
-                    if (dayjs().unix() > expireUnixTime) {
-                        localStorage.removeItem("session");
-                        resetSessionState();
-                        history.push('/login');
+   
+
+    setInterval(async () => {
+        console.log(`call refershtoken`);
+        let localStore = localStorage.getItem("session");
+        if (localStore) {
+            let sessionObject: IUserSession = JSON.parse(localStore);
+            if (sessionObject) {
+                let decodeToken: SessionDecode = jwt_decode(sessionObject.accessToken);
+                if (decodeToken) {
+                    let expireUnixTime = decodeToken.exp;
+                    if (expireUnixTime && (expireUnixTime+30 < dayjs().unix())) {
+                        try {
+                            console.log(`call refresh token api`)
+                            const response = await api.refreshToken({ refreshToken: sessionObject.refreshToken })
+                            if (response) {
+                                const session = {
+                                    accessToken: response.accessToken,
+                                    refreshToken: response.refreshToken,
+                                    lasttimeLogIn: new Date(),
+                                }
+                                localStorage.setItem('session', JSON.stringify(session));
+                                setSessionValue(session);
+                            }
+                        } catch (err) {
+                            localStorage.removeItem('session');
+                            resetSessionState();
+                        }
                     }
                 }
             }
+        } else {
+            resetSessionState();
+            history.push('/login');
         }
-    }
+    }, 60000);
+
+
     useEffect(() => {
-        
-        if (init === true) { 
-            console.log('call auth Initial');
+        if (init === true) {
+           
             loadLocalStorage();
         } else {
-            console.log('session Loadable');
-            console.log(sessionValue);
-
-            checkRefreshToken();
+           
             //case not login
             if (!sessionValue) {
                 if (previousRoute !== '/' && previousRoute !== '/login') {
-                    history.push('/login?redirect=' + previousRoute);
+                    history.push('/login');
                 } else {
                     history.push('/login');
                     return;

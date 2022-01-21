@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { egatHost, localGateway } from "../../constanst";
+import { egatGateway, localGateway } from "../../constanst";
 import { IUserSession } from "../../state/user-sessions";
 import { IWheelingCharge } from "../../state/reference-data/wheeling-chart/wheeling-charge-state";
 import { IWheelingLogs } from "../../state/reference-data/wheeling-chart/wheeling-log-state";
@@ -24,7 +24,7 @@ interface IGetLogsResponse {
     context: IWheelingLogs[],
 }
 export class WheelingChargeAPI {
-    private uri = localGateway;
+    private uri = egatGateway;
 
     async getWheelingCharge(req: IGetWheelingChargeRequest): Promise<IGetWheelingChargeResponse | null> {
         const path = '/reference-data/wheeling-charge-setting'

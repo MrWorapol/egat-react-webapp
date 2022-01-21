@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { egatHost, localGateway } from "../../constanst";
+import { egatGateway, localGateway } from "../../constanst";
 import { Iimbalance } from "../../state/reference-data/imbalance/imbalance-state";
 import { IUserSession } from "../../state/user-sessions";
 import { IImbalanceLog } from "../../state/reference-data/imbalance/imbalance-log";
@@ -25,7 +25,7 @@ interface IUpdateImbalanceRequest {
     imbalance: Iimbalance
 }
 export class ImbalanceAPI {
-    private uri = localGateway;
+    private uri = egatGateway;
 
     async getImbalance(req: IGetImbalanceRequest): Promise<IGetImbalanceResponse | null> {
         const path = '/reference-data/imbalance-setting'

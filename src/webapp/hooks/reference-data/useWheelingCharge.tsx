@@ -80,7 +80,7 @@ export function useWheelingCharge() {
             }
         }
 
-    }, [wheelingCharge, refreshWheelingCharge])
+    }, [session])
     return {
         lastestUpdated,
         wheelingCharge,

@@ -132,73 +132,44 @@ export class UserAndEnergyReportAPI {
                 body: JSON.stringify(body),
             })
             // console.log(`userMeter Info response`);
-            if (response.status !== 200) {
+            if (response.status === 200) {
+
+                const rawData: IMeterAreaAndSite[] = await response.json();
+
+                rawData.forEach((row: IMeterAreaAndSite) => {
+                    // console.log(row);
+                    let inRange = dayjs(row.registrationDate).isBefore(dayjs(period.endDate).endOf('day'));
+                    // console.log(` inrange:${inRange} registrationDate:${dayjs(row.registrationDate).format('DD/MM/YYYY')} :${dayjs(period.endDate).format('DD/MM/YYYY')}`)
+                    if (inRange)
+                        if (period.region === 'all' || period.region === row.regionName) {
+
+                            result.push({
+                                id: row.userId,
+                                meterId: row.meterId,
+                                area: row.area,
+                                locationCode: row.locationCode,
+                                meterName: row.meterName,
+                                role: row.role,
+                                siteName: row.siteName,
+                                region: row.regionName,
+                                address: {
+                                    lat: row.lat,
+                                    lng: row.lng,
+                                },
+                                peameaSubstation: row.substationPeaMea,
+                                egatSubStation: row.substationEgat,
+                            })
+                        }
+                })
+                return {
+                    context: result
+                };
+            } else {
                 throw Error(`CODE: ${response.status} \nMessage: ${response.statusText}`)
             }
-            const rawData: IMeterAreaAndSite[] = await response.json();
-
-            // console.log(rawData);
-            // console.log(`diff Date select Call ${dayjs(period.startDate).startOf('day').toDate()}\t${(dayjs(period.endDate).startOf('day').toDate())}`);
-            // console.log(`diff start and end ${dayjs(period.endDate).startOf('day').isSame(dayjs(period.startDate).startOf('day'))}`);
-            // console.log(`case today query ${dayjs(period.startDate).startOf('day').isSame(dayjs().startOf('day'))}`);
-
-            // if (dayjs(period.endDate).startOf('day').isSame(dayjs(period.startDate).startOf('day')) // if same day
-            //     && dayjs(period.startDate).startOf('day').isSame(dayjs().startOf('day'))) {//and today get all users
-            //     rawData.forEach((row: IMeterAreaAndSite) => {
-            //         if (period.region === 'all' || period.region === row.regionName) {
-            //             result.push({
-            //                 id: row.userId,
-            //                 meterId: row.meterId,
-            //                 area: row.area,
-            //                 locationCode: row.locationCode,
-            //                 meterName: row.meterName,
-            //                 role: row.role,
-            //                 siteName: row.siteName,
-            //                 region: row.regionName,
-            //                 address: {
-            //                     lat: row.lat,
-            //                     lng: row.lng,
-            //                 },
-            //                 peameaSubstation: row.substationPeaMea,
-            //                 egatSubStation: row.substationEgat,
-            //             })
-            //         }
-            //     })
-            // } else { //case period time
-
-            rawData.forEach((row: IMeterAreaAndSite) => {
-                // console.log(row);
-                let inRange = dayjs(row.registrationDate).isBefore(dayjs(period.endDate).endOf('day'));
-                // console.log(` inrange:${inRange} registrationDate:${dayjs(row.registrationDate).format('DD/MM/YYYY')} :${dayjs(period.endDate).format('DD/MM/YYYY')}`)
-                if (inRange)
-                    if (period.region === 'all' || period.region === row.regionName) {
-
-                        result.push({
-                            id: row.userId,
-                            meterId: row.meterId,
-                            area: row.area,
-                            locationCode: row.locationCode,
-                            meterName: row.meterName,
-                            role: row.role,
-                            siteName: row.siteName,
-                            region: row.regionName,
-                            address: {
-                                lat: row.lat,
-                                lng: row.lng,
-                            },
-                            peameaSubstation: row.substationPeaMea,
-                            egatSubStation: row.substationEgat,
-                        })
-                    }
-            })
-            // }
-            return {
-                context: result
-            };
         } catch (e) {
             console.log(e);
-
-            return null;
+            throw Error(`การเชื่อมต่อเซิฟเวอร์ขัดข้อง`);
         }
 
     }
@@ -248,19 +219,20 @@ export class UserAndEnergyReportAPI {
             })
 
             // console.log(response);
-            if (response.status !== 200) {
+            if (response.status === 200) {
+                const resultFromJSON: IGetAllUser[] = await response.json();
+                console.log(`get ALL USER`);
+                console.log(resultFromJSON);
+                return {
+                    context: resultFromJSON
+                };
+            }
+            else {
                 throw Error(`CODE: ${response.status} \nMessage: ${response.statusText}`)
             }
-            const resultFromJSON: IGetAllUser[] = await response.json();
-            console.log(`get ALL USER`);
-            console.log(resultFromJSON);
-            return {
-                context: resultFromJSON
-            };
         } catch (e) {
             console.log(e);
-
-            return null;
+            throw Error(`การเชื่อมต่อเซิฟเวอร์ขัดข้อง`);
         }
 
     }
@@ -294,63 +266,69 @@ export class UserAndEnergyReportAPI {
                 method: "POST",
                 body: JSON.stringify(body),
             })
-            const rawData: IPowerData[] = await response.json();
-            if (period !== undefined) { //case query with period time
-                let powerArray: IPowerData[] = [];
-                let summaryPower = {
+            if (response.status === 200) {
+                const rawData: IPowerData[] = await response.json();
+                if (period !== undefined) { //case query with period time
+                    let powerArray: IPowerData[] = [];
+                    let summaryPower = {
+                        inBattery: 0,
+                        inGrid: 0,
+                        inSolar: 0,
+                        load: 0,
+                    }
+                    if (dayjs(period.endDate).startOf('day').isSame(dayjs(period.startDate).startOf('day')) // if start = end  and isToday return all 
+                        && dayjs(period.startDate).startOf('day').isSame(dayjs().startOf('day'))) {//is startday = Today
+                        rawData.forEach((power: ISummaryPowerInfo) => {
+                            summaryPower.inBattery += +power.inBattery;
+                            summaryPower.inGrid += +power.inGrid;
+                            summaryPower.inSolar += +power.inSolar;
+                            summaryPower.load += +power.load;
+                        })
+                        powerArray = [...rawData];
+                    } else { //case from start day at 00:00 to end day at 23:59
+                        rawData.forEach((power: IPowerData) => {
+                            let inRange = dayjs(power.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
+                                && dayjs(power.timestamp).isBefore(dayjs(period.endDate).endOf('day'))
+                            if (inRange) {
+                                powerArray.push(power);
+                                summaryPower.inBattery += +power.inBattery;
+                                summaryPower.inGrid += +power.inGrid;
+                                summaryPower.inSolar += +power.inSolar;
+                                summaryPower.load += +power.load;
+                            }
+                        })
+                    }
+                    console.log(`summaryPower`);
+                    console.log(`${summaryPower.inBattery}`)
+                    return {
+                        powerData: powerArray, //return array of power with all user meter. incase of period will return array power in range of date with all user meter
+                        summaryPower: summaryPower,//summary power for graph
+                    };
+                }
+                const result = {
                     inBattery: 0,
                     inGrid: 0,
                     inSolar: 0,
                     load: 0,
                 }
-                if (dayjs(period.endDate).startOf('day').isSame(dayjs(period.startDate).startOf('day')) // if start = end  and isToday return all 
-                    && dayjs(period.startDate).startOf('day').isSame(dayjs().startOf('day'))) {//is startday = Today
-                    rawData.forEach((power: ISummaryPowerInfo) => {
-                        summaryPower.inBattery += +power.inBattery;
-                        summaryPower.inGrid += +power.inGrid;
-                        summaryPower.inSolar += +power.inSolar;
-                        summaryPower.load += +power.load;
-                    })
-                    powerArray = [...rawData];
-                } else { //case from start day at 00:00 to end day at 23:59
-                    rawData.forEach((power: IPowerData) => {
-                        let inRange = dayjs(power.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
-                            && dayjs(power.timestamp).isBefore(dayjs(period.endDate).endOf('day'))
-                        if (inRange) {
-                            powerArray.push(power);
-                            summaryPower.inBattery += +power.inBattery;
-                            summaryPower.inGrid += +power.inGrid;
-                            summaryPower.inSolar += +power.inSolar;
-                            summaryPower.load += +power.load;
-                        }
-                    })
-                }
-                console.log(`summaryPower`);
-                console.log(`${summaryPower.inBattery}`)
-                return {
-                    powerData: powerArray, //return array of power with all user meter. incase of period will return array power in range of date with all user meter
-                    summaryPower: summaryPower,//summary power for graph
+                rawData.forEach((power: ISummaryPowerInfo) => {
+                    result.inBattery += +power.inBattery;
+                    result.inGrid += +power.inGrid;
+                    result.inSolar += +power.inSolar;
+                    result.load += +power.load;
+                })
+                return { // incase of dashboard get data
+                    powerData: rawData,
+                    summaryPower: result,
                 };
+            } else {
+                throw Error(`CODE: ${response.status} \nMessage: ${response.statusText}`)
             }
-            const result = {
-                inBattery: 0,
-                inGrid: 0,
-                inSolar: 0,
-                load: 0,
-            }
-            rawData.forEach((power: ISummaryPowerInfo) => {
-                result.inBattery += +power.inBattery;
-                result.inGrid += +power.inGrid;
-                result.inSolar += +power.inSolar;
-                result.load += +power.load;
-            })
-            return { // incase of dashboard get data
-                powerData: rawData,
-                summaryPower: result,
-            };
         } catch (e) {
-            return null;
+            console.log(e);
+            throw Error(`การเชื่อมต่อเซิฟเวอร์ขัดข้อง`);
         }
+
     }
 
     async getForecastData(req: IGetForecastDataRequest): Promise<IGetForecastDataResponse | null> {
@@ -381,30 +359,35 @@ export class UserAndEnergyReportAPI {
                 method: "POST",
                 body: JSON.stringify(body),
             })
-            const rawData: IPowerData[] = await response.json();
-            // console.log(`get Power Forecast By MeterId:${req.meterId} and Type: ${typeof (+req.meterId)}`);
-            // console.log(resultFromJSON);
-            if (period !== undefined) { //case query with period time
-                let powerArray: IPowerData[] = [];
-                let scopeRange = period;
-                rawData.forEach((power: IPowerData) => {
-                    let inRange = dayjs(power.timestamp).isAfter(dayjs(scopeRange.startDate).startOf('day'))
-                        && dayjs(power.timestamp).isBefore(dayjs(scopeRange.endDate).endOf('day'))
-                    if (inRange) {
-                        powerArray.push(power);
-                    }
-                })
-                return {
-                    context: powerArray, //return array of power with all user meter. incase of period will return array power in range of date with all user meter
+            if (response.status === 200) {
+                const rawData: IPowerData[] = await response.json();
+                // console.log(`get Power Forecast By MeterId:${req.meterId} and Type: ${typeof (+req.meterId)}`);
+                // console.log(resultFromJSON);
+                if (period !== undefined) { //case query with period time
+                    let powerArray: IPowerData[] = [];
+                    let scopeRange = period;
+                    rawData.forEach((power: IPowerData) => {
+                        let inRange = dayjs(power.timestamp).isAfter(dayjs(scopeRange.startDate).startOf('day'))
+                            && dayjs(power.timestamp).isBefore(dayjs(scopeRange.endDate).endOf('day'))
+                        if (inRange) {
+                            powerArray.push(power);
+                        }
+                    })
+                    return {//return  data in period
+                        context: powerArray, //return array of power with all user meter. incase of period will return array power in range of date with all user meter
 
-                };
+                    };
+                } else { //return all data
+                    return {
+                        context: rawData
+                    };
+                }
             } else {
-                return {
-                    context: rawData
-                };
+                throw Error(`CODE: ${response.status} \nMessage: ${response.statusText}`)
             }
         } catch (e) {
-            return null;
+            console.log(e);
+            throw Error(`การเชื่อมต่อเซิฟเวอร์ขัดข้อง`);
         }
     }
 

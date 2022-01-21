@@ -12,8 +12,9 @@ import { useAllNews } from '../../../hooks/useAllNews';
 import { useDialog } from '../../../hooks/useDialog';
 import ScrollDialog from './ScrollDialog';
 import { useSnackBarNotification } from '../../../hooks/useSnackBarNotification';
-import { useAuthGuard } from '../../../hooks/useAuthGuard';
 import { useLoadingScreen } from '../../../hooks/useLoadingScreen';
+import { useRecoilValue } from 'recoil';
+import { userSessionState } from '../../../state/user-sessions';
 
 export default function BasicMenu({ data }: { data: NewsInfo }) {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -30,7 +31,7 @@ export default function BasicMenu({ data }: { data: NewsInfo }) {
     const { showSnackBar } = useSnackBarNotification();
     const { refreshAllNews } = useAllNews();
     const { showLoading, hideLoading } = useLoadingScreen();
-    let { session } = useAuthGuard();
+    let session = useRecoilValue(userSessionState);
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);

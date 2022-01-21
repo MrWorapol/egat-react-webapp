@@ -15,7 +15,8 @@ import { INewsDetail, newsDetail } from '../../../state/news-management/news-det
 
 
 import { useSnackBarNotification } from '../../../hooks/useSnackBarNotification';
-import { useAuthGuard } from '../../../hooks/useAuthGuard';
+import { useRecoilValue } from 'recoil';
+import { userSessionState } from '../../../state/user-sessions';
 //npm i markdown-draft-js -s
 //""
 export default function CreateNewsDialog(this: any) {
@@ -23,7 +24,7 @@ export default function CreateNewsDialog(this: any) {
   const { showSnackBar } = useSnackBarNotification();
   const { putRecentsNews, refreshAllNews } = useAllNews();
   const api = new NewsManagementAPI();
-  let {session} = useAuthGuard();
+  let session = useRecoilValue(userSessionState);
   const { register, handleSubmit, watch, formState: { errors } } = useForm<NewsCreationState>();
   
   const onSubmitForm = (data: NewsCreationState) => {
@@ -37,7 +38,7 @@ export default function CreateNewsDialog(this: any) {
       newsrecentDetailholder.content = data.content;
       console.log(data.content);
     }
-    callPostapi(newsrecentDetailholder);
+    createDraftToAPI(newsrecentDetailholder);
 
     closeDialog();
   }
@@ -52,7 +53,7 @@ export default function CreateNewsDialog(this: any) {
     status: 'DRAFT',
   };
 
-  async function callPostapi(newsDetailholder: NewsInfo) {
+  async function createDraftToAPI(newsDetailholder: NewsInfo) {
     if (session) {
       try {
         //insert Id to newsDetail before send to api
