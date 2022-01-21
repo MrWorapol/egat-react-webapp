@@ -8,7 +8,7 @@ export interface IUserDetail {
     citizenId: string,
     meterId: string,
     photo?: string,
-
+    displayName?: string,
 
 }
 
@@ -17,3 +17,5 @@ export const userDetail = atom<IUserDetail | null>({
     key: 'userDetail',
     default: null
 })
+
+

@@ -4,19 +4,23 @@ import UserManagementAPI from "../api/user/userManagementApi";
 import { meterDetail } from "../state/user-management/meter-detail";
 import { userDetail } from "../state/user-management/user-detail";
 import { userSessionState } from "../state/user-sessions";
+import { useLoadingScreen } from "./useLoadingScreen";
 
 export function useUserDetail(id: string) {
     const api = new UserManagementAPI();
     const [userDetailValue, setUserDetailValue] = useRecoilState(userDetail);
     const [meterDetailValue, setMeterDetailValue] = useRecoilState(meterDetail);
     const session = useRecoilValue(userSessionState);
+    const { showLoading, hideLoading } = useLoadingScreen();
     const refreshUserDetail = useCallback(async () => {
         if (session) {
+            showLoading(10);
             console.log(`refresh USer Detail`)
             const response = await api.getUserByMeterID({ meterId: id, session });
             if (response) {
                 setUserDetailValue(response.userDetail);
                 setMeterDetailValue(response.meterDetail);
+                hideLoading(10);
             }
         }
     },

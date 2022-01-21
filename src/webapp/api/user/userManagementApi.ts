@@ -37,7 +37,7 @@ interface IGetUserRequest {
     session: IUserSession
 }
 interface IGetUsersResponse {
-    
+
     userInfos: UserInfo[],
 }
 
@@ -68,23 +68,23 @@ export default class UserManagementAPI {
                 headers
             });
         } catch (e) {
-            return null;
+            throw Error(`Unexpected handle error`);
+        }
+        if (response.status === 200) {
+            let result = await response.json();
+            console.log(result);
+            let content: IGetUsersResponse = {
+                userInfos: result
+            }
+            return content;
+        } else {
+            throw Error(`Error Code: ${response.status}`);
         }
 
-        let result = await response.json();
-        console.log(result);
-        let content: IGetUsersResponse = {
-            userInfos: result
-        }
-        return content;
-      
-       
+
     }
 
     async getUserByMeterID(req: IGetUserByIDRequest): Promise<IGetUserByIDResponse | null> {
-        // if (meterId === 'xxx') {
-        //     return createMockUserByID();
-        // }
         const path = `/web-admin/users/detail/${req.meterId}`;
         const api = this.host + path;
         let response: Response;
@@ -100,20 +100,22 @@ export default class UserManagementAPI {
                 headers
             })
         } catch (e) {
-            return null;
+            throw Error(`Unexpected handle error`);
         }
-        const result = await response.json();
-        const userDetail: IUserDetail = result;
-        const meterDetail: MeterDetail = result;
-        const content: IGetUserByIDResponse = {
-            userDetail: userDetail,
-            meterDetail: meterDetail,
+        if (response.status === 200) {
+            const result: IGetUserByIDResponse = await response.json();
+            const userDetail: IUserDetail = result.userDetail;
+            const meterDetail: MeterDetail = result.meterDetail;
+            const content: IGetUserByIDResponse = {
+                userDetail: userDetail,
+                meterDetail: meterDetail,
+            }
+            console.log(`get userDetail API `);
+            console.log(content)
+            return content;
+        } else {
+            throw Error(`Error Code: ${response.status}`);
         }
-
-        return content;
-        // const response: UserDetailResponse = createMockDetail();
-        // response.userDetail.idNumber = id;
-        // return Promise.resolve(response);
     }
 
     // async postNewAccount(): Promise
@@ -137,16 +139,19 @@ export default class UserManagementAPI {
                 headers
             });
         } catch (e) {
-            return null;
+            throw Error(`Unexpected handle error`);
         }
+        if (response.status === 200) {
 
-        let result = await response.json();
-        console.log(result);
-        let content: IGetUsersResponse = {
-            userInfos: result
+            let result = await response.json();
+            console.log(result);
+            let content: IGetUsersResponse = {
+                userInfos: result
+            }
+            return content;
+        } else {
+            throw Error(`Error Code: ${response.status}`);
         }
-        return content;
-
 
     }
 
@@ -173,17 +178,17 @@ export default class UserManagementAPI {
                 body: body
             });
         } catch (e) {
-            return false;
+            throw Error(`Unexpected handle error`);
         }
-
-        let result = await response.json();
-        console.log(result);
-        let content: IGetUsersResponse = {
-            userInfos: result
+        if (response.status === 204) {
+            return true;
+        } else {
+            throw Error(`Error Code: ${response.status}`);
         }
-        return true;
-
     }
+
+
+
 
     async getUsersByRoles(request: IGetUsersByRolesRequest): Promise<IGetUsersResponse | null> {
         // https://egat-p2p-webadmin-profile.di.iknowplus.co.th/users/filter?roles=admin
@@ -195,7 +200,7 @@ export default class UserManagementAPI {
         const api = new URL(this.host + path);
         api.searchParams.append('roles', rolesParams);
         let response: Response;
-        let accessToken = request.session.accessToken ;
+        let accessToken = request.session.accessToken;
         let headers = {
             "Content-Type": "application/json",
             Authorization: `Bearer ${accessToken}`,
@@ -206,14 +211,19 @@ export default class UserManagementAPI {
                 headers
             });
         } catch (e) {
-            return null;
+            throw Error(`Unexpected handle error`);
         }
-        let result = await response.json();
-        console.log(result);
-        let content: IGetUsersResponse = {
-            userInfos: result
+        if (response.status === 200) {
+            let result = await response.json();
+            console.log(result);
+            let content: IGetUsersResponse = {
+                userInfos: result
+            }
+            return content;
+        } else {
+            throw Error(`Error Code: ${response.status}`);
+
         }
-        return content;
     }
 
 
@@ -221,7 +231,7 @@ export default class UserManagementAPI {
         const path = '/web-admin/users/admin';
         const api = new URL(this.host + path);
         let response: Response;
-        let accessToken = request.session.accessToken ;
+        let accessToken = request.session.accessToken;
         let headers = {
             "Content-Type": "application/json",
             Authorization: `Bearer ${accessToken}`,
@@ -253,247 +263,5 @@ export default class UserManagementAPI {
             return null;
         }
 
-    }
-}
-
-function createMockUserByID(): IGetUserByIDResponse {
-    const result: IGetUserByIDResponse = {
-        meterDetail: {
-            meterId: '0001',
-            typeOfBusiness: '0001', // 'home' | 'school' | 'hospital' | 'government' | 'cooperative' | 'business' | 'industry' | 'other' ;
-            ca: '0001',
-            position: {
-                lat: 10001,
-                lng: 20002,
-            },
-            typeOfUser: '0001', //'house1.1' | 'house1.2' | 'house1.3' | 's-business2.1' | 's-business2.2' | 'm-business3.1' |  'm-business3.2'| 'l-business4.1' | 'l-business4.2' | 'special-business5.1' | 'special-business5.2' ;
-            sizeOfMeter: 202,
-            voltage: 30,
-            numberOfPhases: 12,
-            produceInfo: 'string',
-            brand: 'string',
-            model: 'string',
-            numberOfBoard: 12223,
-            powerOfProduce: 1,
-            typeOfBoard: 'string',
-            sizeOfSetup: 34,
-            invertor: 'string',
-            expectedDate: 'string',
-            address: {
-                buildingNumber: '1',
-                village: 'village',
-                soi: 'soi',
-                road: 'roads',
-                subDistrict: 'subdistrict',
-                district: 'district',
-                province: 'bkk',
-                zipCode: '10900',
-                country: 'Thailand',
-            }
-        },
-        userDetail: {
-            email: 'string@email.com',
-            fullName: 'alice wonderland',
-            phoneNumber: '1234rt6y7890',
-            role: 'roles',
-            citizenId: '1234567890123',
-            meterId: '0001',
-
-        }
-    }
-
-    return result
-}
-
-function createMockData(): IGetUsersResponse {
-    return {
-        userInfos: [
-            {
-                meterId: '0001',
-                fullName: 'user1',
-                email: 'user1@email.com',
-                phoneNumber: '1234567890',
-                role: 'Prosumer',
-            },
-            {
-                meterId: '0002',
-                fullName: 'user2',
-                email: 'user2@email.com',
-                phoneNumber: '1234567899',
-                role: 'Consumer'
-            }, {
-                meterId: '0003',
-                fullName: 'user3',
-                email: 'user3@email.com',
-                phoneNumber: '1234567899',
-                role: 'Admin'
-            }, {
-                meterId: '0004',
-                fullName: 'user4',
-                email: 'user4@email.com',
-                phoneNumber: '1234567899',
-                role: 'Consumer'
-            }, {
-                meterId: '0005',
-                fullName: 'user5',
-                email: 'user5@email.com',
-                phoneNumber: '1234567899',
-                role: 'Aggregator'
-            }, {
-                meterId: '0006',
-                fullName: 'user6',
-                email: 'user6@email.com',
-                phoneNumber: '1234567899',
-                role: 'Consumer'
-            }, {
-                meterId: '0007',
-                fullName: 'user7',
-                email: 'user7@email.com',
-                phoneNumber: '1234567899',
-                role: 'Consumer'
-            }, {
-                meterId: '0008',
-                fullName: 'user8',
-                email: 'user8@email.com',
-                phoneNumber: '1234567899',
-                role: 'Admin'
-            }, {
-                meterId: '0009',
-                fullName: 'user9',
-                email: 'user9@email.com',
-                phoneNumber: '1234567899',
-                role: 'Aggregator'
-            }, {
-                meterId: '0010',
-                fullName: 'user10',
-                email: 'user10@email.com',
-                phoneNumber: '1234567899',
-                role: 'Prosumer'
-            },
-            {
-                meterId: '0011',
-                fullName: 'user1',
-                email: 'user1@email.com',
-                phoneNumber: '1234567890',
-                role: 'Prosumer'
-            },
-            {
-                meterId: '0012',
-                fullName: 'user2',
-                email: 'user2@email.com',
-                phoneNumber: '1234567899',
-                role: 'Consumer'
-            }, {
-                meterId: '0013',
-                fullName: 'user3',
-                email: 'user3@email.com',
-                phoneNumber: '1234567899',
-                role: 'Admin'
-            }, {
-                meterId: '0014',
-                fullName: 'user4',
-                email: 'user4@email.com',
-                phoneNumber: '1234567899',
-                role: 'Consumer'
-            }, {
-                meterId: '0015',
-                fullName: 'user5',
-                email: 'user5@email.com',
-                phoneNumber: '1234567899',
-                role: 'Aggregator'
-            }, {
-                meterId: '0016',
-                fullName: 'user6',
-                email: 'user6@email.com',
-                phoneNumber: '1234567899',
-                role: 'Consumer'
-            }, {
-                meterId: '0017',
-                fullName: 'user7',
-                email: 'user7@email.com',
-                phoneNumber: '1234567899',
-                role: 'Consumer'
-            }, {
-                meterId: '0018',
-                fullName: 'user8',
-                email: 'user8@email.com',
-                phoneNumber: '1234567899',
-                role: 'Admin'
-            }, {
-                meterId: '0019',
-                fullName: 'user9',
-                email: 'user9@email.com',
-                phoneNumber: '1234567899',
-                role: 'Aggregator'
-            }, {
-                meterId: '0020',
-                fullName: 'user10',
-                email: 'user10@email.com',
-                phoneNumber: '1234567899',
-                role: 'Prosumer'
-            },
-            {
-                meterId: '0021',
-                fullName: 'user1',
-                email: 'user1@email.com',
-                phoneNumber: '1234567890',
-                role: 'Prosumer'
-            },
-            {
-                meterId: '0022',
-                fullName: 'user2',
-                email: 'user2@email.com',
-                phoneNumber: '1234567899',
-                role: 'Consumer'
-            }, {
-                meterId: '0023',
-                fullName: 'user3',
-                email: 'user3@email.com',
-                phoneNumber: '1234567899',
-                role: 'Admin'
-            }, {
-                meterId: '0024',
-                fullName: 'user4',
-                email: 'user4@email.com',
-                phoneNumber: '1234567899',
-                role: 'Consumer'
-            }, {
-                meterId: '0025',
-                fullName: 'user5',
-                email: 'user5@email.com',
-                phoneNumber: '1234567899',
-                role: 'Aggregator'
-            }, {
-                meterId: '0026',
-                fullName: 'user6',
-                email: 'user6@email.com',
-                phoneNumber: '1234567899',
-                role: 'Consumer'
-            }, {
-                meterId: '0027',
-                fullName: 'user7',
-                email: 'user7@email.com',
-                phoneNumber: '1234567899',
-                role: 'Consumer'
-            }, {
-                meterId: '0028',
-                fullName: 'user8',
-                email: 'user8@email.com',
-                phoneNumber: '1234567899',
-                role: 'Admin'
-            }, {
-                meterId: '0029',
-                fullName: 'user9',
-                email: 'user9@email.com',
-                phoneNumber: '1234567899',
-                role: 'Aggregator'
-            }, {
-                meterId: '0030',
-                fullName: 'user10',
-                email: 'user10@email.com',
-                phoneNumber: '1234567899',
-                role: 'Prosumer'
-            },
-        ],
     }
 }

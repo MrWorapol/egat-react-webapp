@@ -169,7 +169,7 @@ export default function UserDetail() {
                                 )}
                                 name="meterDetail.address.buildingNumber"
                                 control={control}
-                                defaultValue={meterDetail.address.buildingNumber}
+                                defaultValue={meterDetail.address.buildingNumber || 'cannot load Data'}
                             />
 
                         </GridDetailsComponent>

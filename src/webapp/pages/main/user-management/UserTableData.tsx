@@ -133,7 +133,7 @@ export default function UserTableData() {
     function onClickViewButton(userInfo: UserInfo) {
         if (userInfo.role !== 'admin ') {
             resetUserDetailData();
-            history.push(`/user_management/${userInfo.meterId}`);
+            history.push(`/user_management/${userInfo.citizenId}`);
         }
     }
     return (

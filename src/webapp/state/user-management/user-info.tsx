@@ -7,6 +7,7 @@ export interface UserInfo {
     role: string,
     meterId?: string,
     photo?: string,
+    citizenId: string,
 }
 
 export const userInfo = atom<UserInfo[] | null>({

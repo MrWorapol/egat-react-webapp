@@ -1,4 +1,4 @@
-import {Button, Menu, MenuItem,} from '@mui/material'
+import { Button, Menu, MenuItem, } from '@mui/material'
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -6,26 +6,31 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import React from 'react'
 import NewsManagementAPI from '../../../api/news/newsManagementApi';
 import { NewsInfo } from '../../../state/news-management/news-info';
-import { INewsDetail} from '../../../state/news-management/news-detail';
+import { INewsDetail } from '../../../state/news-management/news-detail';
 import { grey } from '@mui/material/colors';
 import { useAllNews } from '../../../hooks/useAllNews';
 import { useDialog } from '../../../hooks/useDialog';
 import ScrollDialog from './ScrollDialog';
 import { useSnackBarNotification } from '../../../hooks/useSnackBarNotification';
+import { useAuthGuard } from '../../../hooks/useAuthGuard';
+import { useLoadingScreen } from '../../../hooks/useLoadingScreen';
 
 export default function BasicMenu({ data }: { data: NewsInfo }) {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const api = new NewsManagementAPI();
-    let newsDetailholder: INewsDetail;
-    
-    newsDetailholder = {
+    let newsDetailholder: INewsDetail = {
         id: 'IDholder',
         title: 'Titleholder',
         date: 'Dateholder',
         content: 'Contentholder',
         status: 'DRAFT',
     };
+    const { showDialog } = useDialog();
+    const { showSnackBar } = useSnackBarNotification();
+    const { refreshAllNews } = useAllNews();
+    const { showLoading, hideLoading } = useLoadingScreen();
+    let { session } = useAuthGuard();
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -47,14 +52,8 @@ export default function BasicMenu({ data }: { data: NewsInfo }) {
         newsDetailholder.title = data.status;
     }
 
-    const { showDialog } = useDialog();
-    const { showSnackBar } = useSnackBarNotification();
-    const { refreshAllNews} = useAllNews();
 
-    function viewNewsDetailOnClicked(data: NewsInfo) 
-    {
-        console.log(data.title);
-        console.log(data.content);
+    function viewNewsDetailOnClicked(data: NewsInfo) {
 
         showDialog({
             content: <ScrollDialog NewsPara={data} />,
@@ -63,56 +62,63 @@ export default function BasicMenu({ data }: { data: NewsInfo }) {
         });
     }
 
-    async function publishOnClicked() 
-    {   
+    async function publishOnClicked() {
         console.log(newsDetailholder);
         console.log(`is Publish`);
-        try {
-            //insert Id to newsDetail before send to api
-            await api.publishNews(
-                { // token: userSession,
-                newsDetail: newsDetailholder
-            })
-            showSnackBar({
-                serverity: "success",
-                message:"Publish Successful",
-            })
-        } catch (e) {
-            console.log(e);
-            showSnackBar({
-                serverity: "error",
-                message:`Cannot Publish with status:\n${e}`,
-            })
+        if (session) {
+            try {
+                showLoading(10);
+                //insert Id to newsDetail before send to api
+                await api.publishNews(
+                    {
+                        session,
+                        newsDetail: newsDetailholder
+                    })
+                hideLoading(10);
+                showSnackBar({
+                    serverity: "success",
+                    message: "Publish Successful",
+                })
+            } catch (e) {
+                hideLoading(10);
+                console.log(e);
+                showSnackBar({
+                    serverity: "error",
+                    message: `Cannot Publish with status:\n${e}`,
+                })
+            }
+            refreshAllNews();
+            // console.log(`back from api`);
         }
-        refreshAllNews();
-        console.log(`back from api`);
-        
     }
 
-    async function deleteOnClicked() 
-    {
+    async function deleteOnClicked() {
         // console.log(newsDetailholder);
         // console.log(`is Delete`);
-        try {
-            //insert Id to newsDetail before send to api
-            await api.deleteNews({
-                // token: userSession,
-                newsDetail: newsDetailholder,
-            });
-            showSnackBar({
-                serverity: "success",
-                message:"Delete Successful",    
-            })
-        } catch (e) {
-            console.log(e);
-            showSnackBar({
-                serverity: "error",
-                message:`Cannot Delete with status:\n${e}`,
-            
-            })
+        if (session) {
+            try {
+                showLoading(10);
+                //insert Id to newsDetail before send to api
+                await api.deleteNews({
+                    session,
+                    newsDetail: newsDetailholder,
+                });
+                hideLoading(10);
+                showSnackBar({
+                    serverity: "success",
+                    message: "Delete Successful",
+                })
+            } catch (e) {
+                hideLoading(10);
+                console.log(e);
+                showSnackBar({
+                    serverity: "error",
+                    message: `Cannot Delete with status:\n${e}`,
+
+                })
+            }
+            refreshAllNews();
         }
-        refreshAllNews();
-        console.log(`back from api`);
     }
 
     return (
