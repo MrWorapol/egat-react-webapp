@@ -18,31 +18,16 @@ type LoginForm = {
 export default function Login() {
     const { register, handleSubmit, } = useForm<LoginForm>();
     const { login, session } = useLogin();
-    const { showSnackBar } = useSnackBarNotification();
     const history = useHistory();
-    const { showLoading, hideLoading } = useLoadingScreen();
-    const [loadingButton, setLoadingButton] = React.useState(false);
-    // const  params = useParams();
-    // console.log(`params is`);
-    // console.log(params);
-
+   
     if (session) {
 
         history.push('/dashboard');
     }
 
     const onSubmitLogin = async (data: LoginForm) => {
-        try {
-            await login(data.username, data.password);
-            console.log(`before check accessToken`);
-            // if (session) {
-            showSnackBar({
-                serverity: "success",
-                message: "login successful",
-            })
-            history.push('/dashboard');
-        } catch (e) {
-        }
+        await login(data.username, data.password);         
+
     }
     return (
         <>
@@ -81,7 +66,7 @@ export default function Login() {
                                     </Grid>
 
                                     <Grid item container>
-                                        <TextField placeholder="Username"
+                                        <TextField placeholder="Email"
                                             fullWidth
                                             type="username"
                                             {...register("username")}

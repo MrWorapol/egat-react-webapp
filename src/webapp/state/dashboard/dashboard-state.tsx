@@ -43,7 +43,8 @@ export interface IUserDashboard {
 
 export interface IEnergyDashboard {
     pv: number,
-    storage: number,
+    charge: number,
+    discharge: number,
     gridUsed: number,
     load: number,
 }

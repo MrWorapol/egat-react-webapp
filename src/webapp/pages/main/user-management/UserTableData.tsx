@@ -88,7 +88,6 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 }
 
 export default function UserTableData() {
-    console.log(`call userTable Data`);
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const history = useHistory();
@@ -97,7 +96,7 @@ export default function UserTableData() {
 
     const columns: Column[] = [
         { id: 'MeterID', label: 'Meter ID' },
-        { id: 'FullName', label: 'Full Name' },
+        { id: 'FullName', label: 'Username' },
         { id: 'Email', label: 'Email' },
         { id: 'PhoneNumber', label: 'Phone Number' },
         { id: 'Role', label: 'Role' },
@@ -107,10 +106,7 @@ export default function UserTableData() {
         console.log(`WTF : ${userInfoData}`);
         return <></>;
     }
-    // if (userInfoData.length === 0) {
-    //     return <div><Typography variant="h1">Not found</Typography></div>;
-    // }
-    // Avoid a layout jump when reaching the last page with empty rows.
+   
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - userInfoData.length) : 0;
 
 

@@ -67,7 +67,7 @@ export default function DashBoard() {
         return () => {
 
         }
-    }, [session,userDashboard, energyDashboard, tradingDashboard])
+    }, [session, userDashboard, energyDashboard, tradingDashboard])
 
     if (session && currentState === NavigationCurrentType.DASHBOARD) {
         return (
@@ -141,11 +141,11 @@ export default function DashBoard() {
                                     <Typography>Consumer</Typography>
 
                                     <Grid item justifyContent="end">
-                                    <Img src="/assets/icon/Member.png" />
-                                    <Number>
-                                        {userDashboard ? <Typography style={{ fontSize: 26 }} px={2}>{userDashboard.consumer}</Typography> : "loading"}
-                                    </Number>
-                                </Grid>
+                                        <Img src="/assets/icon/Member.png" />
+                                        <Number>
+                                            {userDashboard ? <Typography style={{ fontSize: 26 }} px={2}>{userDashboard.consumer}</Typography> : "loading"}
+                                        </Number>
+                                    </Grid>
                                 </Grid>
                                 <Grid item container direction='column' justifyContent='space-between' xs={2}>
                                     <Grid item>
@@ -177,51 +177,66 @@ export default function DashBoard() {
 
                                 <Grid item container direction='column' justifyContent='space-between' xs={3} width="100%">
                                     <Typography>Total PV Generate</Typography>
-                                    <Img src="/assets/icon/311.png" />
-                                    <Number>
-                                        {energyDashboard ?
-                                            <Typography style={{ fontSize: 26 }}>
-                                                {(Math.round(energyDashboard.pv * 100) / 100).toFixed(2)}
-                                                <Typography style={{ fontSize: 20, color: '#707070' }} display="inline"> kWh</Typography>
-                                            </Typography>
-                                            : <>Loading...</>}
-                                    </Number>
+                                    <Grid item justifyContent="end">
+
+                                        <Img src="/assets/icon/311.png" />
+                                        <Number>
+                                            {energyDashboard ?
+                                                <Typography style={{ fontSize: 26 }}>
+                                                    {(Math.round(energyDashboard.pv * 100) / 100).toFixed(2)}
+                                                    <Typography style={{ fontSize: 20, color: '#707070' }} display="inline"> kWh</Typography>
+                                                </Typography>
+                                                : <>Loading...</>}
+                                        </Number>
+                                    </Grid>
                                 </Grid>
                                 <Grid item container direction='column' justifyContent='space-between' xs={3} >
-                                    <Typography noWrap>Total Energy Storage
-                                    </Typography>
-                                    <Typography>Charge/Discharge</Typography>
-                                    <Img src="/assets/icon/310.png" />
-                                    <Number>
-                                        {energyDashboard ?
-                                            <Typography style={{ fontSize: 26 }} >
-                                                {`${(Math.round(energyDashboard.storage * 100) / 100).toFixed(2)}/${(Math.round(energyDashboard.load * 100) / 100).toFixed(2)}`}
-                                                <Typography style={{ fontSize: 20, color: '#707070' }} display="inline"> kWh</Typography>
-                                            </Typography> : <>Loading...</>}
-                                    </Number>
+                                    <Grid item justifyContent="start">
+
+                                        <Typography noWrap>Total Energy Storage
+                                        </Typography>
+                                        <Typography>Charge/Discharge</Typography>
+                                    </Grid>
+                                    <Grid item justifyContent="end">
+                                        <Img src="/assets/icon/310.png" />
+                                        <Number>
+                                            {energyDashboard ?
+                                                <Typography style={{ fontSize: 26 }} >
+                                                    {`${(Math.round(energyDashboard.charge * 100) / 100).toFixed(2)}/${(Math.round(energyDashboard.discharge * 100) / 100).toFixed(2)}`}
+                                                    <Typography style={{ fontSize: 20, color: '#707070' }} display="inline"> kWh</Typography>
+                                                </Typography> : <>Loading...</>}
+                                        </Number>
+                                    </Grid>
                                 </Grid>
                                 <Grid item container direction='column' justifyContent='space-between' xs={3}>
-                                    <Typography>Total Grid Used</Typography>
-                                    <Img src="/assets/icon/312.png" />
-                                    <Number>
-                                        {energyDashboard ?
-                                            <Typography style={{ fontSize: 26 }} >
-                                                {(Math.round(energyDashboard.gridUsed) * 100 / 100).toFixed(2)}
-                                                <Typography style={{ fontSize: 20, color: '#707070' }} display="inline"> kWh</Typography>
-                                            </Typography>
-                                            : <>Loading...</>}
-                                    </Number>
+                                    <Typography>Total Excess PV/Grid Used</Typography>
+                                    <Grid item justifyContent="end">
+
+                                        <Img src="/assets/icon/312.png" />
+
+                                        <Number>
+                                            {energyDashboard ?
+                                                <Typography style={{ fontSize: 26 }} >
+                                                    {(Math.round(energyDashboard.gridUsed) * 100 / 100).toFixed(2)}
+                                                    <Typography style={{ fontSize: 20, color: '#707070' }} display="inline"> kWh</Typography>
+                                                </Typography>
+                                                : <>Loading...</>}
+                                        </Number>
+                                    </Grid>
                                 </Grid>
                                 <Grid item container direction='column' justifyContent='space-between' xs={3} >
                                     <Typography >Total Energy Load</Typography>
-                                    <Img src="/assets/icon/313.png" />
-                                    <Number>
-                                        {energyDashboard ? <Typography style={{ fontSize: 26 }} >
-                                            {(Math.round(energyDashboard.load * 100) / 100).toFixed(2)}
-                                            <Typography style={{ fontSize: 20, color: '#707070' }} display="inline"> kWh</Typography>
-                                        </Typography>
-                                            : <>Loading...</>}
-                                    </Number>
+                                    <Grid item justifyContent="end">
+
+                                        <Img src="/assets/icon/313.png" />
+                                        <Number>
+                                            {energyDashboard ? <Typography style={{ fontSize: 26 }} >
+                                                {(Math.round(energyDashboard.load * 100) / 100).toFixed(2)}
+                                                <Typography style={{ fontSize: 20, color: '#707070' }} display="inline"> kWh</Typography>
+                                            </Typography>
+                                                : <>Loading...</>}
+                                        </Number>
+                                    </Grid>
                                 </Grid>
 
 
@@ -262,7 +277,7 @@ export default function DashBoard() {
                                     </Number>
                                 </Grid>
                                 <Grid item container direction='column' justifyContent='space-between' xs={3} style={{ textAlign: 'center' }}>
-                                    <Typography >Total Energy Sales (Net)</Typography>
+                                    <Typography >Total Energy Sales (Amount)</Typography>
                                     <Img src="/assets/icon/321.png" />
                                     <Number>
                                         {tradingDashboard ?

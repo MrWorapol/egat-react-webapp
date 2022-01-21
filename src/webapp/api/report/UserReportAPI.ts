@@ -29,11 +29,22 @@ interface IGetPowerInfosResponse {
 
 interface ISummaryPowerInfo {
     inBattery: number,
+    outBattery: number,
+    excessPv: number,
     inGrid: number,
+
     inSolar: number,
     load: number,
 }
 
+interface IPowerResponse {
+    meterId: string,
+    timestamp: string,
+    inBattery: number,
+    inGrid: number,
+    inSolar: number,
+    load: number,
+}
 interface IGetUserMeterInfoRequest {
     session: IUserSession,
     period: IPeriod,
@@ -267,59 +278,62 @@ export class UserAndEnergyReportAPI {
                 body: JSON.stringify(body),
             })
             if (response.status === 200) {
-                const rawData: IPowerData[] = await response.json();
-                if (period !== undefined) { //case query with period time
-                    let powerArray: IPowerData[] = [];
-                    let summaryPower = {
-                        inBattery: 0,
-                        inGrid: 0,
-                        inSolar: 0,
-                        load: 0,
-                    }
-                    if (dayjs(period.endDate).startOf('day').isSame(dayjs(period.startDate).startOf('day')) // if start = end  and isToday return all 
-                        && dayjs(period.startDate).startOf('day').isSame(dayjs().startOf('day'))) {//is startday = Today
-                        rawData.forEach((power: ISummaryPowerInfo) => {
-                            summaryPower.inBattery += +power.inBattery;
-                            summaryPower.inGrid += +power.inGrid;
-                            summaryPower.inSolar += +power.inSolar;
-                            summaryPower.load += +power.load;
-                        })
-                        powerArray = [...rawData];
-                    } else { //case from start day at 00:00 to end day at 23:59
-                        rawData.forEach((power: IPowerData) => {
-                            let inRange = dayjs(power.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
-                                && dayjs(power.timestamp).isBefore(dayjs(period.endDate).endOf('day'))
-                            if (inRange) {
-                                powerArray.push(power);
-                                summaryPower.inBattery += +power.inBattery;
-                                summaryPower.inGrid += +power.inGrid;
-                                summaryPower.inSolar += +power.inSolar;
-                                summaryPower.load += +power.load;
-                            }
-                        })
-                    }
-                    console.log(`summaryPower`);
-                    console.log(`${summaryPower.inBattery}`)
-                    return {
-                        powerData: powerArray, //return array of power with all user meter. incase of period will return array power in range of date with all user meter
-                        summaryPower: summaryPower,//summary power for graph
-                    };
-                }
-                const result = {
+                const responseJSON: IPowerResponse[] = await response.json();
+                let powerData: IPowerData[] = [];
+                let summaryPower: ISummaryPowerInfo = {
                     inBattery: 0,
+                    outBattery: 0,
+                    excessPv: 0,
                     inGrid: 0,
                     inSolar: 0,
                     load: 0,
                 }
-                rawData.forEach((power: ISummaryPowerInfo) => {
-                    result.inBattery += +power.inBattery;
-                    result.inGrid += +power.inGrid;
-                    result.inSolar += +power.inSolar;
-                    result.load += +power.load;
-                })
-                return { // incase of dashboard get data
-                    powerData: rawData,
-                    summaryPower: result,
+                if (period !== undefined) { //case query with period time
+                    responseJSON.forEach((power: IPowerResponse) => {
+                        let inRange = dayjs(power.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
+                            && dayjs(power.timestamp).isBefore(dayjs(period.endDate).endOf('day'))
+                        if (inRange) {
+                            powerData.push({
+                                meterId: power.meterId,
+                                timestamp: power.timestamp,
+                                inSolar: Math.abs(power.inSolar) || 0,
+                                inBattery: power.inBattery < 0 ? Math.abs(power.inBattery) : 0,
+                                outBattery: power.inBattery > 0 ? power.inBattery : 0,
+                                inGrid: power.inGrid < 0 ? Math.abs(power.inGrid) : 0, //inGrid <0 use too much
+                                excessPv: power.inGrid > 0 ? power.inGrid : 0,//inGrid > 0 can sell
+                                load: Math.abs(power.load) || 0
+                            });
+                            summaryPower.inBattery += +power.inBattery;
+                            summaryPower.outBattery += power.inBattery < 0 ? Math.abs(power.inBattery) : 0;
+                            summaryPower.excessPv += power.inGrid > 0 ? power.inGrid : 0;//inGrid > 0 an sell
+                            summaryPower.inGrid += power.inGrid < 0 ? Math.abs(power.inGrid) : 0; //inGrid <0 use too much
+                            summaryPower.inSolar += Math.abs(power.inSolar) || 0;
+                            summaryPower.load += Math.abs(power.load) || 0
+                        }
+                    })
+                } else {
+                    responseJSON.forEach((power: IPowerResponse) => {
+                        powerData.push({
+                            meterId: power.meterId,
+                            timestamp: power.timestamp,
+                            inSolar: Math.abs(power.inSolar) || 0,
+                            inBattery: power.inBattery < 0 ? Math.abs(power.inBattery) : 0,
+                            outBattery: power.inBattery > 0 ? power.inBattery : 0,
+                            inGrid: power.inGrid < 0 ? Math.abs(power.inGrid) : 0, //inGrid <0 use too much
+                            excessPv: power.inGrid > 0 ? power.inGrid : 0,//inGrid > 0 can sell
+                            load: Math.abs(power.load) || 0
+                        });
+                        summaryPower.inBattery += +power.inBattery < 0 ? Math.abs(power.inBattery) : 0; //dont sure inBattery + or -
+                        summaryPower.outBattery += power.inBattery > 0 ? power.inBattery : 0; //dont sure inBattery + or -
+                        summaryPower.excessPv += power.inGrid > 0 ? power.inGrid : 0;//inGrid > 0 an sell
+                        summaryPower.inGrid += power.inGrid < 0 ? Math.abs(power.inGrid) : 0; //inGrid <0 use too much
+                        summaryPower.inSolar += Math.abs(power.inSolar) || 0;
+                        summaryPower.load += Math.abs(power.load) || 0
+                    })
+                }
+                return {
+                    powerData, //return array of power with all user meter. incase of period will return array power in range of date with all user meter
+                    summaryPower,//summary power for graph
                 };
             } else {
                 throw Error(`CODE: ${response.status} \nMessage: ${response.statusText}`)
@@ -360,28 +374,50 @@ export class UserAndEnergyReportAPI {
                 body: JSON.stringify(body),
             })
             if (response.status === 200) {
-                const rawData: IPowerData[] = await response.json();
-                // console.log(`get Power Forecast By MeterId:${req.meterId} and Type: ${typeof (+req.meterId)}`);
-                // console.log(resultFromJSON);
+                const rawData: IPowerResponse[] = await response.json();
+                let powerDatas: IPowerData[] = [];
                 if (period !== undefined) { //case query with period time
-                    let powerArray: IPowerData[] = [];
                     let scopeRange = period;
-                    rawData.forEach((power: IPowerData) => {
+                    rawData.forEach((power: IPowerResponse) => {
                         let inRange = dayjs(power.timestamp).isAfter(dayjs(scopeRange.startDate).startOf('day'))
                             && dayjs(power.timestamp).isBefore(dayjs(scopeRange.endDate).endOf('day'))
                         if (inRange) {
-                            powerArray.push(power);
+                            powerDatas.push({
+                                meterId: power.meterId,
+                                timestamp: power.timestamp,
+                                inSolar: Math.abs(power.inSolar) || 0,
+                                inBattery: power.inBattery < 0 ? Math.abs(power.inBattery) : 0,
+                                outBattery: power.inBattery > 0 ? power.inBattery : 0,
+                                inGrid: power.inGrid < 0 ? Math.abs(power.inGrid) : 0, //inGrid <0 use too much
+                                excessPv: power.inGrid > 0 ? power.inGrid : 0,//inGrid > 0 can sell
+                                load: power.load,
+                            });
                         }
                     })
                     return {//return  data in period
-                        context: powerArray, //return array of power with all user meter. incase of period will return array power in range of date with all user meter
+                        context: powerDatas, //return array of power with all user meter. incase of period will return array power in range of date with all user meter
 
                     };
-                } else { //return all data
-                    return {
-                        context: rawData
-                    };
+                } else {
+                    rawData.forEach((power: IPowerResponse) => {
+                        powerDatas.push({
+                            meterId: power.meterId,
+                            timestamp: power.timestamp,
+                            inSolar: Math.abs(power.inSolar) || 0,
+                            inBattery: power.inBattery < 0 ? Math.abs(power.inBattery) : 0,
+                            outBattery: power.inBattery > 0 ? power.inBattery : 0,
+                            inGrid: power.inGrid < 0 ? Math.abs(power.inGrid) : 0, //inGrid <0 use too much
+                            excessPv: power.inGrid > 0 ? power.inGrid : 0,//inGrid > 0 can sell
+                            load: power.load,
+                        });
+                    })
                 }
+
+                return {
+                    context: powerDatas
+                }
+
+
             } else {
                 throw Error(`CODE: ${response.status} \nMessage: ${response.statusText}`)
             }

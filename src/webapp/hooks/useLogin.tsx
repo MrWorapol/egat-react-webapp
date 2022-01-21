@@ -5,6 +5,7 @@ import KeycloakAdminApi from "../api/keycloak/keycloakAdminApi";
 import { userProfile } from "../state/user-profile";
 import { userSessionState } from "../state/user-sessions";
 import { useLoadingScreen } from "./useLoadingScreen";
+import { useSnackBarNotification } from "./useSnackBarNotification";
 
 
 export function useLogin() {
@@ -13,6 +14,8 @@ export function useLogin() {
     const api = new KeycloakAdminApi();
     const resetSession = useResetRecoilState(userSessionState);
     const { showLoading, hideLoading } = useLoadingScreen();
+    const { showSnackBar } = useSnackBarNotification();
+
     const history = useHistory();
     const login = useCallback(async (username: string, password: string) => {
         try {
@@ -23,6 +26,11 @@ export function useLogin() {
             });
 
             if (response) {
+                hideLoading(10);
+                showSnackBar({
+                    serverity: "success",
+                    message: "login successful",
+                })
                 const session = {
                     accessToken: response.accessToken,
                     refreshToken: response.refreshToken,
@@ -33,24 +41,23 @@ export function useLogin() {
                 history.push('/dashboard');
 
             }
-
             hideLoading(10);
-        } catch (err: any) {
-            let error: Error = err;
-            console.log(error);
+        } catch (err: any) {          
             hideLoading(10);
+            showSnackBar({
+                serverity: "error",
+                message: `${err}`,
+            })
         }
 
     }, [setSession, sessionValue])
 
     const logout = useCallback(() => {
-        //clear local storage
         if (localStorage.getItem('session')) {
             localStorage.removeItem('session');
             resetSession();
         }
         if (sessionValue) {
-            // localStorage.removeItem('session');
             resetSession();
         }
 

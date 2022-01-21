@@ -10,10 +10,10 @@ export interface IUserSummary extends IMap {
 }
 
 export interface IEnergySummary extends IMap {
-    pv: number,
-    energyStorage: number,
-    grid: number,
-    energyConsumptions: number,
+    pv: number, //inSolar
+    energyStorage: number, // Math.abs(inBatt <0)
+    grid: number, // Math.abs(inGrid <0)
+    load: number,
 }
 
 export interface IUserChart {
@@ -27,7 +27,7 @@ export const userChartState = atom<IUserChart | null>({
             pv: 0,
             energyStorage: 0,
             grid: 0,
-            energyConsumptions: 0,
+            load: 0,
         },
         user: {
             AGGREGATOR: 0,

@@ -2,6 +2,7 @@ import { Checkbox, FormControl, FormControlLabel, FormGroup, Grid, MenuItem, Sel
 import { Box } from '@mui/system'
 import React, { useEffect, useState } from 'react'
 import { useDebouncedCallback } from 'use-debounce/lib';
+import usePeriodTime from '../../../../hooks/summary-report/usePeriodTime';
 import useUserReport from '../../../../hooks/summary-report/user/useUserReport';
 import { useLoadingScreen } from '../../../../hooks/useLoadingScreen';
 import { IUserMeterInfo } from '../../../../state/summary-report/user-report/user-report-state';
@@ -16,7 +17,10 @@ export interface IRolesState extends IMap {
     prosumer: boolean,
     consumer: boolean,
 }
-export default function AllArea() {
+interface IProps{
+    region: string,
+}
+export default function AllArea(props: IProps ) {
     const { showLoading, hideLoading } = useLoadingScreen();
     const [areaState, setAreaState] = useState('total');
     const [roleState, setRoleState] = useState<IRolesState>({
@@ -26,7 +30,6 @@ export default function AllArea() {
     });
     const { meterTable } = useUserReport();
     const [filterData, setFilterData] = useState<IUserMeterInfo[] | null>(meterTable);
-
     const refreshTable = useDebouncedCallback(
         () => {
             let filterRoles = Object.values(roleState).includes(true); // if have role checked filter return true
@@ -128,18 +131,12 @@ export default function AllArea() {
                         <Select
                             // labelId="demo-simple-select-label"
                             // id="demo-simple-select"
-                            value={areaState}
+                            defaultValue={'total'}
                             onChange={(event: SelectChangeEvent) => { onSelectedArea(event) }}
                             sx={{ height: '2em' }}
+                            value={areaState}
                         >
-                            <MenuItem value={'total'}> {'Total'}</MenuItem>
-                            <MenuItem value={'3 Villages'}> {'3 Villages'}</MenuItem>
-                            <MenuItem value={'Thammasat University'}>{'Thammasat University'}</MenuItem>
-                            <MenuItem value={'VENUE FLOW (SC ASSET)'}>{'VENUE FLOW'}</MenuItem>
-                            <MenuItem value={'Perfect Park (Property Perfect)'}>{'Perfect Park'}</MenuItem>
-                            <MenuItem value={'CASA Premium (Q House)'}>{'CASA Premium'}</MenuItem>
-                            <MenuItem value={'Srisangthum'}>{'Srisangthum'}</MenuItem>
-
+                            {buildAreaSelector(props.region)}
                         </Select>
                     </FormControl>
                 </Grid>
@@ -151,9 +148,29 @@ export default function AllArea() {
             <Grid id="area-table">
                 {filterData && <AllAreaTable data={filterData} filter={{ area: areaState, role: roleState }} />}
             </Grid>
-        </Grid>
+        </Grid >
         // </Box>
 
     )
 }
 
+const buildAreaSelector = (region: string) => {
+    const areaSelector = [
+        { value: 'total', display: 'Total', region: 'all' },
+        { value: '3 Villages', display: '3 Villages', region: 'central' },
+        { value: 'Thammasat University', display: 'Thammasat University', region: 'central' },
+        { value: 'VENUE FLOW (SC ASSET)', display: 'VENUE FLOW', region: 'central' },
+        { value: 'Perfect Park (Property Perfect)', display: 'Perfect Park', region: 'central' },
+        { value: 'CASA Premium (Q House)', display: 'CASA Premium', region: 'central' },
+        { value: 'Srisangthum', display: 'Srisangthum', region: 'North-Eastern' }
+    ]
+    let filterAreaSelectorElement: JSX.Element[] = [];
+    areaSelector.forEach((area) => {
+        if (area.region === 'all' || region === 'all' || area.region === region) {
+            filterAreaSelectorElement.push(
+                <MenuItem key={`${area.region}-${area.display}`} value={area.value} > {area.display}</MenuItem>);
+        }
+    })
+
+    return (filterAreaSelectorElement)
+}

@@ -144,7 +144,7 @@ function buildEnergyInfo(energySummary: IEnergyInfo) {
             </Grid>
             <Grid container item justifyContent='space-between' px={4} >
                 <Typography>
-                    {`Grid`}
+                    {`Excess PV/Grid Used`}
                 </Typography>
                 <Typography >
                     {energySummary.grid + ` kWh`}

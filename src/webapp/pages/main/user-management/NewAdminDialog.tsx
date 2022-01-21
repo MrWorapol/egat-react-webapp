@@ -51,7 +51,7 @@ export default function NewAdminDialog() {
                         autoFocus
                         margin="dense"
                         id="fullName"
-                        label="Name"
+                        label="Username"
                         type="name"
                         fullWidth
                         variant="standard"

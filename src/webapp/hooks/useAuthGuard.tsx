@@ -47,18 +47,18 @@ export function useAuthGuard() {
         setInit(false);
     };
 
-   
 
-    setInterval(async () => {
-        console.log(`call refershtoken`);
+    const checkRefreshToken = async () => {
         let localStore = localStorage.getItem("session");
         if (localStore) {
+
             let sessionObject: IUserSession = JSON.parse(localStore);
             if (sessionObject) {
                 let decodeToken: SessionDecode = jwt_decode(sessionObject.accessToken);
                 if (decodeToken) {
                     let expireUnixTime = decodeToken.exp;
-                    if (expireUnixTime && (expireUnixTime+30 < dayjs().unix())) {
+                    console.log(`check token expired: ${expireUnixTime && (expireUnixTime + 30 < dayjs().unix())}`);
+                    if (expireUnixTime && (expireUnixTime + 30 < dayjs().unix())) {
                         try {
                             console.log(`call refresh token api`)
                             const response = await api.refreshToken({ refreshToken: sessionObject.refreshToken })
@@ -82,15 +82,21 @@ export function useAuthGuard() {
             resetSessionState();
             history.push('/login');
         }
+    }
+
+    setInterval(async () => {
+        console.log(`call refershtoken`);
+        checkRefreshToken();
     }, 60000);
 
 
     useEffect(() => {
         if (init === true) {
-           
+
             loadLocalStorage();
         } else {
-           
+            console.log(`call refresh token`);
+            checkRefreshToken();
             //case not login
             if (!sessionValue) {
                 if (previousRoute !== '/' && previousRoute !== '/login') {

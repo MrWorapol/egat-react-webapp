@@ -24,8 +24,8 @@ export default function MainPage() {
             <Grid container item id="header" sx={{ height: '4em' }}>
                 <Header />
             </Grid>
-            <Grid container  id="navigation-tab" direction="row" sx={{ minHeight: '100vh-5em' }}>
-                
+            <Grid container id="navigation-tab" direction="row" sx={{ minHeight: '100vh-5em' }}>
+
                 <Grid container item xs={2} >
                     <NavigationMainPage />
                 </Grid>
@@ -38,52 +38,53 @@ export default function MainPage() {
 }
 
 export function PageRouting() {
+    console.log(``)
     let { session } = useAuthGuard();
     if (!session) {
         return;
+    } else {
+        return (
+            <>
+                <Switch>
+                    <Route path={['/', '/dashboard']} exact>
+                        <DashBoard />
+                    </Route>
+                    <Route path='/user_management/:id'>
+                        <UserDetail />
+                    </Route>
+                    <Route path='/user_management' >
+                        <UserManagement />
+                    </Route>
+                    <Route path="/wheeling_charge">
+                        <WheelingCharge />
+                    </Route>
+                    <Route path="/imbalance">
+                        <Imbalance />
+                    </Route>
+                    <Route path="/other_setting">
+                        <OtherSetting />
+                    </Route>
+                    <Route path="/tou_tariff">
+                        <TOUTariff />
+                    </Route>
+
+                    <Route path="/users_report">
+                        <UserReport />
+                    </Route>
+                    <Route path="/order_report">
+                        <OrderReport />
+                    </Route>
+                    <Route path="/settlement_report">
+                        <SettlementReport />
+                    </Route>
+                    <Route path="/billing_report">
+                        <BillingReport />
+                    </Route>
+                    <Route path='/news'>
+                        <NewManagement />
+                    </Route>
+                </Switch>
+            </>
+        )
     }
-    return (
-        <>
-            <Switch>
-                <Route path={['/', '/dashboard']} exact>
-                    <DashBoard />
-                </Route>
-                <Route path='/user_management/:id'>
-                    <UserDetail />
-                </Route>
-                <Route path='/user_management' >
-                    <UserManagement />
-                </Route>
-                <Route path="/wheeling_charge">
-                    <WheelingCharge />
-                </Route>
-                <Route path="/imbalance">
-                    <Imbalance />
-                </Route>
-                <Route path="/other_setting">
-                    <OtherSetting />
-                </Route>
-                <Route path="/tou_tariff">
-                    <TOUTariff />
-                </Route>
-
-                <Route path="/users_report">
-                    <UserReport />
-                </Route>
-                <Route path="/order_report">
-                    <OrderReport />
-                </Route>
-                <Route path="/settlement_report">
-                    <SettlementReport />
-                </Route>
-                <Route path="/billing_report">
-                    <BillingReport />
-                </Route>
-                <Route path='/news'>
-                    <NewManagement />
-                </Route>
-            </Switch>
-        </>
-    )
-
 }

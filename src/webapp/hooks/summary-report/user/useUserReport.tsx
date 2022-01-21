@@ -55,7 +55,7 @@ export default function useUserReport() {
                         energy: {
                             pv: Math.floor(powerData.summaryPower.inSolar),
                             energyStorage: Math.floor( powerData.summaryPower.inBattery),
-                            energyConsumptions: Math.floor(powerData.summaryPower.load),
+                            load: Math.floor(powerData.summaryPower.load),
                             grid: Math.floor(powerData.summaryPower.inGrid)
                         },
                         user: {
@@ -94,19 +94,21 @@ export default function useUserReport() {
                 let energySummary = {
                     pv: 0,
                     energyStorage: 0,
-                    energyConsumptions: 0,
+                    load: 0,
                     grid: 0
                 }
                 if (powerDataByMeterId.length > 0) {
+                    console.log(`actul power meter:${meter.meterId}`);
                     powerDataByMeterId.map((row: IPowerData) => {
+                        console.log(row)
                         energySummary.pv += Math.floor( +row.inSolar);
-                        energySummary.energyStorage += Math.floor(+row.inBattery);
-                        energySummary.energyConsumptions += Math.floor(+row.load);
-                        energySummary.grid += Math.floor(+row.inGrid);
+                        energySummary.energyStorage += Math.floor(+row.inBattery-row.outBattery);
+                        energySummary.grid += Math.floor(row.excessPv - row.inGrid);
+                        energySummary.load += Math.floor(+row.load);
                         actualPowerByMeter.push({ //insert actual power in array
                             timestamp: row.timestamp,
                             grid: +row.inGrid,
-                            pv: +row.inSolar 
+                            pv: +row.excessPv 
                         })
                     })
                 }
@@ -122,7 +124,7 @@ export default function useUserReport() {
                     energySummary: {
                         grid: energySummary.grid,
                         energyStorage: energySummary.energyStorage,
-                        energyLoad: energySummary.energyConsumptions,
+                        energyLoad: energySummary.load,
                         pv: energySummary.pv,
                     },
                     powerUsed: {
@@ -146,7 +148,7 @@ export default function useUserReport() {
                     powerGraph.push({ //insert actual power in array
                         timestamp: row.timestamp,
                         grid: row.inGrid,
-                        pv: row.inSolar 
+                        pv: row.excessPv 
                     }
                     )
                 })

@@ -86,9 +86,10 @@ export default function useDashBoard() {
             if (response) {
                 setEnergyDashboard({
                     pv: response.summaryPower.inSolar,
-                    gridUsed: response.summaryPower.inGrid,
+                    gridUsed: response.summaryPower.excessPv - response.summaryPower.inGrid,
                     load: response.summaryPower.load,
-                    storage: response.summaryPower.inBattery
+                    charge: response.summaryPower.inBattery,
+                    discharge: response.summaryPower.outBattery,
                 })
 
             }
@@ -97,7 +98,8 @@ export default function useDashBoard() {
                 pv: 0,
                 gridUsed: 0,
                 load: 0,
-                storage: 0
+                charge: 0,
+                discharge: 0
             })
             showSnackBar({ serverity: "error", message: `Get Energy Summary Error\n${err}` });
         }

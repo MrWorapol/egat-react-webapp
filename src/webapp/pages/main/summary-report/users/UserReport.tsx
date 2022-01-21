@@ -37,7 +37,7 @@ export default function UserReport() {
                     <Grid container item direction='row' xs={12} >
                         <Grid container item direction='row' id='left-side' xs={6} pr={3}>
                             <Grid container item xs={12} sx={{ backgroundColor: '#fff' }} id='div-area'>
-                                <AllArea />
+                                <AllArea region={period.region}/>
                             </Grid>
                             <Grid container item direction='row' xs={12} sx={{ backgroundColor: '#fff' }} mt={2} pt={2} id='div-chart'>
                                 {chartData && <SummaryChart data={chartData} />}
