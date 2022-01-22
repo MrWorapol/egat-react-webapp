@@ -71,6 +71,14 @@ function buildChooseToBuy(orderDetail: IOrderDetail) {
                     {`Contract ID : #${orderDetail.tradeContractId}`}
                 </Typography>
             </Grid>
+            <Grid container item direction='row' alignItems='center' pt={2}>
+                <Typography sx={{ fontSize: '1.1em', color: 'error.light' }}>
+                    {`Buyer meter id: ${orderDetail.meterId}`}
+                </Typography>
+                <Typography sx={{ fontSize: '1.1em' }} pl={2}>
+                    {`Seller meter id: ${orderDetail.matchedMeterId}`}
+                </Typography>
+            </Grid>
             <Grid item py={1}>
                 <Typography sx={{ fontSize: '1.2em' }}>{orderDetail.tradeMarket === 'pool' ? 'Pool Market Trade' : 'Bilateral Trade'}</Typography>
             </Grid>
@@ -95,6 +103,7 @@ function buildChooseToBuy(orderDetail: IOrderDetail) {
 }
 
 function buildOfferToSell(orderDetail: IOrderDetail) {
+    let settlementTime = dayjs.unix(+orderDetail.orderDetail.deliverdTime).tz('Asia/Bangkok');
     return (
         <Grid container px={2} py={2} sx={{ minHeight: '25vh' }}>
             <Grid item >
@@ -108,6 +117,14 @@ function buildOfferToSell(orderDetail: IOrderDetail) {
                     {`Contract ID : #${orderDetail.tradeContractId}`}
                 </Typography>
             </Grid>
+            <Grid container item direction='row' alignItems='center' pt={2}>
+                <Typography sx={{ fontSize: '1.1em', color: 'success.light' }}>
+                    {`Seller meter id: ${orderDetail.meterId}`}
+                </Typography>
+                <Typography sx={{ fontSize: '1.1em' }} pl={2}>
+                    {`Buyer meter id: ${orderDetail.matchedMeterId}`}
+                </Typography>
+            </Grid>
             <Grid item py={1}>
                 <Typography sx={{ fontSize: '1.2em' }}>{orderDetail.tradeMarket === 'pool' ? 'Pool Market Trade' : 'Bilateral Trade'}</Typography>
             </Grid>
@@ -117,7 +134,7 @@ function buildOfferToSell(orderDetail: IOrderDetail) {
                         {`Deliverd Time`}
                     </Typography>
                     <Typography >
-                        {`${dayjs.unix(orderDetail.orderDetail.deliverdTime).tz('Asia/Bangkok').format(`HH:mm`)}-${dayjs.unix(orderDetail.orderDetail.deliverdTime).tz('Asia/Bangkok').add(1, 'hour').format(`HH:mm`)}`}
+                        {`${dayjs(settlementTime).format(`DD/MM/YYYY HH:mm`)}-${dayjs.unix(+orderDetail.orderDetail.deliverdTime).tz('Asia/Bangkok').add(1, 'hour').format(`HH:mm`)}`}
                     </Typography>
                 </Grid>
                 <Grid container item justifyContent='space-between' px={4} >
@@ -182,7 +199,7 @@ function buildOpenOrder(orderDetail: IOrderDetail) {
                         {`Deliverd Time`}
                     </Typography>
                     <Typography >
-                        {`${dayjs.unix(orderDetail.orderDetail.deliverdTime).tz('Asia/Bangkok').format(`HH:mm`)}-${dayjs.unix(orderDetail.orderDetail.deliverdTime).tz('Asia/Bangkok').add(1, 'hour').format(`HH:mm`)}`}
+                        {`${dayjs.unix(+orderDetail.orderDetail.deliverdTime).tz('Asia/Bangkok').format(`HH:mm`)}-${dayjs.unix(+orderDetail.orderDetail.deliverdTime).tz('Asia/Bangkok').add(1, 'hour').format(`HH:mm`)}`}
                     </Typography>
                 </Grid>
                 <Grid container item justifyContent='space-between' px={4} >

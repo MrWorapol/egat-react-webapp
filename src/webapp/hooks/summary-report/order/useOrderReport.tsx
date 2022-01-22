@@ -5,7 +5,7 @@ import { IGetOrderTableRequest, OrderReportAPI } from "../../../api/report/Order
 import { UserAndEnergyReportAPI } from "../../../api/report/UserReportAPI";
 import { NavigationCurrentType } from "../../../state/navigation-current-state";
 import { orderChartState } from "../../../state/summary-report/order-report/order-chart-state";
-import { orderDetailState } from "../../../state/summary-report/order-report/order-detail-state";
+import { IBuyDetail, orderDetailState } from "../../../state/summary-report/order-report/order-detail-state";
 import { IOrderInfo, orderState } from "../../../state/summary-report/order-report/order-report-state";
 import { IUserMeterInfo } from "../../../state/summary-report/user-report/user-report-state";
 import { userSessionState } from "../../../state/user-sessions";
@@ -32,8 +32,8 @@ export default function useOrderReport() {
     const orderApi = new OrderReportAPI();
     const userMeterApi = new UserAndEnergyReportAPI();
     const { showLoading, hideLoading } = useLoadingScreen();
-    const {showSnackBar} = useSnackBarNotification();
-    
+    const { showSnackBar } = useSnackBarNotification();
+
     const refreshOrderReport = async (roles: string[], buyerType: string, tradeMarket: string, orderStatus: string, area: string) => {
         if (session !== null) { //check session before call api
             resetOrderReport();
@@ -65,16 +65,51 @@ export default function useOrderReport() {
                             summaryTradeMarket[order.tradeMarket.toLowerCase()] += 1;
                             summaryUserType[order.userType.toLowerCase()] += 1;
                             summaryStatus[order.status.toLowerCase()] += 1;
-                            output.push({
-                                ...order,
-                                role: meterInfo.role,
-                                area: meterInfo.area,
-                                regionName: meterInfo.region,
-                            })
+                            if (order.tradeContractId) {// case matching Id
+                                // let matchlet ingid: IUserMeterInfo;
+                                switch (order.userType) {
+                                    case ("BUYER"):
+                                        let sellerMeter = userMeterInfos.context.find((user: IUserMeterInfo) => { return user.id.toString() === order.orderDetail?.sellerId })
+                                        if (sellerMeter && orderDetail) {
+
+                                            output.push({
+                                                ...order,
+                                                role: meterInfo.role,
+                                                area: meterInfo.area,
+                                                regionName: meterInfo.region,
+                                                meterId: meterInfo.meterId,
+                                                matchingMeterId: sellerMeter.meterId,
+                                            })
+                                        }
+                                        break;
+                                    case ("SELLER"):
+                                        let buyerMeter = userMeterInfos.context.find((user: IUserMeterInfo) => { return user.id.toString() === order.orderDetail?.buyerId })
+                                        if (buyerMeter) {
+                                            output.push({
+                                                ...order,
+                                                role: meterInfo.role,
+                                                area: meterInfo.area,
+                                                regionName: meterInfo.region,
+                                                meterId: meterInfo.meterId,
+                                                matchingMeterId: buyerMeter.meterId,
+                                            })
+                                        }
+                                        break;
+                                    default: break;
+                                }
+                            } else {
+                                output.push({
+                                    ...order,
+                                    role: meterInfo.role,
+                                    area: meterInfo.area,
+                                    regionName: meterInfo.region,
+                                    meterId: meterInfo.meterId,
+
+                                })
+                            }
 
                         }
                     })
-                    // console.log(summaryStatus);
                     setOrderChart(
                         {
                             role: {
@@ -125,14 +160,18 @@ export default function useOrderReport() {
                     price: orderInfo.targetPrice,
                     commitedAmount: orderInfo.targetAmount
                 }
+
             })
-        } else {
+        } else {//case match Order
             setOrderDetail({
                 userType: orderInfo.userType,
                 tradeMarket: orderInfo.tradeMarket,
                 tradeContractId: orderInfo.tradeContractId,
-                orderDetail: orderInfo.orderDetail
+                orderDetail: orderInfo.orderDetail,
+                meterId: orderInfo.meterId,
+                matchedMeterId: orderInfo.matchingMeterId
             })
+
         }
 
     };

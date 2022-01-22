@@ -10,6 +10,7 @@ import { IUserSummary, userChartState } from "../../../state/summary-report/user
 import { IUserMeterInfo, userReportState } from "../../../state/summary-report/user-report/user-report-state";
 import { userSessionState } from "../../../state/user-sessions";
 import { useLoadingScreen } from "../../useLoadingScreen";
+import { useSnackBarNotification } from "../../useSnackBarNotification";
 import usePeriodTime from "../usePeriodTime";
 
 
@@ -26,13 +27,21 @@ export default function useUserReport() {
     let session = useRecoilValue(userSessionState);
 
     const { showLoading, hideLoading } = useLoadingScreen();
+    const { showSnackBar } = useSnackBarNotification();
     const getPowerDatas = useCallback(async (period?: IPeriod) => {
         if (session) {
-            const result = await api.getPowerInfos({ period, session }); //period can be undefined because for support dashboard summary 
-            if (result) {
-                setActualPowers(result.powerData);
-                return result;
+
+            try {
+                const result = await api.getPowerInfos({ period, session }); //period can be undefined because for support dashboard summary 
+                if (result) {
+                    setActualPowers(result.powerData);
+                    return result;
+                }
+            } catch (err) {
+
+                showSnackBar({ serverity: 'error', message: `${err}` });
             }
+
         }
 
     }, []);
@@ -41,40 +50,46 @@ export default function useUserReport() {
         // console.log('refresh User Energy Table');
         if (session) {
             showLoading(10);
-            
-            const userMeters = await api.getUserMeterInfo({ period, roles: roles, area: area, session })
-            if (userMeters && userMeters.context.length > 0) {
-                let userSummary: IUserSummary = { AGGREGATOR: 0, CONSUMER: 0, PROSUMER: 0, noUser: 0 };
-                userMeters.context.forEach((meter: IUserMeterInfo) => {
-                    userSummary[meter.role] += 1;
-                })
-                let powerData = await getPowerDatas(period);
-                if (powerData) {
-                    resetChartData();
-                    setChartData({
-                        energy: {
-                            pv: Math.floor(powerData.summaryPower.inSolar),
-                            energyStorage: Math.floor( powerData.summaryPower.inBattery),
-                            load: Math.floor(powerData.summaryPower.load),
-                            grid: Math.floor(powerData.summaryPower.inGrid)
-                        },
-                        user: {
-                            AGGREGATOR: userSummary.AGGREGATOR,
-                            CONSUMER: userSummary.CONSUMER,
-                            PROSUMER: userSummary.PROSUMER,
-                            noUser: userSummary.noUser,
-                        },
+            try {
+                const userMeters = await api.getUserMeterInfo({ period, roles: roles, area: area, session })
+                if (userMeters && userMeters.context.length > 0) {
+                    let userSummary: IUserSummary = { AGGREGATOR: 0, CONSUMER: 0, PROSUMER: 0, noUser: 0 };
+                    userMeters.context.forEach((meter: IUserMeterInfo) => {
+                        userSummary[meter.role] += 1;
                     })
-                    setActualPowers(powerData.powerData);
+                    let powerData = await getPowerDatas(period);
+                    if (powerData) {
+                        resetChartData();
+                        setChartData({
+                            energy: {
+                                pv: Math.floor(powerData.summaryPower.inSolar),
+                                energyStorage: Math.floor(powerData.summaryPower.inBattery - powerData.summaryPower.outBattery),
+                                load: Math.floor(powerData.summaryPower.load),
+                                grid: Math.floor(powerData.summaryPower.excessPv - powerData.summaryPower.inGrid)
+                            },
+                            user: {
+                                AGGREGATOR: userSummary.AGGREGATOR,
+                                CONSUMER: userSummary.CONSUMER,
+                                PROSUMER: userSummary.PROSUMER,
+                                noUser: userSummary.noUser,
+                            },
+                        })
+                        setActualPowers(powerData.powerData);
+                    }
+                    hideLoading(10);
+                    refreshLocationSite(userMeters.context[0]);
+                    setmeterTable(userMeters.context);
+                } else {//if not found reset State
+                    setmeterTable([]);
+                    resetChartData();
+                    resetLocationSite();
+                    hideLoading(10);
                 }
-                refreshLocationSite(userMeters.context[0]);
-                setmeterTable(userMeters.context);
-            } else {//if not found reset State
-                setmeterTable([]);
-                resetChartData();
-                resetLocationSite();
+            } catch (e) {
+                hideLoading(10);
+                showSnackBar({ serverity: 'error', message: `${e}` });
+
             }
-            hideLoading(10);
         }
     };
 
@@ -84,56 +99,65 @@ export default function useUserReport() {
             resetLocationSite();
         }
         if (session) {
-            let forecastPowerByMeter: IPowerGraph[] = await getForecastData(meter.meterId);
-            let actualPowerByMeter: IPowerGraph[] = [];
-            if (actualPowers && forecastPowerByMeter) {
-                let powerDataByMeterId = actualPowers.filter(
-                    (row: IPowerData) => {
-                        return meter.meterId.toString() === row.meterId.toString()
-                    });
-                let energySummary = {
-                    pv: 0,
-                    energyStorage: 0,
-                    load: 0,
-                    grid: 0
-                }
-                if (powerDataByMeterId.length > 0) {
-                    console.log(`actul power meter:${meter.meterId}`);
-                    powerDataByMeterId.map((row: IPowerData) => {
-                        console.log(row)
-                        energySummary.pv += Math.floor( +row.inSolar);
-                        energySummary.energyStorage += Math.floor(+row.inBattery-row.outBattery);
-                        energySummary.grid += Math.floor(row.excessPv - row.inGrid);
-                        energySummary.load += Math.floor(+row.load);
-                        actualPowerByMeter.push({ //insert actual power in array
-                            timestamp: row.timestamp,
-                            grid: +row.inGrid,
-                            pv: +row.excessPv 
-                        })
-                    })
-                }
-                console.log(energySummary);
-                setLocationSite({
-                    meterId: meter.meterId,
-                    peameaSubstation: meter.peameaSubstation,
-                    egatSubStation: meter.egatSubStation,
-                    location: {
-                        lat: meter.address.lat,
-                        lng: meter.address.lng
-                    },
-                    energySummary: {
-                        grid: energySummary.grid,
-                        energyStorage: energySummary.energyStorage,
-                        energyLoad: energySummary.load,
-                        pv: energySummary.pv,
-                    },
-                    powerUsed: {
-                        actual: actualPowerByMeter,
-                        forecast: forecastPowerByMeter
+
+            showLoading(10);
+            try {
+                let forecastPowerByMeter: IPowerGraph[] = await getForecastData(meter.meterId);
+                let actualPowerByMeter: IPowerGraph[] = [];
+                if (actualPowers && forecastPowerByMeter) {
+                    let powerDataByMeterId = actualPowers.filter(
+                        (row: IPowerData) => {
+                            return meter.meterId.toString() === row.meterId.toString()
+                        });
+                    let energySummary = {
+                        pv: 0,
+                        energyStorage: 0,
+                        load: 0,
+                        grid: 0
                     }
+                    if (powerDataByMeterId.length > 0) {
+                        console.log(`actul power meter:${meter.meterId}`);
+                        powerDataByMeterId.map((row: IPowerData) => {
+                            console.log(row)
+                            energySummary.pv += Math.floor(+row.inSolar);
+                            energySummary.energyStorage += Math.floor(+row.inBattery - row.outBattery);
+                            energySummary.grid += Math.floor(row.excessPv - row.inGrid);
+                            energySummary.load += Math.floor(+row.load);
+                            actualPowerByMeter.push({ //insert actual power in array
+                                timestamp: row.timestamp,
+                                grid: +row.inGrid,
+                                pv: +row.excessPv
+                            })
+                        })
+                    }
+                    console.log(energySummary);
+                    setLocationSite({
+                        meterId: meter.meterId,
+                        peameaSubstation: meter.peameaSubstation,
+                        egatSubStation: meter.egatSubStation,
+                        location: {
+                            lat: meter.address.lat,
+                            lng: meter.address.lng
+                        },
+                        energySummary: {
+                            grid: energySummary.grid,
+                            energyStorage: energySummary.energyStorage,
+                            energyLoad: energySummary.load,
+                            pv: energySummary.pv,
+                        },
+                        powerUsed: {
+                            actual: actualPowerByMeter,
+                            forecast: forecastPowerByMeter
+                        }
 
 
-                })
+                    })
+
+                }
+                hideLoading(10);
+            } catch (e) {
+                hideLoading(10);
+                showSnackBar({ serverity: 'error', message: `${e}` });
 
             }
         };
@@ -142,16 +166,20 @@ export default function useUserReport() {
     const getForecastData = async (meterId: string): Promise<IPowerGraph[]> => {
         let powerGraph: IPowerGraph[] = [];
         if (session) {
-            let forecastData = await api.getForecastData({ session, meterId });
-            if (forecastData && forecastData.context.length > 0) {
-                forecastData.context.map((row: IPowerData) => {
-                    powerGraph.push({ //insert actual power in array
-                        timestamp: row.timestamp,
-                        grid: row.inGrid,
-                        pv: row.excessPv 
-                    }
-                    )
-                })
+            try {
+                let forecastData = await api.getForecastData({ session, meterId });
+                if (forecastData && forecastData.context.length > 0) {
+                    forecastData.context.map((row: IPowerData) => {
+                        powerGraph.push({ //insert actual power in array
+                            timestamp: row.timestamp,
+                            grid: row.inGrid,
+                            pv: row.excessPv
+                        }
+                        )
+                    })
+                }
+            }catch(e){
+                showSnackBar({ serverity: 'error', message: `Cannot Load forecst Data ${e}` });
             }
             //load = row.inSolar + row.inGrid + row.inBattery
             //พลังงานที่ใช้ทั้งหมด = พลังงานโซล่า + grid + แบต

@@ -15,6 +15,8 @@ export interface IOrderInfo {
     regionName?: string,
     tradeContractId?: string,
     orderDetail?: IBuyDetail | ISellDetail,
+    meterId?: string,
+    matchingMeterId?: string
 }
 
 export interface IOrderContract {

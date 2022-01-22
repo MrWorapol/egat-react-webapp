@@ -348,7 +348,9 @@ export class OrderReportAPI {
                                     commitedAmount: contract.energyCommitted,
                                     offerToSell: contract.priceCommitted,
                                     tradingFee: contract.tradingFee,
-                                    estimatedSales: contract.priceCommitted
+                                    estimatedSales: contract.priceCommitted,
+                                    sellerId: contract.sellerId,
+                                    buyerId: contract.buyerId,
                                 }
                             })
                             results.context.push({//insert buyer Matched
@@ -362,6 +364,7 @@ export class OrderReportAPI {
                                 settlementTime: contract.settlementTime,
                                 tradeContractId: contract.contractId,
                                 orderDetail: {
+                                    deliverdTime: contract.settlementTime,
                                     amount: contract.energyCommitted,
                                     netBuy: contract.priceCommitted + contract.wheelingChargeFee + contract.tradingFee, //sum of Data
                                     netEnergyPrice: contract.priceCommitted,
@@ -371,6 +374,8 @@ export class OrderReportAPI {
                                     wheelingChargeTariff: Math.round((contract.wheelingChargeFee / contract.energyCommitted)), //dont sure
                                     wheelingCharge: contract.wheelingChargeFee,
                                     tradingFee: contract.tradingFee,
+                                    sellerId: contract.sellerId,
+                                    buyerId: contract.buyerId,
                                 }
                             })
                         }
@@ -391,7 +396,9 @@ export class OrderReportAPI {
                                 commitedAmount: contract.energyCommitted,
                                 offerToSell: contract.priceCommitted,
                                 tradingFee: contract.tradingFee,
-                                estimatedSales: contract.priceCommitted
+                                estimatedSales: contract.priceCommitted,
+                                sellerId: contract.sellerId,
+                                buyerId: contract.buyerId,
                             }
                         })
                         results.context.push({//insert buyer Matched
@@ -405,6 +412,7 @@ export class OrderReportAPI {
                             settlementTime: contract.settlementTime,
                             tradeContractId: contract.contractId,
                             orderDetail: {
+                                deliverdTime: contract.settlementTime,
                                 amount: contract.energyCommitted,
                                 netBuy: contract.priceCommitted + contract.wheelingChargeFee + contract.tradingFee, //sum of Data
                                 netEnergyPrice: contract.priceCommitted,
@@ -414,6 +422,8 @@ export class OrderReportAPI {
                                 wheelingChargeTariff: Math.round((contract.wheelingChargeFee / contract.energyCommitted)), //dont sure
                                 wheelingCharge: contract.wheelingChargeFee,
                                 tradingFee: contract.tradingFee,
+                                sellerId: contract.sellerId,
+                                buyerId: contract.buyerId,
                             }
                         })
                     }

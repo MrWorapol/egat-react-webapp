@@ -9,6 +9,8 @@ export interface IOrderDetail extends IMap {
     userType: string,
     tradeMarket: string,
     orderDetail: IBuyDetail | ISellDetail | IOpenOrderDetail,
+    meterId?: string,
+    matchedMeterId?: string,
 }
 
 export interface ISellDetail extends IMap {
@@ -17,9 +19,12 @@ export interface ISellDetail extends IMap {
     offerToSell: number,
     tradingFee: number,
     estimatedSales: number,
+    sellerId: string,
+    buyerId: string,
 }
 
 export interface IBuyDetail extends IMap {
+    deliverdTime: string,
     amount: number,
     netBuy: number,
     netEnergyPrice: number,
@@ -29,7 +34,8 @@ export interface IBuyDetail extends IMap {
     wheelingChargeTariff: number,
     wheelingCharge: number,
     tradingFee: number,
-
+    sellerId: string,
+    buyerId: string,
 }
 
 export interface IOpenOrderDetail extends IMap {
