@@ -2,6 +2,8 @@ import { atom } from "recoil";
 
 export interface ITradeContractReport {
     contractId: string,
+    meterId: string,
+    matchedMeterId: string,
     bilateralTradeSettlementId?: string, // trade ID
     poolTradeSettlementId?: string, // trade ID
     userType: string, //buyer| seller

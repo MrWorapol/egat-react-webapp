@@ -52,9 +52,9 @@ export default function SummaryCharts(props: IProps) {
                         <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em', color: 'secondary.main' }}> Summary by Role </Typography>
                     </Grid>
                     <DoughnutChart
-                        labels={[`Aggregator ${role.aggregator} (${(role.aggregator * 100 / (role.aggregator + role.prosumer + role.consumer)) || 0})%`,
-                        `Prosumer ${role.prosumer} (${(role.prosumer * 100 / (role.aggregator + role.prosumer + role.consumer)) || 0}) %`,
-                        `Consumer ${role.consumer} (${(role.consumer * 100 / (role.aggregator + role.prosumer + role.consumer)) || 0}) %`]}
+                        labels={[`Aggregator ${role.aggregator} (${(role.aggregator * 100 / (role.aggregator + role.prosumer + role.consumer)) || 0}%)`,
+                        `Prosumer ${role.prosumer} (${(role.prosumer * 100 / (role.aggregator + role.prosumer + role.consumer)) || 0}%)`,
+                        `Consumer ${role.consumer} (${(role.consumer * 100 / (role.aggregator + role.prosumer + role.consumer)) || 0}%)`]}
                         datasets={[
                             {
                                 data: [role.aggregator, role.prosumer, role.consumer],
@@ -75,8 +75,8 @@ export default function SummaryCharts(props: IProps) {
                         <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em', color: 'secondary.main' }}> Summary by Buyer/Seller </Typography>
                     </Grid>
                     <DoughnutChart
-                        labels={[`Seller ${buyerType.seller * 100 / (buyerType.seller + buyerType.buyer) || 0} %`,
-                        `Buyer ${buyerType.buyer * 100 / (buyerType.seller + buyerType.buyer) || 0} %`]}
+                        labels={[`Seller ${buyerType.seller} (${buyerType.seller * 100 / (buyerType.seller + buyerType.buyer) || 0}%)`,
+                        `Buyer ${buyerType.buyer} (${buyerType.buyer * 100 / (buyerType.seller + buyerType.buyer) || 0}%)`]}
                         datasets={[
                             {
                                 data: [buyerType.seller, buyerType.buyer],
@@ -96,8 +96,8 @@ export default function SummaryCharts(props: IProps) {
                     </Grid>
                     <DoughnutChart
                         labels={[
-                            `Bilateral Trade ${(Math.round(trade.bilateral * 100 / (trade.bilateral + trade.pool)) || 0).toFixed(2)} %`,
-                            `Pool Market Trade ${(Math.floor(trade.pool * 100 / (trade.bilateral + trade.pool)) || 0).toFixed(2)} %`]}
+                            `Bilateral Trade ${trade.bilateral} (${(Math.round(trade.bilateral * 100 / (trade.bilateral + trade.pool)) || 0).toFixed(2)}%)`,
+                            `Pool Market Trade ${trade.pool} (${(Math.floor(trade.pool * 100 / (trade.bilateral + trade.pool)) || 0).toFixed(2)}%)`]}
                         datasets={[
                             {
                                 data: [trade.bilateral, trade.pool],
@@ -144,8 +144,8 @@ export default function SummaryCharts(props: IProps) {
 function buildImbalanceStatusChart(status: IStatus) {
     return (
         <DoughnutChart
-            labels={[`Energy Excess ${(Math.floor(status.energyExcess * 100 / (status.energyExcess + status.energyShortfall)) || 0).toFixed(2)} %`,
-            `Energy Shortfall ${(status.energyShortfall * 100 / (status.energyExcess + status.energyShortfall) || 0).toFixed(2)} %`,]}
+            labels={[`Energy Excess ${status.energyExcess} (${(Math.floor(status.energyExcess * 100 / (status.energyExcess + status.energyShortfall)) || 0).toFixed(2)} %)`,
+            `Energy Shortfall ${status.energyShortfall} (${(status.energyShortfall * 100 / (status.energyExcess + status.energyShortfall) || 0).toFixed(2)}%)`]}
             datasets={[
                 {
                     data: [status.energyExcess, status.energyShortfall],
@@ -164,10 +164,10 @@ function buildImbalanceStatusChart(status: IStatus) {
 function buildImbalanceAmountChart(imbalance: INetImbalanceAmountByStatus) {
     let sum = Math.abs(imbalance.sellerOverCommit) + Math.abs(imbalance.sellerUnderCommit) + Math.abs(imbalance.buyerOverCommit) + Math.abs(imbalance.buyerUnderCommit);
     let labels = [
-        `Net Seller Imbalance + : ${(Math.round(imbalance.sellerOverCommit * 100) / 100).toFixed(2)} kWh ${(Math.round(imbalance.sellerOverCommit * 100 / sum) || 0).toFixed(2)}%`,
-        `Net Seller Imbalance - :${(Math.round(imbalance.sellerUnderCommit * 100) / 100).toFixed(2)} kWh ${(Math.round(imbalance.sellerUnderCommit * 100 / sum) || 0).toFixed(2)}%`,
-        `Net Buyer Imbalance + :${(Math.round(imbalance.buyerOverCommit * 100) / 100).toFixed(2)} kWh ${(Math.round(imbalance.buyerOverCommit * 100 / sum) || 0).toFixed(2)}%`,
-        `Net Buyer Imbalance - : ${(Math.round(imbalance.buyerUnderCommit * 100) / 100).toFixed(2)} kWh ${(Math.round(imbalance.buyerUnderCommit * 100 / sum) || 0).toFixed(2)}%`,
+        `Net Seller Imbalance + : ${(Math.round(imbalance.sellerOverCommit * 100) / 100).toFixed(2)} kWh (${(Math.round(imbalance.sellerOverCommit * 100 / sum) || 0).toFixed(2)}%)`,
+        `Net Seller Imbalance - :${(Math.round(imbalance.sellerUnderCommit * 100) / 100).toFixed(2)} kWh (${(Math.round(imbalance.sellerUnderCommit * 100 / sum) || 0).toFixed(2)}%)`,
+        `Net Buyer Imbalance + :${(Math.round(imbalance.buyerOverCommit * 100) / 100).toFixed(2)} kWh (${(Math.round(imbalance.buyerOverCommit * 100 / sum) || 0).toFixed(2)}%)`,
+        `Net Buyer Imbalance - : ${(Math.round(imbalance.buyerUnderCommit * 100) / 100).toFixed(2)} kWh (${(Math.round(imbalance.buyerUnderCommit * 100 / sum) || 0).toFixed(2)}%)`,
     ]
     return (
         <DoughnutChart
@@ -192,9 +192,9 @@ function buildImbalanceAmountChart(imbalance: INetImbalanceAmountByStatus) {
 function buildNetAmount(netImbalanceAmount: INetImbalanceAmount) {
     let sum = Math.abs(netImbalanceAmount.netSale) + Math.abs(netImbalanceAmount.netBuy) + Math.abs(netImbalanceAmount.netAll);
     let labels = [
-        `Net Sales : ${(Math.round(netImbalanceAmount.netSale * 100) / 100).toFixed(2)} Baht ${(Math.round(netImbalanceAmount.netSale * 100 / sum) || 0).toFixed(2)}%`,
-        `Net Buys : ${(Math.round(netImbalanceAmount.netBuy * 100) / 100).toFixed(2)} Baht ${(Math.round(netImbalanceAmount.netBuy * 100 / sum) || 0).toFixed(2)}%`,
-        `Net Imbalance : ${(Math.round(netImbalanceAmount.netAll * 100) / 100).toFixed(2)} Baht ${(Math.round(netImbalanceAmount.netAll * 100 / sum) || 0).toFixed(2)}%`,
+        `Net Sales : ${(Math.round(netImbalanceAmount.netSale * 100) / 100).toFixed(2)} Baht (${(Math.round(netImbalanceAmount.netSale * 100 / sum) || 0).toFixed(2)}%)`,
+        `Net Buys : ${(Math.round(netImbalanceAmount.netBuy * 100) / 100).toFixed(2)} Baht (${(Math.round(netImbalanceAmount.netBuy * 100 / sum) || 0).toFixed(2)}%)`,
+        `Net Imbalance : ${(Math.round(netImbalanceAmount.netAll * 100) / 100).toFixed(2)} Baht (${(Math.round(netImbalanceAmount.netAll * 100 / sum) || 0).toFixed(2)}%)`,
     ]
     return (
         <DoughnutChart

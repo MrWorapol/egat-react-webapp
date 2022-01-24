@@ -30,12 +30,12 @@ interface IProps {
 
 }
 export default function AllAreaTable(props: IProps) {
-    console.warn('call All Area Table');
     const resetPage = 0;
     const [page, setPage] = React.useState(resetPage);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
     const { refreshLocationSite, locationSite } = useUserReport();
+
     const columns: Column[] = [
         { id: 'MeterID', label: 'Meter ID' },
         { id: 'MeterName', label: 'Meter Name' },
@@ -74,6 +74,10 @@ export default function AllAreaTable(props: IProps) {
         }
         // console.log('click view button')
     }
+
+    if (props.data.length < rowsPerPage && page !== 0) {
+        setPage(0);
+    }
     return (
         <Paper sx={{ width: '100%', mb: 2 }} >
             <TableContainer >
@@ -94,12 +98,12 @@ export default function AllAreaTable(props: IProps) {
                     </TableHead>
                     <TableBody>
                         {props.data.length === 0 && /* case notfound data */
-                                <TableRow style={{ height: 53 * emptyRows }}>
-    
-                                    <TableCell colSpan={6}>
-                                        No Data Found
-                                    </TableCell>
-                                </TableRow>
+                            <TableRow style={{ height: 53 * emptyRows }}>
+
+                                <TableCell colSpan={6}>
+                                    No Data Found
+                                </TableCell>
+                            </TableRow>
                         }
                         {props.data.length !== 0 && (rowsPerPage > 0
                             ? props.data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)

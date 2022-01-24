@@ -357,7 +357,7 @@ export default function DashBoard() {
                                     <Number>
                                         {tradingDashboard ?
                                             <>
-                                                <Typography style={{ fontSize: 26 }} >{`${(Math.round(tradingDashboard.netPayment * 100) / 100).toFixed(2)} `}</Typography>
+                                                <Typography style={{ fontSize: 26 }} >{`${(Math.round(tradingDashboard.totalWheelingNet * 100) / 100).toFixed(2)} `}</Typography>
                                                 <Typography style={{ fontSize: 20 }} >Baht</Typography>
                                             </>
                                             : <>...Loading</>
@@ -371,7 +371,7 @@ export default function DashBoard() {
                                     <Number>
                                         {tradingDashboard ?
                                             <>
-                                                <Typography style={{ fontSize: 26 }} >{`${(Math.round((tradingDashboard.accREC / 1000) * 1000) / 1000).toFixed(4)}`}</Typography>
+                                                <Typography style={{ fontSize: 26 }} >{`${(tradingDashboard.accREC / 1000).toFixed(4)}`}</Typography>
                                                 <Typography style={{ fontSize: 20 }} >MWh</Typography>
                                             </>
                                             : <>...Loading</>

@@ -71,7 +71,7 @@ export default class UserManagementAPI {
         }
         if (response.status === 200) {
             let result = await response.json();
-            console.log(result);
+            // console.log(result);
             let content: IGetUsersResponse = {
                 userInfos: result
             }

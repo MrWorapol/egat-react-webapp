@@ -9,7 +9,6 @@ import { useSnackBarNotification } from "./useSnackBarNotification";
 
 
 export function useLogin() {
-    const [, setProfile] = useRecoilState(userProfile);
     const [sessionValue, setSession] = useRecoilState(userSessionState);
     const api = new KeycloakAdminApi();
     const resetSession = useResetRecoilState(userSessionState);
@@ -38,11 +37,11 @@ export function useLogin() {
                 }
                 localStorage.setItem('session', JSON.stringify(session));
                 setSession(session);
-                history.push('/dashboard');
+                history.push('/');
 
             }
             hideLoading(10);
-        } catch (err: any) {          
+        } catch (err: any) {
             hideLoading(10);
             showSnackBar({
                 serverity: "error",
@@ -53,13 +52,10 @@ export function useLogin() {
     }, [setSession, sessionValue])
 
     const logout = useCallback(() => {
-        if (localStorage.getItem('session')) {
-            localStorage.removeItem('session');
-            resetSession();
-        }
-        if (sessionValue) {
-            resetSession();
-        }
+        localStorage.removeItem('session');
+        resetSession();
+        history.push(`/login`);
+
 
     }, [])
     return {

@@ -90,6 +90,8 @@ export function useAllUser() {
         if (!userInfoDataValue) {
             refreshAllUser();
         }
+        return (() => {
+        })
     }, [userInfoDataValue, refreshAllUser]
     )
     return {

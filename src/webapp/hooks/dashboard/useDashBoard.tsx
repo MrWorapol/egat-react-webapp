@@ -14,6 +14,7 @@ import { BillingReportAPI } from '../../api/report/BillingReportAPI';
 import { IInvoice } from '../../state/summary-report/billing-report/billing-report-state';
 import { OrderReportAPI } from '../../api/report/OrderReportAPI';
 import { useSnackBarNotification } from '../useSnackBarNotification';
+import { SettlementReportAPI } from '../../api/report/SettlementReportAPI';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -28,7 +29,7 @@ export default function useDashBoard() {
     const userApi = new UserAndEnergyReportAPI();
     const orderApi = new OrderReportAPI();
     const billingAPI = new BillingReportAPI();
-
+    const contractAPI = new SettlementReportAPI();
     const refreshUserSummary = useCallback(async (session: IUserSession) => {
         let result = {
             allmeter: 0,
@@ -104,6 +105,7 @@ export default function useDashBoard() {
             showSnackBar({ serverity: "error", message: `Get Energy Summary Error\n${err}` });
         }
     }, []);
+
     const refershTradingSummary = useCallback(async (session: IUserSession) => {
         let summary: ITradeDashboard = {
             totalOrder: 0,
@@ -118,24 +120,24 @@ export default function useDashBoard() {
             accREC: 0
         }
         try {
-            let allOrder = await orderApi.getOrderTable({ session });
+            let allOrder = await orderApi.getOpenOrderAll({ session });
             if (allOrder) {
                 summary.totalOrder = allOrder.context.length;
             }
 
+
             let powerDatas = await userApi.getPowerInfos({ session });
             if (powerDatas) {
-                summary.accREC =
-                    powerDatas.summaryPower.load
-                    + powerDatas.summaryPower.inGrid
-                    + powerDatas.summaryPower.inBattery
-                    + powerDatas.summaryPower.inSolar;
+                summary.accREC = powerDatas.summaryPower.inSolar;
             }
-
+            let tradeContracts = await contractAPI.getTradeContractReport({session});
+            if(tradeContracts && tradeContracts.context){
+                summary.totalContract = tradeContracts.context.length;
+            }
             let invoiceReports = await billingAPI.getInvoiceReport({ session });
             if (invoiceReports && invoiceReports.context.length > 0) {
                 invoiceReports.context.forEach((invoice: IInvoice) => {
-                    summary.totalContract += 1;
+                    
                     switch (invoice.invoiceType) {
                         case "SELLER_CONTRACT":
                             summary.netSale += invoice.reference.amount;
@@ -165,8 +167,8 @@ export default function useDashBoard() {
     }, []);
 
     const refreshDashBoard = useCallback(async () => {
-        console.log(`session on refresh Dash board`);
-        console.log(session);
+        // console.log(`session on refresh Dash board`);
+        // console.log(session);
         if (session) {
             refreshUserSummary(session);
             await refreshEnergySummary(session);

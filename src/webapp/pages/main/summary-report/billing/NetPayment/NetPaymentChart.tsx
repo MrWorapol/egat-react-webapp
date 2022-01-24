@@ -27,9 +27,9 @@ export default function NetPaymentChart(props: IProps) {
 function buildPaymentChart(paymentChart: INetPaymentChart) {
     let sum = paymentChart.tradingPayment + paymentChart.gridUsed + paymentChart.wheelingCharge;
     let labels = [
-        `Net Energy Trading Payment : ${Number(paymentChart.tradingPayment * 100 / 100).toFixed(2)} Baht ${(Math.round(paymentChart.tradingPayment * 100 / sum) || 0).toFixed(2)}%`,
-        `Grid Used : ${Number(paymentChart.gridUsed * 100 / 100).toFixed(2)} Baht ${(Math.round(paymentChart.gridUsed * 100 / sum) || 0).toFixed(2)}%`,
-        `Wheeling Charge : ${Number(paymentChart.wheelingCharge * 100 / 100).toFixed(2)} Baht ${(Math.round(paymentChart.wheelingCharge * 100 / sum) || 0).toFixed(2)}%`,
+        `Net Energy Trading Payment : ${paymentChart.tradingPayment.toFixed(3)} Baht ${(Math.round(paymentChart.tradingPayment * 100 / sum) || 0).toFixed(2)}%`,
+        `Grid Used : ${paymentChart.gridUsed.toFixed(3)} Baht ${(Math.round(paymentChart.gridUsed * 100 / sum) || 0).toFixed(2)}%`,
+        `Wheeling Charge : ${paymentChart.wheelingCharge.toFixed(3)} Baht ${(Math.round(paymentChart.wheelingCharge * 100 / sum) || 0).toFixed(2)}%`,
     ];
 
     return (

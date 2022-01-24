@@ -20,6 +20,8 @@ export interface IPowerByMeter {
 
 export interface IEnergyInfo {
     pv: number,
+    inBattery: number,
+    outBattery: number,
     energyStorage: number,
     grid: number,
     energyLoad: number,

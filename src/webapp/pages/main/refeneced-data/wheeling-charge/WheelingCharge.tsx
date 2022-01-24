@@ -70,7 +70,7 @@ interface IMap {
 
 export default function WheelingCharge() {
     useNavigationSet(NavigationCurrentType.WHEELING_CHARGE);
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const [menus, setOpenMenus] = React.useState<null | HTMLElement>(null);
     const { currentState } = useNavigationGet();
     const [selectedColumn, setSelectedColumn] = useState({
         baht: true,
@@ -91,12 +91,12 @@ export default function WheelingCharge() {
 
     function CustomizedMenus(): JSX.Element {
 
-        const open = Boolean(anchorEl);
+        const open = Boolean(menus);
         const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-            setAnchorEl(event.currentTarget);
+            setOpenMenus(event.currentTarget);
         };
         const handleClose = () => {
-            setAnchorEl(null);
+            setOpenMenus(null);
         };
 
         const onCheckedColumns = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -104,7 +104,7 @@ export default function WheelingCharge() {
                 ...selectedColumn,
                 [event.target.name]: event.target.checked
             });
-            console.log(selectedColumn);
+            // console.log(selectedColumn);
         }
 
         return (
@@ -127,7 +127,7 @@ export default function WheelingCharge() {
                     MenuListProps={{
                         'aria-labelledby': 'demo-customized-button',
                     }}
-                    anchorEl={anchorEl}
+                    anchorEl={menus}
                     open={open}
                     onClose={handleClose}
                 >
@@ -188,6 +188,9 @@ export default function WheelingCharge() {
         </>
     }
 
+    useEffect(() => {
+        
+    }, []);
 
     return (
         <Container sx={{ backgroundColor: '#fff' }}>

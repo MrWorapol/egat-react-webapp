@@ -2,11 +2,12 @@ import { Box, Button, Card, CardContent, Container, Grid, Paper, TextField, Typo
 import React from 'react'
 import { useForm } from 'react-hook-form';
 import { useHistory, useParams } from 'react-router';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { useLoadingScreen } from '../../hooks/useLoadingScreen';
 import { useLogin } from '../../hooks/useLogin';
 import { useSnackBarNotification } from '../../hooks/useSnackBarNotification';
 import { userProfile } from '../../state/user-profile';
+import { userSessionState } from '../../state/user-sessions';
 
 
 
@@ -17,16 +18,17 @@ type LoginForm = {
 
 export default function Login() {
     const { register, handleSubmit, } = useForm<LoginForm>();
-    const { login, session } = useLogin();
+    const { login } = useLogin();
+    let session = useRecoilValue(userSessionState);
     const history = useHistory();
-   
+
     if (session) {
 
-        history.push('/dashboard');
+        history.push('/');
     }
 
     const onSubmitLogin = async (data: LoginForm) => {
-        await login(data.username, data.password);         
+        await login(data.username, data.password);
 
     }
     return (

@@ -26,9 +26,7 @@ export default function LocationSite() {
 
             locationSite.powerUsed.forecast.forEach((forecast) => {
                 // console.log(`${locationSite.meterId}foreactPV: ${forecast.pv}\t`);
-                if (forecast.grid < 0) {
                     summaryPVForecast += +forecast.grid;
-                }
             });
             locationSite.powerUsed.actual.forEach((actual) => {
                 maximumPVUsed = maximumPVUsed < actual.pv ? actual.pv : maximumPVUsed; //check maximum Grid Us
@@ -64,17 +62,17 @@ export default function LocationSite() {
                         <Grid item container direction='row' sx={{ height: '20%' }}>
                             <Grid item container direction='column' alignItems='center' xs={4}>
                                 <Typography>ไฟที่จะขายได้ 1 วันล่วงหน้า</Typography>
-                                <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em' }}>{locationSite.powerUsed ? Math.abs((Math.round(summaryPVForecast * 100) / 100)).toFixed(2) : "Cannot Load ForecastData"}</Typography>
+                                <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em' }}>{locationSite.powerUsed ? Math.abs(summaryPVForecast).toFixed(3) : "Cannot Load ForecastData"}</Typography>
                                 <Typography>kWh</Typography>
                             </Grid>
                             <Grid item container direction='column' alignItems='center' xs={4}>
                                 <Typography>กำลังไฟฟ้าใช้จริงสูงสุด</Typography>
-                                <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em' }}>{(Math.round(maximumPVUsed * 100) / 100).toFixed(2)}</Typography>
+                                <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em' }}>{maximumPVUsed.toFixed(3)}</Typography>
                                 <Typography>kW</Typography>
                             </Grid>
                             <Grid item container direction='column' alignItems='center' xs={4}>
                                 <Typography>กำลังไฟฟ้าใช้จริงโดยเฉลี่ย</Typography>
-                                <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em' }}>{(Math.round(averagePVUsed * 100) / 100).toFixed(2)}</Typography>
+                                <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em' }}>{averagePVUsed.toFixed(3)}</Typography>
                                 <Typography>kW</Typography>
                             </Grid>
                         </Grid>
@@ -131,15 +129,15 @@ function buildEnergyInfo(energySummary: IEnergyInfo) {
                     {`PV`}
                 </Typography>
                 <Typography >
-                    {energySummary.pv + ` kWh`}
+                    {energySummary.pv.toFixed(3) + ` kWh`}
                 </Typography>
             </Grid>
             <Grid container item justifyContent='space-between' px={4} >
                 <Typography>
-                    {`Energy Storage`}
+                    {`Energy Storage Charge/Discharge`}
                 </Typography>
                 <Typography >
-                    {energySummary.energyStorage + ` kWh`}
+                    {`${energySummary.inBattery.toFixed(3)}/${energySummary.outBattery.toFixed(3)} kWh`}
                 </Typography>
             </Grid>
             <Grid container item justifyContent='space-between' px={4} >
@@ -147,7 +145,7 @@ function buildEnergyInfo(energySummary: IEnergyInfo) {
                     {`Excess PV/Grid Used`}
                 </Typography>
                 <Typography >
-                    {energySummary.grid + ` kWh`}
+                    {energySummary.grid.toFixed(3) + ` kWh`}
                 </Typography>
             </Grid>
             <Grid container item justifyContent='space-between' px={4} >
@@ -155,7 +153,7 @@ function buildEnergyInfo(energySummary: IEnergyInfo) {
                     {`Energy Load`}
                 </Typography>
                 <Typography >
-                    {energySummary.energyLoad + ` kWh`}
+                    {energySummary.energyLoad.toFixed(3) + ` kWh`}
                 </Typography>
             </Grid>
         </>
@@ -171,23 +169,9 @@ function buildForecastChart( //,chartRef: React.MutableRefObject<any>
     const labels = ["00:00-01:00", "01:00-02:00", "02:00-03:00", "03:00-04:00", "04:00-05:00", "05:00-06:00", "06:00-07:00", "07:00-08:00", "08:00-09:00", "09:00-10:00", "10:00-11:00", "11:00-12:00", "12:00-13:00", "13:00-14:00", "14:00-15:00", "15:00-16:00", "16:00-17:00", "17:00-18:00", "18:00-19:00", "19:00-20:00", "20:00-21:00", "21:00-22:00", "22:00-23:00", "23:00-23:59"];
     let finalForecast: IPowerGraph[] = [];
     let finalActual: IPowerGraph[] = [];
-    labels.forEach((hour: string) => {
+    labels.forEach((hour: string) => { 
         finalForecast.push(sumPowerByHour(hour, forecast));
         finalActual.push(sumPowerByHour(hour, actual));
-        // let sumForecastPowerByHour: IPowerGraph = { timestamp: hour, grid: 0, pv: 0 };
-        // forecast.forEach((power: IPowerGraph) => {
-        //     if (dayjs(power.timestamp).format('HH:mm') === hour.slice(0, 5)) {
-        //         sumForecastPowerByHour.grid += power.grid;
-        //         sumForecastPowerByHour.pv = power.pv;
-        //     }
-        // })
-        // finalForecast.push(sumForecastPowerByHour);
-        // actual.forEach((power: IPowerGraph) => {
-        //     if (dayjs(power.timestamp).format('HH:mm') === hour.slice(0, 5)) {
-        //         sumForecastPowerByHour.grid += power.grid;
-        //         sumForecastPowerByHour.pv = power.pv;
-        //     }
-        // })
     })
     console.log(`final Forecast `)
     console.log(finalForecast);
@@ -223,8 +207,8 @@ function buildForecastChart( //,chartRef: React.MutableRefObject<any>
         labels: labels.slice(start, end),
         datasets: [
             excessPvForecast,
-            gridUsedForecast,
             excessPvActual,
+            gridUsedForecast,
             gridUsedActual
         ],
     }

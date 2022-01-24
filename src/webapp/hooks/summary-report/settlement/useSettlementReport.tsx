@@ -48,7 +48,7 @@ export function useSettlementReport() {
                     orderStatus,
                     session
                 }
-                const traceContractReports = await settlementAPI.getTradeContractReport(req);
+                const tradeContractReports = await settlementAPI.getTradeContractReport(req);
                 const imbalanceReport = await settlementAPI.getTradeDataReport(req);
 
                 let summaryRole: ISummaryMap = { 'aggregator': 0, 'prosumer': 0, 'consumer': 0 };
@@ -67,19 +67,25 @@ export function useSettlementReport() {
                     netAll: 0
                 };
 
-                if ((traceContractReports && userMeterInfos && imbalanceReport) && traceContractReports.context.length > 0 && userMeterInfos.context.length > 0 && imbalanceReport.context.length > 0) {
+                if ((tradeContractReports && userMeterInfos && imbalanceReport)
+                    && tradeContractReports.context.length > 0 && userMeterInfos.context.length > 0 && imbalanceReport.context.length > 0) {
                     let output: ITradeContractReport[] = [];
-                    traceContractReports.context.forEach((contract: ITradeContractReport) => { //map tractContract 
+                    tradeContractReports.context.forEach((contract: ITradeContractReport) => { //map tractContract 
+                        let buyerMeter = userMeterInfos.context.find((user: IUserMeterInfo) => { return user.id.toString() === contract.buyerId.toString() })
+                        let sellerMeter = userMeterInfos.context.find((user: IUserMeterInfo) => { return user.id.toString() === contract.sellerId.toString() })
+
+
                         contract.imbalance = []; //create array variable for insert imbalance Data
-                        let imbalanceMapContractId: IImbalanceReport[] = imbalanceReport.context.filter((imbalance: IImbalanceReport) => {
+                        let tradeDataMapContractId: IImbalanceReport[] = imbalanceReport.context.filter((imbalance: IImbalanceReport) => {
                             return imbalance.tradeContractIds.toString() === contract.contractId.toString();
                         })
-                        if (imbalanceMapContractId.length > 0) {//found Imbalanace
-                            if (imbalanceMapContractId.every((data) => { return data.tradeType === "CONTRACT" })) { //case CONTRACT Only
-                                contract.imbalance.push(...imbalanceMapContractId);
+                        if (tradeDataMapContractId.length > 0) {
+                            if (tradeDataMapContractId.every((tradeData) => { console.log(`tradeData.tradeType ${tradeData.tradeType}`); return tradeData.tradeType === "SELLER_CONTRACT" || tradeData.tradeType === "BUYER_CONTRACT" })) { //case CONTRACT Only
+                                contract.imbalance.push(...tradeDataMapContractId);
                                 contract.imbalanceStatus = "CONTRACT";
+                                
                             } else {
-                                let imbalanceCase = imbalanceMapContractId.filter((imbalance) => { return imbalance.tradeType !== "SELLER_CONTRACT" && imbalance.tradeType !== "BUYER_CONTRACT" })
+                                let imbalanceCase = tradeDataMapContractId.filter((tradeData) => { return tradeData.tradeType !== "SELLER_CONTRACT" && tradeData.tradeType !== "BUYER_CONTRACT" }) //select only imbalance Case
                                 if (imbalanceCase.length > 0) {
                                     imbalanceCase.forEach((imbalance) => {
                                         switch (imbalance.tradeType) {
@@ -99,6 +105,7 @@ export function useSettlementReport() {
                                                 break;
                                             //case under commit
                                             case "SELLER_IMBALANCE_UNDERCOMMIT":
+                                                console.log(imbalance.tradeType);
                                                 contract.imbalanceStatus = "energyShortfall";
                                                 contract.imbalance?.push(imbalance);
                                                 summaryNetAmount["netSale"] += imbalance.amount;
@@ -120,39 +127,40 @@ export function useSettlementReport() {
                             }
 
                         }
-                        let buyerId = userMeterInfos.context.find((user: IUserMeterInfo) => { return user.id.toString() === contract.buyerId.toString() })
-                        if (buyerId) {
+                        if (buyerMeter && sellerMeter) {
+                            //insert buyer row
                             summaryTradeMarket[contract.tradeMarket.toLowerCase()] += 1;
-                            summaryRole[buyerId.role.toLowerCase()] += 1; //count  role user
+                            summaryRole[buyerMeter.role.toLowerCase()] += 1; //count  role user
                             summaryUserType["BUYER".toLowerCase()] += 1;
                             summaryImbalance[contract.imbalanceStatus] += 1;
 
                             output.push({
                                 ...contract,
                                 userType: "BUYER",
-                                regionName: buyerId.region,
-                                area: buyerId.area,
-                                role: buyerId.role,
+                                regionName: buyerMeter.region,
+                                area: buyerMeter.area,
+                                role: buyerMeter.role,
+                                meterId: buyerMeter.meterId,
+                                matchedMeterId: sellerMeter.meterId
                             })
-                        }
-                        let sellerId = userMeterInfos.context.find((user: IUserMeterInfo) => { return user.id.toString() === contract.sellerId.toString() })
-                        if (sellerId) {
+                            //insert seller row
                             summaryTradeMarket[contract.tradeMarket.toLowerCase()] += 1;
-                            summaryRole[sellerId.role.toLowerCase()] += 1; //count  role user
+                            summaryRole[sellerMeter.role.toLowerCase()] += 1; //count  role user
                             summaryUserType["SELLER".toLowerCase()] += 1;
                             summaryImbalance[contract.imbalanceStatus] += 1;
 
                             output.push({
                                 ...contract,
                                 userType: "SELLER",
-                                regionName: sellerId.region,
-                                area: sellerId.area,
-                                role: sellerId.role,
+                                regionName: sellerMeter.region,
+                                area: sellerMeter.area,
+                                role: sellerMeter.role,
+                                meterId: sellerMeter.meterId,
+                                matchedMeterId: buyerMeter.meterId
                             })
                         }
                     });
                     setSettlementReport(output);
-
                     refreshSettlementDetail(output[0]);
                 } else {
                     setSettlementReport([]);
@@ -212,7 +220,9 @@ export function useSettlementReport() {
             netPrice: settlement.priceCommitted + settlement.tradingFee + settlement.wheelingChargeFee, // NET Buy | NET sale
             imbalanceType: settlement.imbalanceStatus,
             tradeMarket: settlement.tradeMarket,
-
+            meterId: settlement.meterId,
+            matchedMeterId: settlement.matchedMeterId,
+            settlementTime: settlement.settlementTime
         } as ISettlementDetail;
 
         if (settlement.imbalance && settlement.imbalance.length === 0) { //case CONTRACT
@@ -221,6 +231,7 @@ export function useSettlementReport() {
         } else { // CASE IMBALANCE
             switch (newSettlementDetail.userType) {
                 case "BUYER":
+
                     // if (settlement.imbalanceStatus === "energyShortfall") { //case shortfall user have to buy DSO to commit imbalance amount
                     let shortfallBuyer = settlement.imbalance && settlement.imbalance.find((tradeData) => { return settlement.buyerId === tradeData.buyerId || settlement.buyerId === tradeData.sellerId });
                     if (shortfallBuyer) {

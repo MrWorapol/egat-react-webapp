@@ -1,36 +1,33 @@
-import { AppBar, Grid, IconButton, Menu, MenuItem, Toolbar, Typography } from '@mui/material'
+import { Grid, IconButton, Menu, MenuItem, Typography, } from '@mui/material'
 import React from 'react'
-import GridViewIcon from '@mui/icons-material/GridView';
 import { AccountCircle } from '@mui/icons-material';
-import MenuIcon from '@mui/icons-material/Menu';
+import Logout from '@mui/icons-material/Logout';
+import ListItemIcon from '@mui/material/ListItemIcon';
+
+
 import { useLogin } from '../hooks/useLogin';
-import { useSnackBarNotification } from '../hooks/useSnackBarNotification';
+import dayjs from 'dayjs';
+import { useRecoilValue } from 'recoil';
+import { userSessionState } from '../state/user-sessions';
+
 
 export default function Header() {
-    const [auth, setAuth] = React.useState(true);
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const [openMenu, setOpenMenu] = React.useState<null | HTMLElement>(null);
     const { logout } = useLogin();
-    const { showSnackBar } = useSnackBarNotification();
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setAuth(event.target.checked);
-    };
-
+    let session = useRecoilValue(userSessionState);
     const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
+        setOpenMenu(event.currentTarget);
     };
 
     const handleClose = () => {
-        setAnchorEl(null);
-        showSnackBar({
-            serverity: 'success',
-            message: 'test snackbar',
-        })
+        setOpenMenu(null);
     };
 
     const handleLogOut = () => {
 
         logout();
     }
+
 
 
     return (
@@ -43,87 +40,68 @@ export default function Header() {
                 <img src={'/assets/images/logo_1x.png'} alt="p2pweb-logo"></img>
 
             </Grid>
-            <Grid container item xs={10} justifyContent="flex-end" style={{ backgroundColor: "white" }} pr={2}>
-                {/* <Typography>Main Menu </Typography> */}
-                <div>
-                    <IconButton
-                        size="large"
-                        aria-label="account of current user"
-                        aria-controls="menu-appbar"
-                        aria-haspopup="true"
-                        onClick={handleMenu}
-                        color="inherit"
-                    >
-                        <AccountCircle />
-                    </IconButton>
-                    <Menu
-                        id="menu-appbar"
-                        anchorEl={anchorEl}
-                        anchorOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right',
-                        }}
-                        keepMounted
-                        transformOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right',
-                        }}
-                        open={Boolean(anchorEl)}
-                        onClose={handleClose}
-                    >
-                        <MenuItem onClick={handleClose}>Profile</MenuItem>
-                        <MenuItem onClick={handleLogOut}>LogOut</MenuItem>
-                    </Menu>
-                </div>
+            <Grid container item xs={10} justifyContent="flex-end" alignItems='center' style={{ backgroundColor: "white" }} pr={2}>
+                <Grid item>
+                    <Typography> {session && `Last login ${dayjs(session.lasttimeLogIn).format('DD/MM/YYYY [at] HH:mm')}`}</Typography>
+                </Grid>
+                <IconButton
+                    size="large"
+                    aria-label="account of current user"
+                    aria-controls="menu-appbar"
+                    aria-haspopup="true"
+                    onClick={handleMenu}
+                    color="inherit"
+                >
+                    <AccountCircle sx={{ width: 32, height: 32 }} />
+                </IconButton>
+                <Menu
+                    id="menu-appbar"
+                    anchorEl={openMenu}
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'right',
+                    }}
+                    keepMounted
+                    transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right',
+                    }}
+                    open={Boolean(openMenu)}
+                    onClose={handleClose}
+                    PaperProps={{
+                        elevation: 0,
+                        sx: {
+                            overflow: 'visible',
+                            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                            mt: 1.5,
+                            '& .MuiAvatar-root': {
+                                width: 32,
+                                height: 32,
+                                ml: -0.5,
+                                mr: 1,
+                            },
+                            '&:before': {
+                                content: '""',
+                                display: 'block',
+                                position: 'absolute',
+                                top: 0,
+                                right: 14,
+                                width: 10,
+                                height: 10,
+                                bgcolor: 'background.paper',
+                                transform: 'translateY(-50%) rotate(45deg)',
+                                zIndex: 0,
+                            },
+                        },
+                    }}
+                >
+                    <MenuItem onClick={handleLogOut}>
+                        <ListItemIcon>
+                            <Logout fontSize="small" />
+                        </ListItemIcon>
+                        Log Out</MenuItem>
+                </Menu>
             </Grid>
         </Grid>
-        // <AppBar position="static" style={{ backgroundColor:"white"}}>
-
-        //     {/* <Toolbar>
-        //         <IconButton
-        //             size="large"
-        //             edge="start"
-        //             color="inherit"
-        //             aria-label="menu"
-        //             sx={{ mr: 2 }}
-        //         >
-        //             <MenuIcon />
-        //         </IconButton>
-        //         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-        //             Photos
-        //         </Typography>
-        // <div>
-        //     <IconButton
-        //         size="large"
-        //         aria-label="account of current user"
-        //         aria-controls="menu-appbar"
-        //         aria-haspopup="true"
-        //         onClick={handleMenu}
-        //         color="inherit"
-        //     >
-        //         <AccountCircle />
-        //     </IconButton>
-        //     <Menu
-        //         id="menu-appbar"
-        //         anchorEl={anchorEl}
-        //         anchorOrigin={{
-        //             vertical: 'top',
-        //             horizontal: 'right',
-        //         }}
-        //         keepMounted
-        //         transformOrigin={{
-        //             vertical: 'top',
-        //             horizontal: 'right',
-        //         }}
-        //         open={Boolean(anchorEl)}
-        //         onClose={handleClose}
-        //     >
-        //         <MenuItem onClick={handleClose}>Profile</MenuItem>
-        //         <MenuItem onClick={handleClose}>My account</MenuItem>
-        //     </Menu>
-        // </div>
-
-        //     </Toolbar> */}
-        // </AppBar>
     )
 }

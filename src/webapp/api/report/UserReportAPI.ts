@@ -148,30 +148,32 @@ export class UserAndEnergyReportAPI {
                 const rawData: IMeterAreaAndSite[] = await response.json();
 
                 rawData.forEach((row: IMeterAreaAndSite) => {
-                    // console.log(row);
-                    let inRange = dayjs(row.registrationDate).isBefore(dayjs(period.endDate).endOf('day'));
-                    // console.log(` inrange:${inRange} registrationDate:${dayjs(row.registrationDate).format('DD/MM/YYYY')} :${dayjs(period.endDate).format('DD/MM/YYYY')}`)
-                    if (inRange)
-                        if (period.region === 'all' || period.region === row.regionName) {
+                    console.log(rawData);
 
-                            result.push({
-                                id: row.userId,
-                                meterId: row.meterId,
-                                area: row.area,
-                                locationCode: row.locationCode,
-                                meterName: row.meterName,
-                                role: row.role,
-                                siteName: row.siteName,
-                                region: row.regionName,
-                                address: {
-                                    lat: row.lat,
-                                    lng: row.lng,
-                                },
-                                peameaSubstation: row.substationPeaMea,
-                                egatSubStation: row.substationEgat,
-                            })
-                        }
-                })
+                    // let inRange = dayjs(row.registrationDate).isBefore(dayjs(period.endDate).endOf('day'));
+                    // console.log(` inrange:${inRange} registrationDate:${dayjs(row.registrationDate).format('DD/MM/YYYY')} :${dayjs(period.endDate).format('DD/MM/YYYY')}`)
+                    // if (inRange)
+                    if (period.region === 'all' || period.region === row.regionName) {
+
+                        result.push({
+                            id: row.userId,
+                            meterId: row.meterId,
+                            area: row.area,
+                            locationCode: row.locationCode,
+                            meterName: row.meterName,
+                            role: row.role,
+                            siteName: row.siteName,
+                            region: row.regionName,
+                            address: {
+                                lat: row.lat,
+                                lng: row.lng,
+                            },
+                            peameaSubstation: row.substationPeaMea,
+                            egatSubStation: row.substationEgat,
+                        })
+                    }
+                }
+                )
                 return {
                     context: result
                 };
@@ -266,7 +268,8 @@ export class UserAndEnergyReportAPI {
             "payload.inSolar" as "inSolar", 
             "payload.load" as "load",
             "payload.meterId" as "meterId"
-            FROM "PowerOnEgatF"`,
+            FROM "PowerOnEgatF"
+            WHERE "__time" >= '2022-01-24T15:00:00.000Z'`,
             resultFormat: "object",
         }
 
@@ -362,7 +365,7 @@ export class UserAndEnergyReportAPI {
                 "payload.inSolar" as "inSolar",
                 "payload.load" as "load" 
                 FROM "ForecastOnEgatF"
-                WHERE "payload.meterId" = ${req.meterId}`,
+                WHERE "payload.meterId" = ${req.meterId} AND "__time" >= '2022-01-24T15:00:00.000Z'`,
             resultFormat: "object",
         }
 
@@ -394,10 +397,6 @@ export class UserAndEnergyReportAPI {
                             });
                         }
                     })
-                    return {//return  data in period
-                        context: powerDatas, //return array of power with all user meter. incase of period will return array power in range of date with all user meter
-
-                    };
                 } else {
                     rawData.forEach((power: IPowerResponse) => {
                         powerDatas.push({

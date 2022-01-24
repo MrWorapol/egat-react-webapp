@@ -27,25 +27,30 @@ export function useAuthGuard() {
     const api = new KeycloakAdminApi();
     const resetSessionState = useResetRecoilState(userSessionState);
     const { showSnackBar } = useSnackBarNotification();
-    const loadLocalStorage = async () => {
-        const localStore = localStorage.getItem('session');
-        if (localStore) {
 
-            const sessionObject: IUserSession = JSON.parse(localStore);
-            setSessionValue({
-                accessToken: sessionObject.accessToken,
-                refreshToken: sessionObject.refreshToken,
-                lasttimeLogIn: new Date(),
-            })
-        } else {
-            history.push('/login');
-            return;
-        }
-        setInit(false);
-    };
+    // const loadLocalStorage = async () => {
+    //     const localStore = localStorage.getItem('session');
+    //     if (localStore) {
+
+    //         const sessionObject: IUserSession = JSON.parse(localStore);
+    //         setSessionValue({
+    //             accessToken: sessionObject.accessToken,
+    //             refreshToken: sessionObject.refreshToken,
+    //             lasttimeLogIn: new Date(),
+    //         })
+    //     } else {
+    //         history.push('/login');
+    //         return;
+    //     }
+    //     setInit(false);
+    // };
 
 
     const checkRefreshToken = async () => {
+        if (currentState === NavigationCurrentType.LOGIN && sessionValue) {
+            history.push('/');
+            return;
+        }
         let localStore = localStorage.getItem("session");
         if (localStore) {
             let sessionObject: IUserSession = JSON.parse(localStore);
@@ -54,15 +59,16 @@ export function useAuthGuard() {
                 let decodeToken: SessionDecode = jwt_decode(sessionObject.accessToken);
                 if (decodeToken) {
                     let expireUnixTime = decodeToken.exp;
-                    console.log(`token unix  is ${expireUnixTime}   and expired: ${expireUnixTime && (dayjs().unix() + 70 > expireUnixTime)} of now unix: ${dayjs().unix()}`);
+                    // console.log(`token unix  is ${expireUnixTime}   and expired: ${expireUnixTime && (dayjs().unix() + 70 > expireUnixTime)} of now unix: ${dayjs().unix()}`);
                     if (expireUnixTime && (dayjs().unix() + 70 > expireUnixTime)) {
                         try {
+                            console.log(`call refresh api`)
                             const response = await api.refreshToken({ refreshToken: sessionObject.refreshToken })
                             if (response) {
                                 let session = {
                                     accessToken: response.accessToken,
                                     refreshToken: response.refreshToken,
-                                    lasttimeLogIn: new Date(),
+                                    lasttimeLogIn: sessionObject.lasttimeLogIn,
                                 }
                                 // console.log(`new token :${dayjs(session.lasttimeLogIn).format('DD/MM/YYYY HH:mm:ss')}`);
                                 localStorage.removeItem('session');
@@ -76,7 +82,11 @@ export function useAuthGuard() {
                             showSnackBar({ serverity: 'info', message: 'Session is timeout' });
                         }
                     } else if (init === true) {
-                        setSessionValue(sessionObject);
+                        setSessionValue({
+                            accessToken: sessionObject.accessToken,
+                            refreshToken: sessionObject.refreshToken,
+                            lasttimeLogIn: new Date(),
+                        });
                         setInit(false);
                     }
                 }
@@ -98,14 +108,13 @@ export function useAuthGuard() {
         //         history.push('/login');
         //         return;
         //     }
-            
-            
-            
-        //     if (currentState === NavigationCurrentType.LOGIN && sessionValue) {
-        //         history.push('/dashboard');
-        //         return;
-        //     }    //case try to access login but already logined
-        // }
+
+
+
+        if (currentState === NavigationCurrentType.LOGIN && sessionValue) {
+            history.push('/dashboard');
+            return;
+        }    //case try to access login but already logined
 
     }, [currentState]);
 

@@ -9,10 +9,6 @@ import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-interface IMap {
-    [key: string]: string,
-}
-
 export default function OrderDetail() {
     const { orderDetail } = useOrderReport();
 
@@ -48,18 +44,6 @@ export default function OrderDetail() {
 }
 function buildMatchedBuyOrder(orderDetail: IOrderDetail) {
     let settlementTime = dayjs(+orderDetail.orderDetail.deliverdTime);
-
-    let details: IMap[] = [
-        { key: 'amount', label: 'amount', unit: 'kWh' },
-        { key: 'netBuy', label: 'NET buy', unit: 'Baht' },
-        { key: 'netEnergyPrice', label: 'NET energy price', unit: 'Baht' },
-        { key: 'energyToBuy', label: 'Energy to buy', unit: 'kWh' },
-        { key: 'energyTariff', label: 'Energy tariff', unit: 'Baht/kWh' },
-        { key: 'energyPrice', label: 'Energy price', unit: 'Baht' },
-        { key: 'wheelingChargeTariff', label: 'Wheeling charge Tariff', unit: 'Baht/kWh' },
-        { key: 'wheelingCharge', label: 'Wheeling charge', unit: 'Baht' },
-        { key: 'tradingFee', label: 'Trading fee', unit: 'Baht' }
-    ];
     return (
         <Grid px={2} py={2} sx={{ minHeight: '25vh' }}>
             <Grid item >

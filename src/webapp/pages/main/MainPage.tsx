@@ -1,4 +1,4 @@
-import { Grid } from '@mui/material'
+import { Box, Grid } from '@mui/material'
 import Header from '../../components/Header'
 import NavigationMainPage from './NavigationMainPage'
 import { Switch, Route, Redirect } from 'react-router-dom'
@@ -17,42 +17,55 @@ import BillingReport from './summary-report/billing/BillingReport'
 import NewManagement from './news-management/NewManagement'
 import { useAuthGuard } from '../../hooks/useAuthGuard'
 import PageNotFound from './PageNotFound'
+import { useEffect } from 'react'
 
 export default function MainPage() {
 
     return (
-        <Grid container direction="column" style={{ minHeight: '100vh', backgroundColor: '#E9EDF2' }}>
-            <Grid container item id="header" sx={{ height: '4em' }}>
-                <Header />
-            </Grid>
-            <Grid container id="navigation-tab" direction="row" sx={{ minHeight: '100vh-5em' }}>
+        <Box flexGrow={1} height={1} width={1}>
+            <Grid container direction="column" style={{ minHeight: '100vh', backgroundColor: '#E9EDF2' }}>
+                <Grid container item id="header" sx={{ height: '4em' }}>
+                    <Header />
+                </Grid>
 
-                <Grid container item xs={2} >
-                    <NavigationMainPage />
+                <Grid item container id="navigation-tab" direction="row" sx={{ minHeight: '93vh' }}>
+                    <Grid container item xs={2} bgcolor="#EFEFEF">
+                        <NavigationMainPage />
+                    </Grid>
+                    <Grid container xs={10} id="content" px={2} my={3} width='100%'  >
+                        {PageRouting()}
+                    </Grid>
                 </Grid>
-                <Grid container item xs={10} id="content" pt={3} px={4} width='100%'>
-                    {PageRouting()}
-                </Grid>
-            </Grid>
-        </Grid >
+
+            </Grid >
+        </Box>
     )
 }
 
 function PageRouting() {
     let { session, checkRefreshToken } = useAuthGuard();
+    let countInterval = 0;
 
+    useEffect(() => {
+        const timerInterval = setInterval(async () => {
+            
+            countInterval += 1;
+            console.log(`call Interval ${countInterval}`)
+            checkRefreshToken();
+        }, 50000);
+        return () => {
+            countInterval = 0;
+            clearInterval(timerInterval);
+        };
+    }, []);
 
     if (!session) {
         return;
     } else {
-        setInterval(async () => {
-            console.log(`call interval on Main Page`);
-            checkRefreshToken();
-        }, 50000);
         return (
             <>
                 <Switch>
-                    <Route path={['/']} exact>
+                    <Route path='/' exact>
                         <DashBoard />
                     </Route>
                     <Route path='/user_management/:id'>
@@ -89,7 +102,7 @@ function PageRouting() {
                     <Route path='/news'>
                         <NewManagement />
                     </Route>
-                    <Route path='/404' component={PageNotFound}/>                    
+                    <Route path='/404' component={PageNotFound} />
                     <Redirect to='/404' />
                 </Switch>
             </>

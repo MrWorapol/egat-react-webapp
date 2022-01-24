@@ -1,33 +1,31 @@
-import dayjs from "dayjs";
 import { useCallback, useEffect } from "react";
 import { useRecoilState, useRecoilValue, useResetRecoilState } from "recoil"
 import { UserAndEnergyReportAPI } from "../../../api/report/UserReportAPI";
 import { navigationCurrentState, NavigationCurrentType } from "../../../state/navigation-current-state";
 import { IPeriod, periodState } from "../../../state/summary-report/period-state";
-import { IPowerGraph, locationSiteState } from "../../../state/summary-report/user-report/location-site-state";
+import { IEnergyInfo, IPowerGraph, locationSiteState } from "../../../state/summary-report/user-report/location-site-state";
 import { IPowerData, powerDatastate } from "../../../state/summary-report/user-report/power-data-state";
 import { IUserSummary, userChartState } from "../../../state/summary-report/user-report/user-chart-state"
 import { IUserMeterInfo, userReportState } from "../../../state/summary-report/user-report/user-report-state";
 import { userSessionState } from "../../../state/user-sessions";
 import { useLoadingScreen } from "../../useLoadingScreen";
 import { useSnackBarNotification } from "../../useSnackBarNotification";
-import usePeriodTime from "../usePeriodTime";
 
 
 export default function useUserReport() {
-    const currentState = useRecoilValue(navigationCurrentState);
     const [chartData, setChartData] = useRecoilState(userChartState);
     const [meterTable, setmeterTable] = useRecoilState(userReportState);
     const [locationSite, setLocationSite] = useRecoilState(locationSiteState);
     const [actualPowers, setActualPowers] = useRecoilState(powerDatastate);
     const resetLocationSite = useResetRecoilState(locationSiteState);
     const api = new UserAndEnergyReportAPI();
+    let currentState = useRecoilValue(navigationCurrentState);
     let resetChartData = useResetRecoilState(userChartState);
-    let period = useRecoilValue(periodState);
     let session = useRecoilValue(userSessionState);
-
+    let period = useRecoilValue(periodState);
     const { showLoading, hideLoading } = useLoadingScreen();
     const { showSnackBar } = useSnackBarNotification();
+
     const getPowerDatas = useCallback(async (period?: IPeriod) => {
         if (session) {
 
@@ -47,7 +45,6 @@ export default function useUserReport() {
     }, []);
 
     const refreshUserTable = async (period: IPeriod, roles: string[], area: string) => {
-        // console.log('refresh User Energy Table');
         if (session) {
             showLoading(10);
             try {
@@ -109,20 +106,22 @@ export default function useUserReport() {
                         (row: IPowerData) => {
                             return meter.meterId.toString() === row.meterId.toString()
                         });
-                    let energySummary = {
+                    let energySummary: IEnergyInfo = {
                         pv: 0,
                         energyStorage: 0,
-                        load: 0,
+                        inBattery: 0,
+                        outBattery: 0,
+                        energyLoad: 0,
                         grid: 0
                     }
                     if (powerDataByMeterId.length > 0) {
-                        console.log(`actul power meter:${meter.meterId}`);
                         powerDataByMeterId.map((row: IPowerData) => {
-                            console.log(row)
-                            energySummary.pv += Math.floor(+row.inSolar);
-                            energySummary.energyStorage += Math.floor(+row.inBattery - row.outBattery);
-                            energySummary.grid += Math.floor(row.excessPv - row.inGrid);
-                            energySummary.load += Math.floor(+row.load);
+                            energySummary.pv += +row.inSolar;
+                            energySummary.energyStorage += +row.inBattery - row.outBattery;
+                            energySummary.inBattery += row.inBattery;
+                            energySummary.outBattery += row.outBattery;
+                            energySummary.grid += (row.excessPv - row.inGrid);
+                            energySummary.energyLoad += +row.load;
                             actualPowerByMeter.push({ //insert actual power in array
                                 timestamp: row.timestamp,
                                 grid: +row.inGrid,
@@ -130,7 +129,6 @@ export default function useUserReport() {
                             })
                         })
                     }
-                    console.log(energySummary);
                     setLocationSite({
                         meterId: meter.meterId,
                         peameaSubstation: meter.peameaSubstation,
@@ -141,8 +139,10 @@ export default function useUserReport() {
                         },
                         energySummary: {
                             grid: energySummary.grid,
+                            inBattery: energySummary.inBattery,
+                            outBattery: energySummary.outBattery,
                             energyStorage: energySummary.energyStorage,
-                            energyLoad: energySummary.load,
+                            energyLoad: energySummary.energyLoad,
                             pv: energySummary.pv,
                         },
                         powerUsed: {
@@ -178,11 +178,9 @@ export default function useUserReport() {
                         )
                     })
                 }
-            }catch(e){
+            } catch (e) {
                 showSnackBar({ serverity: 'error', message: `Cannot Load forecst Data ${e}` });
             }
-            //load = row.inSolar + row.inGrid + row.inBattery
-            //พลังงานที่ใช้ทั้งหมด = พลังงานโซล่า + grid + แบต
         }
         return powerGraph;
     };

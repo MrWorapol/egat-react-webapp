@@ -1,4 +1,4 @@
-import { Box, Button, Container, Grid, TextField, Typography } from '@mui/material'
+import { Box, Button, Container, FormControl, Grid, MenuItem, Select, TextField, Typography } from '@mui/material'
 import React from 'react'
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { useParams } from 'react-router';
@@ -14,6 +14,7 @@ import { userSessionState } from '../../../state/user-sessions';
 import dayjs from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
+import { useSnackBarNotification } from '../../../hooks/useSnackBarNotification';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -76,6 +77,7 @@ export default function UserDetail() {
     const [edit, setEdit] = React.useState(false);
     const session = useRecoilValue(userSessionState);
     const { showLoading, hideLoading } = useLoadingScreen();
+    const { showSnackBar } = useSnackBarNotification();
     const onSetEditable = () => {
         setEdit(!edit);
     }
@@ -83,7 +85,7 @@ export default function UserDetail() {
     const onEditUser = async (data: IFormTextFieldInput) => {
 
         // if (userSession && data.userDetail && data.meterDetail) {
-        showLoading();
+        showLoading(10);
         if (session) {
             try {
                 //insert meter Id to userDetail before send to api
@@ -94,12 +96,12 @@ export default function UserDetail() {
                     meterDetail: data.meterDetail,
                     userDetail: userDetailInput,
                 });
+                hideLoading(10);
             } catch (e) {
 
-                // hideLoading();
+                hideLoading(10);
+                showSnackBar({ serverity: 'error', message: `${e}` })
             }
-            console.log(`back from api`);
-
         }
     }
     const onSubmit: SubmitHandler<IFormTextFieldInput> = data => {
@@ -161,7 +163,7 @@ export default function UserDetail() {
                             <Controller
                                 render={({ field }) => (
                                     <TextField variant="standard"
-                                        sx={{ ml: 2, width: '4em' }}
+                                        sx={{ ml: 2, width: '13em' }}
                                         size="small" disabled={!edit}
 
                                         {...field}
@@ -244,7 +246,7 @@ export default function UserDetail() {
                                 control={control}
                                 render={({ field }) => (
                                     <TextField variant="standard"
-                                        sx={{ ml: 2 }}
+                                        sx={{ ml: 2, width: '10em' }}
                                         size="small"
                                         disabled={!edit}
                                         {...field}
@@ -404,12 +406,19 @@ export default function UserDetail() {
                                 name="meterDetail.typeOfUser"
                                 control={control}
                                 render={({ field }) => (
-                                    <TextField variant="standard"
-                                        sx={{ ml: 2, width: '30em' }}
-                                        size="small"
-                                        disabled={!edit}
-                                        {...field}
-                                    />)}
+                                    <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+                                        <Select {...field} disabled={!edit}>
+                                            <MenuItem value={'2.1 PEA แรงดัน 22-33 kV, MEA แรงดัน 12-24 kV'}>{'2.1 PEA แรงดัน 22-33 kV, MEA แรงดัน 12-24 kV'}</MenuItem>
+                                            <MenuItem value={'2.2 PEA แรงดัน <22 kV, MEA แรงดัน <12 kW'}>{'2.2 PEA แรงดัน <22 kV, MEA แรงดัน <12 kW'}</MenuItem>
+
+                                        </Select>
+                                    </FormControl>
+                                    // <TextField variant="standard"
+                                    // sx={{ ml: 2, width: '30em' }}
+                                    // size="small"
+                                    // disabled={!edit}
+                                    // {...field}
+                                )}
                             />
                         </GridDetailsComponent>
                     </Grid>

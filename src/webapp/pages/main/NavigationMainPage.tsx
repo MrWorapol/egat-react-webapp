@@ -12,6 +12,7 @@ import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import NoteAltOutlinedIcon from '@mui/icons-material/NoteAltOutlined';
 import AssessmentOutlinedIcon from '@mui/icons-material/AssessmentOutlined';
 import CampaignOutlinedIcon from '@mui/icons-material/CampaignOutlined';
+import { Box } from '@mui/system';
 
 const NavigationMainPage = () => {
     const { currentState } = useNavigationGet();
@@ -52,20 +53,17 @@ const NavigationMainPage = () => {
     }, [currentState])
 
     return (
-        <>
-            <Grid container item direction='column' justifyContent='flex-start' style={{ backgroundColor: '#EFEFEF', height: '100vh-4em' }}>
-                <Grid item>
-                    <List>
-                        {buildDashBoard()}
-                        {buildUserManagement()}
-                        {buildReferenceData(referenceDataChildrenMenu)}
-                        {buildSummaryReport(summaryChildrenMenu)}
-                        {buildNews()}
-                    </List>
-                </Grid>
+        <Grid container item direction='column' justifyContent='flex-start' style={{ backgroundColor: '#EFEFEF'}}>
+            <Grid item>
+                <List>
+                    {buildDashBoard()}
+                    {buildUserManagement()}
+                    {buildReferenceData(referenceDataChildrenMenu)}
+                    {buildSummaryReport(summaryChildrenMenu)}
+                    {buildNews()}
+                </List>
             </Grid>
-
-        </>
+        </Grid>
     )
 
     function buildDashBoard() {

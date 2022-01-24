@@ -53,8 +53,9 @@ export default function useOrderReport() {
                 let summaryStatus: ISummaryMap = { 'open': 0, 'matched': 0 }
                 if (allOrder && allOrder.context.length > 0 && userMeterInfos) {
                     let output: IOrderInfo[] = [];
-                    allOrder.context.map((order: IOrderInfo) => {
-                        let meterInfo = userMeterInfos.context.find((user: IUserMeterInfo) => { return user.id.toString() === order.userId.toString() })      
+                    allOrder.context.map((order: IOrderInfo, index: number) => {
+
+                        let meterInfo = userMeterInfos.context.find((user: IUserMeterInfo) => { return user.id.toString() === order.userId.toString() })
                         if (meterInfo && meterInfo !== undefined) {
 
                             summaryRole[meterInfo.role.toLowerCase()] += 1;
@@ -66,6 +67,7 @@ export default function useOrderReport() {
                                 switch (order.userType) {
                                     case ("BUYER"):
                                         let sellerMeter = userMeterInfos.context.find((user: IUserMeterInfo) => { return user.id.toString() === order.orderDetail?.sellerId })
+                                        console.log(`case BUYER`)
                                         if (sellerMeter && orderDetail) {
 
                                             output.push({
@@ -80,6 +82,7 @@ export default function useOrderReport() {
                                         break;
                                     case ("SELLER"):
                                         let buyerMeter = userMeterInfos.context.find((user: IUserMeterInfo) => { return user.id.toString() === order.orderDetail?.buyerId })
+                                        console.log(`case SELLER`)
                                         if (buyerMeter) {
                                             output.push({
                                                 ...order,
@@ -126,11 +129,13 @@ export default function useOrderReport() {
                                 open: summaryStatus.open
                             }
                         })
+                    console.log(`output data before render table`);
+                    console.log(output)
                     setOrderReport(output);
 
                     refreshOrderDetail(output[0]);
 
-                }else{
+                } else {
                     setOrderReport([]);
                 }
                 hideLoading(10);

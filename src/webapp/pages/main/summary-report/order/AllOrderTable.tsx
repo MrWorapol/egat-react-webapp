@@ -68,7 +68,10 @@ export default function AllOrderTable(props: IProps) {
         console.log(row)
         refreshOrderDetail(row)
     }
-
+    
+    if (props.data.length < rowsPerPage && page !== 0) {
+        setPage(0);
+    }
     return (
         <Paper sx={{ width: '100%', mb: 2 }} >
             <TableContainer >

@@ -19,7 +19,7 @@ export default function PeriodComponent(props: PeriodProps) {
     const startDayslist = buildDaylist(period.startDate);
     const endDayslist = buildDaylist(period.endDate);
     const { showLoading, hideLoading } = useLoadingScreen();
-
+    const [init, setInit] = useState(true);
     let isCurrentMonth = dayjs().diff(period.startDate, 'month') === 0 && dayjs().diff(period.startDate, 'year') === 0 ? true : false;
 
     const debounceFn = useDebouncedCallback(() => {
@@ -31,7 +31,7 @@ export default function PeriodComponent(props: PeriodProps) {
     }, 2000);
 
     const handleChangeStartDay = async (e: SelectChangeEvent<string>) => {
-        console.log(`start Day${e.target.value}`);
+        // console.log(`start Day${e.target.value}`);
         setStartDay(e.target.value);
         setEndDay(e.target.value);
         updatedPeriod({
@@ -39,18 +39,18 @@ export default function PeriodComponent(props: PeriodProps) {
             endDate: dayjs(period.startDate).set('date', +e.target.value).toDate(),
             region: period.region,
         })
-        
+
     }
     const handleChangeEndDay = async (e: SelectChangeEvent<string>) => {
         const newEndDay = dayjs(period.startDate).date(+e.target.value);
         setEndDay(e.target.value);
-        console.log(`End Day${e.target.value}`);
+        // console.log(`End Day${e.target.value}`);
         updatedPeriod({
             startDate: period.startDate,
             endDate: newEndDay.toDate(),
             region: period.region,
         })
-        
+
     }
 
     const handleChangeMonth = async (newMonth: Dayjs) => {
@@ -78,7 +78,11 @@ export default function PeriodComponent(props: PeriodProps) {
 
     }
     useEffect(() => {
-        debounceFn();
+        if (init) {
+            setInit(false);
+        } else {
+            debounceFn();
+        }
 
     }, [period, debounceFn]);
 
@@ -143,7 +147,7 @@ export default function PeriodComponent(props: PeriodProps) {
                                             disabled={
                                                 isCurrentMonth && day > dayjs().date()/* is case this month && year */
                                                     ? day < +startDay || day > dayjs().date()  //YES : disabled  day within range 'under startDay ' and 'more than today'   
-                        
+
                                                     : day < +startDay} //'disabled day within range under startDay'
                                         >
                                             {day}

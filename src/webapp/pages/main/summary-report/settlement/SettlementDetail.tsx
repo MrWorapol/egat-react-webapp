@@ -2,6 +2,13 @@ import { Grid, Typography } from '@mui/material'
 import { useSettlementReport } from '../../../../hooks/summary-report/settlement/useSettlementReport';
 import { ISettlementDetail } from '../../../../state/summary-report/settlement-report/settlement-detail-state';
 
+import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+
 export default function SettlementDetail() {
     const { settlementDetail } = useSettlementReport();
     console.log(settlementDetail);
@@ -29,6 +36,7 @@ export default function SettlementDetail() {
 }
 
 function buildSettlementDetail(settlement: ISettlementDetail) {
+    let settlementTime = dayjs(+settlement.settlementTime);
     return (
         <Grid px={2} py={2} direction='column' sx={{ minHeight: '25vh' }}>
             <Grid item >
@@ -44,6 +52,16 @@ function buildSettlementDetail(settlement: ISettlementDetail) {
                 </Typography>
             </Grid>
             <Grid container item direction='row' alignItems='center' pt={2}>
+                <Typography sx={{ color: settlement.userType.toLowerCase() === 'seller' ? 'success.light' : 'error.light' }}>
+                    {settlement.userType.toLowerCase() === 'seller' && `Seller meter:  ${settlement.meterId}`}
+                    {settlement.userType.toLowerCase() === 'buyer' && `Buyer meter:  ${settlement.meterId}`}
+                </Typography>
+                <Typography pl={2}>
+                    {settlement.userType.toLowerCase() === 'seller' && `Buyer meter:  ${settlement.matchedMeterId}`}
+                    {settlement.userType.toLowerCase() === 'buyer' && `Seller meter:  ${settlement.matchedMeterId}`}
+                </Typography>
+            </Grid>
+            <Grid container item direction='row' alignItems='center' pt={2}>
                 <Typography sx={{ fontSize: '1.2em', color: 'error.light' }}>
                     {settlement.imbalanceType === "energyShortfall" && "Energy Shortfall"}
                     {settlement.imbalanceType === "POOl" && "Energy Excess"}
@@ -54,7 +72,15 @@ function buildSettlementDetail(settlement: ISettlementDetail) {
                     {settlement.tradeMarket === "POOl" && "Pool Market"}
                 </Typography>
             </Grid>
-            <Grid item container xs={12} id='energy-info' mt={3}>
+            <Grid item container xs={12} id='imbalance-info' mt={3}>
+                <Grid container item justifyContent='space-between' pl={4} pr={6} >
+                    <Typography>
+                        {'Settlement Time'}
+                    </Typography>
+                    <Typography >
+                        {`${dayjs(settlementTime).format(`DD/MM/YYYY HH:mm`)}-${dayjs(settlementTime).tz('Asia/Bangkok').add(1, 'hour').format(`HH:mm`)}`}
+                    </Typography>
+                </Grid>
                 <Grid container item justifyContent='space-between' pl={4} pr={6} >
                     <Typography>
                         {'Energy Commited/Delivered'}

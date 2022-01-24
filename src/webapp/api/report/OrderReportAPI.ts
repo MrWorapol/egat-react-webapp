@@ -89,16 +89,16 @@ export class OrderReportAPI {
 
         let results: IGetOrderTableResponse = { context: [] };
 
-        let poolSellerOpenOrders = await this.getPoolTradeOffer({ session: req.session, period: req.period });
+        let poolSellerOpenOrders = await this.getOpenPoolTradeOffer({ session: req.session, period: req.period });
         if (poolSellerOpenOrders && poolSellerOpenOrders.length > 0) {
             results.context.push(...poolSellerOpenOrders);
         }
-        let poolBuyerOpenOrders = await this.getPoolMarketBid({ session: req.session, period: req.period });
+        let poolBuyerOpenOrders = await this.getOpenPoolMarketBid({ session: req.session, period: req.period });
         if (poolBuyerOpenOrders && poolBuyerOpenOrders.length > 0) {
             console.log(poolBuyerOpenOrders)
             results.context.push(...poolBuyerOpenOrders);
         }
-        let bilateralSellerOpenOrders = await this.getBilateralTradeOffer({ session: req.session, period: req.period });
+        let bilateralSellerOpenOrders = await this.getOpenBilateralTradeOffer({ session: req.session, period: req.period });
         if (bilateralSellerOpenOrders && bilateralSellerOpenOrders.length > 0) {
             console.log(bilateralSellerOpenOrders)
             results.context.push(...bilateralSellerOpenOrders);
@@ -107,11 +107,33 @@ export class OrderReportAPI {
         if (matchOrders && matchOrders.context.length > 0) {
             results.context.push(...matchOrders.context);
         }
+        console.log(`Get Order API Response`);
+        console.log(results);
         return results;
     }
 
+    async getOpenOrderAll(req: IGetOrderTableRequest): Promise<IGetOrderTableResponse | null> {
+        let results: IGetOrderTableResponse = { context: [] };
 
-    async getPoolTradeOffer(req: IGetOrderRequest): Promise<IGetOrderResponse[] | null> {
+        let poolSellerOpenOrders = await this.getOpenPoolTradeOffer({ session: req.session, period: req.period });
+        if (poolSellerOpenOrders && poolSellerOpenOrders.length > 0) {
+            results.context.push(...poolSellerOpenOrders);
+        }
+        let poolBuyerOpenOrders = await this.getOpenPoolMarketBid({ session: req.session, period: req.period });
+        if (poolBuyerOpenOrders && poolBuyerOpenOrders.length > 0) {
+            console.log(poolBuyerOpenOrders)
+            results.context.push(...poolBuyerOpenOrders);
+        }
+        let bilateralSellerOpenOrders = await this.getOpenBilateralTradeOffer({ session: req.session, period: req.period });
+        if (bilateralSellerOpenOrders && bilateralSellerOpenOrders.length > 0) {
+            console.log(bilateralSellerOpenOrders)
+            results.context.push(...bilateralSellerOpenOrders);
+        }
+        return results;
+
+    }
+
+    async getOpenPoolTradeOffer(req: IGetOrderRequest): Promise<IGetOrderResponse[] | null> {
         const period = req.period;
         const body: IGetDruidBody = {
             "query": `SELECT "payload.id",
@@ -122,7 +144,7 @@ export class OrderReportAPI {
             LATEST(CAST("payload.targetPrice" as VARCHAR),10 ) FILTER(WHERE "payload.targetPrice" is not null) targetPrice,
             LATEST(CAST("payload.targetAmount" as VARCHAR),10 ) FILTER(WHERE "payload.targetAmount" is not null) targetAmount
             FROM "PoolMarketOfferOnEgatF"
-            WHERE "payload.status" = 'OPEN'
+            WHERE "payload.status" = 'OPEN' AND "__time" >= '2022-01-24T15:00:00.000Z''
             GROUP BY "payload.id"`,
             "resultFormat": "object"
         }
@@ -182,7 +204,7 @@ export class OrderReportAPI {
         }
     }//wait for 
 
-    async getPoolMarketBid(req: IGetOrderRequest): Promise<IGetOrderResponse[] | null> { //new query
+    async getOpenPoolMarketBid(req: IGetOrderRequest): Promise<IGetOrderResponse[] | null> { //new query
         const period = req.period;
         const body: IGetDruidBody = {
             "query": `SELECT "payload.id",
@@ -193,7 +215,7 @@ export class OrderReportAPI {
             LATEST(CAST("payload.targetPrice" as VARCHAR),10 ) FILTER(WHERE "payload.targetPrice" is not null) targetPrice,
             LATEST(CAST("payload.targetAmount" as VARCHAR),10 ) FILTER(WHERE "payload.targetAmount" is not null) targetAmount
             FROM "PoolMarketBidOnEgatF"
-            WHERE "payload.status" = 'OPEN'
+            WHERE "payload.status" = 'OPEN' AND "__time" >= '2022-01-24T15:00:00.000Z''
             GROUP BY "payload.id"`,
             "resultFormat": "object"
         }
@@ -250,7 +272,7 @@ export class OrderReportAPI {
         }
     }
 
-    async getBilateralTradeOffer(req: IGetOrderRequest): Promise<IGetOrderResponse[] | null> {  //new query
+    async getOpenBilateralTradeOffer(req: IGetOrderRequest): Promise<IGetOrderResponse[] | null> {  //new query
         const period = req.period;
         const body: IGetDruidBody = {
             "query": `SELECT "payload.id",
@@ -261,7 +283,7 @@ export class OrderReportAPI {
             LATEST(CAST("payload.targetPrice" as VARCHAR),10 ) FILTER(WHERE "payload.targetPrice" is not null) targetPrice,
             LATEST(CAST("payload.targetAmount" as VARCHAR),10 ) FILTER(WHERE "payload.targetAmount" is not null) targetAmount
             FROM "BilateralTradeOfferOnEgat"
-            WHERE "payload.status" = 'OPEN'
+            WHERE "payload.status" = 'OPEN' AND "__time" >= '2022-01-24T15:00:00.000Z''
             GROUP BY "payload.id"`,
             "resultFormat": "object"
         }

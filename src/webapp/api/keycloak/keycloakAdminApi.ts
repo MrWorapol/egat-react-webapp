@@ -41,6 +41,9 @@ export default class KeycloakAdminApi {
         if (response.status === 401) {
             throw Error(`Username or Password incorrect`)
         }
+        if (response.status === 500) {
+            throw Error(`Internal Server Error`)
+        }
         if (response.status === 504) {
             throw Error(`Gateway timeout`)
         }

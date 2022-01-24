@@ -92,12 +92,12 @@ function buildTOUTariffChart(tariff: ITOUTariffChart): JSX.Element {
 function buildGridUsedChart(gridUsed: IGridUsedChart): JSX.Element {
     let sum = gridUsed.amount + gridUsed.discount + gridUsed.ft + gridUsed.gridUsed + gridUsed.serviceCharge + gridUsed.vat;
     let labels = [
-        `Grid Used : ${(Math.round(gridUsed.gridUsed * 100) / 100).toFixed(2)} Baht ${(Math.round(gridUsed.gridUsed * 100 / sum) || 0).toFixed(2)}%`,
-        `ค่าบริการ : ${(Math.round(gridUsed.serviceCharge * 100) / 100).toFixed(2)} Baht ${(Math.round(gridUsed.serviceCharge * 100 / sum) || 0).toFixed(2)}%`,
-        `ค่าไฟฟ้าผันแปร(Ft) : ${(Math.round(gridUsed.ft * 100) / 100).toFixed(2)} Baht ${(Math.round(Math.abs(gridUsed.ft) * 100 / sum) || 0).toFixed(2)}%`,
-        `ร่วมค่าไฟฟ้าก่อนภาษีมูลค่าเพิ่ม :  ${(Math.round(gridUsed.amount * 100) / 100).toFixed(2)} Baht ${(Math.round(gridUsed.amount * 100 / sum) || 0).toFixed(2)}%`,
-        `VAT :  ${Number(gridUsed.vat).toFixed(2)} Baht ${(Math.round(gridUsed.vat * 100 / sum) || 0).toFixed(2)}%`,
-        `ส่วนลดค่าพลังงานไฟฟ้า : ${Number(gridUsed.discount).toFixed(2)} Baht${(Math.round(gridUsed.discount * 100 / sum) || 0).toFixed(2)}%`,
+        `Grid Used : ${gridUsed.gridUsed.toFixed(3)} Baht (${(Math.round(gridUsed.gridUsed * 100 / sum) || 0).toFixed(2)}%)`,
+        `ค่าบริการ : ${gridUsed.serviceCharge.toFixed(3)} Baht (${(Math.round(gridUsed.serviceCharge * 100 / sum) || 0).toFixed(2)}%)`,
+        `ค่าไฟฟ้าผันแปร(Ft) : ${gridUsed.ft.toFixed(3)} Baht (${(Math.round(Math.abs(gridUsed.ft) * 100 / sum) || 0).toFixed(2)}%)`,
+        `ร่วมค่าไฟฟ้าก่อนภาษีมูลค่าเพิ่ม :  ${gridUsed.amount.toFixed(3)} Baht (${(Math.round(gridUsed.amount * 100 / sum) || 0).toFixed(2)}%)`,
+        `VAT :  ${gridUsed.vat.toFixed(3)} Baht (${(Math.round(gridUsed.vat * 100 / sum) || 0).toFixed(2)}%)`,
+        `ส่วนลดค่าพลังงานไฟฟ้า : ${gridUsed.discount.toFixed(3)} Baht (${(Math.round(gridUsed.discount * 100 / sum) || 0).toFixed(2)}%)`,
 
     ];
 

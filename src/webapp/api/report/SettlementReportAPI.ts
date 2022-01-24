@@ -55,7 +55,8 @@ export class SettlementReportAPI {
             "payload.tradingFee" as "tradingFee",
             "payload.wheelingChargeFee" as "wheelingChargeFee",
             "payload.priceRuleApplied" as "priceRuleApplied"
-            FROM "TradeContractFinal"`,
+            FROM "TradeContractFinal"
+            WHERE "__time" >= '2022-01-24T15:00:00.000Z'`,
             "resultFormat": "object"
         }
         let headers = {
@@ -70,7 +71,7 @@ export class SettlementReportAPI {
                 body: JSON.stringify(body),
             })
             if (response.status !== 200) {
-                return null;
+                throw Error(`Error With Code: ${response.status}`);
             }
 
             const reponseJSON: ITradeContractReport[] = await response.json();
@@ -121,7 +122,8 @@ export class SettlementReportAPI {
             "payload.reference.imbalanceBuyerUnderCommit" as "imbalanceBuyerUnderCommit", 
             "payload.reference.imbalanceSellerOverCommit"as "imbalanceSellerOverCommit", 
             "payload.reference.imbalanceSellerUnderCommit" as "imbalanceSellerUnderCommit"
-            FROM "TradeFinal"`,
+            FROM "TradeFinal"
+            WHERE "__time" >= '2022-01-24T15:00:00.000Z'`,
             "resultFormat": "object"
 
         }

@@ -125,7 +125,8 @@ export class BillingReportAPI {
                 "payload.wheelingChargeRe" as "wheelingChargeRe",
                 "payload.wheelingChargeT" as "wheelingChargeT",
                 "payload.wheelingChargeTotal" as "wheelingChargeTotal"
-                FROM "InvoiceOnEgat"`,
+                FROM "InvoiceOnEgat"
+                WHERE "__time" >= '2022-01-24T09:10:00.000Z'`,
             "resultFormat": "object"
         }
         let headers = {

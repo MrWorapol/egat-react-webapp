@@ -108,10 +108,10 @@ function buildEnergyChart(data: IEnergySummary): JSX.Element {
 }
 function buildUserChart(data: IUserSummary): JSX.Element {
     let sum = data.AGGREGATOR + data.PROSUMER + data.CONSUMER + data.noUser;
-    let labels = [`Aggregator :${Number(data.AGGREGATOR * 100 / sum).toFixed(2)}%`,
-    `Prosumer : ${Number(data.PROSUMER * 100 / sum).toFixed(2)}%`,
-    `Consumer : ${Number(data.CONSUMER * 100 / sum).toFixed(2)}%`,
-    `No User :${Number(data.noUser * 100 / sum).toFixed(2)}%`];
+    let labels = [`Aggregator : ${data.AGGREGATOR} (${Number(data.AGGREGATOR * 100 / sum).toFixed(2)}%)`,
+    `Prosumer : ${data.PROSUMER} (${Number(data.PROSUMER * 100 / sum).toFixed(2)}%)`,
+    `Consumer : ${data.CONSUMER} (${Number(data.CONSUMER * 100 / sum).toFixed(2)}%)`,
+    `No User : ${data.noUser} (${Number(data.noUser * 100 / sum).toFixed(2)}%)`];
     return (
         <DoughnutChart
             labels={labels}
