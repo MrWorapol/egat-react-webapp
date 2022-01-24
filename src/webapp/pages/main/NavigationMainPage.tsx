@@ -75,7 +75,7 @@ const NavigationMainPage = () => {
                 label='Dashboard'
                 selected={currentState === NavigationCurrentType.DASHBOARD}
                 onClick={() => {
-                    history.push('/dashboard');
+                    history.push('/');
                 }
                 }
             />

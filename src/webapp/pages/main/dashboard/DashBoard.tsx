@@ -67,7 +67,7 @@ export default function DashBoard() {
         return () => {
 
         }
-    }, [session, userDashboard, energyDashboard, tradingDashboard])
+    }, [userDashboard, energyDashboard, tradingDashboard])
 
     if (session && currentState === NavigationCurrentType.DASHBOARD) {
         return (

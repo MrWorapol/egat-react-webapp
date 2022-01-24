@@ -283,7 +283,6 @@ export class OrderReportAPI {
                     if (period) {
                         let inRange = dayjs(order.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
                             && dayjs(order.timestamp).isBefore(dayjs(period.endDate).endOf('day'))
-                        console.log(`is ${dayjs(order.timestamp).toDate()} inRange:${inRange} of :${dayjs(period.startDate).startOf('day')}\t to ${dayjs(period.endDate).endOf('day')}`);
                         if (inRange) {
                             results.push({
                                 timestamp: order.timestamp,

@@ -52,13 +52,9 @@ export default function useOrderReport() {
                 let summaryTradeMarket: ISummaryMap = { 'bilateral': 0, 'pool': 0 };
                 let summaryStatus: ISummaryMap = { 'open': 0, 'matched': 0 }
                 if (allOrder && allOrder.context.length > 0 && userMeterInfos) {
-                    console.log(`user Meter Infos`);
-                    console.log(userMeterInfos);
                     let output: IOrderInfo[] = [];
                     allOrder.context.map((order: IOrderInfo) => {
-                        let meterInfo = userMeterInfos.context.find((user: IUserMeterInfo) => { return user.id.toString() === order.userId.toString() })
-                        // console.log(`get meter Info`);
-                        // console.log(meterInfo);
+                        let meterInfo = userMeterInfos.context.find((user: IUserMeterInfo) => { return user.id.toString() === order.userId.toString() })      
                         if (meterInfo && meterInfo !== undefined) {
 
                             summaryRole[meterInfo.role.toLowerCase()] += 1;
@@ -97,7 +93,7 @@ export default function useOrderReport() {
                                         break;
                                     default: break;
                                 }
-                            } else {
+                            } else {//case open order
                                 output.push({
                                     ...order,
                                     role: meterInfo.role,
@@ -132,8 +128,10 @@ export default function useOrderReport() {
                         })
                     setOrderReport(output);
 
-                    refreshOrderDetail(allOrder.context[0]);
+                    refreshOrderDetail(output[0]);
 
+                }else{
+                    setOrderReport([]);
                 }
                 hideLoading(10);
             } catch (e) {
@@ -155,12 +153,12 @@ export default function useOrderReport() {
             setOrderDetail({
                 userType: orderInfo.userType,
                 tradeMarket: orderInfo.tradeMarket,
+                meterId: orderInfo.meterId,
                 orderDetail: {
                     deliverdTime: orderInfo.settlementTime,
                     price: orderInfo.targetPrice,
                     commitedAmount: orderInfo.targetAmount
-                }
-
+                },
             })
         } else {//case match Order
             setOrderDetail({

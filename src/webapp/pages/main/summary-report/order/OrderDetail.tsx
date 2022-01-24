@@ -17,19 +17,19 @@ export default function OrderDetail() {
     const { orderDetail } = useOrderReport();
 
     if (orderDetail) {
-        console.log(`order detail page`);
-        console.log(orderDetail)
+        // console.log(`order detail page`);
+        // console.log(orderDetail)
         if (orderDetail.tradeContractId === undefined) {
-
+            
             return buildOpenOrder(orderDetail);
         } else {
             if (orderDetail.userType.toLowerCase() === 'buyer') {
-                console.log(`orderDEtail is found case buyer`)
-                return buildChooseToBuy(orderDetail);
+                // console.log(`orderDEtail is found case buyer`)
+                return buildMatchedBuyOrder(orderDetail);
             }
             else {
-                console.log(`orderDEtail is found case seller`)
-                return buildOfferToSell(orderDetail);
+                // console.log(`orderDEtail is found case seller`)
+                return buildMatchedSellOrder(orderDetail);
 
             }
         }
@@ -46,7 +46,9 @@ export default function OrderDetail() {
     }
 
 }
-function buildChooseToBuy(orderDetail: IOrderDetail) {
+function buildMatchedBuyOrder(orderDetail: IOrderDetail) {
+    let settlementTime = dayjs(+orderDetail.orderDetail.deliverdTime);
+
     let details: IMap[] = [
         { key: 'amount', label: 'amount', unit: 'kWh' },
         { key: 'netBuy', label: 'NET buy', unit: 'Baht' },
@@ -83,27 +85,99 @@ function buildChooseToBuy(orderDetail: IOrderDetail) {
                 <Typography sx={{ fontSize: '1.2em' }}>{orderDetail.tradeMarket === 'pool' ? 'Pool Market Trade' : 'Bilateral Trade'}</Typography>
             </Grid>
             <Grid item container id='energy-info'>
-                {details.map((detail, index) => {
-                    return (
-                        <Grid container item justifyContent='space-between' pl={4} pr={6} >
-                            <Typography>
-                                {detail.label}
-                            </Typography>
-                            <Typography >
-                                {`${orderDetail.orderDetail[detail.key]} ${detail.unit}`}
-                            </Typography>
-                        </Grid>
-                    )
-                })
-                }
+                <Grid container item justifyContent='space-between' pl={4} pr={6} >
+                    <Typography>
+                        {`Deliverd Time`}
+                    </Typography>
+                    <Typography >
+                        {`${dayjs(settlementTime).format(`DD/MM/YYYY HH:mm`)}-${dayjs(settlementTime).tz('Asia/Bangkok').add(1, 'hour').format(`HH:mm`)}`}
+                    </Typography>
+                </Grid>
+                <Grid container item justifyContent='space-between' pl={4} pr={6} >
+                    <Typography>
+                        {`Amount`}
+                    </Typography>
+                    <Typography >
+                        {`${orderDetail.orderDetail["amount"]} kWh`}
+                    </Typography>
+                </Grid>
+                <Grid container item justifyContent='space-between' pl={4} pr={6} >
+                    <Typography>
+                        {`NET buy`}
+                    </Typography>
+                    <Typography >
+                        {`${(Math.round(orderDetail.orderDetail.netBuy * 1000) / 1000).toFixed(2)} Baht`}
+                    </Typography>
+                </Grid>
+                <Grid container item justifyContent='space-between' pl={4} pr={6} >
+                    <Typography>
+                        {`NET energy price`}
+                    </Typography>
+                    <Typography >
+                        {`${(Math.round(orderDetail.orderDetail.netEnergyPrice * 1000) / 1000).toFixed(2)} Baht`}
+                    </Typography>
+                </Grid>
+                <Grid container item justifyContent='space-between' pl={4} pr={6} >
+                    <Typography>
+                        {`Energy to buy`}
+                    </Typography>
+                    <Typography >
+                        {`${orderDetail.orderDetail.energyToBuy} kWh`}
+                    </Typography>
+                </Grid>
+                <Grid container item justifyContent='space-between' pl={4} pr={6} >
+                    <Typography>
+                        {`Energy to tariff`}
+                    </Typography>
+                    <Typography >
+                        {`${(Math.round(orderDetail.orderDetail.energyTariff * 1000) / 1000).toFixed(2)} Baht/kWh`}
+                    </Typography>
+
+                </Grid>
+                <Grid container item justifyContent='space-between' pl={4} pr={6} >
+                    <Typography>
+                        {`Energy price`}
+                    </Typography>
+                    <Typography >
+                        {`${(Math.round(orderDetail.orderDetail.energyPrice * 1000) / 1000).toFixed(2)} Baht`}
+                    </Typography>
+
+                </Grid>
+                <Grid container item justifyContent='space-between' pl={4} pr={6} >
+                    <Typography>
+                        {`Wheeling charge Tariff`}
+                    </Typography>
+                    <Typography >
+                        {`${(Math.round(orderDetail.orderDetail.wheelingChargeTariff * 1000) / 1000).toFixed(2)} Baht/kWh`}
+                    </Typography>
+
+                </Grid>
+                <Grid container item justifyContent='space-between' pl={4} pr={6} >
+                    <Typography>
+                        {`Wheeling charge`}
+                    </Typography>
+                    <Typography >
+                        {`${(Math.round(orderDetail.orderDetail.wheelingCharge * 1000) / 1000).toFixed(2)} Baht`}
+                    </Typography>
+
+                </Grid>
+                <Grid container item justifyContent='space-between' pl={4} pr={6} >
+                    <Typography>
+                        {`Trading fee`}
+                    </Typography>
+                    <Typography >
+                        {`${(Math.round(orderDetail.orderDetail.tradingFee * 1000) / 1000).toFixed(2)} Baht`}
+                    </Typography>
+
+                </Grid>
             </Grid>
 
         </Grid>
     )
 }
 
-function buildOfferToSell(orderDetail: IOrderDetail) {
-    let settlementTime = dayjs.unix(+orderDetail.orderDetail.deliverdTime).tz('Asia/Bangkok');
+function buildMatchedSellOrder(orderDetail: IOrderDetail) {
+    let settlementTime = dayjs(+orderDetail.orderDetail.deliverdTime);
     return (
         <Grid container px={2} py={2} sx={{ minHeight: '25vh' }}>
             <Grid item >
@@ -134,7 +208,7 @@ function buildOfferToSell(orderDetail: IOrderDetail) {
                         {`Deliverd Time`}
                     </Typography>
                     <Typography >
-                        {`${dayjs(settlementTime).format(`DD/MM/YYYY HH:mm`)}-${dayjs.unix(+orderDetail.orderDetail.deliverdTime).tz('Asia/Bangkok').add(1, 'hour').format(`HH:mm`)}`}
+                        {`${dayjs(settlementTime).format(`DD/MM/YYYY HH:mm`)}-${dayjs(settlementTime).tz('Asia/Bangkok').add(1, 'hour').format(`HH:mm`)}`}
                     </Typography>
                 </Grid>
                 <Grid container item justifyContent='space-between' px={4} >
@@ -150,7 +224,7 @@ function buildOfferToSell(orderDetail: IOrderDetail) {
                         {`Offer To Sell`}
                     </Typography>
                     <Typography >
-                        {`${(Math.round(orderDetail.orderDetail.offerToSell*100)/100).toFixed(2)} Baht/kWh`}
+                        {`${(Math.round(orderDetail.orderDetail.offerToSell * 100) / 100).toFixed(2)} Baht/kWh`}
                     </Typography>
                 </Grid>
                 <Grid container item justifyContent='space-between' px={4} >
@@ -158,7 +232,7 @@ function buildOfferToSell(orderDetail: IOrderDetail) {
                         {`Trading Fee`}
                     </Typography>
                     <Typography >
-                        {`(${(Math.round(orderDetail.orderDetail.tradingFee*100)/100).toFixed(2)}) Baht`}
+                        {`(${(Math.round(orderDetail.orderDetail.tradingFee * 100) / 100).toFixed(2)}) Baht`}
                     </Typography>
                 </Grid>
                 <Grid container item justifyContent='space-between' px={4} >
@@ -166,8 +240,8 @@ function buildOfferToSell(orderDetail: IOrderDetail) {
                         {`Estimated Sales`}
                     </Typography>
                     <Typography >
-                        
-                        {`${(Math.round((orderDetail.orderDetail.estimatedSales + orderDetail.orderDetail.tradingFee)*100)/100).toFixed(2)} Baht`}
+
+                        {`${(Math.round((orderDetail.orderDetail.estimatedSales + orderDetail.orderDetail.tradingFee) * 100) / 100).toFixed(2)} Baht`}
                     </Typography>
                 </Grid>
             </Grid>
@@ -177,7 +251,7 @@ function buildOfferToSell(orderDetail: IOrderDetail) {
 }
 
 function buildOpenOrder(orderDetail: IOrderDetail) {
-    console.log(orderDetail);
+    let settlementTime = dayjs(+orderDetail.orderDetail.deliverdTime);
     return (
         <Grid container px={2} py={2} sx={{ minHeight: '25vh' }}>
             <Grid item >
@@ -193,13 +267,19 @@ function buildOpenOrder(orderDetail: IOrderDetail) {
             <Grid item py={1}>
                 <Typography sx={{ fontSize: '1.2em' }}>{orderDetail.tradeMarket.toLowerCase() === 'pool' ? 'Pool Market Trade' : 'Bilateral Trade'}</Typography>
             </Grid>
+            <Grid container item direction='row' alignItems='center' pt={2}>
+                <Typography sx={{ fontSize: '1.1em', color: 'success.light' }}>
+                    {orderDetail.userType.toLowerCase() === "seller" &&  `Seller meter id: ${orderDetail.meterId}`}
+                    {orderDetail.userType.toLowerCase() === "buyer" &&  `Buyer meter id: ${orderDetail.meterId}`}
+                </Typography>
+            </Grid>
             <Grid item container id='energy-info'>
                 <Grid container item justifyContent='space-between' px={4} >
                     <Typography>
                         {`Deliverd Time`}
                     </Typography>
                     <Typography >
-                        {`${dayjs.unix(+orderDetail.orderDetail.deliverdTime).tz('Asia/Bangkok').format(`HH:mm`)}-${dayjs.unix(+orderDetail.orderDetail.deliverdTime).tz('Asia/Bangkok').add(1, 'hour').format(`HH:mm`)}`}
+                        {`${dayjs(settlementTime).format(`DD/MM/YYYY HH:mm`)}-${dayjs(settlementTime).tz('Asia/Bangkok').add(1, 'hour').format(`HH:mm`)}`}
                     </Typography>
                 </Grid>
                 <Grid container item justifyContent='space-between' px={4} >
@@ -222,7 +302,7 @@ function buildOpenOrder(orderDetail: IOrderDetail) {
                         </Typography>
                     }
                     <Typography >
-                        {`${(Math.round(orderDetail.orderDetail.price*1000)/1000).toFixed(3)} Baht/kWh`}
+                        {`${(Math.round(orderDetail.orderDetail.price * 1000) / 1000).toFixed(3)} Baht/kWh`}
                     </Typography>
                 </Grid>
             </Grid>

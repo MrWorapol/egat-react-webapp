@@ -1,7 +1,7 @@
 import { Grid } from '@mui/material'
 import Header from '../../components/Header'
 import NavigationMainPage from './NavigationMainPage'
-import { Switch, Route } from 'react-router-dom'
+import { Switch, Route, Redirect } from 'react-router-dom'
 
 import UserManagement from './user-management/UserManagement'
 import UserDetail from './user-management/UserDetail'
@@ -16,6 +16,7 @@ import SettlementReport from './summary-report/settlement/SettlementReport'
 import BillingReport from './summary-report/billing/BillingReport'
 import NewManagement from './news-management/NewManagement'
 import { useAuthGuard } from '../../hooks/useAuthGuard'
+import PageNotFound from './PageNotFound'
 
 export default function MainPage() {
 
@@ -37,16 +38,21 @@ export default function MainPage() {
     )
 }
 
-export function PageRouting() {
-    console.log(``)
-    let { session } = useAuthGuard();
+function PageRouting() {
+    let { session, checkRefreshToken } = useAuthGuard();
+
+
     if (!session) {
         return;
     } else {
+        setInterval(async () => {
+            console.log(`call interval on Main Page`);
+            checkRefreshToken();
+        }, 50000);
         return (
             <>
                 <Switch>
-                    <Route path={['/', '/dashboard']} exact>
+                    <Route path={['/']} exact>
                         <DashBoard />
                     </Route>
                     <Route path='/user_management/:id'>
@@ -83,6 +89,8 @@ export function PageRouting() {
                     <Route path='/news'>
                         <NewManagement />
                     </Route>
+                    <Route path='/404' component={PageNotFound}/>                    
+                    <Redirect to='/404' />
                 </Switch>
             </>
         )

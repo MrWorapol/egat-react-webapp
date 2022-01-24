@@ -66,8 +66,8 @@ export default function useDashBoard() {
                             default: break;
                         }; //count role
                     } else { //un register
-                        console.log(`no register user`)
-                        console.log(user.meterId);
+                        // console.log(`no register user`)
+                        // console.log(user.meterId);
                         result.noUser += 1;
                     }
                 })
