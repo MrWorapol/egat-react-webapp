@@ -183,7 +183,7 @@ export default function DashBoard() {
                                         <Number>
                                             {energyDashboard ?
                                                 <Typography style={{ fontSize: 26 }}>
-                                                    {(Math.round(energyDashboard.pv * 100) / 100).toFixed(2)}
+                                                    {energyDashboard.pv.toFixed(3)}
                                                     <Typography style={{ fontSize: 20, color: '#707070' }} display="inline"> kWh</Typography>
                                                 </Typography>
                                                 : <>Loading...</>}
@@ -202,7 +202,7 @@ export default function DashBoard() {
                                         <Number>
                                             {energyDashboard ?
                                                 <Typography style={{ fontSize: 26 }} >
-                                                    {`${(Math.round(energyDashboard.charge * 100) / 100).toFixed(2)}/${(Math.round(energyDashboard.discharge * 100) / 100).toFixed(2)}`}
+                                                    {`${energyDashboard.charge.toFixed(3)}/${energyDashboard.discharge.toFixed(3)}`}
                                                     <Typography style={{ fontSize: 20, color: '#707070' }} display="inline"> kWh</Typography>
                                                 </Typography> : <>Loading...</>}
                                         </Number>
@@ -217,7 +217,7 @@ export default function DashBoard() {
                                         <Number>
                                             {energyDashboard ?
                                                 <Typography style={{ fontSize: 26 }} >
-                                                    {(Math.round(energyDashboard.gridUsed) * 100 / 100).toFixed(2)}
+                                                    {energyDashboard.gridUsed.toFixed(3)}
                                                     <Typography style={{ fontSize: 20, color: '#707070' }} display="inline"> kWh</Typography>
                                                 </Typography>
                                                 : <>Loading...</>}
@@ -231,7 +231,7 @@ export default function DashBoard() {
                                         <Img src="/assets/icon/313.png" />
                                         <Number>
                                             {energyDashboard ? <Typography style={{ fontSize: 26 }} >
-                                                {(Math.round(energyDashboard.load * 100) / 100).toFixed(2)}
+                                                {energyDashboard.load.toFixed(3)}
                                                 <Typography style={{ fontSize: 20, color: '#707070' }} display="inline"> kWh</Typography>
                                             </Typography>
                                                 : <>Loading...</>}
@@ -281,7 +281,7 @@ export default function DashBoard() {
                                     <Img src="/assets/icon/321.png" />
                                     <Number>
                                         {tradingDashboard ?
-                                            <Typography style={{ fontSize: 26 }} >{`${(Math.round(tradingDashboard.netSale * 100) / 100).toFixed(2)} kWh`}</Typography>
+                                            <Typography style={{ fontSize: 26 }} >{`${tradingDashboard.netSale.toFixed(3)} kWh`}</Typography>
                                             : <>...Loading</>
                                         }
                                     </Number>
@@ -291,7 +291,7 @@ export default function DashBoard() {
                                     <Img src="/assets/icon/322.png" />
                                     <Number>
                                         {tradingDashboard ?
-                                            <Typography style={{ fontSize: 26 }} >{`${(Math.round(tradingDashboard.netBuy * 100) / 100).toFixed(2)} kWh`}</Typography>
+                                            <Typography style={{ fontSize: 26 }} >{`${tradingDashboard.netBuy.toFixed(3)} kWh`}</Typography>
                                             : <>...Loading</>
                                         }
                                     </Number>
@@ -301,7 +301,7 @@ export default function DashBoard() {
                                     <Img src="/assets/icon/323.png" />
                                     <Number>
                                         {tradingDashboard ?
-                                            <Typography style={{ fontSize: 26 }} >{`${(Math.round(tradingDashboard.netImbalance * 100) / 100).toFixed(2)} kWh`}</Typography>
+                                            <Typography style={{ fontSize: 26 }} >{`${tradingDashboard.netImbalance.toFixed(3)} kWh`}</Typography>
                                             : <>...Loading</>
                                         }
                                     </Number>
@@ -318,7 +318,7 @@ export default function DashBoard() {
                                     <Number>
                                         {tradingDashboard ?
                                             <>
-                                                <Typography style={{ fontSize: 26 }} px={2}>{`${(Math.round(tradingDashboard.netPayment * 100) / 100).toFixed(2)} `}</Typography>
+                                                <Typography style={{ fontSize: 26 }} px={2}>{`${tradingDashboard.netPayment.toFixed(3)} `}</Typography>
                                                 <Typography style={{ fontSize: 20 }} >Baht</Typography>
                                             </>
                                             : <>...Loading</>
@@ -331,7 +331,7 @@ export default function DashBoard() {
                                     <Number>
                                         {tradingDashboard ?
                                             <>
-                                                <Typography style={{ fontSize: 26 }} >{`${(Math.round(tradingDashboard.totalEnergyNet * 100) / 100).toFixed(2)} `}</Typography>
+                                                <Typography style={{ fontSize: 26 }} >{`${tradingDashboard.totalEnergyNet.toFixed(3)} `}</Typography>
                                                 <Typography style={{ fontSize: 20 }} >Baht</Typography>
                                             </>
                                             : <>...Loading</>
@@ -344,7 +344,7 @@ export default function DashBoard() {
                                     <Number>
                                         {tradingDashboard ?
                                             <>
-                                                <Typography style={{ fontSize: 26 }} >{`${(Math.round(tradingDashboard.totalGridNet * 100) / 100).toFixed(2)} `}</Typography>
+                                                <Typography style={{ fontSize: 26 }} >{`${tradingDashboard.totalGridNet.toFixed(3)} `}</Typography>
                                                 <Typography style={{ fontSize: 20 }} >Baht</Typography>
                                             </>
                                             : <>...Loading</>
@@ -357,7 +357,7 @@ export default function DashBoard() {
                                     <Number>
                                         {tradingDashboard ?
                                             <>
-                                                <Typography style={{ fontSize: 26 }} >{`${(Math.round(tradingDashboard.totalWheelingNet * 100) / 100).toFixed(2)} `}</Typography>
+                                                <Typography style={{ fontSize: 26 }} >{`${tradingDashboard.totalWheelingNet.toFixed(3)} `}</Typography>
                                                 <Typography style={{ fontSize: 20 }} >Baht</Typography>
                                             </>
                                             : <>...Loading</>

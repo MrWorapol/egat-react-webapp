@@ -1,7 +1,7 @@
 import { druidHost, localDruidEndpoint, summaryApi } from "../../constanst";
 import { IPeriod } from "../../state/summary-report/period-state";
 import { ISettlementDetail } from "../../state/summary-report/settlement-report/settlement-detail-state";
-import { IImbalanceReport, ITradeContractReport } from "../../state/summary-report/settlement-report/settlement-report-state";
+import { IBilateralSettlement, IImbalanceReport, ITradeContractReport } from "../../state/summary-report/settlement-report/settlement-report-state";
 
 import { IUserSession } from "../../state/user-sessions";
 
@@ -35,6 +35,9 @@ interface IGetImbalanceReport {
     context: IImbalanceReport[]
 }
 
+interface IGetBilateralSettlementResponse {
+    context: IBilateralSettlement[]
+}
 
 export class SettlementReportAPI {
     private endpoint = druidHost;
@@ -56,7 +59,7 @@ export class SettlementReportAPI {
             "payload.wheelingChargeFee" as "wheelingChargeFee",
             "payload.priceRuleApplied" as "priceRuleApplied"
             FROM "TradeContractFinal"
-            WHERE "__time" >= '2022-01-24T15:00:00.000Z'`,
+            WHERE "__time" >= '2022-01-24T09:10:00.000Z'`,
             "resultFormat": "object"
         }
         let headers = {
@@ -123,7 +126,7 @@ export class SettlementReportAPI {
             "payload.reference.imbalanceSellerOverCommit"as "imbalanceSellerOverCommit", 
             "payload.reference.imbalanceSellerUnderCommit" as "imbalanceSellerUnderCommit"
             FROM "TradeFinal"
-            WHERE "__time" >= '2022-01-24T15:00:00.000Z'`,
+            WHERE "__time" >= '2022-01-24T09:10:00.000Z'`,
             "resultFormat": "object"
 
         }
@@ -168,5 +171,56 @@ export class SettlementReportAPI {
         }
     }
 
+    async getBilateralSettlementLongTerm(req: IGetSettlementReportRequest): Promise<IGetBilateralSettlementResponse | null> {
+        const period = req.period;
+        const body: IGetDruidBody = {
+            "query": `SELECT "__time" as "timestamp", 
+            "payload.id" as "bilateralTradeSettlementId", 
+            "payload.longtermTradeContractId"  as "longtermTradeContractId"
+            FROM "BilateralSettlementFinal"
+            WHERE "__time" >= '2022-01-24T09:10:00.000Z'
+            AND "payload.longtermTradeContractId" != ''`,
+            "resultFormat": "object"
+        }
+        let headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": `Bearer ${req.session.accessToken}`,
+        }
+        try {
+            const response = await fetch(this.endpoint, {
+                headers,
+                method: "POST",
+                body: JSON.stringify(body),
+            })
+            if (response.status === 200) {
+                const resultFromJSON: IBilateralSettlement[] = await response.json();
+
+                if (period !== undefined) {
+                    let bilateralPeriod: IBilateralSettlement[] = [];
+                    resultFromJSON.forEach((bilateralSettlement: IBilateralSettlement) => {
+                        let inRange = dayjs(bilateralSettlement.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
+                            && dayjs(bilateralSettlement.timestamp).isBefore(dayjs(period.endDate).endOf('day'));
+                        if (inRange) {
+                            bilateralPeriod.push(bilateralSettlement);
+                        }
+
+                    })
+                    return {
+                        context: bilateralPeriod,
+                    }
+                }
+
+                return {
+                    context: resultFromJSON
+                };
+            } else {
+                throw Error(`ERROR WITH CODE:${response.status}`);
+            }
+        } catch (e) {
+            console.log(e);
+            throw Error(`Unexpected handle error`);
+        }
+    }
 
 }

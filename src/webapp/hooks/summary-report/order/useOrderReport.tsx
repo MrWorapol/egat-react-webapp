@@ -67,9 +67,7 @@ export default function useOrderReport() {
                                 switch (order.userType) {
                                     case ("BUYER"):
                                         let sellerMeter = userMeterInfos.context.find((user: IUserMeterInfo) => { return user.id.toString() === order.orderDetail?.sellerId })
-                                        console.log(`case BUYER`)
-                                        if (sellerMeter && orderDetail) {
-
+                                        if (sellerMeter) {
                                             output.push({
                                                 ...order,
                                                 role: meterInfo.role,
@@ -82,7 +80,6 @@ export default function useOrderReport() {
                                         break;
                                     case ("SELLER"):
                                         let buyerMeter = userMeterInfos.context.find((user: IUserMeterInfo) => { return user.id.toString() === order.orderDetail?.buyerId })
-                                        console.log(`case SELLER`)
                                         if (buyerMeter) {
                                             output.push({
                                                 ...order,

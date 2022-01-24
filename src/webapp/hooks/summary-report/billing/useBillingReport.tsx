@@ -145,7 +145,7 @@ export default function useBillingReport() {
     const InsertEnergyPaymentReport = (energyPaymentData: IEnergyPaymentState, invoiceWithMeters: IInvoice[], user: IUserMeterInfo) => {
         let row: IEnergyPaymentTable = { meterId: user.meterId, meterName: user.meterName, role: user.role, area: user.area, netPrice: 0 };
         invoiceWithMeters.map((invoiceWithMeter: IInvoice) => {
-            row.netPrice += invoiceWithMeter.price + invoiceWithMeter.tradingFee + (invoiceWithMeter.price * invoiceWithMeter.vat / 100) //energyTradepayment netPrice
+            row.netPrice += invoiceWithMeter.price + invoiceWithMeter.tradingFee + invoiceWithMeter.wheelingChargeTotal + (invoiceWithMeter.price * invoiceWithMeter.vat / 100) //energyTradepayment netPrice
             switch (invoiceWithMeter.invoiceType) {
                 case "SELLER_CONTRACT":
                     energyPaymentData.energyPaymentChart.netSales += invoiceWithMeter.price;

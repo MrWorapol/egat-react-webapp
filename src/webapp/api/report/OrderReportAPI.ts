@@ -107,8 +107,7 @@ export class OrderReportAPI {
         if (matchOrders && matchOrders.context.length > 0) {
             results.context.push(...matchOrders.context);
         }
-        console.log(`Get Order API Response`);
-        console.log(results);
+        
         return results;
     }
 
@@ -144,7 +143,7 @@ export class OrderReportAPI {
             LATEST(CAST("payload.targetPrice" as VARCHAR),10 ) FILTER(WHERE "payload.targetPrice" is not null) targetPrice,
             LATEST(CAST("payload.targetAmount" as VARCHAR),10 ) FILTER(WHERE "payload.targetAmount" is not null) targetAmount
             FROM "PoolMarketOfferOnEgatF"
-            WHERE "payload.status" = 'OPEN' AND "__time" >= '2022-01-24T15:00:00.000Z''
+            WHERE "payload.status" = 'OPEN' AND "__time" > '2022-01-24T09:10'
             GROUP BY "payload.id"`,
             "resultFormat": "object"
         }
@@ -215,7 +214,7 @@ export class OrderReportAPI {
             LATEST(CAST("payload.targetPrice" as VARCHAR),10 ) FILTER(WHERE "payload.targetPrice" is not null) targetPrice,
             LATEST(CAST("payload.targetAmount" as VARCHAR),10 ) FILTER(WHERE "payload.targetAmount" is not null) targetAmount
             FROM "PoolMarketBidOnEgatF"
-            WHERE "payload.status" = 'OPEN' AND "__time" >= '2022-01-24T15:00:00.000Z''
+            WHERE "payload.status" = 'OPEN' AND "__time" > '2022-01-24T09:10'
             GROUP BY "payload.id"`,
             "resultFormat": "object"
         }
@@ -283,7 +282,7 @@ export class OrderReportAPI {
             LATEST(CAST("payload.targetPrice" as VARCHAR),10 ) FILTER(WHERE "payload.targetPrice" is not null) targetPrice,
             LATEST(CAST("payload.targetAmount" as VARCHAR),10 ) FILTER(WHERE "payload.targetAmount" is not null) targetAmount
             FROM "BilateralTradeOfferOnEgat"
-            WHERE "payload.status" = 'OPEN' AND "__time" >= '2022-01-24T15:00:00.000Z''
+            WHERE "payload.status" = 'OPEN' AND "__time" > '2022-01-24T09:10'
             GROUP BY "payload.id"`,
             "resultFormat": "object"
         }

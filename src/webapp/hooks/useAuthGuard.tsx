@@ -111,10 +111,10 @@ export function useAuthGuard() {
 
 
 
-        if (currentState === NavigationCurrentType.LOGIN && sessionValue) {
-            history.push('/dashboard');
-            return;
-        }    //case try to access login but already logined
+        // if (currentState === NavigationCurrentType.LOGIN && sessionValue) {
+        //     history.push('/dashboard');
+        //     return;
+        // }    //case try to access login but already logined
 
     }, [currentState]);
 

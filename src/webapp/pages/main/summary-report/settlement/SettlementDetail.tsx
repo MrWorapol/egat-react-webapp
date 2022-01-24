@@ -11,7 +11,7 @@ dayjs.extend(timezone);
 
 export default function SettlementDetail() {
     const { settlementDetail } = useSettlementReport();
-    console.log(settlementDetail);
+    // console.log(settlementDetail);
     if (settlementDetail !== null && settlementDetail !== undefined) {
         // if(settlementDetail.imbalanceStatus === "")
         // if (settlementDetail.userType.toLowerCase() === "buyer") {
@@ -68,7 +68,8 @@ function buildSettlementDetail(settlement: ISettlementDetail) {
                 </Typography>
 
                 <Typography sx={{ fontSize: '1.2em' }} ml={2}>
-                    {settlement.tradeMarket === "BILATERAL" && "Bilateral Market"}
+                    {settlement.tradeMarket === "LONGTERM_BILATERAL" && "Long Term Bilateral Market"}
+                    {settlement.tradeMarket === "BILATERAL" && "Short Term Bilateral Market"}
                     {settlement.tradeMarket === "POOl" && "Pool Market"}
                 </Typography>
             </Grid>
@@ -86,7 +87,7 @@ function buildSettlementDetail(settlement: ISettlementDetail) {
                         {'Energy Commited/Delivered'}
                     </Typography>
                     <Typography >
-                        {`${(Math.round(settlement.energyCommited * 100) / 100).toFixed(2)}/${(Math.round(settlement.energyDeliverd * 100) / 100).toFixed(2)} kWh`}
+                        {`${settlement.energyCommited.toFixed(3)}/${settlement.energyDeliverd.toFixed(3)} kWh`}
                     </Typography>
                 </Grid>
                 <Grid container item justifyContent='space-between' pl={4} pr={6} >
@@ -95,7 +96,7 @@ function buildSettlementDetail(settlement: ISettlementDetail) {
                         {settlement.userType.toLowerCase() === 'buyer' && 'NET Buy'}
                     </Typography>
                     <Typography >
-                        {`${(Math.round(settlement.netPrice * 100) / 100).toFixed(2)} Baht`}
+                        {`${settlement.netPrice.toFixed(3)} Baht`}
                     </Typography>
                 </Grid>
                 {settlement.orderImbalanceAmount &&
@@ -105,7 +106,7 @@ function buildSettlementDetail(settlement: ISettlementDetail) {
                             {settlement.userType.toLowerCase() === 'buyer' && 'Buyer imbalance amount'}
                         </Typography>
                         <Typography >
-                            {`${(Math.round(settlement.orderImbalanceAmount * 100) / 100).toFixed(2)} kWh`}
+                            {`${settlement.orderImbalanceAmount.toFixed(3)} kWh`}
                         </Typography>
                     </Grid>
                 }
@@ -116,7 +117,7 @@ function buildSettlementDetail(settlement: ISettlementDetail) {
                             {settlement.userType.toLowerCase() === 'buyer' && 'Buyer imbalance'}
                         </Typography>
                         <Typography >
-                            {`(${(Math.round(settlement.orderImbalance * 100) / 100).toFixed(2)}) Baht`}
+                            {`(${settlement.orderImbalance.toFixed(3)}) Baht`}
                         </Typography>
                     </Grid>
                 }
@@ -126,7 +127,7 @@ function buildSettlementDetail(settlement: ISettlementDetail) {
                         {settlement.userType.toLowerCase() === 'buyer' && 'NET energy price(NET Buy/Energy Used)'}
                     </Typography>
                     <Typography >
-                        {` ${(Math.round(settlement.netEnergyPrice * 100) / 100).toFixed(2)} Baht/kWh`}
+                        {` ${settlement.netEnergyPrice.toFixed(3)} Baht/kWh`}
                     </Typography>
                 </Grid>
 

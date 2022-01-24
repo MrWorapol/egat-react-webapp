@@ -48,7 +48,7 @@ export default class KeycloakAdminApi {
             throw Error(`Gateway timeout`)
         }
         if (response.status !== 200) {
-            throw Error(`Username or Password incorrect`)
+            throw Error(`CODE: ${response.status}`)
 
         }
         return response.json();

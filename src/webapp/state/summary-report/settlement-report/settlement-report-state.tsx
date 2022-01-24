@@ -22,7 +22,7 @@ export interface ITradeContractReport {
     imbalance?: IImbalanceReport[]
     imbalanceStatus: string,
     priceRuleApplied: string,
-    
+
 }
 
 export interface IImbalanceReport {
@@ -44,6 +44,11 @@ export interface IImbalanceReport {
     imbalanceSellerUnderCommit: number
 }
 
+export interface IBilateralSettlement {
+    timestamp: string,
+    bilateralTradeSettlementId: string,
+    longtermTradeContractId: string,
+}
 export const settlementReportState = atom<ITradeContractReport[] | null>({
     key: 'settlementReportState',
     default: null,

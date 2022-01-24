@@ -1,15 +1,11 @@
 import { Box, Button, Card, CardContent, Container, Grid, Paper, TextField, Typography } from '@mui/material'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form';
 import { useHistory, useParams } from 'react-router';
-import { useRecoilState, useRecoilValue } from 'recoil';
-import { useLoadingScreen } from '../../hooks/useLoadingScreen';
+
 import { useLogin } from '../../hooks/useLogin';
-import { useSnackBarNotification } from '../../hooks/useSnackBarNotification';
-import { userProfile } from '../../state/user-profile';
-import { userSessionState } from '../../state/user-sessions';
-
-
+import { useNavigationSet } from '../../hooks/useNavigationSet';
+import { NavigationCurrentType } from '../../state/navigation-current-state';
 
 type LoginForm = {
     username: string;
@@ -17,20 +13,16 @@ type LoginForm = {
 }
 
 export default function Login() {
+    useNavigationSet(NavigationCurrentType.LOGIN);
     const { register, handleSubmit, } = useForm<LoginForm>();
     const { login } = useLogin();
-    let session = useRecoilValue(userSessionState);
+
     const history = useHistory();
-
-    if (session) {
-
-        history.push('/');
-    }
-
     const onSubmitLogin = async (data: LoginForm) => {
         await login(data.username, data.password);
 
     }
+
     return (
         <>
             <Grid

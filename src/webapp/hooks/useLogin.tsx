@@ -1,21 +1,26 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useHistory } from "react-router";
 import { useRecoilState, useResetRecoilState } from "recoil";
 import KeycloakAdminApi from "../api/keycloak/keycloakAdminApi";
+import { NavigationCurrentType } from "../state/navigation-current-state";
 import { userProfile } from "../state/user-profile";
 import { userSessionState } from "../state/user-sessions";
+import { useAuthGuard } from "./useAuthGuard";
 import { useLoadingScreen } from "./useLoadingScreen";
+import { useNavigationGet } from "./useNavigationGet";
 import { useSnackBarNotification } from "./useSnackBarNotification";
 
 
 export function useLogin() {
-    const [sessionValue, setSession] = useRecoilState(userSessionState);
+    let [sessionValue, setSession] = useRecoilState(userSessionState);
     const api = new KeycloakAdminApi();
     const resetSession = useResetRecoilState(userSessionState);
     const { showLoading, hideLoading } = useLoadingScreen();
     const { showSnackBar } = useSnackBarNotification();
-
+    const { currentState } = useNavigationGet();
     const history = useHistory();
+    const { checkRefreshToken } = useAuthGuard();
+
     const login = useCallback(async (username: string, password: string) => {
         try {
             showLoading(10);
@@ -58,6 +63,19 @@ export function useLogin() {
 
 
     }, [])
+
+    useEffect(() => {
+        // if (currentState === NavigationCurrentType.LOGIN && sessionValue) {
+        //     history.push(`/`);
+        // } else {
+        //     checkRefreshToken();
+        // }
+        // return () => {
+
+        // };
+    }, []);
+
+
     return {
         login,
         logout,

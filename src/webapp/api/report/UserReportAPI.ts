@@ -269,7 +269,7 @@ export class UserAndEnergyReportAPI {
             "payload.load" as "load",
             "payload.meterId" as "meterId"
             FROM "PowerOnEgatF"
-            WHERE "__time" >= '2022-01-24T15:00:00.000Z'`,
+            WHERE "__time" >= '2022-01-24T13:00:00.000Z'`,
             resultFormat: "object",
         }
 
@@ -365,7 +365,7 @@ export class UserAndEnergyReportAPI {
                 "payload.inSolar" as "inSolar",
                 "payload.load" as "load" 
                 FROM "ForecastOnEgatF"
-                WHERE "payload.meterId" = ${req.meterId} AND "__time" >= '2022-01-24T15:00:00.000Z'`,
+                WHERE "payload.meterId" = ${req.meterId} AND "__time" >= '2022-01-24T13:00:00.000Z'`,
             resultFormat: "object",
         }
 

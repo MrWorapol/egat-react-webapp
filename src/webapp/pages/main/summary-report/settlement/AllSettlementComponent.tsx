@@ -116,7 +116,7 @@ export default function AllSettlementComponent() {
                         >
                             <MenuItem value='all'>All</MenuItem>
                             <MenuItem value={'BILATERAL'}>Short Term Bilateral Trade</MenuItem>
-                            <MenuItem value={'BILATERAL_LONGTERM'}>Long Term Bilateral Trade</MenuItem>
+                            <MenuItem value={'LONGTERM_BILATERAL'}>Long Term Bilateral Trade</MenuItem>
                             <MenuItem value={'POOL'}>Pool Market Trade</MenuItem>
                         </Select>
 

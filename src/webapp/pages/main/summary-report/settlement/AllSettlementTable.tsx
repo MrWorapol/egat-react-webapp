@@ -113,7 +113,7 @@ export default function AllSettlementTable(props: IProps) {
                                 <TableCell
                                     key={row.tradeMarket + i}
                                 >
-                                    {row.tradeMarket === "BILATERAL" && "Bilateral Trade"}
+                                    {row.tradeMarket.includes("BILATERAL") && "Bilateral Trade"}
                                     {row.tradeMarket === "POOL" && "Pool Market"}
                                 </TableCell>
                                 <TableCell
