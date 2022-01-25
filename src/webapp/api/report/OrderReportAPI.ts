@@ -107,7 +107,7 @@ export class OrderReportAPI {
         if (matchOrders && matchOrders.context.length > 0) {
             results.context.push(...matchOrders.context);
         }
-        
+
         return results;
     }
 
@@ -301,10 +301,25 @@ export class OrderReportAPI {
             if (response.status === 200) {
                 let results: IGetOrderResponse[] = [];
                 ordersFromJSON.forEach((order: IOrderResponseFromJSON) => {
-                    if (period) {
-                        let inRange = dayjs(order.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
-                            && dayjs(order.timestamp).isBefore(dayjs(period.endDate).endOf('day'))
-                        if (inRange) {
+                    console.log(`settlement Time:${dayjs(+order.settlementTime).add(1, 'hour').format(`DD/MM/YYYY HH:mm:ss`)} isBefore ${dayjs(+order.settlementTime).add(1, 'hour').isBefore(dayjs())} now: ${dayjs().format(`DD/MM/YYYY HH:mm:ss`)}`)
+                    if (dayjs(+order.settlementTime).add(1, 'hour').isAfter(dayjs())) {
+                        if (period) {
+                            let inRange = dayjs(order.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
+                                && dayjs(order.timestamp).isBefore(dayjs(period.endDate).endOf('day'))
+                            if (inRange) {
+                                results.push({
+                                    timestamp: order.timestamp,
+                                    orderId: order[`payload.id`],
+                                    userId: order.userId,
+                                    status: order.status,
+                                    targetAmount: order.targetAmount,
+                                    targetPrice: order.targetPrice,
+                                    userType: "SELLER",
+                                    tradeMarket: "BILATERAL",
+                                    settlementTime: order.settlementTime
+                                })
+                            }
+                        } else {
                             results.push({
                                 timestamp: order.timestamp,
                                 orderId: order[`payload.id`],
@@ -317,18 +332,6 @@ export class OrderReportAPI {
                                 settlementTime: order.settlementTime
                             })
                         }
-                    } else {
-                        results.push({
-                            timestamp: order.timestamp,
-                            orderId: order[`payload.id`],
-                            userId: order.userId,
-                            status: order.status,
-                            targetAmount: order.targetAmount,
-                            targetPrice: order.targetPrice,
-                            userType: "SELLER",
-                            tradeMarket: "BILATERAL",
-                            settlementTime: order.settlementTime
-                        })
                     }
                 })
                 return results;
