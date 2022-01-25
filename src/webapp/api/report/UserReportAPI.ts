@@ -252,6 +252,8 @@ export class UserAndEnergyReportAPI {
 
     async getPowerInfos(req: IGetPowerInfosRequest): Promise<IGetPowerInfosResponse | null> {
         const period = req?.period;
+        console.log(`get period ${period}`);
+        console.log(period);
         let headers = {
             "Content-Type": "application/json",
             "Accept": "application/json",
@@ -292,6 +294,7 @@ export class UserAndEnergyReportAPI {
                     load: 0,
                 }
                 if (period !== undefined) { //case query with period time
+                    console.log(`filter power period `)
                     responseJSON.forEach((power: IPowerResponse) => {
                         let inRange = dayjs(power.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
                             && dayjs(power.timestamp).isBefore(dayjs(period.endDate).endOf('day'))
@@ -397,6 +400,9 @@ export class UserAndEnergyReportAPI {
                             });
                         }
                     })
+
+                    console.log(`raw forecast data filter date`);
+                    console.log(powerDatas);
                 } else {
                     rawData.forEach((power: IPowerResponse) => {
                         powerDatas.push({

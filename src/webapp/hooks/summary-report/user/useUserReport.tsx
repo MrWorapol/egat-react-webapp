@@ -11,6 +11,12 @@ import { userSessionState } from "../../../state/user-sessions";
 import { useLoadingScreen } from "../../useLoadingScreen";
 import { useSnackBarNotification } from "../../useSnackBarNotification";
 
+import dayjs from "dayjs";
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
 
 export default function useUserReport() {
     const [chartData, setChartData] = useRecoilState(userChartState);
@@ -26,7 +32,7 @@ export default function useUserReport() {
     const { showLoading, hideLoading } = useLoadingScreen();
     const { showSnackBar } = useSnackBarNotification();
 
-    const getPowerDatas = useCallback(async (period?: IPeriod) => {
+    const getPowerDatas = async (period?: IPeriod) => {
         if (session) {
 
             try {
@@ -42,7 +48,7 @@ export default function useUserReport() {
 
         }
 
-    }, []);
+    };
 
     const refreshUserTable = async (period: IPeriod, roles: string[], area: string) => {
         if (session) {
@@ -102,9 +108,17 @@ export default function useUserReport() {
                 let forecastPowerByMeter: IPowerGraph[] = await getForecastData(meter.meterId);
                 let actualPowerByMeter: IPowerGraph[] = [];
                 if (actualPowers && forecastPowerByMeter) {
-                    let powerDataByMeterId = actualPowers.filter(
+                    let powerDataByMeterIdAndPeriod = actualPowers.filter(
                         (row: IPowerData) => {
-                            return meter.meterId.toString() === row.meterId.toString()
+                            if (period) {
+                                let inRange = dayjs(row.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
+                                    && dayjs(row.timestamp).isBefore(dayjs(period.endDate).endOf('day'));
+                                if (inRange) {
+                                    return meter.meterId.toString() === row.meterId.toString()
+                                }
+                            } else {
+                                return meter.meterId.toString() === row.meterId.toString()
+                            }
                         });
                     let energySummary: IEnergyInfo = {
                         pv: 0,
@@ -114,8 +128,8 @@ export default function useUserReport() {
                         energyLoad: 0,
                         grid: 0
                     }
-                    if (powerDataByMeterId.length > 0) {
-                        powerDataByMeterId.map((row: IPowerData) => {
+                    if (powerDataByMeterIdAndPeriod.length > 0) {
+                        powerDataByMeterIdAndPeriod.map((row: IPowerData) => {
                             energySummary.pv += +row.inSolar;
                             energySummary.energyStorage += +row.inBattery - row.outBattery;
                             energySummary.inBattery += row.inBattery;
@@ -167,7 +181,7 @@ export default function useUserReport() {
         let powerGraph: IPowerGraph[] = [];
         if (session) {
             try {
-                let forecastData = await api.getForecastData({ session, meterId });
+                let forecastData = await api.getForecastData({ session, meterId, period });
                 if (forecastData && forecastData.context.length > 0) {
                     forecastData.context.map((row: IPowerData) => {
                         powerGraph.push({ //insert actual power in array

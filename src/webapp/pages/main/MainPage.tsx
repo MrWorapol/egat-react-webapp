@@ -52,7 +52,7 @@ function PageRouting() {
             countInterval += 1;
             console.log(`call Interval ${countInterval}`)
             checkRefreshToken();
-        }, 50000);
+        }, 60000);
         return () => {
             countInterval = 0;
             clearInterval(timerInterval);

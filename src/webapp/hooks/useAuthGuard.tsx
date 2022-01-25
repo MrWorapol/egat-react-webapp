@@ -47,10 +47,7 @@ export function useAuthGuard() {
 
 
     const checkRefreshToken = async () => {
-        if (currentState === NavigationCurrentType.LOGIN && sessionValue) {
-            history.push('/');
-            return;
-        }
+
         let localStore = localStorage.getItem("session");
         if (localStore) {
             let sessionObject: IUserSession = JSON.parse(localStore);
@@ -60,7 +57,7 @@ export function useAuthGuard() {
                 if (decodeToken) {
                     let expireUnixTime = decodeToken.exp;
                     // console.log(`token unix  is ${expireUnixTime}   and expired: ${expireUnixTime && (dayjs().unix() + 70 > expireUnixTime)} of now unix: ${dayjs().unix()}`);
-                    if (expireUnixTime && (dayjs().unix() + 70 > expireUnixTime)) {
+                    if (expireUnixTime && (dayjs().unix() + 80 > expireUnixTime)) {
                         try {
                             console.log(`call refresh api`)
                             const response = await api.refreshToken({ refreshToken: sessionObject.refreshToken })

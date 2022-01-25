@@ -20,20 +20,19 @@ export default function LocationSite() {
     if (locationSite) {
         let summaryPVForecast = 0;
         let maximumPVUsed = 0;
-        let averagePVUsed = 0;
+        let averageLoad = 0;
         if (locationSite.powerUsed) {
-            averagePVUsed = locationSite.energySummary.energyLoad / locationSite.powerUsed.actual.length || 0; //if NaN return 0
-
             locationSite.powerUsed.forecast.forEach((forecast) => {
                 // console.log(`${locationSite.meterId}foreactPV: ${forecast.pv}\t`);
-                    summaryPVForecast += +forecast.grid;
+                summaryPVForecast += +forecast.pv;
             });
             locationSite.powerUsed.actual.forEach((actual) => {
-                maximumPVUsed = maximumPVUsed < actual.pv ? actual.pv : maximumPVUsed; //check maximum Grid Us
+                maximumPVUsed = maximumPVUsed < actual.grid ? actual.grid : maximumPVUsed; //check maximum Grid Us
             });
             if (locationSite.powerUsed.forecast.length > 24) {
                 summaryPVForecast = summaryPVForecast / (locationSite.powerUsed.forecast.length) || 0; //if NaN return 0
             }
+            averageLoad = (locationSite.energySummary.energyLoad / locationSite.powerUsed.actual.length) || 0; //if NaN return 0
         }
 
         return (
@@ -72,7 +71,7 @@ export default function LocationSite() {
                             </Grid>
                             <Grid item container direction='column' alignItems='center' xs={4}>
                                 <Typography>กำลังไฟฟ้าใช้จริงโดยเฉลี่ย</Typography>
-                                <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em' }}>{averagePVUsed.toFixed(3)}</Typography>
+                                <Typography sx={{ fontWeight: 'bold', fontSize: '1.5em' }}>{averageLoad.toFixed(3)}</Typography>
                                 <Typography>kW</Typography>
                             </Grid>
                         </Grid>
@@ -169,7 +168,7 @@ function buildForecastChart( //,chartRef: React.MutableRefObject<any>
     const labels = ["00:00-01:00", "01:00-02:00", "02:00-03:00", "03:00-04:00", "04:00-05:00", "05:00-06:00", "06:00-07:00", "07:00-08:00", "08:00-09:00", "09:00-10:00", "10:00-11:00", "11:00-12:00", "12:00-13:00", "13:00-14:00", "14:00-15:00", "15:00-16:00", "16:00-17:00", "17:00-18:00", "18:00-19:00", "19:00-20:00", "20:00-21:00", "21:00-22:00", "22:00-23:00", "23:00-23:59"];
     let finalForecast: IPowerGraph[] = [];
     let finalActual: IPowerGraph[] = [];
-    labels.forEach((hour: string) => { 
+    labels.forEach((hour: string) => {
         finalForecast.push(sumPowerByHour(hour, forecast));
         finalActual.push(sumPowerByHour(hour, actual));
     })
