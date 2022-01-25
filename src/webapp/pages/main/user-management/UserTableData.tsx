@@ -103,7 +103,6 @@ export default function UserTableData() {
         { id: 'Action', label: '' }
     ];
     if (userInfoData === null || userInfoData === undefined) {
-        console.log(`WTF : ${userInfoData}`);
         return <></>;
     }
    
@@ -124,7 +123,6 @@ export default function UserTableData() {
         setPage(0);
     };
 
-    console.log(`user data on render ${userInfoData}`);
 
     function onClickViewButton(userInfo: UserInfo) {
         if (userInfo.role !== 'admin ') {
@@ -162,27 +160,27 @@ export default function UserTableData() {
                         ).map((row, i) => (
                             <TableRow>
                                 <TableCell
-                                // key={row.meterId}
+                                key={row.meterId}
                                 >
                                     {row.role !== 'ADMIN' && row.meterId}
                                 </TableCell>
                                 <TableCell
-                                // key={row.fullName + i}
+                                key={`row.fullName` + i}
                                 >
                                     {row.fullName}
                                 </TableCell>
                                 <TableCell
-                                // key={row.email + i}
+                                key={`row.email` + i}
                                 >
                                     {row.email}
                                 </TableCell>
                                 <TableCell
-                                // key={row.phoneNumber + i}
+                                key={`phone-number` + i}
                                 >
                                     {row.phoneNumber}
                                 </TableCell>
                                 <TableCell
-                                // key={row.role + i}
+                                key={`row.role` + i}
                                 >
                                     {row.role}
                                 </TableCell>

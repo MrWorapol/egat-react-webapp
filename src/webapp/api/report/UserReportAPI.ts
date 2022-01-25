@@ -20,11 +20,10 @@ interface IGetPowerInfosRequest {
     session: IUserSession,
     period?: IPeriod,
 }
+
 interface IGetPowerInfosResponse {
     powerData: IPowerData[],
     summaryPower: ISummaryPowerInfo,
-
-
 }
 
 interface ISummaryPowerInfo {
@@ -32,7 +31,6 @@ interface ISummaryPowerInfo {
     outBattery: number,
     excessPv: number,
     inGrid: number,
-
     inSolar: number,
     load: number,
 }
@@ -130,7 +128,6 @@ export class UserAndEnergyReportAPI {
           WHERE info."active" = true`,
             "resultFormat": "object"
         }
-        //local: MeterInfoDataTest2 , egat : FROM MeterInfoOnEgat
         let headers = {
             "Content-Type": "application/json",
             "Accept": "application/json",
@@ -142,19 +139,13 @@ export class UserAndEnergyReportAPI {
                 method: "POST",
                 body: JSON.stringify(body),
             })
-            // console.log(`userMeter Info response`);
+
             if (response.status === 200) {
 
                 const rawData: IMeterAreaAndSite[] = await response.json();
 
                 rawData.forEach((row: IMeterAreaAndSite) => {
-                    console.log(rawData);
-
-                    // let inRange = dayjs(row.registrationDate).isBefore(dayjs(period.endDate).endOf('day'));
-                    // console.log(` inrange:${inRange} registrationDate:${dayjs(row.registrationDate).format('DD/MM/YYYY')} :${dayjs(period.endDate).format('DD/MM/YYYY')}`)
-                    // if (inRange)
                     if (period.region === 'all' || period.region === row.regionName) {
-
                         result.push({
                             id: row.userId,
                             meterId: row.meterId,
@@ -218,7 +209,6 @@ export class UserAndEnergyReportAPI {
           ON info."userTypeName" = site."payload.userTypeName"`,
             "resultFormat": "object"
         }
-        //local: MeterInfoDataTest2 , egat : FROM MeterInfoOnEgat
         let headers = {
             "Content-Type": "application/json",
             "Accept": "application/json",
@@ -231,11 +221,8 @@ export class UserAndEnergyReportAPI {
                 body: JSON.stringify(body),
             })
 
-            // console.log(response);
             if (response.status === 200) {
                 const resultFromJSON: IGetAllUser[] = await response.json();
-                console.log(`get ALL USER`);
-                console.log(resultFromJSON);
                 return {
                     context: resultFromJSON
                 };
@@ -252,8 +239,6 @@ export class UserAndEnergyReportAPI {
 
     async getPowerInfos(req: IGetPowerInfosRequest): Promise<IGetPowerInfosResponse | null> {
         const period = req?.period;
-        console.log(`get period ${period}`);
-        console.log(period);
         let headers = {
             "Content-Type": "application/json",
             "Accept": "application/json",
@@ -303,16 +288,16 @@ export class UserAndEnergyReportAPI {
                                 meterId: power.meterId,
                                 timestamp: power.timestamp,
                                 inSolar: Math.abs(power.inSolar) || 0,
-                                inBattery: power.inBattery < 0 ? Math.abs(power.inBattery) : 0,
                                 outBattery: power.inBattery > 0 ? power.inBattery : 0,
-                                inGrid: power.inGrid < 0 ? Math.abs(power.inGrid) : 0, //inGrid <0 use too much
-                                excessPv: power.inGrid > 0 ? power.inGrid : 0,//inGrid > 0 can sell
+                                inBattery: power.inBattery < 0 ? Math.abs(power.inBattery) : 0,
+                                inGrid: power.inGrid > 0 ? power.inGrid : 0,//inGrid > 0 can sell
+                                excessPv: power.inGrid < 0 ? Math.abs(power.inGrid) : 0, //inGrid <0 use too much
                                 load: Math.abs(power.load) || 0
                             });
-                            summaryPower.inBattery += +power.inBattery;
-                            summaryPower.outBattery += power.inBattery < 0 ? Math.abs(power.inBattery) : 0;
-                            summaryPower.excessPv += power.inGrid > 0 ? power.inGrid : 0;//inGrid > 0 an sell
-                            summaryPower.inGrid += power.inGrid < 0 ? Math.abs(power.inGrid) : 0; //inGrid <0 use too much
+                            summaryPower.outBattery += power.inBattery > 0 ? power.inBattery : 0; 
+                            summaryPower.inBattery += +power.inBattery < 0 ? Math.abs(power.inBattery) : 0; //dont sure inBattery + or -
+                            summaryPower.inGrid += power.inGrid > 0 ? power.inGrid : 0;//inGrid > 0 an sell
+                            summaryPower.excessPv += power.inGrid < 0 ? Math.abs(power.inGrid) : 0; //inGrid <0 use too much
                             summaryPower.inSolar += Math.abs(power.inSolar) || 0;
                             summaryPower.load += Math.abs(power.load) || 0
                         }
@@ -323,16 +308,16 @@ export class UserAndEnergyReportAPI {
                             meterId: power.meterId,
                             timestamp: power.timestamp,
                             inSolar: Math.abs(power.inSolar) || 0,
-                            inBattery: power.inBattery < 0 ? Math.abs(power.inBattery) : 0,
                             outBattery: power.inBattery > 0 ? power.inBattery : 0,
-                            inGrid: power.inGrid < 0 ? Math.abs(power.inGrid) : 0, //inGrid <0 use too much
-                            excessPv: power.inGrid > 0 ? power.inGrid : 0,//inGrid > 0 can sell
+                            inBattery: power.inBattery < 0 ? Math.abs(power.inBattery) : 0,
+                            inGrid: power.inGrid > 0 ? power.inGrid : 0,
+                            excessPv: power.inGrid < 0 ? Math.abs(power.inGrid) : 0,
                             load: Math.abs(power.load) || 0
                         });
-                        summaryPower.inBattery += +power.inBattery < 0 ? Math.abs(power.inBattery) : 0; //dont sure inBattery + or -
                         summaryPower.outBattery += power.inBattery > 0 ? power.inBattery : 0; //dont sure inBattery + or -
-                        summaryPower.excessPv += power.inGrid > 0 ? power.inGrid : 0;//inGrid > 0 an sell
-                        summaryPower.inGrid += power.inGrid < 0 ? Math.abs(power.inGrid) : 0; //inGrid <0 use too much
+                        summaryPower.inBattery += +power.inBattery < 0 ? Math.abs(power.inBattery) : 0; //dont sure inBattery + or -
+                        summaryPower.inGrid += power.inGrid > 0 ? power.inGrid : 0;
+                        summaryPower.excessPv += power.inGrid < 0 ? Math.abs(power.inGrid) : 0;
                         summaryPower.inSolar += Math.abs(power.inSolar) || 0;
                         summaryPower.load += Math.abs(power.load) || 0
                     })
@@ -392,10 +377,10 @@ export class UserAndEnergyReportAPI {
                                 meterId: power.meterId,
                                 timestamp: power.timestamp,
                                 inSolar: Math.abs(power.inSolar) || 0,
-                                inBattery: power.inBattery < 0 ? Math.abs(power.inBattery) : 0,
                                 outBattery: power.inBattery > 0 ? power.inBattery : 0,
-                                inGrid: power.inGrid < 0 ? Math.abs(power.inGrid) : 0, //inGrid <0 use too much
-                                excessPv: power.inGrid > 0 ? power.inGrid : 0,//inGrid > 0 can sell
+                                inBattery: power.inBattery < 0 ? Math.abs(power.inBattery) : 0,
+                                inGrid: power.inGrid > 0 ? power.inGrid : 0,
+                                excessPv: power.inGrid < 0 ? Math.abs(power.inGrid) : 0,
                                 load: power.load,
                             });
                         }
@@ -409,10 +394,10 @@ export class UserAndEnergyReportAPI {
                             meterId: power.meterId,
                             timestamp: power.timestamp,
                             inSolar: Math.abs(power.inSolar) || 0,
-                            inBattery: power.inBattery < 0 ? Math.abs(power.inBattery) : 0,
                             outBattery: power.inBattery > 0 ? power.inBattery : 0,
-                            inGrid: power.inGrid < 0 ? Math.abs(power.inGrid) : 0, //inGrid <0 use too much
-                            excessPv: power.inGrid > 0 ? power.inGrid : 0,//inGrid > 0 can sell
+                            inBattery: power.inBattery < 0 ? Math.abs(power.inBattery) : 0,
+                            inGrid: power.inGrid > 0 ? power.inGrid : 0,//inGrid > 0 can sell
+                            excessPv: power.inGrid < 0 ? Math.abs(power.inGrid) : 0, //inGrid <0 use too much
                             load: power.load,
                         });
                     })

@@ -1,20 +1,11 @@
 import dayjs from 'dayjs';
-import { druidHost, localDruidEndpoint } from '../../constanst';
-import { IOrderDetail } from '../../state/summary-report/order-report/order-detail-state';
+import { druidHost } from '../../constanst';
 import { IOrderInfo } from '../../state/summary-report/order-report/order-report-state';
 import { IPeriod } from '../../state/summary-report/period-state';
 import { ITradeContractReport } from '../../state/summary-report/settlement-report/settlement-report-state';
 import { IUserSession } from '../../state/user-sessions';
 import { SettlementReportAPI } from './SettlementReportAPI';
 
-interface IGetOrderDetailRequest {
-    session: IUserSession,
-    traceContractId: string,
-}
-interface IGetOrderDetailResponse {
-    context: IOrderDetail,
-
-}
 interface IGetDruidBody {
     query: string,
     resultFormat: string,
@@ -52,29 +43,6 @@ interface IGetOrderResponse {
     targetPrice: number,
 }
 
-interface ISettlementOrder {
-    id: string,
-    settlementTime: string,
-    createTime: string,
-    matches: IPoolMatchedOrder[] | IBilateralMatchedOrder[]
-
-}
-interface IPoolMatchedOrder {
-    tradeOfferId: string,
-    tradeBidId: string,
-    offerUserId: string,
-    bidUserId: string,
-    amount: number,
-    price: number,
-}
-interface IBilateralMatchedOrder {
-    tradeOfferId: string,
-    tradeBidId: string,
-    offerUserId: string,
-    bidUserId: string,
-    amount: number,
-    price: number,
-}
 interface IGetOrderTableResponse {
     context: IOrderInfo[],
 }
@@ -95,12 +63,12 @@ export class OrderReportAPI {
         }
         let poolBuyerOpenOrders = await this.getOpenPoolMarketBid({ session: req.session, period: req.period });
         if (poolBuyerOpenOrders && poolBuyerOpenOrders.length > 0) {
-            console.log(poolBuyerOpenOrders)
+            // console.log(poolBuyerOpenOrders)
             results.context.push(...poolBuyerOpenOrders);
         }
         let bilateralSellerOpenOrders = await this.getOpenBilateralTradeOffer({ session: req.session, period: req.period });
         if (bilateralSellerOpenOrders && bilateralSellerOpenOrders.length > 0) {
-            console.log(bilateralSellerOpenOrders)
+            // console.log(bilateralSellerOpenOrders)
             results.context.push(...bilateralSellerOpenOrders);
         }
         let matchOrders = await this.getMatchedOrder({ session: req.session, period: req.period });
@@ -120,12 +88,12 @@ export class OrderReportAPI {
         }
         let poolBuyerOpenOrders = await this.getOpenPoolMarketBid({ session: req.session, period: req.period });
         if (poolBuyerOpenOrders && poolBuyerOpenOrders.length > 0) {
-            console.log(poolBuyerOpenOrders)
+            // console.log(poolBuyerOpenOrders)
             results.context.push(...poolBuyerOpenOrders);
         }
         let bilateralSellerOpenOrders = await this.getOpenBilateralTradeOffer({ session: req.session, period: req.period });
         if (bilateralSellerOpenOrders && bilateralSellerOpenOrders.length > 0) {
-            console.log(bilateralSellerOpenOrders)
+            // console.log(bilateralSellerOpenOrders)
             results.context.push(...bilateralSellerOpenOrders);
         }
         return results;
@@ -301,7 +269,7 @@ export class OrderReportAPI {
             if (response.status === 200) {
                 let results: IGetOrderResponse[] = [];
                 ordersFromJSON.forEach((order: IOrderResponseFromJSON) => {
-                    console.log(`settlement Time:${dayjs(+order.settlementTime).add(1, 'hour').format(`DD/MM/YYYY HH:mm:ss`)} isBefore ${dayjs(+order.settlementTime).add(1, 'hour').isBefore(dayjs())} now: ${dayjs().format(`DD/MM/YYYY HH:mm:ss`)}`)
+                    // console.log(`settlement Time:${dayjs(+order.settlementTime).add(1, 'hour').format(`DD/MM/YYYY HH:mm:ss`)} isAfter ${dayjs(+order.settlementTime).add(1, 'hour').isBefore(dayjs())} now: ${dayjs().format(`DD/MM/YYYY HH:mm:ss`)}`)
                     if (dayjs(+order.settlementTime).add(1, 'hour').isAfter(dayjs())) {
                         if (period) {
                             let inRange = dayjs(order.timestamp).isAfter(dayjs(period.startDate).startOf('day'))

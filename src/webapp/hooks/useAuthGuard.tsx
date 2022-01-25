@@ -21,6 +21,7 @@ interface SessionDecode extends JwtPayload {
 
 export function useAuthGuard() {
     const [init, setInit] = useState(true);
+    let count = 0;
     let [sessionValue, setSessionValue] = useRecoilState(userSessionState);
     const { currentState } = useNavigationGet();
     const history = useHistory();
@@ -28,36 +29,16 @@ export function useAuthGuard() {
     const resetSessionState = useResetRecoilState(userSessionState);
     const { showSnackBar } = useSnackBarNotification();
 
-    // const loadLocalStorage = async () => {
-    //     const localStore = localStorage.getItem('session');
-    //     if (localStore) {
-
-    //         const sessionObject: IUserSession = JSON.parse(localStore);
-    //         setSessionValue({
-    //             accessToken: sessionObject.accessToken,
-    //             refreshToken: sessionObject.refreshToken,
-    //             lasttimeLogIn: new Date(),
-    //         })
-    //     } else {
-    //         history.push('/login');
-    //         return;
-    //     }
-    //     setInit(false);
-    // };
-
-
     const checkRefreshToken = async () => {
 
         let localStore = localStorage.getItem("session");
         if (localStore) {
             let sessionObject: IUserSession = JSON.parse(localStore);
             if (sessionObject) {
-                // console.log(`logs: ${dayjs().format('DD/MM/YYYY HH:mm:ss')} last time login ${dayjs(sessionObject.lasttimeLogIn).format('DD/MM/YYYY HH:mm')} \t state:${dayjs(sessionValue?.lasttimeLogIn).format('DD/MM/YYYY HH:mm')}`)
                 let decodeToken: SessionDecode = jwt_decode(sessionObject.accessToken);
                 if (decodeToken) {
                     let expireUnixTime = decodeToken.exp;
-                    // console.log(`token unix  is ${expireUnixTime}   and expired: ${expireUnixTime && (dayjs().unix() + 70 > expireUnixTime)} of now unix: ${dayjs().unix()}`);
-                    if (expireUnixTime && (dayjs().unix() + 80 > expireUnixTime)) {
+                    if (expireUnixTime && (dayjs().unix() + 70 > expireUnixTime)) {//check token expired
                         try {
                             console.log(`call refresh api`)
                             const response = await api.refreshToken({ refreshToken: sessionObject.refreshToken })
@@ -67,7 +48,6 @@ export function useAuthGuard() {
                                     refreshToken: response.refreshToken,
                                     lasttimeLogIn: sessionObject.lasttimeLogIn,
                                 }
-                                // console.log(`new token :${dayjs(session.lasttimeLogIn).format('DD/MM/YYYY HH:mm:ss')}`);
                                 localStorage.removeItem('session');
                                 localStorage.setItem('session', JSON.stringify(session));
                                 setSessionValue(session);
@@ -78,7 +58,7 @@ export function useAuthGuard() {
                             history.push('/login');
                             showSnackBar({ serverity: 'info', message: 'Session is timeout' });
                         }
-                    } else if (init === true) {
+                    } else if (init === true) {//if not expired and start initialize set to session state
                         setSessionValue({
                             accessToken: sessionObject.accessToken,
                             refreshToken: sessionObject.refreshToken,
@@ -95,23 +75,8 @@ export function useAuthGuard() {
     }
 
     useEffect(() => {
-        console.log(`call useEffect AuthGuard`);
+        console.log(`call useEffect AuthGuard ${count += 1}`);
         checkRefreshToken();
-        // if (init === true) {
-        //     loadLocalStorage();
-        // } else {
-        //     //case not login
-        //     if (!sessionValue) {
-        //         history.push('/login');
-        //         return;
-        //     }
-
-
-
-        // if (currentState === NavigationCurrentType.LOGIN && sessionValue) {
-        //     history.push('/dashboard');
-        //     return;
-        // }    //case try to access login but already logined
 
     }, [currentState]);
 

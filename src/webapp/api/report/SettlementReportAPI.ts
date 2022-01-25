@@ -19,11 +19,6 @@ interface IGetDruidBody {
 interface IGetSettlementReportRequest {
     session: IUserSession,
     period?: IPeriod,
-    area?: string,
-    role?: string,
-    buyerType?: string,
-    tradeMarket?: string,
-    orderStatus?: string,
 }
 
 interface IGetTradeContractResponse {
@@ -31,7 +26,7 @@ interface IGetTradeContractResponse {
 }
 
 
-interface IGetImbalanceReport {
+interface IGetTradeDataResponse {
     context: IImbalanceReport[]
 }
 
@@ -103,7 +98,7 @@ export class SettlementReportAPI {
 
     }
 
-    async getTradeDataReport(req: IGetSettlementReportRequest): Promise<IGetImbalanceReport | null> {
+    async getTradeDataReport(req: IGetSettlementReportRequest): Promise<IGetTradeDataResponse | null> {
         const period = req.period;
         const body: IGetDruidBody = {
             "query": `SELECT 

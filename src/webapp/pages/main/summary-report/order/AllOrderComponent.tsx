@@ -6,6 +6,7 @@ import AllOrderTable from './AllOrderTable';
 import { IOrderInfo, orderState } from '../../../../state/summary-report/order-report/order-report-state';
 import { useRecoilValue } from 'recoil';
 import { useLoadingScreen } from '../../../../hooks/useLoadingScreen';
+import usePeriodTime from '../../../../hooks/summary-report/usePeriodTime';
 
 interface IRolesState {
     [key: string]: boolean,
@@ -21,13 +22,12 @@ interface ITableSelector {
 
 
 export default function AllOrder() {
-    const { showLoading, hideLoading } = useLoadingScreen();
     const [area, setArea] = useState('total');
     const [role, setRole] = useState('all');
     const [userType, setUserType] = useState('all');
     const [tradeMarket, setTradeMarket] = useState('all');
     const [orderStatus, setOrderStatus] = useState('all');
-    // const { orderReport } = useOrderReport();
+    let { period } = usePeriodTime();
     const orderReport = useRecoilValue(orderState);
     const [filterData, setFilterData] = useState<IOrderInfo[] | null>(orderReport);
 
@@ -157,9 +157,6 @@ export default function AllOrder() {
         )
     }
 
-    const onSubmitForm = async (data: ITableSelector) => {
-        console.log(data);
-    }
 
     useEffect(() => {
         if (orderReport) {
@@ -186,13 +183,7 @@ export default function AllOrder() {
                             onChange={(event: SelectChangeEvent) => { onSelectedDropdown(event) }}
                             sx={{ height: '1.5em' }}
                         >
-                            <MenuItem value={'total'}> {'Total'}</MenuItem>
-                            <MenuItem value={'3villages'}> {'3 Villages'}</MenuItem>
-                            <MenuItem value={'tu'}>{'Thammasat University'}</MenuItem>
-                            <MenuItem value={'venueFlow'}>{'VENUE FLOW'}</MenuItem>
-                            <MenuItem value={'perfectPark'}>{'Perfect Park'}</MenuItem>
-                            <MenuItem value={'casaPermium'}>{'CASA Premium'}</MenuItem>
-                            <MenuItem value={'Srisangthum'}>{'Srisangthum'}</MenuItem>
+                            {buildAreaSelector(period.region)}
                         </Select>
                     </FormControl>
                 </Grid>
@@ -208,4 +199,26 @@ export default function AllOrder() {
         // </Box>
 
     )
+}
+
+
+const buildAreaSelector = (region: string) => {
+    const areaSelector = [
+        { value: 'total', display: 'Total', region: 'all' },
+        { value: '3 Villages', display: '3 Villages', region: 'Central' },
+        { value: 'Thammasat University', display: 'Thammasat University', region: 'Central' },
+        { value: 'VENUE FLOW (SC ASSET)', display: 'VENUE FLOW', region: 'Central' },
+        { value: 'Perfect Park (Property Perfect)', display: 'Perfect Park', region: 'Central' },
+        { value: 'CASA Premium (Q House)', display: 'CASA Premium', region: 'Central' },
+        { value: 'Srisangthum', display: 'Srisangthum', region: 'North-Eastern' }
+    ]
+    let filterAreaSelectorElement: JSX.Element[] = [];
+    areaSelector.forEach((area) => {
+        if (area.region === 'all' || region === 'all' || area.region === region) {
+            filterAreaSelectorElement.push(
+                <MenuItem key={`${area.region}-${area.display}`} value={area.value} > {area.display}</MenuItem>);
+        }
+    })
+
+    return (filterAreaSelectorElement)
 }

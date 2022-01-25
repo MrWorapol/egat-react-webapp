@@ -203,14 +203,8 @@ export default function useUserReport() {
         if (session && currentState === NavigationCurrentType.USER_REPORT) {
             if (!meterTable) {
                 refreshUserTable(period, [], 'all');
-
             }
-            // if (meterTable && !locationSite) {
-            //     if (meterTable.length > 0) {
-            //         refreshLocationSite(meterTable[0]);
-            //     }
-            // }
-
+            
         }
         return () => {
 

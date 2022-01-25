@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Login from './pages/login/Login'
 import { ThemeProvider } from '@mui/material/styles';
 import MainPage from './pages/main/MainPage';
@@ -12,6 +12,7 @@ import DateAdapter from '@mui/lab/AdapterDayjs';
 import SnackBarNotification from './components/SnackBarNotification';
 
 import theme from './theme/Theme';
+import { useAuthGuard } from './hooks/useAuthGuard';
 
 export default function WebApp() {
     return (
@@ -34,7 +35,16 @@ export default function WebApp() {
 }
 
 function WebAdminRouting() {
+    let { session, checkRefreshToken } = useAuthGuard();
 
+
+    useEffect(() => {
+        checkRefreshToken();
+
+        return () => {
+
+        };
+    }, []);
     return (
         <Box>
             <Switch>

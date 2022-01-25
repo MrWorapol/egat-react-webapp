@@ -4,7 +4,6 @@ import { Box } from '@mui/system'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigationSet } from '../../../../hooks/useNavigationSet';
 import { NavigationCurrentType } from '../../../../state/navigation-current-state';
-import PeriodComponent from '../PeriodComponent';
 
 import useBillingReport from '../../../../hooks/summary-report/billing/useBillingReport';
 import GridUsed from './GridUsed/GridUsed';
@@ -15,6 +14,8 @@ import { useNavigationGet } from '../../../../hooks/useNavigationGet';
 import { useRecoilValue } from 'recoil';
 import { userSessionState } from '../../../../state/user-sessions';
 import { useDebouncedCallback } from 'use-debounce/lib';
+import usePeriodTime from '../../../../hooks/summary-report/usePeriodTime';
+import PeriodComponent from '../PeriodComponent';
 
 export default function BillingReport() {
     useNavigationSet(NavigationCurrentType.BILLING_REPORT);
@@ -22,7 +23,7 @@ export default function BillingReport() {
     const session = useRecoilValue(userSessionState);
     const [area, setArea] = useState('total');
     const [role, setRole] = useState('all');
-
+    let {period} = usePeriodTime();
     const {
         refreshInvoice,
         netPaymentReport,
@@ -35,7 +36,7 @@ export default function BillingReport() {
 
     const refreshPage = useDebouncedCallback(async () => {
         if (session) {
-            refreshInvoice(session, role,area);
+            refreshInvoice(session, role, area);
         }
     }, 0);
 
@@ -90,13 +91,7 @@ export default function BillingReport() {
                             onChange={(event: SelectChangeEvent) => { onSelectedDropdown(event) }}
                             sx={{ height: '2em' }}
                         >
-                            <MenuItem value={'total'}> {'Total'}</MenuItem>
-                            <MenuItem value={'3villages'}> {'3 Villages'}</MenuItem>
-                            <MenuItem value={'tu'}>{'Thammasat University'}</MenuItem>
-                            <MenuItem value={'venueFlow'}>{'VENUE FLOW'}</MenuItem>
-                            <MenuItem value={'perfectPark'}>{'Perfect Park'}</MenuItem>
-                            <MenuItem value={'casaPermium'}>{'CASA Premium'}</MenuItem>
-                            <MenuItem value={'Srisangthum'}>{'Srisangthum'}</MenuItem>
+                            {buildAreaSelector(period.region)}
                         </Select>
                     </FormControl>
                 </Grid>
@@ -138,3 +133,23 @@ export default function BillingReport() {
 }
 
 
+const buildAreaSelector = (region: string) => {
+    const areaSelector = [
+        { value: 'total', display: 'Total', region: 'all' },
+        { value: '3 Villages', display: '3 Villages', region: 'Central' },
+        { value: 'Thammasat University', display: 'Thammasat University', region: 'Central' },
+        { value: 'VENUE FLOW (SC ASSET)', display: 'VENUE FLOW', region: 'Central' },
+        { value: 'Perfect Park (Property Perfect)', display: 'Perfect Park', region: 'Central' },
+        { value: 'CASA Premium (Q House)', display: 'CASA Premium', region: 'Central' },
+        { value: 'Srisangthum', display: 'Srisangthum', region: 'North-Eastern' }
+    ]
+    let filterAreaSelectorElement: JSX.Element[] = [];
+    areaSelector.forEach((area) => {
+        if (area.region === 'all' || region === 'all' || area.region === region) {
+            filterAreaSelectorElement.push(
+                <MenuItem key={`${area.region}-${area.display}`} value={area.value} > {area.display}</MenuItem>);
+        }
+    })
+
+    return (filterAreaSelectorElement)
+}

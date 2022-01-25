@@ -157,11 +157,11 @@ export default function AllArea(props: IProps ) {
 const buildAreaSelector = (region: string) => {
     const areaSelector = [
         { value: 'total', display: 'Total', region: 'all' },
-        { value: '3 Villages', display: '3 Villages', region: 'central' },
-        { value: 'Thammasat University', display: 'Thammasat University', region: 'central' },
-        { value: 'VENUE FLOW (SC ASSET)', display: 'VENUE FLOW', region: 'central' },
-        { value: 'Perfect Park (Property Perfect)', display: 'Perfect Park', region: 'central' },
-        { value: 'CASA Premium (Q House)', display: 'CASA Premium', region: 'central' },
+        { value: '3 Villages', display: '3 Villages', region: 'Central' },
+        { value: 'Thammasat University', display: 'Thammasat University', region: 'Central' },
+        { value: 'VENUE FLOW (SC ASSET)', display: 'VENUE FLOW', region: 'Central' },
+        { value: 'Perfect Park (Property Perfect)', display: 'Perfect Park', region: 'Central' },
+        { value: 'CASA Premium (Q House)', display: 'CASA Premium', region: 'Central' },
         { value: 'Srisangthum', display: 'Srisangthum', region: 'North-Eastern' }
     ]
     let filterAreaSelectorElement: JSX.Element[] = [];

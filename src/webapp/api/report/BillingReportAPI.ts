@@ -1,4 +1,4 @@
-import { druidHost, localDruidEndpoint } from "../../constanst";
+import { druidHost } from "../../constanst";
 import { IInvoice } from "../../state/summary-report/billing-report/billing-report-state";
 import { IPeriod } from "../../state/summary-report/period-state";
 import { IUserSession } from "../../state/user-sessions";

@@ -172,10 +172,6 @@ function buildForecastChart( //,chartRef: React.MutableRefObject<any>
         finalForecast.push(sumPowerByHour(hour, forecast));
         finalActual.push(sumPowerByHour(hour, actual));
     })
-    console.log(`final Forecast `)
-    console.log(finalForecast);
-    console.log(`final Actual `)
-    console.log(finalActual);
     let excessPvForecast = {
         label: 'Excess PV Forecast',
         data: finalForecast.slice(start, end).map((power: IPowerGraph) => { return power.pv }),

@@ -48,8 +48,11 @@ function PageRouting() {
 
     useEffect(() => {
         const timerInterval = setInterval(async () => {
-            
+
             countInterval += 1;
+            if(countInterval === 30){ //page away 30 mins will reload for aviod memory leak
+                window.location.reload();
+            }
             console.log(`call Interval ${countInterval}`)
             checkRefreshToken();
         }, 60000);

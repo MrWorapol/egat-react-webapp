@@ -4,6 +4,8 @@ import { useDebouncedCallback } from 'use-debounce/lib';
 import AllSettlementTable from './AllSettlementTable';
 import { useSettlementReport } from '../../../../hooks/summary-report/settlement/useSettlementReport';
 import { ITradeContractReport } from '../../../../state/summary-report/settlement-report/settlement-report-state';
+import usePeriodTime from '../../../../hooks/summary-report/usePeriodTime';
+
 
 export default function AllSettlementComponent() {
     const [area, setArea] = useState('total');
@@ -11,7 +13,7 @@ export default function AllSettlementComponent() {
     const [userType, setBuyerType] = useState('all');
     const [tradeMarket, setTradeMarket] = useState('all');
     const [imbalance, setImbalance] = useState('all');
-
+    let { period } = usePeriodTime();
     const { settlementReport } = useSettlementReport();
     const [filterData, setFilterData] = useState<ITradeContractReport[] | null>(settlementReport);
 
@@ -166,13 +168,7 @@ export default function AllSettlementComponent() {
                             onChange={(event: SelectChangeEvent) => { onSelectedDropdown(event) }}
                             sx={{ height: '1.5em' }}
                         >
-                            <MenuItem value={'total'}> {'Total'}</MenuItem>
-                            <MenuItem value={'3villages'}> {'3 Villages'}</MenuItem>
-                            <MenuItem value={'tu'}>{'Thammasat University'}</MenuItem>
-                            <MenuItem value={'venueFlow'}>{'VENUE FLOW'}</MenuItem>
-                            <MenuItem value={'perfectPark'}>{'Perfect Park'}</MenuItem>
-                            <MenuItem value={'casaPermium'}>{'CASA Premium'}</MenuItem>
-                            <MenuItem value={'Srisangthum'}>{'Srisangthum'}</MenuItem>
+                            {buildAreaSelector(period.region)}
                         </Select>
                     </FormControl>
                 </Grid>
@@ -186,4 +182,25 @@ export default function AllSettlementComponent() {
             </Grid>
         </Grid >
     )
+}
+
+const buildAreaSelector = (region: string) => {
+    const areaSelector = [
+        { value: 'total', display: 'Total', region: 'all' },
+        { value: '3 Villages', display: '3 Villages', region: 'Central' },
+        { value: 'Thammasat University', display: 'Thammasat University', region: 'Central' },
+        { value: 'VENUE FLOW (SC ASSET)', display: 'VENUE FLOW', region: 'Central' },
+        { value: 'Perfect Park (Property Perfect)', display: 'Perfect Park', region: 'Central' },
+        { value: 'CASA Premium (Q House)', display: 'CASA Premium', region: 'Central' },
+        { value: 'Srisangthum', display: 'Srisangthum', region: 'North-Eastern' }
+    ]
+    let filterAreaSelectorElement: JSX.Element[] = [];
+    areaSelector.forEach((area) => {
+        if (area.region === 'all' || region === 'all' || area.region === region) {
+            filterAreaSelectorElement.push(
+                <MenuItem key={`${area.region}-${area.display}`} value={area.value} > {area.display}</MenuItem>);
+        }
+    })
+
+    return (filterAreaSelectorElement)
 }

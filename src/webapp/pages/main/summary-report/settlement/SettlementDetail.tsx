@@ -11,17 +11,8 @@ dayjs.extend(timezone);
 
 export default function SettlementDetail() {
     const { settlementDetail } = useSettlementReport();
-    // console.log(settlementDetail);
     if (settlementDetail !== null && settlementDetail !== undefined) {
-        // if(settlementDetail.imbalanceStatus === "")
-        // if (settlementDetail.userType.toLowerCase() === "buyer") {
-        //     console.log(`build To Buy`)
-        //     return buildChooseToBuy(settlementDetail);
-        // }
-        // else {
-        //     console.log(`build Offer To Sell`)
         return buildSettlementDetail(settlementDetail);
-        // }
     } else {
 
         return (
@@ -47,7 +38,7 @@ function buildSettlementDetail(settlement: ISettlementDetail) {
                     {settlement.userType.toLowerCase() === 'seller' && `Seller`}
                     {settlement.userType.toLowerCase() === 'buyer' && `Buyer`}
                 </Typography>
-                <Typography sx={{ fontWeight: 'bold', fontSize: '1.3em' }} pl={2}>
+                <Typography sx={{ fontSize: '1.3em' }} pl={2}>
                     {`Contract ID : ${settlement.contractId}`}
                 </Typography>
             </Grid>
@@ -90,15 +81,7 @@ function buildSettlementDetail(settlement: ISettlementDetail) {
                         {`${settlement.energyCommited.toFixed(3)}/${settlement.energyDeliverd.toFixed(3)} kWh`}
                     </Typography>
                 </Grid>
-                <Grid container item justifyContent='space-between' pl={4} pr={6} >
-                    <Typography>
-                        {settlement.userType.toLowerCase() === 'seller' && 'NET Sales'}
-                        {settlement.userType.toLowerCase() === 'buyer' && 'NET Buy'}
-                    </Typography>
-                    <Typography >
-                        {`${settlement.netPrice.toFixed(3)} Baht`}
-                    </Typography>
-                </Grid>
+              
                 {settlement.orderImbalanceAmount &&
                     <Grid container item justifyContent='space-between' pl={4} pr={6} >
                         <Typography>
@@ -121,6 +104,15 @@ function buildSettlementDetail(settlement: ISettlementDetail) {
                         </Typography>
                     </Grid>
                 }
+                  <Grid container item justifyContent='space-between' pl={4} pr={6} >
+                    <Typography>
+                        {settlement.userType.toLowerCase() === 'seller' && 'NET Sales'}
+                        {settlement.userType.toLowerCase() === 'buyer' && 'NET Buy'}
+                    </Typography>
+                    <Typography >
+                        {`${settlement.netPrice.toFixed(3)} Baht`}
+                    </Typography>
+                </Grid>
                 <Grid container item justifyContent='space-between' pl={4} pr={6} >
                     <Typography>
                         {settlement.userType.toLowerCase() === 'seller' && 'NET energy price(NET Sales/Energy Delivered)'}

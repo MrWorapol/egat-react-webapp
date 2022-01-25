@@ -50,9 +50,7 @@ export function useSettlementReport() {
                 }
                 const tradeContractReports = await settlementAPI.getTradeContractReport(req);
                 const tradeDataReport = await settlementAPI.getTradeDataReport(req);
-                const bilateralSettlement = await settlementAPI.getBilateralSettlementLongTerm(req);
-                console.log(`longterm settlement`);
-                console.log(bilateralSettlement);
+                const longTermBilateralOrders = await settlementAPI.getBilateralSettlementLongTerm(req);
                 let summaryRole: ISummaryMap = { 'aggregator': 0, 'prosumer': 0, 'consumer': 0 };
                 let summaryUserType: ISummaryMap = { 'seller': 0, 'buyer': 0 };
                 let summaryTradeMarket: ISummaryMap = { 'bilateral': 0, 'pool': 0 };
@@ -69,9 +67,9 @@ export function useSettlementReport() {
                     netImbalance: 0
                 };
 
-                if ((tradeContractReports && userMeterInfos && tradeDataReport && bilateralSettlement)
+                if ((tradeContractReports && userMeterInfos && tradeDataReport && longTermBilateralOrders)
                     && tradeContractReports.context.length > 0 && userMeterInfos.context.length > 0 && tradeDataReport.context.length > 0) {
-                    let longTermTradeContracts = bilateralSettlement.context.length > 0 && bilateralSettlement.context;
+                    let longTermTradeContracts = longTermBilateralOrders.context.length > 0 && longTermBilateralOrders.context;
                     let output: ITradeContractReport[] = [];
                     tradeContractReports.context.forEach((contract: ITradeContractReport) => { //map tractContract 
                         let buyerMeter = userMeterInfos.context.find((user: IUserMeterInfo) => { return user.id.toString() === contract.buyerId.toString() })
@@ -106,7 +104,6 @@ export function useSettlementReport() {
                                                 summaryImbalnceAmount["sellerOverCommit"] += imbalance.amount;
                                                 break;
                                             case "BUYER_IMBALANCE_OVERCOMMIT":
-                                                // console.log(`OVER_COMMITT`);
                                                 contract.imbalanceStatus = "energyExcess";
                                                 contract.imbalance?.push(imbalance);
                                                 summaryNet["netBuy"] += contract.priceCommitted + contract.tradingFee + contract.wheelingChargeFee;
@@ -114,10 +111,7 @@ export function useSettlementReport() {
                                                 summaryImbalnceAmount["buyerOverCommit"] += imbalance.amount;
                                                 break;
                                             //case under commit
-                                            case "SELLER_IMBALANCE_UNDERCOMMIT":
-
-                                                console.log('SELLER_IMBALANCE_UNDERCOMMIT');
-                                                console.log(imbalance);
+                                            case "SELLER_IMBALANCE_UNDERCOMMIT":                                        
                                                 contract.imbalanceStatus = "energyShortfall";
                                                 contract.imbalance?.push(imbalance);
                                                 summaryNet["netSale"] += contract.priceCommitted + contract.tradingFee + contract.wheelingChargeFee;
@@ -125,8 +119,7 @@ export function useSettlementReport() {
                                                 summaryImbalnceAmount["sellerUnderCommit"] += imbalance.amount;
                                                 break;
                                             case "BUYER_IMBALANCE_UNDERCOMMIT":
-                                                console.log('BUYER_IMBALANCE_UNDERCOMMIT');
-                                                console.log(imbalance);
+                                               
                                                 contract.imbalanceStatus = "energyShortfall";
                                                 contract.imbalance?.push(imbalance);
                                                 summaryNet["netBuy"] += contract.priceCommitted + contract.tradingFee + contract.wheelingChargeFee;
@@ -176,7 +169,9 @@ export function useSettlementReport() {
                         }
                     });
                     setSettlementReport(output);
-                    refreshSettlementDetail(output[0]);
+                    if (output.length > 0) {
+                        refreshSettlementDetail(output[0]);
+                    }
                 } else {
                     setSettlementReport([]);
                     resetSettlementDetail();

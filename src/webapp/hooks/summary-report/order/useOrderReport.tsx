@@ -19,7 +19,6 @@ interface ISummaryMap {
 }
 
 export default function useOrderReport() {
-    // console.log(`call Use ORDER REPORT`);
     let session = useRecoilValue(userSessionState);
     const { currentState } = useNavigationGet();
     const [orderReport, setOrderReport] = useRecoilState(orderState)

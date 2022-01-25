@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import { useRecoilState, useRecoilValue, useResetRecoilState } from "recoil";
 import { BillingReportAPI } from "../../../api/report/BillingReportAPI";
 import { UserAndEnergyReportAPI } from "../../../api/report/UserReportAPI";
@@ -6,12 +6,12 @@ import { NavigationCurrentType } from "../../../state/navigation-current-state";
 import { billingState, IInvoice } from "../../../state/summary-report/billing-report/billing-report-state"
 import { IUserSession, userSessionState } from "../../../state/user-sessions";
 import { useNavigationGet } from "../../useNavigationGet";
-import dayjs from 'dayjs';
+
 import usePeriodTime from "../usePeriodTime";
 import { IUserMeterInfo } from "../../../state/summary-report/user-report/user-report-state";
 import { energyPaymentReportState, IEnergyPaymentState, IEnergyPaymentTable } from "../../../state/summary-report/billing-report/energy-payment-state";
 import { INetPaymentState, netPaymentReportState, INetPaymentTable } from "../../../state/summary-report/billing-report/net-payment-state";
-import { gridUsedReportState, IGridUsedState, IGridUsedTable } from "../../../state/summary-report/billing-report/grid-used-state";
+import { gridUsedReportState, IGridUsedState } from "../../../state/summary-report/billing-report/grid-used-state";
 import { IWheelingReportState, wheelingReportState } from "../../../state/summary-report/billing-report/wheeling-charge-state";
 import { SettlementReportAPI } from "../../../api/report/SettlementReportAPI";
 import { IImbalanceReport } from "../../../state/summary-report/settlement-report/settlement-report-state";
@@ -41,7 +41,7 @@ export default function useBillingReport() {
 
     const { showSnackBar } = useSnackBarNotification();
     const refreshInvoice = async (session: IUserSession, role?: string, area?: string) => {
-        // console.log(period);
+
         resetGridUsed();
         resetWheelingCharge();
         resetNetPayment();
@@ -54,9 +54,6 @@ export default function useBillingReport() {
                 let userMeterInfos: IUserMeterInfo[] | undefined = [];
                 if (role && area) {
                     userMeterInfos = userMeterFromApi?.context.filter((user: IUserMeterInfo) => {
-                        // console.log(`call filter user meter`);
-                        // console.log(` user.role: ${user.role} is ${user.role.toLowerCase() === role?.toLowerCase()} role: ${role?.toLowerCase()}`)
-                        // console.log(`user.area ${user.area} is ${user.area.toLowerCase() === area?.toLowerCase()} area: ${area?.toLowerCase()}`)
                         return (role === "all" || user.role.toLowerCase() === role.toLowerCase()) && (area === 'total' || user.area.toLowerCase() === area.toLowerCase())
                     })
                 } else {
