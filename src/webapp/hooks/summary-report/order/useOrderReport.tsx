@@ -1,11 +1,11 @@
-import dayjs from "dayjs";
-import { useCallback, useEffect } from "react";
+
+import {  useEffect } from "react";
 import { useRecoilState, useRecoilValue, useResetRecoilState } from "recoil"
 import { IGetOrderTableRequest, OrderReportAPI } from "../../../api/report/OrderReportAPI";
 import { UserAndEnergyReportAPI } from "../../../api/report/UserReportAPI";
 import { NavigationCurrentType } from "../../../state/navigation-current-state";
 import { orderChartState } from "../../../state/summary-report/order-report/order-chart-state";
-import { IBuyDetail, orderDetailState } from "../../../state/summary-report/order-report/order-detail-state";
+import { orderDetailState } from "../../../state/summary-report/order-report/order-detail-state";
 import { IOrderInfo, orderState } from "../../../state/summary-report/order-report/order-report-state";
 import { IUserMeterInfo } from "../../../state/summary-report/user-report/user-report-state";
 import { userSessionState } from "../../../state/user-sessions";
@@ -52,7 +52,7 @@ export default function useOrderReport() {
                 let summaryStatus: ISummaryMap = { 'open': 0, 'matched': 0 }
                 if (allOrder && allOrder.context.length > 0 && userMeterInfos) {
                     let output: IOrderInfo[] = [];
-                    allOrder.context.map((order: IOrderInfo, index: number) => {
+                    allOrder.context.forEach((order: IOrderInfo, index: number) => {
 
                         let meterInfo = userMeterInfos.context.find((user: IUserMeterInfo) => { return user.id.toString() === order.userId.toString() })
                         if (meterInfo && meterInfo !== undefined) {

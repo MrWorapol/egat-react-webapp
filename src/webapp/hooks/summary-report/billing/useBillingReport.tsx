@@ -89,10 +89,9 @@ export default function useBillingReport() {
                 };
                 if (userMeterInfos && userMeterInfos.length > 0 && invoiceReports?.context && invoiceReports?.context.length > 0) {
                     let invoiceData = invoiceReports; //use for map to user avoid null data when mapping in userMeterInofos.map Data method
-                    userMeterInfos.map((user: IUserMeterInfo) => {
+                    userMeterInfos.forEach((user: IUserMeterInfo) => {
                         let invoiceWithMeter = invoiceData.context.filter((invoice: IInvoice) => { return invoice.issueToUserId === user.id })
                         if (invoiceWithMeter.length > 0) {
-                            // console.log(/invoiceWithMeter);
                             InsertNetPaymentReport(netPaymentData, invoiceWithMeter, user);
                             InsertEnergyPaymentReport(energyPaymentData, invoiceWithMeter, user);
                             InsertGridUsedReport(gridUsedData, invoiceWithMeter, user);
@@ -123,7 +122,7 @@ export default function useBillingReport() {
             area: user.area,
             netPrice: 0
         };
-        invoiceWithMeters.map((invoiceWithMeter) => { //sum by meterId
+        invoiceWithMeters.forEach((invoiceWithMeter) => { //sum by meterId
             row.netPrice +=
                 invoiceWithMeter.price + invoiceWithMeter.tradingFee + (invoiceWithMeter.price * invoiceWithMeter.vat / 100) //energyTradepayment netPrice
                 + invoiceWithMeter.reference.touTariff //GridUsed Price
@@ -132,16 +131,13 @@ export default function useBillingReport() {
             netPaymentData.chart.tradingPayment += invoiceWithMeter.price + invoiceWithMeter.tradingFee + (invoiceWithMeter.price * invoiceWithMeter.vat / 100) //energyTradepayment netPrice
             netPaymentData.chart.gridUsed += invoiceWithMeter.reference.touTariff; //GridUsed Price
             netPaymentData.chart.wheelingCharge += invoiceWithMeter.wheelingChargeTotal; //GridUsed Price
-            // console.log(`tradingPayment : ${netPaymentData.chart.tradingPayment}`);
-            // console.log(`gridUsed : ${netPaymentData.chart.gridUsed}`);
-            // console.log(`wheelingCharge: ${netPaymentData.chart.wheelingCharge}`);
         })
         netPaymentData.table.push(row);
     }
 
     const InsertEnergyPaymentReport = (energyPaymentData: IEnergyPaymentState, invoiceWithMeters: IInvoice[], user: IUserMeterInfo) => {
         let row: IEnergyPaymentTable = { meterId: user.meterId, meterName: user.meterName, role: user.role, area: user.area, netPrice: 0 };
-        invoiceWithMeters.map((invoiceWithMeter: IInvoice) => {
+        invoiceWithMeters.forEach((invoiceWithMeter: IInvoice) => {
             row.netPrice += invoiceWithMeter.price + invoiceWithMeter.tradingFee + invoiceWithMeter.wheelingChargeTotal + (invoiceWithMeter.price * invoiceWithMeter.vat / 100) //energyTradepayment netPrice
             switch (invoiceWithMeter.invoiceType) {
                 case "SELLER_CONTRACT":
@@ -184,15 +180,7 @@ export default function useBillingReport() {
     //wait for confirm with p'chin about  data are already use or need to query with trade Table
     const InsertGridUsedReport = (gridUsedData: IGridUsedState, invoiceWithMeters: IInvoice[], user: IUserMeterInfo) => {
         let gridPriceByGridUsedAndMeterSummary: { [key: string]: number } = { "PEAK_MONFRI": 0, "OFFPEAK_MONFRI": 0, "OFFPEAK_SATSUN": 0, "OFFPEAK_HOLIDAY": 0 };
-        // let row: IGridUsedTable = {
-        //     meterId: user.meterId,
-        //     meterName: user.meterName,
-        //     role: user.role,
-        //     area: user.area,
-        //     gridPrice: invoiceWithMeter.reference.touTariff, //tariff because calculate from mobile
-        //     gridUsedType: invoiceWithMeter.reference.touTariffType
-        // };
-        invoiceWithMeters.map((invoiceWithMeter) => {
+        invoiceWithMeters.forEach((invoiceWithMeter) => {
             switch (invoiceWithMeter.reference.touTariffType) {
                 case "PEAK_MONFRI":
                     gridUsedData.netTOUTariff.peak += invoiceWithMeter.reference.touTariff;
@@ -223,8 +211,8 @@ export default function useBillingReport() {
             gridUsedData.gridChart.amount += invoiceWithMeter.reference.amount;
             gridUsedData.gridChart.vat += invoiceWithMeter.reference.vat;
             gridUsedData.gridChart.discount += invoiceWithMeter.reference.gridUsedDiscount;
-            // gridUsedData.table.push(row);
         })
+
         Object.keys(gridPriceByGridUsedAndMeterSummary).forEach((gridUsedType: string) => {
             if (gridPriceByGridUsedAndMeterSummary[gridUsedType] > 0) {
                 gridUsedData.table.push(
@@ -243,7 +231,7 @@ export default function useBillingReport() {
     //issue about data
     const InsertWheelingChargeReport = (wheelingData: IWheelingReportState, invoiceWithMeters: IInvoice[], user: IUserMeterInfo, tradeDatas: IImbalanceReport[]) => {
         let wheelingChargeByMeterSummary: { [key: string]: number } = { "mea": 0, "pea": 0, "meaegat": 0, "peaegat": 0, "meapeaegat": 0 };
-        invoiceWithMeters.map((invoiceWithMeter) => {
+        invoiceWithMeters.forEach((invoiceWithMeter) => {
             let wheelingChargeType = tradeDatas.find((tradeData) => { return tradeData.tradeDataId === invoiceWithMeter.tradeId });
             if (wheelingChargeType && wheelingChargeType.priceRuleApplied) {
                 switch (wheelingChargeType.priceRuleApplied.toLowerCase()) {
