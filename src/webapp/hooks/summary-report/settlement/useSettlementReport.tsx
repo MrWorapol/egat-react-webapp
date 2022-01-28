@@ -38,19 +38,13 @@ export function useSettlementReport() {
         if (session) {
             try {
                 showLoading(10);
-                const userMeterInfos = await userMeterApi.getUserMeterInfo({ period, roles: [role], area: area, session });
+                const userMeterInfos = await userMeterApi.getUserMeterInfo({ period, session });
                 const req = {
                     period,
-                    area,
-                    role,
-                    buyerType,
-                    tradeMarket,
-                    orderStatus,
                     session
                 }
                 const tradeContractReports = await settlementAPI.getTradeContractReport(req);
                 const tradeDataReport = await settlementAPI.getTradeDataReport(req);
-                const longTermBilateralOrders = await settlementAPI.getBilateralSettlementLongTerm(req);
                 let summaryRole: ISummaryMap = { 'aggregator': 0, 'prosumer': 0, 'consumer': 0 };
                 let summaryUserType: ISummaryMap = { 'seller': 0, 'buyer': 0 };
                 let summaryTradeMarket: ISummaryMap = { 'bilateral': 0, 'pool': 0 };
@@ -67,21 +61,21 @@ export function useSettlementReport() {
                     netImbalance: 0
                 };
 
-                if ((tradeContractReports && userMeterInfos && tradeDataReport && longTermBilateralOrders)
+                if ((tradeContractReports && userMeterInfos && tradeDataReport)
                     && tradeContractReports.context.length > 0 && userMeterInfos.context.length > 0 && tradeDataReport.context.length > 0) {
-                    let longTermTradeContracts = longTermBilateralOrders.context.length > 0 && longTermBilateralOrders.context;
+
                     let output: ITradeContractReport[] = [];
                     tradeContractReports.context.forEach((contract: ITradeContractReport) => { //map tractContract 
                         let buyerMeter = userMeterInfos.context.find((user: IUserMeterInfo) => { return user.id.toString() === contract.buyerId.toString() })
                         let sellerMeter = userMeterInfos.context.find((user: IUserMeterInfo) => { return user.id.toString() === contract.sellerId.toString() })
-                        if (contract.bilateralTradeSettlementId) {
-                            if (longTermTradeContracts) {
-                                let isLongTermContract = longTermTradeContracts.find((settlement) => { return contract.bilateralTradeSettlementId === settlement.bilateralTradeSettlementId });
-                                if (isLongTermContract) {
-                                    contract.tradeMarket = "LONGTERM_BILATERAL";
-                                }
-                            }
-                        }
+                        // if (contract.bilateralTradeSettlementId) {
+                        //     if (longTermTradeContracts) {
+                        //         let isLongTermContract = longTermTradeContracts.find((settlement) => { return contract.bilateralTradeSettlementId === settlement.bilateralTradeSettlementId });
+                        //         if (isLongTermContract) {
+                        //             contract.tradeMarket = "LONGTERM_BILATERAL";
+                        //         }
+                        //     }
+                        // }
 
                         contract.imbalance = []; //create array variable for insert imbalance Data
                         let tradeDataMapContractId: IImbalanceReport[] = tradeDataReport.context.filter((imbalance: IImbalanceReport) => {
@@ -111,7 +105,7 @@ export function useSettlementReport() {
                                                 summaryImbalnceAmount["buyerOverCommit"] += imbalance.amount;
                                                 break;
                                             //case under commit
-                                            case "SELLER_IMBALANCE_UNDERCOMMIT":                                        
+                                            case "SELLER_IMBALANCE_UNDERCOMMIT":
                                                 contract.imbalanceStatus = "energyShortfall";
                                                 contract.imbalance?.push(imbalance);
                                                 summaryNet["netSale"] += contract.priceCommitted + contract.tradingFee + contract.wheelingChargeFee;
@@ -119,7 +113,7 @@ export function useSettlementReport() {
                                                 summaryImbalnceAmount["sellerUnderCommit"] += imbalance.amount;
                                                 break;
                                             case "BUYER_IMBALANCE_UNDERCOMMIT":
-                                               
+
                                                 contract.imbalanceStatus = "energyShortfall";
                                                 contract.imbalance?.push(imbalance);
                                                 summaryNet["netBuy"] += contract.priceCommitted + contract.tradingFee + contract.wheelingChargeFee;

@@ -132,7 +132,7 @@ export default function useDashBoard() {
             }
             let tradeContracts = await contractAPI.getTradeContractReport({session});
             if(tradeContracts && tradeContracts.context){
-                summary.totalContract = tradeContracts.context.length;
+                summary.totalContract = tradeContracts.count;
             }
             let invoiceReports = await billingAPI.getInvoiceReport({ session });
             if (invoiceReports && invoiceReports.context.length > 0) {

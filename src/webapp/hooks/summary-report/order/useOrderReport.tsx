@@ -40,7 +40,7 @@ export default function useOrderReport() {
             resetChart();
             showLoading(10);
             try {
-                const userMeterInfos = await userMeterApi.getUserMeterInfo({ period, roles: roles, area: area, session })
+                const userMeterInfos = await userMeterApi.getUserMeterInfo({ period,  session })
                 const req: IGetOrderTableRequest = {
                     session,
                     period,

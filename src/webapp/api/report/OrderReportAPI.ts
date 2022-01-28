@@ -1,10 +1,10 @@
-import dayjs from 'dayjs';
 import { druidHost } from '../../constanst';
 import { IOrderInfo } from '../../state/summary-report/order-report/order-report-state';
 import { IPeriod } from '../../state/summary-report/period-state';
 import { ITradeContractReport } from '../../state/summary-report/settlement-report/settlement-report-state';
 import { IUserSession } from '../../state/user-sessions';
 import { SettlementReportAPI } from './SettlementReportAPI';
+import dayjs from '../../utils/customDayjs';
 
 interface IGetDruidBody {
     query: string,
@@ -129,24 +129,12 @@ export class OrderReportAPI {
             const ordersFromJSON: IOrderResponseFromJSON[] = await response.json();
             let results: IGetOrderResponse[] = [];
             ordersFromJSON.forEach((order: IOrderResponseFromJSON) => {
+                let inRange = false;
                 if (period) {
-                    let inRange = dayjs(order.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
-                        && dayjs(order.timestamp).isBefore(dayjs(period.endDate).endOf('day'))
-                    if (inRange) {
-                        results.push({
-                            timestamp: order.timestamp,
-                            orderId: order[`payload.id`],
-                            userId: order.userId,
-                            status: order.status,
-                            targetAmount: order.targetAmount,
-                            targetPrice: order.targetPrice,
-                            userType: "SELLER",
-                            tradeMarket: "POOL",
-                            settlementTime: order.settlementTime
+                    inRange = dayjs(order.timestamp).isBetween(dayjs(period.startDate),dayjs(period.endDate),null,'[]');
 
-                        })
-                    }
-                } else {
+                }
+                if (period === undefined || inRange) {
                     results.push({
                         timestamp: order.timestamp,
                         orderId: order[`payload.id`],
@@ -160,6 +148,20 @@ export class OrderReportAPI {
 
                     })
                 }
+                // } else {
+                //     results.push({
+                //         timestamp: order.timestamp,
+                //         orderId: order[`payload.id`],
+                //         userId: order.userId,
+                //         status: order.status,
+                //         targetAmount: order.targetAmount,
+                //         targetPrice: order.targetPrice,
+                //         userType: "SELLER",
+                //         tradeMarket: "POOL",
+                //         settlementTime: order.settlementTime
+
+                //     })
+                // }
 
             })
 
@@ -200,24 +202,14 @@ export class OrderReportAPI {
             const ordersFromJSON: IOrderResponseFromJSON[] = await response.json();
             let results: IGetOrderResponse[] = [];
             ordersFromJSON.forEach((order: IOrderResponseFromJSON) => {
+                let inRange = false;
                 if (period) {
-                    let inRange = dayjs(order.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
-                        && dayjs(order.timestamp).isBefore(dayjs(period.endDate).endOf('day'))
-                    if (inRange) {
-                        results.push({
-                            timestamp: order.timestamp,
-                            orderId: order[`payload.id`],
-                            userId: order.userId,
-                            status: order.status,
-                            targetAmount: order.targetAmount,
-                            targetPrice: order.targetPrice,
-                            userType: "BUYER",
-                            tradeMarket: "POOL",
-                            settlementTime: order.settlementTime
-                        })
-                    }
+                    inRange = dayjs(order.timestamp).isBetween(dayjs(period.startDate),dayjs(period.endDate),null,'[]');
+
+                    // inRange = dayjs(order.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
+                    //     && dayjs(order.timestamp).isBefore(dayjs(period.endDate).endOf('day'))
                 }
-                else {
+                if (period === undefined || inRange) {
                     results.push({
                         timestamp: order.timestamp,
                         orderId: order[`payload.id`],
@@ -230,6 +222,20 @@ export class OrderReportAPI {
                         settlementTime: order.settlementTime
                     })
                 }
+
+                // else {
+                //     results.push({
+                //         timestamp: order.timestamp,
+                //         orderId: order[`payload.id`],
+                //         userId: order.userId,
+                //         status: order.status,
+                //         targetAmount: order.targetAmount,
+                //         targetPrice: order.targetPrice,
+                //         userType: "BUYER",
+                //         tradeMarket: "POOL",
+                //         settlementTime: order.settlementTime
+                //     })
+                // }
             })
             return results;
         } catch (e) {
@@ -269,25 +275,15 @@ export class OrderReportAPI {
             if (response.status === 200) {
                 let results: IGetOrderResponse[] = [];
                 ordersFromJSON.forEach((order: IOrderResponseFromJSON) => {
-                    // console.log(`settlement Time:${dayjs(+order.settlementTime).add(1, 'hour').format(`DD/MM/YYYY HH:mm:ss`)} isAfter ${dayjs(+order.settlementTime).add(1, 'hour').isBefore(dayjs())} now: ${dayjs().format(`DD/MM/YYYY HH:mm:ss`)}`)
                     if (dayjs(+order.settlementTime).add(1, 'hour').isAfter(dayjs())) {
+                        let inRange = false;
                         if (period) {
-                            let inRange = dayjs(order.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
-                                && dayjs(order.timestamp).isBefore(dayjs(period.endDate).endOf('day'))
-                            if (inRange) {
-                                results.push({
-                                    timestamp: order.timestamp,
-                                    orderId: order[`payload.id`],
-                                    userId: order.userId,
-                                    status: order.status,
-                                    targetAmount: order.targetAmount,
-                                    targetPrice: order.targetPrice,
-                                    userType: "SELLER",
-                                    tradeMarket: "BILATERAL",
-                                    settlementTime: order.settlementTime
-                                })
-                            }
-                        } else {
+                            inRange = dayjs(order.timestamp).isBetween(dayjs(period.startDate),dayjs(period.endDate),null,'[]');
+
+                            // inRange = dayjs(order.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
+                            //     && dayjs(order.timestamp).isBefore(dayjs(period.endDate).endOf('day'))
+                        }
+                        if (period === undefined || inRange) {
                             results.push({
                                 timestamp: order.timestamp,
                                 orderId: order[`payload.id`],
@@ -300,6 +296,19 @@ export class OrderReportAPI {
                                 settlementTime: order.settlementTime
                             })
                         }
+                        // } else {
+                        //     results.push({
+                        //         timestamp: order.timestamp,
+                        //         orderId: order[`payload.id`],
+                        //         userId: order.userId,
+                        //         status: order.status,
+                        //         targetAmount: order.targetAmount,
+                        //         targetPrice: order.targetPrice,
+                        //         userType: "SELLER",
+                        //         tradeMarket: "BILATERAL",
+                        //         settlementTime: order.settlementTime
+                        //     })
+                        // }
                     }
                 })
                 return results;
@@ -311,67 +320,23 @@ export class OrderReportAPI {
             throw Error(`การเชื่อมต่อเซิฟเวอร์ขัดข้อง`);
         }
     }
+
     async getMatchedOrder(req: IGetOrderRequest): Promise<IGetMathOrderResponse | null> {
+        const period = req.period;
+
         try {
             const contracts = await this.tradeContractAPI.getTradeContractReport({ ...req });
-
-            const period = req.period;
             let results: IGetMathOrderResponse = { context: [] };
-
             if (contracts && contracts.context.length > 0) {
                 contracts.context.forEach((contract: ITradeContractReport) => {
+                    let inRange = false;
                     if (period) {
-                        let inRange = dayjs(contract.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
-                            && dayjs(contract.timestamp).isBefore(dayjs(period.endDate).endOf('day'))
-                        if (inRange) {
-                            results.context.push({ // insert seller Matched
-                                orderId: contract.contractId,
-                                userId: contract.sellerId,
-                                status: "MATCHED",
-                                targetAmount: contract.energyCommitted,
-                                targetPrice: contract.priceCommitted,
-                                userType: "SELLER",
-                                tradeMarket: contract.tradeMarket,
-                                settlementTime: contract.settlementTime,
-                                tradeContractId: contract.contractId,
-                                orderDetail: {
-                                    deliverdTime: contract.settlementTime,
-                                    commitedAmount: contract.energyCommitted,
-                                    offerToSell: contract.priceCommitted,
-                                    tradingFee: contract.tradingFee,
-                                    estimatedSales: contract.priceCommitted,
-                                    sellerId: contract.sellerId,
-                                    buyerId: contract.buyerId,
-                                }
-                            })
-                            results.context.push({//insert buyer Matched
-                                orderId: contract.contractId,
-                                userId: contract.buyerId,
-                                status: "MATCHED",
-                                targetAmount: contract.energyCommitted,
-                                targetPrice: contract.priceCommitted,
-                                userType: "BUYER",
-                                tradeMarket: contract.tradeMarket,
-                                settlementTime: contract.settlementTime,
-                                tradeContractId: contract.contractId,
-                                orderDetail: {
-                                    deliverdTime: contract.settlementTime,
-                                    amount: contract.energyCommitted,
-                                    netBuy: contract.priceCommitted + contract.wheelingChargeFee + contract.tradingFee, //sum of Data
-                                    netEnergyPrice: contract.priceCommitted,
-                                    energyToBuy: contract.energyCommitted,
-                                    energyTariff: Math.round(contract.energyCommitted / contract.priceCommitted), //dont sure
-                                    energyPrice: (contract.priceCommitted * contract.energyCommitted), // dont sure
-                                    wheelingChargeTariff: Math.round((contract.wheelingChargeFee / contract.energyCommitted)), //dont sure
-                                    wheelingCharge: contract.wheelingChargeFee,
-                                    tradingFee: contract.tradingFee,
-                                    sellerId: contract.sellerId,
-                                    buyerId: contract.buyerId,
-                                }
-                            })
-                        }
+                        inRange = dayjs(contract.timestamp).isBetween(dayjs(period.startDate),dayjs(period.endDate),null,'[]');
 
-                    } else {
+                        // inRange = dayjs(contract.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
+                        //     && dayjs(contract.timestamp).isBefore(dayjs(period.endDate).endOf('day'))
+                    }
+                    if (period === undefined || inRange) { //period===undefined is selected All
                         results.context.push({ // insert seller Matched
                             orderId: contract.contractId,
                             userId: contract.sellerId,
@@ -380,10 +345,10 @@ export class OrderReportAPI {
                             targetPrice: contract.priceCommitted,
                             userType: "SELLER",
                             tradeMarket: contract.tradeMarket,
-                            settlementTime: contract.settlementTime,
+                            settlementTime: contract.settlementTime.toString(),
                             tradeContractId: contract.contractId,
                             orderDetail: {
-                                deliverdTime: contract.settlementTime,
+                                deliverdTime: contract.settlementTime.toString(),
                                 commitedAmount: contract.energyCommitted,
                                 offerToSell: contract.priceCommitted,
                                 tradingFee: contract.tradingFee,
@@ -400,17 +365,17 @@ export class OrderReportAPI {
                             targetPrice: contract.priceCommitted,
                             userType: "BUYER",
                             tradeMarket: contract.tradeMarket,
-                            settlementTime: contract.settlementTime,
+                            settlementTime: contract.settlementTime.toString(),
                             tradeContractId: contract.contractId,
                             orderDetail: {
-                                deliverdTime: contract.settlementTime,
+                                deliverdTime: contract.settlementTime.toString(),
                                 amount: contract.energyCommitted,
                                 netBuy: contract.priceCommitted + contract.wheelingChargeFee + contract.tradingFee, //sum of Data
                                 netEnergyPrice: contract.priceCommitted,
                                 energyToBuy: contract.energyCommitted,
-                                energyTariff: Math.round(contract.energyCommitted / contract.priceCommitted), //dont sure
+                                energyTariff: (contract.energyCommitted / contract.priceCommitted) || 0, //dont sure
                                 energyPrice: (contract.priceCommitted * contract.energyCommitted), // dont sure
-                                wheelingChargeTariff: Math.round((contract.wheelingChargeFee / contract.energyCommitted)), //dont sure
+                                wheelingChargeTariff: (contract.wheelingChargeFee / contract.energyCommitted) || 0, //dont sure
                                 wheelingCharge: contract.wheelingChargeFee,
                                 tradingFee: contract.tradingFee,
                                 sellerId: contract.sellerId,

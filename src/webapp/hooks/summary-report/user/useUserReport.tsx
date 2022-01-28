@@ -14,6 +14,9 @@ import { useSnackBarNotification } from "../../useSnackBarNotification";
 import dayjs from "dayjs";
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
+var isToday = require('dayjs/plugin/isToday')
+
+dayjs.extend(isToday)
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -50,11 +53,11 @@ export default function useUserReport() {
 
     };
 
-    const refreshUserTable = async (period: IPeriod, roles: string[], area: string) => {
+    const refreshUserTable = async (period: IPeriod) => {
         if (session) {
             showLoading(10);
             try {
-                const userMeters = await api.getUserMeterInfo({ period, roles: roles, area: area, session })
+                const userMeters = await api.getUserMeterInfo({ period, session })
                 if (userMeters && userMeters.context.length > 0) {
                     let userSummary: IUserSummary = { AGGREGATOR: 0, CONSUMER: 0, PROSUMER: 0, noUser: 0 };
                     userMeters.context.forEach((meter: IUserMeterInfo) => {
@@ -80,8 +83,9 @@ export default function useUserReport() {
                         setActualPowers(powerData.powerData);
                     }
                     hideLoading(10);
-                    refreshLocationSite(userMeters.context[0]);
+                    // refreshLocationSite(userMeters.context[0]);
                     setmeterTable(userMeters.context);
+                    resetLocationSite();
                 } else {//if not found reset State
                     setmeterTable([]);
                     resetChartData();
@@ -111,8 +115,10 @@ export default function useUserReport() {
                     let powerDataByMeterIdAndPeriod = actualPowers.filter(
                         (row: IPowerData) => {
                             if (period) {
-                                let inRange = dayjs(row.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
-                                    && dayjs(row.timestamp).isBefore(dayjs(period.endDate).endOf('day'));
+                                let inRange = dayjs(row.timestamp).isBetween(dayjs(period.startDate), dayjs(period.endDate), null, '[]');
+                                // let inRange = dayjs(row.timestamp).isSame(dayjs(period.startDate).startOf('day')) ||
+                                //     (dayjs(row.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
+                                //         && dayjs(row.timestamp).isBefore(dayjs(period.endDate).endOf('day')));
                                 if (inRange) {
                                     return meter.meterId.toString() === row.meterId.toString()
                                 }
@@ -202,9 +208,9 @@ export default function useUserReport() {
     useEffect(() => {
         if (session && currentState === NavigationCurrentType.USER_REPORT) {
             if (!meterTable) {
-                refreshUserTable(period, [], 'all');
+                refreshUserTable(period);
             }
-            
+
         }
         return () => {
 

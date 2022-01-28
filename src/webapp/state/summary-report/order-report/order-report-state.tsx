@@ -7,7 +7,7 @@ export interface IOrderInfo {
     userType: string, //buyer| seller
     status: string,
     userId: string,
-    settlementTime: string,
+    settlementTime: string, //unix time
     targetPrice: number,
     targetAmount: number,
     role?: string, //Aggregator | Prosumer | Consumer

@@ -4,12 +4,7 @@ import { IPeriod } from '../../state/summary-report/period-state';
 import { IPowerData } from '../../state/summary-report/user-report/power-data-state';
 import { IUserMeterInfo } from '../../state/summary-report/user-report/user-report-state';
 import { IUserSession } from '../../state/user-sessions';
-
-import dayjs from "dayjs";
-import timezone from 'dayjs/plugin/timezone';
-import utc from 'dayjs/plugin/utc';
-dayjs.extend(utc);
-dayjs.extend(timezone);
+import dayjs from '../../utils/customDayjs';
 
 interface IGetDruidBody {
     query: string,
@@ -46,8 +41,6 @@ interface IPowerResponse {
 interface IGetUserMeterInfoRequest {
     session: IUserSession,
     period: IPeriod,
-    roles: string[],
-    area: string,
 }
 interface IGetAllUserRequest {
     session: IUserSession,
@@ -278,50 +271,32 @@ export class UserAndEnergyReportAPI {
                     inSolar: 0,
                     load: 0,
                 }
-                if (period !== undefined) { //case query with period time
-                    console.log(`filter power period `)
-                    responseJSON.forEach((power: IPowerResponse) => {
-                        let inRange = dayjs(power.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
-                            && dayjs(power.timestamp).isBefore(dayjs(period.endDate).endOf('day'))
-                        if (inRange) {
-                            powerData.push({
-                                meterId: power.meterId,
-                                timestamp: power.timestamp,
-                                inSolar: Math.abs(power.inSolar) || 0,
-                                outBattery: power.inBattery > 0 ? power.inBattery : 0,
-                                inBattery: power.inBattery < 0 ? Math.abs(power.inBattery) : 0,
-                                inGrid: power.inGrid > 0 ? power.inGrid : 0,//inGrid > 0 can sell
-                                excessPv: power.inGrid < 0 ? Math.abs(power.inGrid) : 0, //inGrid <0 use too much
-                                load: Math.abs(power.load) || 0
-                            });
-                            summaryPower.outBattery += power.inBattery > 0 ? power.inBattery : 0; 
-                            summaryPower.inBattery += +power.inBattery < 0 ? Math.abs(power.inBattery) : 0; //dont sure inBattery + or -
-                            summaryPower.inGrid += power.inGrid > 0 ? power.inGrid : 0;//inGrid > 0 an sell
-                            summaryPower.excessPv += power.inGrid < 0 ? Math.abs(power.inGrid) : 0; //inGrid <0 use too much
-                            summaryPower.inSolar += Math.abs(power.inSolar) || 0;
-                            summaryPower.load += Math.abs(power.load) || 0
-                        }
-                    })
-                } else {
-                    responseJSON.forEach((power: IPowerResponse) => {
+                responseJSON.forEach((power: IPowerResponse) => {
+                    let inRange = false;
+                    if (period !== undefined) { //case query with period time
+                        console.log(dayjs(power.timestamp).isBetween(dayjs(period.startDate),dayjs(period.endDate),null,'[]'));
+                        inRange = dayjs(power.timestamp).isBetween(dayjs(period.startDate),dayjs(period.endDate),null,'[]');
+                    }
+
+                    if (period === undefined || inRange) { //
                         powerData.push({
                             meterId: power.meterId,
                             timestamp: power.timestamp,
                             inSolar: Math.abs(power.inSolar) || 0,
                             outBattery: power.inBattery > 0 ? power.inBattery : 0,
                             inBattery: power.inBattery < 0 ? Math.abs(power.inBattery) : 0,
-                            inGrid: power.inGrid > 0 ? power.inGrid : 0,
-                            excessPv: power.inGrid < 0 ? Math.abs(power.inGrid) : 0,
+                            inGrid: power.inGrid > 0 ? power.inGrid : 0,//inGrid > 0 can sell
+                            excessPv: power.inGrid < 0 ? Math.abs(power.inGrid) : 0, //inGrid <0 use too much
                             load: Math.abs(power.load) || 0
                         });
-                        summaryPower.outBattery += power.inBattery > 0 ? power.inBattery : 0; //dont sure inBattery + or -
+                        summaryPower.outBattery += power.inBattery > 0 ? power.inBattery : 0;
                         summaryPower.inBattery += +power.inBattery < 0 ? Math.abs(power.inBattery) : 0; //dont sure inBattery + or -
-                        summaryPower.inGrid += power.inGrid > 0 ? power.inGrid : 0;
-                        summaryPower.excessPv += power.inGrid < 0 ? Math.abs(power.inGrid) : 0;
+                        summaryPower.inGrid += power.inGrid > 0 ? power.inGrid : 0;//inGrid > 0 an sell
+                        summaryPower.excessPv += power.inGrid < 0 ? Math.abs(power.inGrid) : 0; //inGrid <0 use too much
                         summaryPower.inSolar += Math.abs(power.inSolar) || 0;
                         summaryPower.load += Math.abs(power.load) || 0
-                    })
-                }
+                    }
+                })
                 return {
                     powerData, //return array of power with all user meter. incase of period will return array power in range of date with all user meter
                     summaryPower,//summary power for graph
@@ -367,41 +342,42 @@ export class UserAndEnergyReportAPI {
             if (response.status === 200) {
                 const rawData: IPowerResponse[] = await response.json();
                 let powerDatas: IPowerData[] = [];
-                if (period !== undefined) { //case query with period time
-                    let scopeRange = period;
-                    rawData.forEach((power: IPowerResponse) => {
-                        let inRange = dayjs(power.timestamp).isAfter(dayjs(scopeRange.startDate).startOf('day'))
-                            && dayjs(power.timestamp).isBefore(dayjs(scopeRange.endDate).endOf('day'))
-                        if (inRange) {
-                            powerDatas.push({
-                                meterId: power.meterId,
-                                timestamp: power.timestamp,
-                                inSolar: Math.abs(power.inSolar) || 0,
-                                outBattery: power.inBattery > 0 ? power.inBattery : 0,
-                                inBattery: power.inBattery < 0 ? Math.abs(power.inBattery) : 0,
-                                inGrid: power.inGrid > 0 ? power.inGrid : 0,
-                                excessPv: power.inGrid < 0 ? Math.abs(power.inGrid) : 0,
-                                load: power.load,
-                            });
-                        }
-                    })
 
-                    console.log(`raw forecast data filter date`);
-                    console.log(powerDatas);
-                } else {
-                    rawData.forEach((power: IPowerResponse) => {
+                rawData.forEach((power: IPowerResponse) => {
+                    let inRange = false;
+                    if (period !== undefined) { //case query with period time
+                        inRange = dayjs(power.timestamp).isBetween(dayjs(period.startDate),dayjs(period.endDate),null,'[]');
+                    }
+                    if (period === undefined || inRange) {
                         powerDatas.push({
                             meterId: power.meterId,
                             timestamp: power.timestamp,
                             inSolar: Math.abs(power.inSolar) || 0,
                             outBattery: power.inBattery > 0 ? power.inBattery : 0,
                             inBattery: power.inBattery < 0 ? Math.abs(power.inBattery) : 0,
-                            inGrid: power.inGrid > 0 ? power.inGrid : 0,//inGrid > 0 can sell
-                            excessPv: power.inGrid < 0 ? Math.abs(power.inGrid) : 0, //inGrid <0 use too much
+                            inGrid: power.inGrid > 0 ? power.inGrid : 0,
+                            excessPv: power.inGrid < 0 ? Math.abs(power.inGrid) : 0,
                             load: power.load,
                         });
-                    })
-                }
+                    }
+                })
+
+                // console.log(`raw forecast data filter date`);
+                // console.log(powerDatas);
+                // {
+                //     rawData.forEach((power: IPowerResponse) => {
+                //         powerDatas.push({
+                //             meterId: power.meterId,
+                //             timestamp: power.timestamp,
+                //             inSolar: Math.abs(power.inSolar) || 0,
+                //             outBattery: power.inBattery > 0 ? power.inBattery : 0,
+                //             inBattery: power.inBattery < 0 ? Math.abs(power.inBattery) : 0,
+                //             inGrid: power.inGrid > 0 ? power.inGrid : 0,//inGrid > 0 can sell
+                //             excessPv: power.inGrid < 0 ? Math.abs(power.inGrid) : 0, //inGrid <0 use too much
+                //             load: power.load,
+                //         });
+                //     })
+                // }
 
                 return {
                     context: powerDatas

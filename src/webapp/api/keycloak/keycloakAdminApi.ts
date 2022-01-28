@@ -38,7 +38,7 @@ export default class KeycloakAdminApi {
             console.log(e);
             throw Error(`Unexpected Error`);
         }
-        if (response.status === 401) {
+        if (response.status === 401 || response.status === 404) {
             throw Error(`Username or Password incorrect`)
         }
         if (response.status === 500) {

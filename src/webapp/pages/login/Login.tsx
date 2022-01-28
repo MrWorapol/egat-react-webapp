@@ -1,26 +1,29 @@
-import { Box, Button, Card, CardContent, Container, Grid, Paper, TextField, Typography } from '@mui/material'
+import { Box, Button, Grid, TextField, Typography } from '@mui/material'
 import React, { useEffect } from 'react'
-import { useForm } from 'react-hook-form';
 import { useHistory, useParams } from 'react-router';
-
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 import { useLogin } from '../../hooks/useLogin';
 import { useNavigationSet } from '../../hooks/useNavigationSet';
 import { NavigationCurrentType } from '../../state/navigation-current-state';
 
 type LoginForm = {
-    username: string;
+    email: string;
     password: string;
 }
 
+const schema = yup.object().shape({
+    email: yup.string().email().required(),
+    password: yup.string().required()
+})
 export default function Login() {
     useNavigationSet(NavigationCurrentType.LOGIN);
-    const { register, handleSubmit, } = useForm<LoginForm>();
+    const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>({ resolver: yupResolver(schema) });
     const { login } = useLogin();
 
-    const history = useHistory();
     const onSubmitLogin = async (data: LoginForm) => {
-        await login(data.username, data.password);
-
+        await login(data.email, data.password);
     }
 
     return (
@@ -62,13 +65,21 @@ export default function Login() {
                                     <Grid item container>
                                         <TextField placeholder="Email"
                                             fullWidth
-                                            type="username"
-                                            {...register("username")}
+                                            type="email"
+                                            error={!!errors.email}
+                                            helperText={errors.email && errors.email.message ? errors.email.message : ''}
+                                            {...register("email", { required: "Please Filled" })}
                                         ></TextField>
                                     </Grid>
                                     <Grid item container>
-                                        <TextField placeholder="Password" fullWidth type="password"
-                                            {...register("password")}></TextField>
+                                        <TextField placeholder="Password"
+                                            fullWidth
+                                            type="password"
+                                            error={!!errors.password}
+                                            helperText={errors.password && errors.password.message ? errors.password.message : ''}
+                                            {...register("password", { required: "Please Filled" })}>
+
+                                        </TextField>
                                     </Grid>
                                     <Grid item container style={{ justifyContent: 'flex-end' }}>
 

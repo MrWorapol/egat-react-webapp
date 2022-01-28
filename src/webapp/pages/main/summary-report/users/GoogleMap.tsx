@@ -1,7 +1,7 @@
-import React from 'react'
+
 import GoogleMapReact, { BootstrapURLKeys, Maps } from 'google-map-react';
-import { Box } from '@mui/system';
 import RoomIcon from '@mui/icons-material/Room';
+import { GOOGLE_API_KEY } from '../../../../constanst';
 
 
 interface IProps {
@@ -53,7 +53,7 @@ export default function GoogleMap(props: IProps) {
 
     return (
         <GoogleMapReact
-            bootstrapURLKeys={{ key: "AIzaSyBCQSJCd6FCG2bqvt3MEtgXWyGdVMY4xRc" }}
+            bootstrapURLKeys={{ key: GOOGLE_API_KEY }}
             defaultCenter={{ lat: address.lat, lng: address.lng }}
             zoom={zoom}
             // yesIWantToUseGoogleMapApiInternals

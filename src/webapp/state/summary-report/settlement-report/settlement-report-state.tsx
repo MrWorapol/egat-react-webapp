@@ -15,8 +15,8 @@ export interface ITradeContractReport {
     sellerId: string,
     priceCommitted: number, // price
     energyCommitted: number, // amount
-    settlementTime: string, //deliverd time
-    timestamp: number, //unix Time
+    settlementTime: number, //deliverd time
+    timestamp: string, //unix Time
     tradingFee: number,
     wheelingChargeFee: number,
     imbalance?: IImbalanceReport[]

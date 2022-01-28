@@ -35,7 +35,7 @@ export default function WebApp() {
 }
 
 function WebAdminRouting() {
-    let { session, checkRefreshToken } = useAuthGuard();
+    let {  checkRefreshToken } = useAuthGuard();
 
 
     useEffect(() => {

@@ -3,11 +3,7 @@ import { IInvoice } from "../../state/summary-report/billing-report/billing-repo
 import { IPeriod } from "../../state/summary-report/period-state";
 import { IUserSession } from "../../state/user-sessions";
 
-import dayjs from "dayjs";
-import timezone from 'dayjs/plugin/timezone';
-import utc from 'dayjs/plugin/utc';
-dayjs.extend(utc);
-dayjs.extend(timezone);
+import dayjs from '../../utils/customDayjs';
 
 interface IGetDruidBody {
     query: string,
@@ -143,67 +139,15 @@ export class BillingReportAPI {
             })
             const jsonResponse: IInvoiceResponse[] = await response.json();
             let invoices: IInvoice[] = [];
-
-            if (period) {
-                jsonResponse.forEach((invoice: IInvoiceResponse) => {
-                    let inRange = dayjs(invoice.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
-                        && dayjs(invoice.timestamp).isBefore(dayjs(period.endDate).endOf('day'))
-                    if (inRange) {
-                        invoices.push({
-                            timestamp: invoice.timestamp,
-                            discountAppFee: invoice.discountAppFee,
-                            discountGridUsed: invoice.discountGridUsed,
-                            expireTime: invoice.expireTime,
-                            gridUsedFt: invoice.gridUsedFt,
-                            invoiceId: invoice.invoiceId,
-                            invoiceType: invoice.invoiceType,
-                            issueToUserId: invoice.issueToUserId,
-                            price: invoice.price,
-                            tradeId: invoice.tradeId,
-                            tradingFee: invoice.tradingFee,
-                            vat: invoice.vat,
-                            wheelingChargeAs: invoice.wheelingChargeAs,
-                            wheelingChargeD: invoice.wheelingChargeD,
-                            wheelingChargeRe: invoice.wheelingChargeRe,
-                            wheelingChargeT: invoice.wheelingChargeT,
-                            wheelingChargeTotal: invoice.wheelingChargeTotal,
-                            reference: {
-                                "amount": invoice["reference.amount"],
-                                "discountAppFee": invoice["reference.discountAppFee"],
-                                "gridUsedDiscount": invoice["reference.gridUsedDiscount"],
-                                "gridUsedFt": invoice["reference.gridUsedFt"],
-                                "imbalanceBuyerOverCommit": invoice["reference.imbalanceBuyerOverCommit"],
-                                "imbalanceBuyerUnderCommit": invoice["reference.imbalanceBuyerUnderCommit"],
-                                "imbalanceSellerOverCommit": invoice["reference.imbalanceSellerOverCommit"],
-                                "imbalanceSellerUnderCommit": invoice["reference.imbalanceSellerUnderCommit"],
-                                "targetPrice": invoice["reference.targetPrice"],
-                                "touTariff": invoice["reference.touTariff"],
-                                "touTariffClass": invoice["reference.touTariffClass"],
-                                "touTariffType": invoice["reference.touTariffType"],
-                                "transactionFee": invoice["reference.transactionFee"],
-                                "vat": invoice["reference.vat"],
-                                "wheelingAs": invoice["reference.wheelingAs"],
-                                "wheelingBuyerEgatAs": invoice["reference.wheelingBuyerEgatAs"],
-                                "wheelingBuyerEgatD": invoice["reference.wheelingBuyerEgatD"],
-                                "wheelingBuyerEgatRe": invoice["reference.wheelingBuyerEgatRe"],
-                                "wheelingBuyerEgatT": invoice["reference.wheelingBuyerEgatT"],
-                                "wheelingBuyerEgatTotal": invoice["reference.wheelingBuyerEgatTotal"],
-                                "wheelingD": invoice["reference.wheelingD"],
-                                "wheelingRe": invoice["reference.wheelingRe"],
-                                "wheelingSellerEgatAs": invoice["reference.wheelingSellerEgatAs"],
-                                "wheelingSellerEgatD": invoice["reference.wheelingSellerEgatD"],
-                                "wheelingSellerEgatRe": invoice["reference.wheelingSellerEgatRe"],
-                                "wheelingSellerEgatT": invoice["reference.wheelingSellerEgatT"],
-                                "wheelingSellerEgatTotal": invoice["reference.wheelingSellerEgatTotal"],
-                                "wheelingT": invoice["reference.wheelingT"],
-                                "wheelingTotal": invoice["reference.wheelingTotal"],
-                            }
-                        });
-                    }
-                })
-            } else { // no period use for dashboard
-                invoices = jsonResponse.map((invoice: IInvoiceResponse) => {
-                    return {
+            jsonResponse.forEach((invoice: IInvoiceResponse) => {
+                let inRange = false;
+                if (period) {
+                    inRange = dayjs(invoice.timestamp).isBetween(dayjs(period.startDate), dayjs(period.endDate), null, '[]');
+                }
+                // let inRange = dayjs(invoice.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
+                //     && dayjs(invoice.timestamp).isBefore(dayjs(period.endDate).endOf('day'))
+                if (period === undefined || inRange) {
+                    invoices.push({
                         timestamp: invoice.timestamp,
                         discountAppFee: invoice.discountAppFee,
                         discountGridUsed: invoice.discountGridUsed,
@@ -251,10 +195,11 @@ export class BillingReportAPI {
                             "wheelingSellerEgatTotal": invoice["reference.wheelingSellerEgatTotal"],
                             "wheelingT": invoice["reference.wheelingT"],
                             "wheelingTotal": invoice["reference.wheelingTotal"],
-                        },
-                    }
-                })
-            }
+                        }
+                    });
+                }
+            })
+
             return {
                 context: invoices
             };

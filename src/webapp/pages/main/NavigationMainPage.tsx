@@ -74,8 +74,7 @@ const NavigationMainPage = () => {
                 selected={currentState === NavigationCurrentType.DASHBOARD}
                 onClick={() => {
                     history.push('/');
-                }
-                }
+                }}
             />
         )
     }

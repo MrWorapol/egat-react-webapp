@@ -14,7 +14,7 @@ export interface ISettlementDetail {
     netEnergyPrice: number,
     meterId: string,
     matchedMeterId: string,
-    settlementTime: string,
+    settlementTime: number,
 }
 
 export const settlementDetailState = atom<ISettlementDetail | null>({

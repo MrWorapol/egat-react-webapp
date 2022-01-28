@@ -30,7 +30,6 @@ export function useAuthGuard() {
     const { showSnackBar } = useSnackBarNotification();
 
     const checkRefreshToken = async () => {
-
         let localStore = localStorage.getItem("session");
         if (localStore) {
             let sessionObject: IUserSession = JSON.parse(localStore);
@@ -56,16 +55,19 @@ export function useAuthGuard() {
                             localStorage.removeItem('session');
                             resetSessionState();
                             history.push('/login');
-                            showSnackBar({ serverity: 'info', message: 'Session is timeout' });
+                            showSnackBar({ serverity: 'info', message: 'Session timeout' });
                         }
                     } else if (init === true) {//if not expired and start initialize set to session state
                         setSessionValue({
                             accessToken: sessionObject.accessToken,
                             refreshToken: sessionObject.refreshToken,
-                            lasttimeLogIn: new Date(),
+                            lasttimeLogIn: sessionObject.lasttimeLogIn,
                         });
                         setInit(false);
+                    } else if (currentState === NavigationCurrentType.LOGIN) {
+                        history.push('/');
                     }
+
                 }
             }
         } else {
@@ -75,7 +77,7 @@ export function useAuthGuard() {
     }
 
     useEffect(() => {
-        console.log(`call useEffect AuthGuard ${count += 1}`);
+        console.log(`call useEffect AuthGuard ${count}`);
         checkRefreshToken();
 
     }, [currentState]);

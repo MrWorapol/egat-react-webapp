@@ -49,7 +49,7 @@ export default function useBillingReport() {
         showLoading(15);
         if (session !== null) {
             try {
-                let userMeterFromApi = await userMeterApi.getUserMeterInfo({ period, roles: ["dont use"], area: "dont use", session })
+                let userMeterFromApi = await userMeterApi.getUserMeterInfo({ period, session })
                 // filterUser 
                 let userMeterInfos: IUserMeterInfo[] | undefined = [];
                 if (role && area) {
@@ -177,7 +177,6 @@ export default function useBillingReport() {
 
     };
 
-    //wait for confirm with p'chin about  data are already use or need to query with trade Table
     const InsertGridUsedReport = (gridUsedData: IGridUsedState, invoiceWithMeters: IInvoice[], user: IUserMeterInfo) => {
         let gridPriceByGridUsedAndMeterSummary: { [key: string]: number } = { "PEAK_MONFRI": 0, "OFFPEAK_MONFRI": 0, "OFFPEAK_SATSUN": 0, "OFFPEAK_HOLIDAY": 0 };
         invoiceWithMeters.forEach((invoiceWithMeter) => {
@@ -289,7 +288,7 @@ export default function useBillingReport() {
             }
         }
         return () => {
-
+            
         }
     }, [currentState])
 

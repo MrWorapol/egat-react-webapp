@@ -16,7 +16,7 @@ export default function usePeriodTime() {
         setPeriod(
             {
                 startDate: dayjs(newData.startDate).startOf('day').toDate(),
-                endDate: dayjs(newData.endDate).startOf('day').toDate(),
+                endDate: dayjs(newData.endDate).endOf('day').toDate(),
                 region: newData.region
             });
 
@@ -27,8 +27,8 @@ export default function usePeriodTime() {
     useEffect(() => {
         if (!period) {
             setPeriod({
-                startDate: dayjs().tz('Asia/Bangkok').toDate(),
-                endDate: dayjs().tz('Asia/Bangkok').toDate(),
+                startDate: dayjs().tz('Asia/Bangkok').startOf('day').toDate(),
+                endDate: dayjs().tz('Asia/Bangkok').endOf('day').toDate(),
                 region: 'all',
             })
         }

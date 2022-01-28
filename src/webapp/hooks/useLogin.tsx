@@ -17,7 +17,6 @@ export function useLogin() {
     const resetSession = useResetRecoilState(userSessionState);
     const { showLoading, hideLoading } = useLoadingScreen();
     const { showSnackBar } = useSnackBarNotification();
-    const { currentState } = useNavigationGet();
     const history = useHistory();
     const { checkRefreshToken } = useAuthGuard();
 
@@ -65,14 +64,7 @@ export function useLogin() {
     }, [])
 
     useEffect(() => {
-        // if (currentState === NavigationCurrentType.LOGIN && sessionValue) {
-        //     history.push(`/`);
-        // } else {
-        //     checkRefreshToken();
-        // }
-        // return () => {
-
-        // };
+        checkRefreshToken();
     }, []);
 
 

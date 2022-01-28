@@ -19,10 +19,11 @@ export default function UserReport() {
     const session = useRecoilValue(userSessionState);
     const { chartData, refreshUserData, refreshUserTable } = useUserReport();
     let period = useRecoilValue(periodState);
+    
     const refreshData = async () => {
         console.log(`call refreshData Page`);
         refreshUserData();
-        refreshUserTable(period, [], 'all');
+        refreshUserTable(period);
     }
 
     if (session && currentState === NavigationCurrentType.USER_REPORT) {
