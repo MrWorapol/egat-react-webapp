@@ -6,7 +6,54 @@ import { IBilateralSettlement, IImbalanceReport, ITradeContractReport } from "..
 import { IUserSession } from "../../state/user-sessions";
 import dayjs from "../../utils/customDayjs";
 
+interface ITradeContractJSON {
+    "timestamp": string,
+    "contractId": string,
+    "energyCommitted": number,
+    "priceCommitted": number,
+    bilateralTradeSettlementId?: string,
+    poolTradeSettlementId?: string,
+    isBilateralLongTerm?: boolean,
+    "tradeMarket": string,
+    "buyerIds": string[],
+    "sellerIds": string[],
+    "settlementTime": number,//unix time 13 digits
+    "tradingFee": number,
+    "wheelingChargeFee": number,
+    "priceRuleApplied": string
+}
 
+interface IPoolSettlementJSON {
+    "timestamp": string,
+    "poolSettlementId": string,
+    "tradeContractId": string,
+    "buyerId": string,
+    "sellerId": string,
+    "actualSellerAmount": number,
+    "actualBuyerAmount": number,
+    "agreementAmount": number,
+    "agreementPrice": number,
+    "agreementTradingFee": number,
+    "agreementWheelingChargeFee": number,
+    "priceRuleApplied": string,
+    "discountAppFee": number,
+    "gridUsedDiscount": number,
+    "gridUsedFt": number,
+    "imbalanceBuyerOverCommit": number,
+    "imbalanceBuyerUnderCommit": number,
+    "imbalanceSellerOverCommit": number,
+    "imbalanceSellerUnderCommit": number,
+    "targetPrice": number,
+    "touTariff": number,
+    "touTariffClass": number,
+    "transactionFee": number,
+    "vat": number,
+    "payload.reference.wheelingBuyerEgatTotal": number,
+    "payload.reference.wheelingSellerEgatTotal": number,
+    "wheelingTotal": number,
+
+
+}
 interface IGetDruidBody {
     query: string,
     resultFormat: string,
@@ -22,31 +69,16 @@ interface IGetTradeContractResponse {
     count: number,
 }
 
-interface ITradeContractJSON {
-    "timestamp": string,
-    "contractId": string,
-    "energyCommitted": number,
-    "priceCommitted": number,
-
-    bilateralTradeSettlementId?: string,
-    poolTradeSettlementId?: string,
-    isBilateralLongTerm?: boolean,
-    "tradeMarket": string,
-    "buyerIds": string[],
-    "sellerIds": string[],
-    "settlementTime": number,//unix time 13 digits
-    "tradingFee": number,
-    "wheelingChargeFee": number,
-    "priceRuleApplied": string
-}
-
 interface IGetTradeDataResponse {
     context: IImbalanceReport[]
 }
 
-interface IGetBilateralSettlementResponse {
-    context: IBilateralSettlement[]
-}
+
+
+
+
+
+
 
 export class SettlementReportAPI {
     private endpoint = druidHost;
@@ -62,8 +94,8 @@ export class SettlementReportAPI {
             "payload.reference.isBilateralLongTerm" as "isBilateralLongTerm",
             "payload.reference.poolTradeSettlementId" as "poolTradeSettlementId",
             "payload.reference.marketType" as "tradeMarket",
-            "payload.buyerIds" as "buyerIds",
-            "payload.sellerIds" as "sellerIds",
+            "payload.buyerId" as "buyerIds",
+            "payload.sellerId" as "sellerIds",
             "payload.settlementTime" as "settlementTime",
             "payload.tradingFee" as "tradingFee",
             "payload.wheelingChargeFee" as "wheelingChargeFee",
@@ -93,10 +125,7 @@ export class SettlementReportAPI {
             reponseJSON.length > 0 && reponseJSON.forEach((tradeContract: ITradeContractJSON) => {
                 let inRange: boolean = false; //default is false
                 if (period !== undefined) {//is select all in selected period
-                    inRange = dayjs(tradeContract.timestamp).isBetween(dayjs(period.startDate),dayjs(period.endDate),null,'[]');
-
-                    // inRange = dayjs(tradeContract.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
-                    //     && dayjs(tradeContract.timestamp).isBefore(dayjs(period.endDate).endOf('day'));
+                    inRange = dayjs(tradeContract.timestamp).isBetween(dayjs(period.startDate), dayjs(period.endDate), null, '[]');
                 }
                 if (tradeContract.bilateralTradeSettlementId) {
                     if (tradeContract.isBilateralLongTerm) {
@@ -251,10 +280,7 @@ export class SettlementReportAPI {
                 if (period !== undefined) {
                     let tradePeriod: IImbalanceReport[] = [];
                     resultFromJSON.forEach((trade: IImbalanceReport) => {
-                        let inRange = dayjs(trade.timestamp).isBetween(dayjs(period.startDate),dayjs(period.endDate),null,'[]');
-
-                        // dayjs(trade.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
-                        //     && dayjs(trade.timestamp).isBefore(dayjs(period.endDate).endOf('day'));
+                        let inRange = dayjs(trade.timestamp).isBetween(dayjs(period.startDate), dayjs(period.endDate), null, '[]');
                         if (inRange) {
                             tradePeriod.push(trade);
                         }
@@ -275,6 +301,78 @@ export class SettlementReportAPI {
             console.log(e);
             throw Error(`Unexpected handle error`);
         }
+    }
+
+    async getPoolSettlement(req: IGetSettlementReportRequest): Promise<IPoolSettlementJSON[] | null> {
+        const period = req.period;
+
+        let headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": `Bearer ${req.session.accessToken}`,
+        }
+        const body: IGetDruidBody = {
+            "query": `SELECT "__time" as "timestamp", 
+            "payload.id",
+            "payload.tradeContractId" as "tradeContractId",
+            "payload.buyerId" as "buyerId", 
+            "payload.sellerId" as "sellerId", 
+            "payload.actualAmountProvided" as "actualSellerAmount", 
+            "payload.actualAmountReceived" as "actualBuyerAmount",
+            "payload.agreementAmount" as "agreementAmount",
+            "payload.agreementPrice" as "agreementPrice",  
+            "payload.agreementTradingFee" as "agreementTradingFee", 
+            "payload.agreementWheelingChargeFee" as "agreementWheelingChargeFee", 
+            "payload.priceRuleApplied" as "priceRuleApplied", 
+            "payload.reference.discountAppFee" as "discountAppFee", 
+            "payload.reference.gridUsedDiscount" as "gridUsedDiscount",
+            "payload.reference.gridUsedFt" as "gridUsedFt",
+            "payload.reference.imbalanceBuyerOverCommit" as "imbalanceBuyerOverCommit",
+            "payload.reference.imbalanceBuyerUnderCommit" as "imbalanceBuyerUnderCommit",
+            "payload.reference.imbalanceSellerOverCommit" as "imbalanceSellerOverCommit",
+            "payload.reference.imbalanceSellerUnderCommit" as "imbalanceSellerUnderCommit",
+            "payload.reference.targetPrice" as "targetPrice",
+            "payload.reference.touTariff" as "touTariff",
+            "payload.reference.touTariffClass" as "touTariffClass",
+            "payload.reference.transactionFee" as "transactionFee", 
+            "payload.reference.vat" as "vat",
+            "payload.reference.wheelingBuyerEgatTotal", 
+            "payload.reference.wheelingSellerEgatTotal", 
+            "payload.reference.wheelingTotal" as "wheelingTotal"
+            FROM "ClearingSettlementOnEgat"`,
+            "resultFormat": "object"
+        }
+        let response: Response;
+
+        try {
+            response = await fetch(this.endpoint, {
+
+                headers,
+                method: "POST",
+                body: JSON.stringify(body),
+            })
+            if (response.status === 200) {
+                const result: IPoolSettlementJSON[] = [];
+                const responseJSON: IPoolSettlementJSON[] = await response.json();
+                if (responseJSON.length > 0) {
+                    responseJSON.forEach((poolSettlement) => {
+                        let inRange = false;
+                        if (period) {
+                            inRange = dayjs(poolSettlement.timestamp).isBetween(dayjs(period.startDate), dayjs(period.endDate), null, '[]');
+                        }
+                        if (period === undefined || inRange) {
+                            result.push(poolSettlement);
+                        }
+                    })
+                }
+                return result;
+            }
+
+        } catch (e) {
+            console.log(e);
+            throw Error(`Unexpected handle error`);
+        }
+        return null;
     }
 
     // async getBilateralSettlementLongTerm(req: IGetSettlementReportRequest): Promise<IGetBilateralSettlementResponse | null> {

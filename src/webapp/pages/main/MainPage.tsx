@@ -18,6 +18,8 @@ import NewManagement from './news-management/NewManagement'
 import { useAuthGuard } from '../../hooks/useAuthGuard'
 import PageNotFound from './PageNotFound'
 import { useEffect } from 'react'
+import { NavigationCurrentType } from '../../state/navigation-current-state'
+import { useNavigationGet } from '../../hooks/useNavigationGet'
 
 export default function MainPage() {
 
@@ -45,21 +47,28 @@ export default function MainPage() {
 function PageRouting() {
     let { session, checkRefreshToken } = useAuthGuard();
     let countInterval = 0;
+    let { currentState } = useNavigationGet();
 
     useEffect(() => {
-        const timerInterval = setInterval(async () => {
+        if (currentState === NavigationCurrentType.LOGIN) {
+            console.log(`current state ${currentState}`);
+            return () => {}
+        } else {
+            const timerInterval = setInterval(async () => {
 
-            countInterval += 1;
-            if(countInterval === 30){ //page away 30 mins will reload for aviod memory leak
-                window.location.reload();
-            }
-            console.log(`call Interval ${countInterval}`)
-            checkRefreshToken();
-        }, 60000);
-        return () => {
-            countInterval = 0;
-            clearInterval(timerInterval);
-        };
+                countInterval += 1;
+                if (countInterval === 30) { //page away 30 mins will reload for aviod memory leak
+                    window.location.reload();
+                }
+                console.log(`call Interval ${countInterval}`)
+                checkRefreshToken();
+            }, 60000);
+
+            return () => {
+                countInterval = 0;
+                clearInterval(timerInterval);
+            };
+        }
     }, []);
 
     if (!session) {
