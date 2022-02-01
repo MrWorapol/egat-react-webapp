@@ -20,7 +20,8 @@ export default function PeriodComponent(props: PeriodProps) {
     const endDayslist = buildDaylist(period.endDate);
     const { showLoading, hideLoading } = useLoadingScreen();
     const [init, setInit] = useState(true);
-    let isCurrentMonth = dayjs().diff(period.startDate, 'month') === 0 && dayjs().diff(period.startDate, 'year') === 0 ? true : false;
+    let isCurrentMonth = (dayjs().month() === dayjs(period.startDate).month() &&
+        dayjs().year() === dayjs(period.startDate).year()) ? true : false;
 
     const debounceFn = useDebouncedCallback(() => {
         console.log(`debounce fn`)

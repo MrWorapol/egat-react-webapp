@@ -114,18 +114,20 @@ export default function Imbalance() {
                                         <TableCell
                                             key={i + row.id}
                                         >
-                                            <Grid container direction="row">
-                                                <Grid item>
-                                                    <IconButton onClick={() => onClickSettingButton(i + 1, row)}>
-                                                        <SettingsIcon />
-                                                    </IconButton>
+                                            {i === 0 &&
+                                                <Grid container direction="row">
+                                                    <Grid item>
+                                                        <IconButton onClick={() => onClickSettingButton(i + 1, row)}>
+                                                            <SettingsIcon />
+                                                        </IconButton>
+                                                    </Grid>
+                                                    <Grid item>
+                                                        <IconButton onClick={() => onClickLogButton(i + 1, row)}>
+                                                            <ContentPasteIcon />
+                                                        </IconButton>
+                                                    </Grid>
                                                 </Grid>
-                                                <Grid item>
-                                                    <IconButton onClick={() => onClickLogButton(i + 1, row)}>
-                                                        <ContentPasteIcon />
-                                                    </IconButton>
-                                                </Grid>
-                                            </Grid>
+                                            }
 
                                         </TableCell>
                                     </TableRow>
