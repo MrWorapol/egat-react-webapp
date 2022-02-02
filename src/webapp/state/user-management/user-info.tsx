@@ -2,7 +2,7 @@ import { atom } from "recoil";
 
 export interface UserInfo {
     email?: string,
-    fullName?: string,
+    displayName?: string,
     phoneNumber?: string,
     role: string,
     meterId?: string,

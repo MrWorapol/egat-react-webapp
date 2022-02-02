@@ -106,7 +106,7 @@ export default function AllOrderTable(props: IProps) {
                                 <TableCell
                                     key={row.orderId}
                                 >
-                                    {row.tradeMarket === "BILATERAL" ? "Bilateral Trade" : "Pool Market"}
+                                    {row.tradeMarket.includes("BILATERAL")  ? "Bilateral Trade" : "Pool Market"}
                                 </TableCell>
                                 <TableCell
                                 // key={row.fullName + i}

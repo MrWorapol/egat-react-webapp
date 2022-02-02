@@ -1,5 +1,5 @@
 
-import {  useEffect } from "react";
+import { useEffect } from "react";
 import { useRecoilState, useRecoilValue, useResetRecoilState } from "recoil"
 import { IGetOrderTableRequest, OrderReportAPI } from "../../../api/report/OrderReportAPI";
 import { UserAndEnergyReportAPI } from "../../../api/report/UserReportAPI";
@@ -33,14 +33,14 @@ export default function useOrderReport() {
     const { showLoading, hideLoading } = useLoadingScreen();
     const { showSnackBar } = useSnackBarNotification();
 
-    const refreshOrderReport = async (roles: string[], buyerType: string, tradeMarket: string, orderStatus: string, area: string) => {
+    const refreshOrderReport = async () => {
         if (session !== null) { //check session before call api
             resetOrderReport();
             resetOrderDetail();
             resetChart();
             showLoading(10);
             try {
-                const userMeterInfos = await userMeterApi.getUserMeterInfo({ period,  session })
+                const userMeterInfos = await userMeterApi.getUserMeterInfo({ period, session })
                 const req: IGetOrderTableRequest = {
                     session,
                     period,
@@ -58,9 +58,13 @@ export default function useOrderReport() {
                         if (meterInfo && meterInfo !== undefined) {
 
                             summaryRole[meterInfo.role.toLowerCase()] += 1;
-                            summaryTradeMarket[order.tradeMarket.toLowerCase()] += 1;
                             summaryUserType[order.userType.toLowerCase()] += 1;
                             summaryStatus[order.status.toLowerCase()] += 1;
+                            if(order.tradeMarket.toLowerCase().includes('bilateral')){ //support bilateral and long-term bilateral
+                                summaryTradeMarket['bilateral'] += 1;
+                            }else{
+                                summaryTradeMarket['pool'] += 1;
+                            }
                             if (order.tradeContractId) {// case matching Id
                                 // let matchlet ingid: IUserMeterInfo;
                                 switch (order.userType) {
@@ -132,6 +136,26 @@ export default function useOrderReport() {
                     refreshOrderDetail(output[0]);
 
                 } else {
+                    setOrderChart(
+                        {
+                            role: {
+                                aggregator: 0,
+                                prosumer: 0,
+                                consumer: 0,
+                            },
+                            buyerType: {
+                                seller: 0,
+                                buyer: 0,
+                            },
+                            trade: {
+                                bilateral: 0,
+                                pool: 0,
+                            },
+                            status: {
+                                matched: 0,
+                                open: 0
+                            }
+                        })
                     setOrderReport([]);
                 }
                 hideLoading(10);
@@ -178,7 +202,7 @@ export default function useOrderReport() {
     useEffect(() => {
         if (session && currentState === NavigationCurrentType.ORDER_REPORT) {
             if (!orderReport) {
-                refreshOrderReport([], 'all', 'all', 'all', 'all');
+                refreshOrderReport();
             }
         }
         // if (orderReport && !orderDetail) { //table has data and automatic get detail from first row in table

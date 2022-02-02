@@ -14,7 +14,7 @@ import { useResetRecoilState } from 'recoil';
 
 
 interface Column {
-    id: 'MeterID' | 'FullName' | 'Email' | 'PhoneNumber' | 'Role' | 'Action',
+    id: 'MeterID' | 'displayName' | 'Email' | 'PhoneNumber' | 'Role' | 'Action',
     label: string,
 
 
@@ -96,7 +96,7 @@ export default function UserTableData() {
 
     const columns: Column[] = [
         { id: 'MeterID', label: 'Meter ID' },
-        { id: 'FullName', label: 'Username' },
+        { id: 'displayName', label: 'Display Name' },
         { id: 'Email', label: 'Email' },
         { id: 'PhoneNumber', label: 'Phone Number' },
         { id: 'Role', label: 'Role' },
@@ -157,7 +157,7 @@ export default function UserTableData() {
                         {userInfoData.length > 0 && (rowsPerPage > 0
                             ? userInfoData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             : userInfoData
-                        ).map((row, i) => (
+                        ).map((row: UserInfo, i) => (
                             <TableRow>
                                 <TableCell
                                 key={row.meterId}
@@ -165,9 +165,9 @@ export default function UserTableData() {
                                     {row.role !== 'ADMIN' && row.meterId}
                                 </TableCell>
                                 <TableCell
-                                key={`row.fullName` + i}
+                                key={`row.displayName` + i}
                                 >
-                                    {row.fullName}
+                                    {row.displayName}
                                 </TableCell>
                                 <TableCell
                                 key={`row.email` + i}

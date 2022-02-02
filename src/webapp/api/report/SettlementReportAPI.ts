@@ -6,7 +6,7 @@ import { IBilateralSettlement, IImbalanceReport, ITradeContractReport } from "..
 import { IUserSession } from "../../state/user-sessions";
 import dayjs from "../../utils/customDayjs";
 
-interface ITradeContractJSON {
+interface OldITradeContractJSON {
     "timestamp": string,
     "contractId": string,
     "energyCommitted": number,
@@ -22,6 +22,73 @@ interface ITradeContractJSON {
     "wheelingChargeFee": number,
     "priceRuleApplied": string
 }
+
+interface TradeContractInfo {
+    sellerId?: string;
+    buyerId?: string;
+
+    reference: {
+        marketType: 'BILATERAL' | 'POOL' | 'LONGTERM_BILATERAL',
+        bilateralTradeSettlementId?: string
+        poolTradeSettlementId?: string
+        isBilateralLongTerm: boolean
+
+        wheelingAs: string;
+        wheelingT: string;
+        wheelingD: string;
+        wheelingRe: string;
+        wheelingTotal: string;
+
+        wheelingBuyerEgatAs: string;
+        wheelingBuyerEgatT: string;
+        wheelingBuyerEgatD: string;
+        wheelingBuyerEgatRe: string;
+        wheelingBuyerEgatTotal: string;
+
+        wheelingSellerEgatAs: string;
+        wheelingSellerEgatT: string;
+        wheelingSellerEgatD: string;
+        wheelingSellerEgatRe: string;
+        wheelingSellerEgatTotal: string;
+
+        imbalanceSellerOverCommit: string;
+        imbalanceSellerUnderCommit: string;
+        imbalanceBuyerOverCommit: string;
+        imbalanceBuyerUnderCommit: string;
+
+        touTariff: string;
+        touTariffType: 'PEAK_MONFRI' | 'OFFPEAK_MONFRI' | 'OFFPEAK_SATSUN' | 'OFFPEAK_HOLIDAY';
+        touTariffClass: 'HIGH' | 'LOW';
+
+        transactionFee: string;
+        discountAppFee: string;
+
+        gridUsedFt: string;
+        gridUsedDiscount: string;
+
+        vat: string;
+        targetPrice: string;
+    }
+    amount: string
+    price: string
+    wheelingChargeFee: string;
+    tradingFee: string;
+}
+
+
+interface ITradeContractJSON {
+    tradeContractId?: string
+
+    sellerIds: string[]
+    buyerIds: string[]
+    priceRuleApplied: string
+
+    settlementTime: string
+
+    infos: string;
+    timestamp: string
+}
+
 
 interface IPoolSettlementJSON {
     "timestamp": string,
@@ -86,22 +153,14 @@ export class SettlementReportAPI {
     async getTradeContractReport(req: IGetSettlementReportRequest): Promise<IGetTradeContractResponse | null> {
         const period = req.period; //undefined is select all 
         const body: IGetDruidBody = {
-            "query": `SELECT DISTINCT "__time" as "timestamp", 
-            "payload.id" as "contractId",
-            "payload.amount" as "energyCommitted",
-            "payload.price" as "priceCommitted",
-            "payload.reference.bilateralTradeSettlementId" as "bilateralTradeSettlementId",
-            "payload.reference.isBilateralLongTerm" as "isBilateralLongTerm",
-            "payload.reference.poolTradeSettlementId" as "poolTradeSettlementId",
-            "payload.reference.marketType" as "tradeMarket",
-            "payload.buyerId" as "buyerIds",
-            "payload.sellerId" as "sellerIds",
+            "query": `SELECT "__time" as "timestamp",
+            "payload.id" as "tradeContractId",
+            "payload.buyerIds" as "buyerIds",
+            "payload.priceRuleApplied" as "priceRuleApplied",
+            "payload.sellerIds" as "sellerIds",  
             "payload.settlementTime" as "settlementTime",
-            "payload.tradingFee" as "tradingFee",
-            "payload.wheelingChargeFee" as "wheelingChargeFee",
-            "payload.priceRuleApplied" as "priceRuleApplied"
-            FROM "TradeContractFinal"
-            WHERE "__time" >= '2022-01-24T09:10:00.000Z'`,
+            "payload.infos" as "infos"
+            FROM "TradeContractEgatFinal"`,
             "resultFormat": "object"
         }
         let headers = {
@@ -121,114 +180,208 @@ export class SettlementReportAPI {
 
             const reponseJSON: ITradeContractJSON[] = await response.json();
             let context: ITradeContractReport[] = [];
-
+            console.log(reponseJSON);
             reponseJSON.length > 0 && reponseJSON.forEach((tradeContract: ITradeContractJSON) => {
                 let inRange: boolean = false; //default is false
                 if (period !== undefined) {//is select all in selected period
                     inRange = dayjs(tradeContract.timestamp).isBetween(dayjs(period.startDate), dayjs(period.endDate), null, '[]');
                 }
-                if (tradeContract.bilateralTradeSettlementId) {
-                    if (tradeContract.isBilateralLongTerm) {
-                        tradeContract.tradeMarket = "LONGTERM_BILATERAL"
-                    }
-                }
-                if (tradeContract.poolTradeSettlementId) {
-                    if (tradeContract.buyerIds.length > 0) {
-                        tradeContract.buyerIds.forEach((buyerId: string) => {
-                            if (inRange || period === undefined) {
-                                context.push({
-                                    contractId: tradeContract.contractId,
-                                    buyerId: buyerId || '-1',//if -1 is logic bug
-                                    sellerId: 'POOL',
-                                    energyCommitted: tradeContract.energyCommitted,
-                                    priceCommitted: tradeContract.priceCommitted,
-                                    meterId: '-1',
-                                    matchedMeterId: '-1',
-                                    bilateralTradeSettlementId: tradeContract.bilateralTradeSettlementId, // trade ID
-                                    poolTradeSettlementId: tradeContract.poolTradeSettlementId, // trade ID
-                                    userType: 'BUYER', //buyer| seller
-                                    tradeMarket: tradeContract.tradeMarket, //short term, long term,pool market
-                                    settlementTime: tradeContract.settlementTime, //settlement timedeliverd time
-                                    timestamp: tradeContract.timestamp, //unix Time
-                                    tradingFee: tradeContract.tradingFee,
-                                    wheelingChargeFee: tradeContract.wheelingChargeFee,
-                                    imbalanceStatus: "CONTRACT",
-                                    priceRuleApplied: tradeContract.priceRuleApplied,
-                                })
-                            }
-                        })
-                    } if (tradeContract.sellerIds.length > 0) {
-                        tradeContract.sellerIds.forEach((sellerId: string) => {
-                            if (inRange || period === undefined) {
-                                context.push({
-                                    contractId: tradeContract.contractId,
-                                    buyerId: 'POOL',
-                                    sellerId: sellerId || '-1',//if -1 is logic bug
-                                    energyCommitted: tradeContract.energyCommitted,
-                                    priceCommitted: tradeContract.priceCommitted,
-                                    meterId: '-1',
-                                    matchedMeterId: '-1',
-                                    bilateralTradeSettlementId: tradeContract.bilateralTradeSettlementId, // trade ID
-                                    poolTradeSettlementId: tradeContract.poolTradeSettlementId, // trade ID
-                                    userType: 'BUYER', //buyer| seller
-                                    tradeMarket: tradeContract.tradeMarket, //short term, long term,pool market
-                                    settlementTime: tradeContract.settlementTime, //settlement timedeliverd time
-                                    timestamp: tradeContract.timestamp, //unix Time
-                                    tradingFee: tradeContract.tradingFee,
-                                    wheelingChargeFee: tradeContract.wheelingChargeFee,
-                                    imbalanceStatus: "CONTRACT",
-                                    priceRuleApplied: tradeContract.priceRuleApplied,
-                                })
-                            }
-                        })
-                    }
-                }
                 if (inRange || period === undefined) {
-                    context.push({
-                        contractId: tradeContract.contractId,
-                        buyerId: tradeContract.buyerIds[0] || '-1',//if -1 is logic bug
-                        sellerId: tradeContract.sellerIds[0] || '-1',//if -1 is logic bug
-                        energyCommitted: tradeContract.energyCommitted,
-                        priceCommitted: tradeContract.priceCommitted,
-                        meterId: '-1',
-                        matchedMeterId: '-1',
-                        bilateralTradeSettlementId: tradeContract.bilateralTradeSettlementId, // trade ID
-                        poolTradeSettlementId: tradeContract.poolTradeSettlementId, // trade ID
-                        userType: '', //buyer| seller
-                        tradeMarket: tradeContract.tradeMarket, //short term, long term,pool market
-                        settlementTime: tradeContract.settlementTime, //settlement timedeliverd time
-                        timestamp: tradeContract.timestamp, //unix Time
-                        tradingFee: tradeContract.tradingFee,
-                        wheelingChargeFee: tradeContract.wheelingChargeFee,
-                        imbalanceStatus: "CONTRACT",
-                        priceRuleApplied: tradeContract.priceRuleApplied,
-                    })
+                    // console.log(tradeContract)
+                    tradeContract.infos = tradeContract.infos.replace(/=/gi, ':');
+                    // console.log(tradeContract.infos);
+                    let newRegex = new RegExp(/[a-zA-Z0-9._-]+[a-zA-Z0-9._-]|[0-9]/g);
+                    let infosConvert = tradeContract.infos.replace(newRegex, '"$&"');
+                    // let arrayRegex = new RegExp(/(\[")|("\])|(",")/g); 
+                    let reformatStartBracket = infosConvert.replace(/(\[")/, '[')
+                    let reformatEndBracket = reformatStartBracket.replace(/("\])/, ']')
+                    let arrayInfos = reformatEndBracket.replace(/(",")/, ',');
+                    console.log(`convert infos`);
+                    console.log(arrayInfos);
+                    console.log(`infos JSON`);
+                    let infosJSON: TradeContractInfo | TradeContractInfo[] = JSON.parse(arrayInfos);
+                    console.log(infosJSON);
+                    console.log(`is array${Array.isArray(infosJSON)}`);
+                    if (!Array.isArray(infosJSON)) { //Bilateral market always isn't arrays 
+                        if (infosJSON.reference.marketType === "BILATERAL") {
+                            context.push({
+                                contractId: tradeContract.tradeContractId || '_',
+                                buyerId: Array.isArray(tradeContract.buyerIds) ? tradeContract.buyerIds[0] : tradeContract.buyerIds,//if "_" is logic bug
+                                sellerId: Array.isArray(tradeContract.sellerIds) ? tradeContract.sellerIds[0] : tradeContract.sellerIds,//if "_" is logic bug
+                                energyCommitted: parseFloat(infosJSON.amount) || -99,//-99 if logic fail
+                                priceCommitted: parseFloat(infosJSON.price) || -99, //-99 if logic fail
+                                meterId: '_',
+                                matchedMeterId: '_',
+                                bilateralTradeSettlementId: infosJSON.reference.bilateralTradeSettlementId, // trade ID
+                                userType: '_', //
+                                tradeMarket: infosJSON.reference.isBilateralLongTerm ? "LONGTERM_BILATERAL" : infosJSON.reference.marketType, //short term, long term,pool market
+                                settlementTime: +tradeContract.settlementTime, //settlement timedeliverd time
+                                timestamp: tradeContract.timestamp, //unix Time
+                                tradingFee: parseFloat(infosJSON.tradingFee) || -99, //-99 if logic fail
+                                wheelingChargeFee: parseFloat(infosJSON.wheelingChargeFee) || -99,//-99 if logic fail
+                                imbalanceStatus: "_",
+                                priceRuleApplied: tradeContract.priceRuleApplied,
+                            })
+                        }
+                    } else {//Pool market 
+                        infosJSON.forEach((tradeInfo: TradeContractInfo) => {
+                            context.push({
+                                contractId: tradeContract.tradeContractId || '_',
+                                buyerId: tradeInfo.buyerId || "_",//if "_" is logic bug
+                                sellerId: tradeInfo.sellerId || "_",//if "_" is logic bug
+                                energyCommitted: parseFloat(tradeInfo.amount) || -99,//-99 if logic fail
+                                priceCommitted: parseFloat(tradeInfo.price) || -99, //-99 if logic fail
+                                meterId: '_',
+                                matchedMeterId: '_',
+                                poolTradeSettlementId: tradeInfo.reference.poolTradeSettlementId, // trade ID
+                                userType: '_', //
+                                tradeMarket: tradeInfo.reference.marketType, //short term, long term,pool market
+                                settlementTime: +tradeContract.settlementTime, //settlement timedeliverd time
+                                timestamp: tradeContract.timestamp, //unix Time
+                                tradingFee: parseFloat(tradeInfo.tradingFee) || -99, //-99 if logic fail
+                                wheelingChargeFee: parseFloat(tradeInfo.wheelingChargeFee) || -99,//-99 if logic fail
+                                imbalanceStatus: "_",
+                                priceRuleApplied: tradeContract.priceRuleApplied,
+                            })
+                        })
+                    }
+                    // let tradeContractInfos = JSON.parse(tradeContract.infos);
+                    // if (tradeContract.infos.length > 0) {
+                    //     tradeContract.infos.forEach((tradeContractInfo: TradeContractInfo) => {
+                    //         if (tradeContractInfo.reference.marketType === "BILATERAL") {
+                    //             context.push({
+                    //                 contractId: tradeContract.tradeContractId || '_',
+                    //                 buyerId: tradeContract.buyerIds[0] || '_',//if "_" is logic bug
+                    //                 sellerId: tradeContract.sellerIds[0] || '_',//if "_" is logic bug
+                    //                 energyCommitted: tradeContractInfo.amount,
+                    //                 priceCommitted: tradeContractInfo.price,
+                    //                 meterId: '_',
+                    //                 matchedMeterId: '_',
+                    //                 bilateralTradeSettlementId: tradeContractInfo.reference.bilateralTradeSettlementId, // trade ID
+                    //                 userType: '_', //
+                    //                 tradeMarket: tradeContractInfo.reference.isBilateralLongTerm ? "LONGTERM_BILATERAL" : tradeContractInfo.reference.marketType, //short term, long term,pool market
+                    //                 settlementTime: +tradeContract.settlementTime, //settlement timedeliverd time
+                    //                 timestamp: tradeContract.timestamp, //unix Time
+                    //                 tradingFee: tradeContractInfo.tradingFee,
+                    //                 wheelingChargeFee: tradeContractInfo.wheelingChargeFee,
+                    //                 imbalanceStatus: "_",
+                    //                 priceRuleApplied: tradeContract.priceRuleApplied,
+                    //             })
+                    //         }
+                    //         if (tradeContractInfo.reference.marketType === "POOL") {
+
+                    //         }
+                    //     })
+                    // }
+
                 }
-                // else {
-                //     context.push({
-                //         contractId: tradeContract.contractId,
-                //         buyerId: tradeContract.buyerIds[0] || '-1', //if -1 is logic bug
-                //         sellerId: tradeContract.sellerIds[0] || '-1',//if -1 is logic bug
-                //         energyCommitted: tradeContract.energyCommitted,
-                //         priceCommitted: tradeContract.priceCommitted,
-                //         meterId: '-1',
-                //         matchedMeterId: '-1',
-                //         bilateralTradeSettlementId: tradeContract.bilateralTradeSettlementId, // trade ID
-                //         poolTradeSettlementId: tradeContract.poolTradeSettlementId, // trade ID
-                //         userType: '', //buyer| seller
-                //         tradeMarket: tradeContract.tradeMarket, //short term, long term,pool market
-                //         settlementTime: tradeContract.settlementTime, //settlement timedeliverd time
-                //         timestamp: tradeContract.timestamp, //unix Time
-                //         tradingFee: tradeContract.tradingFee,
-                //         wheelingChargeFee: tradeContract.wheelingChargeFee,
-                //         imbalanceStatus: "CONTRACT",
-                //         priceRuleApplied: tradeContract.priceRuleApplied,
-                //     })
-                // }
             })
+            //     let inRange: boolean = false; //default is false
+            //     if (period !== undefined) {//is select all in selected period
+            //         inRange = dayjs(tradeContract.timestamp).isBetween(dayjs(period.startDate), dayjs(period.endDate), null, '[]');
+            //     }
+            //     if (tradeContract.bilateralTradeSettlementId) {
+            //         if (tradeContract.isBilateralLongTerm) {
+            //             tradeContract.tradeMarket = "LONGTERM_BILATERAL"
+            //         }
+            //     }
+            //     if (tradeContract.poolTradeSettlementId) {
+            //         if (tradeContract.buyerIds.length > 0) {
+            //             tradeContract.buyerIds.forEach((buyerId: string) => {
+            //                 if (inRange || period === undefined) {
+            //                     context.push({
+            //                         contractId: tradeContract.contractId,
+            //                         buyerId: buyerId || '-1',//if -1 is logic bug
+            //                         sellerId: 'POOL',
+            //                         energyCommitted: tradeContract.energyCommitted,
+            //                         priceCommitted: tradeContract.priceCommitted,
+            //                         meterId: '-1',
+            //                         matchedMeterId: '-1',
+            //                         bilateralTradeSettlementId: tradeContract.bilateralTradeSettlementId, // trade ID
+            //                         poolTradeSettlementId: tradeContract.poolTradeSettlementId, // trade ID
+            //                         userType: 'BUYER', //buyer| seller
+            //                         tradeMarket: tradeContract.tradeMarket, //short term, long term,pool market
+            //                         settlementTime: tradeContract.settlementTime, //settlement timedeliverd time
+            //                         timestamp: tradeContract.timestamp, //unix Time
+            //                         tradingFee: tradeContract.tradingFee,
+            //                         wheelingChargeFee: tradeContract.wheelingChargeFee,
+            //                         imbalanceStatus: "CONTRACT",
+            //                         priceRuleApplied: tradeContract.priceRuleApplied,
+            //                     })
+            //                 }
+            //             })
+            //         } if (tradeContract.sellerIds.length > 0) {
+            //             tradeContract.sellerIds.forEach((sellerId: string) => {
+            //                 if (inRange || period === undefined) {
+            //                     context.push({
+            //                         contractId: tradeContract.contractId,
+            //                         buyerId: 'POOL',
+            //                         sellerId: sellerId || '-1',//if -1 is logic bug
+            //                         energyCommitted: tradeContract.energyCommitted,
+            //                         priceCommitted: tradeContract.priceCommitted,
+            //                         meterId: '-1',
+            //                         matchedMeterId: '-1',
+            //                         bilateralTradeSettlementId: tradeContract.bilateralTradeSettlementId, // trade ID
+            //                         poolTradeSettlementId: tradeContract.poolTradeSettlementId, // trade ID
+            //                         userType: 'BUYER', //buyer| seller
+            //                         tradeMarket: tradeContract.tradeMarket, //short term, long term,pool market
+            //                         settlementTime: tradeContract.settlementTime, //settlement timedeliverd time
+            //                         timestamp: tradeContract.timestamp, //unix Time
+            //                         tradingFee: tradeContract.tradingFee,
+            //                         wheelingChargeFee: tradeContract.wheelingChargeFee,
+            //                         imbalanceStatus: "CONTRACT",
+            //                         priceRuleApplied: tradeContract.priceRuleApplied,
+            //                     })
+            //                 }
+            //             })
+            //         }
+            //     }
+            //     if (inRange || period === undefined) {
+            //         context.push({
+            //             contractId: tradeContract.contractId,
+            //             buyerId: tradeContract.buyerIds[0] || '-1',//if -1 is logic bug
+            //             sellerId: tradeContract.sellerIds[0] || '-1',//if -1 is logic bug
+            //             energyCommitted: tradeContract.energyCommitted,
+            //             priceCommitted: tradeContract.priceCommitted,
+            //             meterId: '-1',
+            //             matchedMeterId: '-1',
+            //             bilateralTradeSettlementId: tradeContract.bilateralTradeSettlementId, // trade ID
+            //             poolTradeSettlementId: tradeContract.poolTradeSettlementId, // trade ID
+            //             userType: '', //buyer| seller
+            //             tradeMarket: tradeContract.tradeMarket, //short term, long term,pool market
+            //             settlementTime: tradeContract.settlementTime, //settlement timedeliverd time
+            //             timestamp: tradeContract.timestamp, //unix Time
+            //             tradingFee: tradeContract.tradingFee,
+            //             wheelingChargeFee: tradeContract.wheelingChargeFee,
+            //             imbalanceStatus: "CONTRACT",
+            //             priceRuleApplied: tradeContract.priceRuleApplied,
+            //         })
+            //     }
+            //     // else {
+            //     //     context.push({
+            //     //         contractId: tradeContract.contractId,
+            //     //         buyerId: tradeContract.buyerIds[0] || '-1', //if -1 is logic bug
+            //     //         sellerId: tradeContract.sellerIds[0] || '-1',//if -1 is logic bug
+            //     //         energyCommitted: tradeContract.energyCommitted,
+            //     //         priceCommitted: tradeContract.priceCommitted,
+            //     //         meterId: '-1',
+            //     //         matchedMeterId: '-1',
+            //     //         bilateralTradeSettlementId: tradeContract.bilateralTradeSettlementId, // trade ID
+            //     //         poolTradeSettlementId: tradeContract.poolTradeSettlementId, // trade ID
+            //     //         userType: '', //buyer| seller
+            //     //         tradeMarket: tradeContract.tradeMarket, //short term, long term,pool market
+            //     //         settlementTime: tradeContract.settlementTime, //settlement timedeliverd time
+            //     //         timestamp: tradeContract.timestamp, //unix Time
+            //     //         tradingFee: tradeContract.tradingFee,
+            //     //         wheelingChargeFee: tradeContract.wheelingChargeFee,
+            //     //         imbalanceStatus: "CONTRACT",
+            //     //         priceRuleApplied: tradeContract.priceRuleApplied,
+            //     //     })
+            //     // }
+            // })
             return {
                 context: context,
-                count: reponseJSON.length
+                count: 0
             };
         } catch (e) {
             console.log(e);

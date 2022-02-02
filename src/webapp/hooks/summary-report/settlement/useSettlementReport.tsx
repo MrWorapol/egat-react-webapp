@@ -35,6 +35,13 @@ export function useSettlementReport() {
     const { showSnackBar } = useSnackBarNotification();
 
     const refreshSettlementReport = async (role: string, area: string, buyerType: string, tradeMarket: string, orderStatus: string) => {
+        // let testInfos = '{sellerId=0deb041a-f171-48b5-8327-4a79ee1dfe51, buyerId=6a29f8a2-ca9d-4cb2-b797-acb5645945e9, reference={marketType=BILATERAL, bilateralTradeSettlementId=61f92ba4607fe3000819302e, isBilateralLongTerm=false, wheelingAs=0.071, wheelingD=0.55, wheelingRe=0.28, wheelingT=0, wheelingTotal=0.901, wheelingBuyerEgatAs=0.071, wheelingBuyerEgatD=0.55, wheelingBuyerEgatRe=0.28, wheelingBuyerEgatT=0.25, wheelingBuyerEgatTotal=1.151, wheelingSellerEgatAs=0.071, wheelingSellerEgatD=0.55, wheelingSellerEgatRe=0.28, wheelingSellerEgatT=0.25, wheelingSellerEgatTotal=1.151, imbalanceBuyerOverCommit=0, imbalanceBuyerUnderCommit=2.7, imbalanceSellerOverCommit=2.3, imbalanceSellerUnderCommit=0, discountAppFee=0, gridUsedDiscount=0, gridUsedFt=-0.1532, touTariff=0, touTariffClass=LOW, touTariffType=PEAK_MONFRI, transactionFee=0.02, vat=7, targetPrice=5}, amount=3, price=15, wheelingChargeFee=2.7030000000000003, tradingFee=0.06}'
+        // testInfos = testInfos.replace(/=/gi, ':'); //replace '=' to ':'
+        // console.log(tradeContract.infos);
+        // let newRegex = new RegExp(/[a-zA-Z0-9._-]+[a-zA-Z0-9._-]|[0-9]/g);
+        // let infosConvert = testInfos.replace(newRegex, '"$&"'); //insert  double quote around every text("")
+        // console.log(`convert infos`);
+        // console.log(infosConvert);
         if (session) {
             try {
                 showLoading(10);

@@ -21,7 +21,7 @@ export default function OrderReport() {
     const { refreshOrderReport, orderChart } = useOrderReport();
 
     const refreshPage = async () => {
-        refreshOrderReport([], 'all', 'all', 'all', 'all');
+        refreshOrderReport();
     }
 
     if (session && currentState === NavigationCurrentType.ORDER_REPORT) {

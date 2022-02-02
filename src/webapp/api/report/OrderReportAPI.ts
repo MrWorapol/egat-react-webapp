@@ -326,6 +326,7 @@ export class OrderReportAPI {
 
         try {
             const contracts = await this.tradeContractAPI.getTradeContractReport({ ...req });
+            console.log(contracts);
             let results: IGetMathOrderResponse = { context: [] };
             if (contracts && contracts.context.length > 0) {
                 contracts.context.forEach((contract: ITradeContractReport) => {
