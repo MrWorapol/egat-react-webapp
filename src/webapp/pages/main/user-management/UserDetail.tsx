@@ -32,6 +32,7 @@ interface IFormTextFieldInput {
         registrationDate: string,
         citizenId: string,
         meterId: string,
+        displayName: string,
     },
     meterDetail: {
         meterId: string,
@@ -153,6 +154,23 @@ export default function UserDetail() {
                                 name="userDetail.citizenId"
                                 control={control}
                                 defaultValue={userDetail.citizenId}
+
+                            />
+                        </GridDetailsComponent>
+                        <GridDetailsComponent size={4}>
+                            <Typography >ชื่อที่ใช้แสดง: </Typography>
+                            <Controller
+                                render={({ field }) => (
+                                    <TextField
+                                        variant="standard"
+                                        sx={{ ml: 2 }}
+                                        disabled={true}
+                                        {...field}
+                                    />
+                                )}
+                                name="userDetail.displayName"
+                                control={control}
+                                defaultValue={userDetail.displayName}
 
                             />
                         </GridDetailsComponent>
