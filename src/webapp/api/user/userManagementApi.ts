@@ -18,8 +18,14 @@ interface IGetSearchUserRequest {
 
 interface IEditUserRequest {
     session: IUserSession,
-    userDetail: IUserDetail,
     meterDetail: MeterDetail,
+    userDetail: {
+        email: string,
+        fullName: string,
+        phoneNumber: string,
+        citizenId: string,
+        displayName: string,
+    },
 }
 
 interface ICreateAdminRequest {
@@ -50,7 +56,7 @@ interface IGetUserByIDResponse {
 }
 
 export default class UserManagementAPI {
-    private host = egatGateway;
+    private host = localGateway;//egatGateway;
 
     async getAllUser(req: IGetUserRequest): Promise<IGetUsersResponse | null> {
         const path = '/web-admin/users'
@@ -140,6 +146,9 @@ export default class UserManagementAPI {
         } catch (e) {
             throw Error(`Unexpected handle error`);
         }
+        if (response.status === 401) {
+            throw Error(`Please Login`);
+        }
         if (response.status === 200) {
 
             let result = await response.json();
@@ -178,6 +187,9 @@ export default class UserManagementAPI {
             });
         } catch (e) {
             throw Error(`Unexpected handle error`);
+        }
+        if (response.status === 401) {
+            throw Error(`Please Login`);
         }
         if (response.status === 204) {
             return true;

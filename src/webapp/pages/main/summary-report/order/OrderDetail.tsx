@@ -13,18 +13,13 @@ export default function OrderDetail() {
     const { orderDetail } = useOrderReport();
 
     if (orderDetail) {
-        // console.log(`order detail page`);
-        // console.log(orderDetail)
         if (orderDetail.tradeContractId === undefined) {
-            
             return buildOpenOrder(orderDetail);
         } else {
             if (orderDetail.userType.toLowerCase() === 'buyer') {
-                // console.log(`orderDEtail is found case buyer`)
                 return buildMatchedBuyOrder(orderDetail);
             }
             else {
-                // console.log(`orderDEtail is found case seller`)
                 return buildMatchedSellOrder(orderDetail);
 
             }
@@ -57,13 +52,16 @@ function buildMatchedBuyOrder(orderDetail: IOrderDetail) {
                     {`Contract ID : #${orderDetail.tradeContractId}`}
                 </Typography>
             </Grid>
+
             <Grid container item direction='row' alignItems='center' pt={2}>
                 <Typography sx={{ fontSize: '1.1em', color: 'error.light' }}>
                     {`Buyer meter id: ${orderDetail.meterId}`}
                 </Typography>
-                <Typography sx={{ fontSize: '1.1em' }} pl={2}>
-                    {`Seller meter id: ${orderDetail.matchedMeterId}`}
-                </Typography>
+                {orderDetail.tradeMarket.toLowerCase() === 'bilateral' &&
+                    <Typography sx={{ fontSize: '1.1em' }} pl={2}>
+                        {`Seller meter id: ${orderDetail.matchedMeterId}`}
+                    </Typography>
+                }
             </Grid>
             <Grid item py={1}>
                 <Typography sx={{ fontSize: '1.2em' }}>{orderDetail.tradeMarket === 'pool' ? 'Pool Market Trade' : 'Bilateral Trade'}</Typography>
@@ -179,9 +177,11 @@ function buildMatchedSellOrder(orderDetail: IOrderDetail) {
                 <Typography sx={{ fontSize: '1.1em', color: 'success.light' }}>
                     {`Seller meter id: ${orderDetail.meterId}`}
                 </Typography>
-                <Typography sx={{ fontSize: '1.1em' }} pl={2}>
-                    {`Buyer meter id: ${orderDetail.matchedMeterId}`}
-                </Typography>
+                {orderDetail.tradeMarket.toLowerCase() === 'bilateral' &&
+                    <Typography sx={{ fontSize: '1.1em' }} pl={2}>
+                        {`Buyer meter id: ${orderDetail.matchedMeterId}`}
+                    </Typography>
+                }
             </Grid>
             <Grid item py={1}>
                 <Typography sx={{ fontSize: '1.2em' }}>{orderDetail.tradeMarket === 'pool' ? 'Pool Market Trade' : 'Bilateral Trade'}</Typography>
@@ -253,8 +253,8 @@ function buildOpenOrder(orderDetail: IOrderDetail) {
             </Grid>
             <Grid container item direction='row' alignItems='center' pt={2}>
                 <Typography sx={{ fontSize: '1.1em', color: 'success.light' }}>
-                    {orderDetail.userType.toLowerCase() === "seller" &&  `Seller meter id: ${orderDetail.meterId}`}
-                    {orderDetail.userType.toLowerCase() === "buyer" &&  `Buyer meter id: ${orderDetail.meterId}`}
+                    {orderDetail.userType.toLowerCase() === "seller" && `Seller meter id: ${orderDetail.meterId}`}
+                    {orderDetail.userType.toLowerCase() === "buyer" && `Buyer meter id: ${orderDetail.meterId}`}
                 </Typography>
             </Grid>
             <Grid item container id='energy-info'>

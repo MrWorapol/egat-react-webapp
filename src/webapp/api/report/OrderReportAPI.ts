@@ -131,7 +131,7 @@ export class OrderReportAPI {
             ordersFromJSON.forEach((order: IOrderResponseFromJSON) => {
                 let inRange = false;
                 if (period) {
-                    inRange = dayjs(order.timestamp).isBetween(dayjs(period.startDate),dayjs(period.endDate),null,'[]');
+                    inRange = dayjs(order.timestamp).isBetween(dayjs(period.startDate), dayjs(period.endDate), null, '[]');
 
                 }
                 if (period === undefined || inRange) {
@@ -204,7 +204,7 @@ export class OrderReportAPI {
             ordersFromJSON.forEach((order: IOrderResponseFromJSON) => {
                 let inRange = false;
                 if (period) {
-                    inRange = dayjs(order.timestamp).isBetween(dayjs(period.startDate),dayjs(period.endDate),null,'[]');
+                    inRange = dayjs(order.timestamp).isBetween(dayjs(period.startDate), dayjs(period.endDate), null, '[]');
 
                     // inRange = dayjs(order.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
                     //     && dayjs(order.timestamp).isBefore(dayjs(period.endDate).endOf('day'))
@@ -278,7 +278,7 @@ export class OrderReportAPI {
                     if (dayjs(+order.settlementTime).add(1, 'hour').isAfter(dayjs())) {
                         let inRange = false;
                         if (period) {
-                            inRange = dayjs(order.timestamp).isBetween(dayjs(period.startDate),dayjs(period.endDate),null,'[]');
+                            inRange = dayjs(order.timestamp).isBetween(dayjs(period.startDate), dayjs(period.endDate), null, '[]');
 
                             // inRange = dayjs(order.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
                             //     && dayjs(order.timestamp).isBefore(dayjs(period.endDate).endOf('day'))
@@ -326,68 +326,72 @@ export class OrderReportAPI {
 
         try {
             const contracts = await this.tradeContractAPI.getTradeContractReport({ ...req });
-            console.log(contracts);
+            // console.log(contracts);
             let results: IGetMathOrderResponse = { context: [] };
             if (contracts && contracts.context.length > 0) {
                 contracts.context.forEach((contract: ITradeContractReport) => {
+                    console.log(`contract in order matched`);
+                    console.log(contract);
                     let inRange = false;
                     if (period) {
-                        inRange = dayjs(contract.timestamp).isBetween(dayjs(period.startDate),dayjs(period.endDate),null,'[]');
-
-                        // inRange = dayjs(contract.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
-                        //     && dayjs(contract.timestamp).isBefore(dayjs(period.endDate).endOf('day'))
+                        inRange = dayjs(contract.timestamp).isBetween(dayjs(period.startDate), dayjs(period.endDate), null, '[]');
                     }
                     if (period === undefined || inRange) { //period===undefined is selected All
-                        results.context.push({ // insert seller Matched
-                            orderId: contract.contractId,
-                            userId: contract.sellerId,
-                            status: "MATCHED",
-                            targetAmount: contract.energyCommitted,
-                            targetPrice: contract.priceCommitted,
-                            userType: "SELLER",
-                            tradeMarket: contract.tradeMarket,
-                            settlementTime: contract.settlementTime.toString(),
-                            tradeContractId: contract.contractId,
-                            orderDetail: {
-                                deliverdTime: contract.settlementTime.toString(),
-                                commitedAmount: contract.energyCommitted,
-                                offerToSell: contract.priceCommitted,
-                                tradingFee: contract.tradingFee,
-                                estimatedSales: contract.priceCommitted,
-                                sellerId: contract.sellerId,
-                                buyerId: contract.buyerId,
-                            }
-                        })
-                        results.context.push({//insert buyer Matched
-                            orderId: contract.contractId,
-                            userId: contract.buyerId,
-                            status: "MATCHED",
-                            targetAmount: contract.energyCommitted,
-                            targetPrice: contract.priceCommitted,
-                            userType: "BUYER",
-                            tradeMarket: contract.tradeMarket,
-                            settlementTime: contract.settlementTime.toString(),
-                            tradeContractId: contract.contractId,
-                            orderDetail: {
-                                deliverdTime: contract.settlementTime.toString(),
-                                amount: contract.energyCommitted,
-                                netBuy: contract.priceCommitted + contract.wheelingChargeFee + contract.tradingFee, //sum of Data
-                                netEnergyPrice: contract.priceCommitted,
-                                energyToBuy: contract.energyCommitted,
-                                energyTariff: (contract.energyCommitted / contract.priceCommitted) || 0, //dont sure
-                                energyPrice: (contract.priceCommitted * contract.energyCommitted), // dont sure
-                                wheelingChargeTariff: (contract.wheelingChargeFee / contract.energyCommitted) || 0, //dont sure
-                                wheelingCharge: contract.wheelingChargeFee,
-                                tradingFee: contract.tradingFee,
-                                sellerId: contract.sellerId,
-                                buyerId: contract.buyerId,
-                            }
-                        })
+                        if (contract.sellerId !== null && contract.sellerId !== 'null') { //null incase pool trade 
+                            results.context.push({ // insert seller Matched
+                                orderId: contract.contractId,
+                                userId: contract.sellerId,
+                                status: "MATCHED",
+                                targetAmount: contract.energyCommitted,
+                                targetPrice: contract.priceCommitted,
+                                userType: "SELLER",
+                                tradeMarket: contract.tradeMarket,
+                                settlementTime: contract.settlementTime.toString(),
+                                tradeContractId: contract.contractId,
+                                orderDetail: {
+                                    deliverdTime: contract.settlementTime.toString(),
+                                    commitedAmount: contract.energyCommitted,
+                                    offerToSell: contract.priceCommitted,
+                                    tradingFee: contract.tradingFee,
+                                    estimatedSales: contract.priceCommitted,
+                                    sellerId: contract.sellerId,
+                                    buyerId: contract.buyerId,
+                                }
+                            })
+                        }
+                        if (contract.buyerId !== null && contract.buyerId !== 'null') {
+                            results.context.push({//insert buyer Matched
+                                orderId: contract.contractId,
+                                userId: contract.buyerId,
+                                status: "MATCHED",
+                                targetAmount: contract.energyCommitted,
+                                targetPrice: contract.priceCommitted,
+                                userType: "BUYER",
+                                tradeMarket: contract.tradeMarket,
+                                settlementTime: contract.settlementTime.toString(),
+                                tradeContractId: contract.contractId,
+                                orderDetail: {
+                                    deliverdTime: contract.settlementTime.toString(),
+                                    amount: contract.energyCommitted,
+                                    netBuy: contract.priceCommitted + contract.wheelingChargeFee + contract.tradingFee, //sum of Data
+                                    netEnergyPrice: contract.priceCommitted,
+                                    energyToBuy: contract.energyCommitted,
+                                    energyTariff: (contract.energyCommitted / contract.priceCommitted) || 0, //dont sure
+                                    energyPrice: (contract.priceCommitted * contract.energyCommitted), // dont sure
+                                    wheelingChargeTariff: (contract.wheelingChargeFee / contract.energyCommitted) || 0, //dont sure
+                                    wheelingCharge: contract.wheelingChargeFee,
+                                    tradingFee: contract.tradingFee,
+                                    sellerId: contract.sellerId,
+                                    buyerId: contract.buyerId,
+                                }
+                            })
+                        }
                     }
 
                 })
             }
-
+            console.log(`match order `);
+            console.log(results);
             return results;
         } catch (err) {
             throw err;

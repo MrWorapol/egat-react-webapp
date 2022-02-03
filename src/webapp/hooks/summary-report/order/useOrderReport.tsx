@@ -129,8 +129,8 @@ export default function useOrderReport() {
                                 open: summaryStatus.open
                             }
                         })
-                    console.log(`output data before render table`);
-                    console.log(output)
+                    // console.log(`output data before render table`);
+                    // console.log(output)
                     setOrderReport(output);
 
                     refreshOrderDetail(output[0]);
@@ -173,8 +173,8 @@ export default function useOrderReport() {
             resetOrderDetail();
         }
         if (orderInfo.orderDetail === undefined) {//case open order
-            console.log(`order Detail`)
-            console.log(orderInfo);
+            // console.log(`order Detail`)
+            // console.log(orderInfo);
             setOrderDetail({
                 userType: orderInfo.userType,
                 tradeMarket: orderInfo.tradeMarket,
@@ -185,7 +185,7 @@ export default function useOrderReport() {
                     commitedAmount: orderInfo.targetAmount
                 },
             })
-        } else {//case match Order
+        } else {//case match order
             setOrderDetail({
                 userType: orderInfo.userType,
                 tradeMarket: orderInfo.tradeMarket,

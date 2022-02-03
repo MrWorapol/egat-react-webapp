@@ -1,5 +1,5 @@
 import { Box, Button, Container, FormControl, Grid, MenuItem, Select, TextField, Typography } from '@mui/material'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { useParams } from 'react-router';
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -10,19 +10,19 @@ import { useUserDetail } from '../../../hooks/useUserDetail';
 // import { getUserDetail } from '../../../hooks/getUserDetail'
 import { NavigationCurrentType } from '../../../state/navigation-current-state';
 import { userSessionState } from '../../../state/user-sessions';
-
-import dayjs from 'dayjs';
-import timezone from 'dayjs/plugin/timezone';
-import utc from 'dayjs/plugin/utc';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import dayjs from '../../../utils/customDayjs';
 import { useSnackBarNotification } from '../../../hooks/useSnackBarNotification';
-dayjs.extend(utc);
-dayjs.extend(timezone);
+import { DatePicker } from '@mui/lab';
+
+
 
 type MeterParams = {
     id: string;
 }
 
-interface IFormTextFieldInput {
+type IFormTextFieldInput = {
     userDetail: {
         id: string,
         email: string,
@@ -69,14 +69,55 @@ interface IFormTextFieldInput {
     }
 }
 
+// const schema = yup.object().shape({
+//     "meterDetail.address.buildingNumber": yup.string().required(),
+//     "meterDetail.address.village": yup.string().required(),
+//     "meterDetail.address.soi": yup.string().required(),
+//     "meterDetail.address.subDistrict": yup.string().required(),
+//     "meterDetail.address.district": yup.string().required(),
+//     "meterDetail.address.province": yup.string().required(),
+//     "meterDetail.address.zipCode": yup.string().required(),
+//     "meterDetail.typeOfBusiness": yup.string().required(),
+//     "meterDetail.ca": yup.string().required(),
+//     "meterDetail.position.lat": yup.number().required(),
+//     "meterDetail.position.lng": yup.number().required(),
+//     "meterDetail.sizeOfMeter": yup.number().required(),
+//     "meterDetail.voltage": yup.number().required(),
+//     "meterDetail.brand": yup.string().required(),
+//     "meterDetail.model": yup.string().required(),
+//     "meterDetail.numberOfBoard": yup.number().required(),
+//     "meterDetail.powerOfProduce": yup.number().required(),
+//     "meterDetail.typeOfBoard": yup.string().required(),
+//     "meterDetail.sizeOfSetup": yup.number().required(),
+//     "meterDetail.invertor": yup.string().required(),
+// })
+
 export default function UserDetail() {
     useNavigationSet(NavigationCurrentType.USER_DETAIL);
     const api = new UserManagementAPI();
     const { id } = useParams<MeterParams>();
     const { userDetail, meterDetail } = useUserDetail(id);
-    const { handleSubmit, formState: { errors }, control } = useForm<IFormTextFieldInput>();
+    const { handleSubmit, formState: { errors }, control, watch } = useForm<IFormTextFieldInput>(
+        // {
+        //     resolver: yupResolver(schema),
+        //     defaultValues: {
+        //         userDetail: userDetail ? userDetail : undefined,
+        //         meterDetail: meterDetail ? meterDetail : undefined
+        //     }
+        // }
+    );
+    let watchError = watch();
+
+    useEffect(() => {
+      console.log(watchError);
+    
+      return () => {
+        
+      };
+    }, []);
+    
     const [edit, setEdit] = React.useState(false);
-    const session = useRecoilValue(userSessionState);
+    let session = useRecoilValue(userSessionState);
     const { showLoading, hideLoading } = useLoadingScreen();
     const { showSnackBar } = useSnackBarNotification();
     const onSetEditable = () => {
@@ -84,19 +125,27 @@ export default function UserDetail() {
     }
 
     const onEditUser = async (data: IFormTextFieldInput) => {
-
+        console.log(errors);
         // if (userSession && data.userDetail && data.meterDetail) {
         showLoading(10);
         if (session) {
             try {
-                //insert meter Id to userDetail before send to api
-                let userDetailInput = data.userDetail;
-                userDetailInput.meterId = data.meterDetail.meterId
+                let newUserDetail = data.userDetail;
+                console.log(data.meterDetail);
+                console.log(newUserDetail);
+                data.meterDetail.expectedDate = dayjs(data.meterDetail.expectedDate).toISOString();
                 await api.editUser({
                     session,
                     meterDetail: data.meterDetail,
-                    userDetail: userDetailInput,
+                    userDetail: {
+                        email: data.userDetail.email,
+                        fullName: data.userDetail.fullName,
+                        phoneNumber: data.userDetail.phoneNumber,
+                        citizenId: data.userDetail.citizenId,
+                        displayName: data.userDetail.displayName,
+                    },
                 });
+                showSnackBar({ serverity: 'success', message: `updated successful` })
                 hideLoading(10);
             } catch (e) {
 
@@ -128,7 +177,7 @@ export default function UserDetail() {
                                 render={({ field }) => (
                                     <TextField variant="standard"
                                         sx={{ ml: 2, width: '15em' }}
-                                        disabled={!edit}
+                                        disabled={true}
                                         {...field}
                                     />)}
                                 name="userDetail.fullName"
@@ -312,7 +361,7 @@ export default function UserDetail() {
                                     <TextField variant="standard"
                                         sx={{ ml: 2, width: '10em' }}
                                         size="small"
-                                        disabled={!edit}
+                                        disabled={true}
                                         {...field}
                                     />)}
                             />
@@ -329,7 +378,7 @@ export default function UserDetail() {
                                     <TextField variant="standard"
                                         sx={{ ml: 2, width: '15em' }}
                                         size="small"
-                                        disabled={!edit}
+                                        disabled={true}
                                         {...field}
                                     />)}
                             />
@@ -496,12 +545,15 @@ export default function UserDetail() {
                                 name="meterDetail.produceInfo"
                                 control={control}
                                 render={({ field }) => (
-                                    <TextField variant="standard"
-                                        sx={{ ml: 2, width: '10em' }}
-                                        size="small"
-                                        disabled={!edit}
-                                        {...field}
-                                    />)}
+                                    <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+                                        <Select {...field} disabled={!edit}>
+                                            <MenuItem value={'เจ้าของเครื่องวัดผลิตเอง(บุคคลธรรมดา/นิติบุคคล)'}>{'เจ้าของเครื่องวัดผลิตเอง(บุคคลธรรมดา/นิติบุคคล)'}</MenuItem>
+                                            <MenuItem value={'ผู้ลงทุน/สนับสนุน'}>{'ผู้ลงทุน/สนับสนุน'}</MenuItem>
+
+                                        </Select>
+                                    </FormControl>
+                                )}
+
                             />
                         </GridDetailsComponent>
                     </Grid>
@@ -626,16 +678,25 @@ export default function UserDetail() {
                         <GridDetailsComponent size={'6'}>
                             <Typography >วันที่คาดว่าจะเริ่มจ่ายไฟฟ้าเข้าระบบ: </Typography>
                             <Controller
-                                defaultValue={dayjs(meterDetail.expectedDate).format('DD/MM/YYYY')}
+                                defaultValue={dayjs(meterDetail.expectedDate).toString()}
                                 name="meterDetail.expectedDate"
                                 control={control}
-                                render={({ field }) => (
-                                    <TextField variant="standard"
-                                        sx={{ ml: 2, width: '10em' }}
-                                        size="small"
+                                render={({ field: { onChange, onBlur, value, ref } }) => (
+                                    <DatePicker
                                         disabled={!edit}
-                                        {...field}
-                                    />)}
+                                        views={['year', 'month', 'day']}
+                                        maxDate={dayjs().add(5, 'year')}
+                                        inputFormat='DD/MM/YYYY'
+                                        value={value}
+                                        onChange={onChange}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                size='small'
+                                                {...params}
+                                                sx={{ ml: 2, width: '10em', justifyContent: 'flex-end', textAlignLast: 'end', }} />
+                                        )}
+                                    />
+                                )}
                             />
                         </GridDetailsComponent>
 

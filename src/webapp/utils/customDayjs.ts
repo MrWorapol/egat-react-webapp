@@ -5,6 +5,7 @@ import isBetween from 'dayjs/plugin/isBetween';
 dayjs.extend(isBetween);
 dayjs.extend(utc);
 dayjs.extend(timezone);
+dayjs.tz.setDefault('Asia/Bangkok');
 
 //https://day.js.org/docs/en/plugin/is-between reference to use isBetween 
 

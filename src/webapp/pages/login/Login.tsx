@@ -19,7 +19,7 @@ const schema = yup.object().shape({
 })
 export default function Login() {
     useNavigationSet(NavigationCurrentType.LOGIN);
-    const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>({ resolver: yupResolver(schema) });
+    const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>();//{ resolver: yupResolver(schema) }
     const { login } = useLogin();
 
     const onSubmitLogin = async (data: LoginForm) => {
@@ -65,7 +65,7 @@ export default function Login() {
                                     <Grid item container>
                                         <TextField placeholder="Email"
                                             fullWidth
-                                            type="email"
+                                            // type="email"
                                             error={!!errors.email}
                                             helperText={errors.email && errors.email.message ? errors.email.message : ''}
                                             {...register("email", { required: "Please Filled" })}

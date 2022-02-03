@@ -187,21 +187,15 @@ export class SettlementReportAPI {
                     inRange = dayjs(tradeContract.timestamp).isBetween(dayjs(period.startDate), dayjs(period.endDate), null, '[]');
                 }
                 if (inRange || period === undefined) {
-                    // console.log(tradeContract)
-                    tradeContract.infos = tradeContract.infos.replace(/=/gi, ':');
-                    // console.log(tradeContract.infos);
-                    let newRegex = new RegExp(/[a-zA-Z0-9._-]+[a-zA-Z0-9._-]|[0-9]/g);
-                    let infosConvert = tradeContract.infos.replace(newRegex, '"$&"');
-                    // let arrayRegex = new RegExp(/(\[")|("\])|(",")/g); 
-                    let reformatStartBracket = infosConvert.replace(/(\[")/, '[')
-                    let reformatEndBracket = reformatStartBracket.replace(/("\])/, ']')
-                    let arrayInfos = reformatEndBracket.replace(/(",")/, ',');
-                    console.log(`convert infos`);
-                    console.log(arrayInfos);
-                    console.log(`infos JSON`);
+                    tradeContract.infos = tradeContract.infos.replace(/=/gi, ':'); //convert = -> :
+                    let newRegex = new RegExp(/[a-zA-Z0-9._-]+[a-zA-Z0-9._-]|[0-9]/g); // check start and end with text,number,".","_","-" , 0-9
+                    let infosConvert = tradeContract.infos.replace(newRegex, '"$&"');//insert "" around every text
+                    let reformatStartBracket = infosConvert.replace(/(\[")/, '[') // [" -> [
+                    let reformatEndBracket = reformatStartBracket.replace(/("\])/, ']') // "] -> ]
+                    let arrayInfos = reformatEndBracket.replace(/(",")/, ',');// between array object "," -> ,
+                    
                     let infosJSON: TradeContractInfo | TradeContractInfo[] = JSON.parse(arrayInfos);
-                    console.log(infosJSON);
-                    console.log(`is array${Array.isArray(infosJSON)}`);
+                    
                     if (!Array.isArray(infosJSON)) { //Bilateral market always isn't arrays 
                         if (infosJSON.reference.marketType === "BILATERAL") {
                             context.push({

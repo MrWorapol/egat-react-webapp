@@ -13,7 +13,7 @@ interface refreshRequest {
 }
 
 export default class KeycloakAdminApi {
-    private host = egatGateway;
+    private host = localGateway;//egatGateway;
 
 
     async login(request: LoginRequest): Promise<LoginResponse | null> {

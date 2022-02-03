@@ -136,7 +136,7 @@ export function useSettlementReport() {
                             }
 
                         }
-                        if (buyerMeter && sellerMeter) {
+                        if (buyerMeter) {
                             //insert buyer row
                             summaryTradeMarket[contract.tradeMarket.toLowerCase()] += 1;
                             summaryRole[buyerMeter.role.toLowerCase()] += 1; //count  role user
@@ -150,8 +150,9 @@ export function useSettlementReport() {
                                 area: buyerMeter.area,
                                 role: buyerMeter.role,
                                 meterId: buyerMeter.meterId,
-                                matchedMeterId: sellerMeter.meterId
+                                matchedMeterId: sellerMeter?.meterId || 'null' //null incase pool market
                             })
+                        }if(sellerMeter){
                             //insert seller row
                             summaryTradeMarket[contract.tradeMarket.toLowerCase()] += 1;
                             summaryRole[sellerMeter.role.toLowerCase()] += 1; //count  role user
@@ -165,7 +166,7 @@ export function useSettlementReport() {
                                 area: sellerMeter.area,
                                 role: sellerMeter.role,
                                 meterId: sellerMeter.meterId,
-                                matchedMeterId: buyerMeter.meterId
+                                matchedMeterId: buyerMeter?.meterId || 'null' //null incase pool market
                             })
                         }
                     });
