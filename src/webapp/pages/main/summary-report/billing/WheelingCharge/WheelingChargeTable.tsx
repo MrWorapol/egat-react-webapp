@@ -27,7 +27,7 @@ export default function WheelingChargeTable(props: IProps) {
         { id: 'price', label: 'Price' },
     ];
     if (wheelingChargeTable === null || wheelingChargeTable === undefined) {
-        console.log(`WTF : ${wheelingChargeTable}`);
+        console.log(`NULL`);
         return <></>;
     }
 
@@ -51,7 +51,7 @@ export default function WheelingChargeTable(props: IProps) {
 
 
     function onClickViewButton(row: any) {
-        console.log('click view button')
+
     }
 
     return (

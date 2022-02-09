@@ -34,7 +34,6 @@ export default function AllOrder() {
     const refreshTable = useDebouncedCallback(() => {
         if (orderReport) {
             let tableFilter = [...orderReport];
-            console.log(`role: ${role}\t buyer: ${userType}\t orderStatus: ${orderStatus}\t tradeMarket:${tradeMarket}\n area: ${area}`);
             if (role !== 'all') {
 
                 tableFilter = tableFilter.filter((order) => { return (order.role !== undefined && order.role.toLowerCase() === role.toLowerCase()) });

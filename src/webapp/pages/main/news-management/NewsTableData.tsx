@@ -89,7 +89,7 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 
 
 export default function NewsTableData() {
-    console.log(`call userTable Data`);
+
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     // const { showDialog } = useDialog();
@@ -107,7 +107,7 @@ export default function NewsTableData() {
         { id: 'action', label: '' }
     ];
     if (newsInfoData === null || newsInfoData === undefined) {
-        console.log(`Error : ${newsInfoData}`);
+        // console.log(`Error : ${newsInfoData}`);
         return <></>;
     }
     // if (userInfoData.length === 0) {
@@ -131,7 +131,7 @@ export default function NewsTableData() {
         setPage(0);
     };
 
-    console.log(`user data on render ${newsInfoData}`);
+    // console.log(`user data on render ${newsInfoData}`);
 
     //set minwidth ,theme
     return (

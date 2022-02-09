@@ -37,7 +37,7 @@ export default function AllSettlementTable(props: IProps) {
         { id: 'Action', label: '' }
     ];
     if (data === null || data === undefined) {
-        console.log(`WTF : ${data}`);
+        console.log(`NULL`);
         return <></>;
     }
 

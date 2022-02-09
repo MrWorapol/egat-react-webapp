@@ -47,7 +47,7 @@ export class OtherSettingAPI {
         }
         if (response.status === 200) {
             let result = await response.json();
-            console.log(result);
+            
             let content: IGetOtherSettingResponse = {
                 context: result
             }
@@ -76,7 +76,6 @@ export class OtherSettingAPI {
         }
         if (response.status === 200) {
             let result = await response.json();
-            console.log(result);
             let content: IGetOtherSettingLogsResponse = {
                 context: result
             }

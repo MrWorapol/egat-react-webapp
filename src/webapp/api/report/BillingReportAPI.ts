@@ -75,12 +75,12 @@ export class BillingReportAPI {
         const period = req.period;
         const body: IGetDruidBody = {
             "query":
-                `SELECT "__time" as "timestamp",
+                `SELECT DISTINCT "__time" as "timestamp",
                 "payload.discountAppFee" as "discountAppFee", 
                 "payload.discountGridUsed" as "discountGridUsed",
                 "payload.expireTime" as "expireTime",  
                 "payload.gridUsedFt" as "gridUsedFt", 
-                "payload.id" as "invoiceId",
+                "payload._id" as "invoiceId",
                 "payload.invoiceType" as "invoiceType",
                 "payload.issueToUserId" as "issueToUserId",
                 "payload.price" as "price", 
@@ -121,7 +121,7 @@ export class BillingReportAPI {
                 "payload.wheelingChargeRe" as "wheelingChargeRe",
                 "payload.wheelingChargeT" as "wheelingChargeT",
                 "payload.wheelingChargeTotal" as "wheelingChargeTotal"
-                FROM "InvoiceFinal"
+                FROM "FinalInvoice"
                 WHERE "__time" >= '2022-01-24T09:10:00.000Z'`,
             "resultFormat": "object"
         }
@@ -144,8 +144,6 @@ export class BillingReportAPI {
                 if (period) {
                     inRange = dayjs(invoice.timestamp).isBetween(dayjs(period.startDate), dayjs(period.endDate), null, '[]');
                 }
-                // let inRange = dayjs(invoice.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
-                //     && dayjs(invoice.timestamp).isBefore(dayjs(period.endDate).endOf('day'))
                 if (period === undefined || inRange) {
                     invoices.push({
                         timestamp: invoice.timestamp,

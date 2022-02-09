@@ -6,7 +6,7 @@ export function useNavigationSet(navigationState?: NavigationCurrentType) {
   const [currentState, setCurrentState] = useRecoilState(navigationCurrentState);
 
   useEffect(() => {
-    console.log(`Call navigationSet from ${currentState} to ${navigationState}`)
+    // console.log(`Call navigationSet from ${currentState} to ${navigationState}`)
     if (navigationState !== undefined) {
       if (navigationState !== currentState) {
         setCurrentState(navigationState);

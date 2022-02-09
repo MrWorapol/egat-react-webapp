@@ -64,8 +64,7 @@ export default function BasicMenu({ data }: { data: NewsInfo }) {
     }
 
     async function publishOnClicked() {
-        console.log(newsDetailholder);
-        console.log(`is Publish`);
+   
         if (session) {
             try {
                 showLoading(10);

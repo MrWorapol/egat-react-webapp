@@ -24,7 +24,7 @@ export default function PeriodComponent(props: PeriodProps) {
     dayjs().year() === dayjs(period.startDate).year()) ? true : false;
     
     const debounceFn = useDebouncedCallback(() => {
-        console.log(`debounce fn`)
+        // console.log(`debounce fn`)
         try {
             props.refreshPage();
         } catch (e) {

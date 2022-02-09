@@ -35,13 +35,6 @@ export function useSettlementReport() {
     const { showSnackBar } = useSnackBarNotification();
 
     const refreshSettlementReport = async (role: string, area: string, buyerType: string, tradeMarket: string, orderStatus: string) => {
-        // let testInfos = '{sellerId=0deb041a-f171-48b5-8327-4a79ee1dfe51, buyerId=6a29f8a2-ca9d-4cb2-b797-acb5645945e9, reference={marketType=BILATERAL, bilateralTradeSettlementId=61f92ba4607fe3000819302e, isBilateralLongTerm=false, wheelingAs=0.071, wheelingD=0.55, wheelingRe=0.28, wheelingT=0, wheelingTotal=0.901, wheelingBuyerEgatAs=0.071, wheelingBuyerEgatD=0.55, wheelingBuyerEgatRe=0.28, wheelingBuyerEgatT=0.25, wheelingBuyerEgatTotal=1.151, wheelingSellerEgatAs=0.071, wheelingSellerEgatD=0.55, wheelingSellerEgatRe=0.28, wheelingSellerEgatT=0.25, wheelingSellerEgatTotal=1.151, imbalanceBuyerOverCommit=0, imbalanceBuyerUnderCommit=2.7, imbalanceSellerOverCommit=2.3, imbalanceSellerUnderCommit=0, discountAppFee=0, gridUsedDiscount=0, gridUsedFt=-0.1532, touTariff=0, touTariffClass=LOW, touTariffType=PEAK_MONFRI, transactionFee=0.02, vat=7, targetPrice=5}, amount=3, price=15, wheelingChargeFee=2.7030000000000003, tradingFee=0.06}'
-        // testInfos = testInfos.replace(/=/gi, ':'); //replace '=' to ':'
-        // console.log(tradeContract.infos);
-        // let newRegex = new RegExp(/[a-zA-Z0-9._-]+[a-zA-Z0-9._-]|[0-9]/g);
-        // let infosConvert = testInfos.replace(newRegex, '"$&"'); //insert  double quote around every text("")
-        // console.log(`convert infos`);
-        // console.log(infosConvert);
         if (session) {
             try {
                 showLoading(10);
@@ -70,27 +63,16 @@ export function useSettlementReport() {
 
                 if ((tradeContractReports && userMeterInfos && tradeDataReport)
                     && tradeContractReports.context.length > 0 && userMeterInfos.context.length > 0 && tradeDataReport.context.length > 0) {
-
                     let output: ITradeContractReport[] = [];
                     tradeContractReports.context.forEach((contract: ITradeContractReport) => { //map tractContract 
                         let buyerMeter = userMeterInfos.context.find((user: IUserMeterInfo) => { return user.id.toString() === contract.buyerId.toString() })
                         let sellerMeter = userMeterInfos.context.find((user: IUserMeterInfo) => { return user.id.toString() === contract.sellerId.toString() })
-                        // if (contract.bilateralTradeSettlementId) {
-                        //     if (longTermTradeContracts) {
-                        //         let isLongTermContract = longTermTradeContracts.find((settlement) => { return contract.bilateralTradeSettlementId === settlement.bilateralTradeSettlementId });
-                        //         if (isLongTermContract) {
-                        //             contract.tradeMarket = "LONGTERM_BILATERAL";
-                        //         }
-                        //     }
-                        // }
-
                         contract.imbalance = []; //create array variable for insert imbalance Data
                         let tradeDataMapContractId: IImbalanceReport[] = tradeDataReport.context.filter((imbalance: IImbalanceReport) => {
                             return imbalance.tradeContractIds.toString() === contract.contractId.toString();
                         })
                         if (tradeDataMapContractId.length > 0) {
-                            if (tradeDataMapContractId.every((tradeData) => { console.log(`tradeData.tradeType ${tradeData.tradeType}`); return tradeData.tradeType === "SELLER_CONTRACT" || tradeData.tradeType === "BUYER_CONTRACT" })) { //case CONTRACT Not use
-
+                            if (tradeDataMapContractId.every((tradeData) => { return tradeData.tradeType === "SELLER_CONTRACT" || tradeData.tradeType === "BUYER_CONTRACT" })) { //case CONTRACT Not use
                             } else {
                                 let imbalanceCase = tradeDataMapContractId.filter((tradeData) => { return tradeData.tradeType !== "SELLER_CONTRACT" && tradeData.tradeType !== "BUYER_CONTRACT" }) //select only imbalance Case
                                 if (imbalanceCase.length > 0) {
@@ -132,43 +114,52 @@ export function useSettlementReport() {
                                         }
                                     })
                                 }
+                                if (buyerMeter) {
+                                    //insert buyer row
+                                    if (contract.tradeMarket.toLowerCase() === "pool") {
+                                        summaryTradeMarket["pool"] += 1;
+                                    } else {
+                                        summaryTradeMarket["bilateral"] += 1;
+                                    }
 
+                                    summaryRole[buyerMeter.role.toLowerCase()] += 1; //count  role user
+                                    summaryUserType["BUYER".toLowerCase()] += 1;
+                                    summaryImbalanceType[contract.imbalanceStatus] += 1;
+
+                                    output.push({
+                                        ...contract,
+                                        userType: "BUYER",
+                                        regionName: buyerMeter.region,
+                                        area: buyerMeter.area,
+                                        role: buyerMeter.role,
+                                        meterId: buyerMeter.meterId,
+                                        matchedMeterId: sellerMeter?.meterId || 'null' //null incase pool market
+                                    })
+                                } if (sellerMeter) {
+                                    //insert seller row
+                                    if (contract.tradeMarket.toLowerCase() === "pool") {
+                                        summaryTradeMarket["pool"] += 1;
+                                    } else {
+                                        summaryTradeMarket["bilateral"] += 1;
+                                    }
+                                    summaryRole[sellerMeter.role.toLowerCase()] += 1; //count  role user
+                                    summaryUserType["SELLER".toLowerCase()] += 1;
+                                    summaryImbalanceType[contract.imbalanceStatus] += 1;
+
+                                    output.push({
+                                        ...contract,
+                                        userType: "SELLER",
+                                        regionName: sellerMeter.region,
+                                        area: sellerMeter.area,
+                                        role: sellerMeter.role,
+                                        meterId: sellerMeter.meterId,
+                                        matchedMeterId: buyerMeter?.meterId || 'null' //null incase pool market
+                                    })
+                                }
                             }
 
                         }
-                        if (buyerMeter) {
-                            //insert buyer row
-                            summaryTradeMarket[contract.tradeMarket.toLowerCase()] += 1;
-                            summaryRole[buyerMeter.role.toLowerCase()] += 1; //count  role user
-                            summaryUserType["BUYER".toLowerCase()] += 1;
-                            summaryImbalanceType[contract.imbalanceStatus] += 1;
 
-                            output.push({
-                                ...contract,
-                                userType: "BUYER",
-                                regionName: buyerMeter.region,
-                                area: buyerMeter.area,
-                                role: buyerMeter.role,
-                                meterId: buyerMeter.meterId,
-                                matchedMeterId: sellerMeter?.meterId || 'null' //null incase pool market
-                            })
-                        }if(sellerMeter){
-                            //insert seller row
-                            summaryTradeMarket[contract.tradeMarket.toLowerCase()] += 1;
-                            summaryRole[sellerMeter.role.toLowerCase()] += 1; //count  role user
-                            summaryUserType["SELLER".toLowerCase()] += 1;
-                            summaryImbalanceType[contract.imbalanceStatus] += 1;
-
-                            output.push({
-                                ...contract,
-                                userType: "SELLER",
-                                regionName: sellerMeter.region,
-                                area: sellerMeter.area,
-                                role: sellerMeter.role,
-                                meterId: sellerMeter.meterId,
-                                matchedMeterId: buyerMeter?.meterId || 'null' //null incase pool market
-                            })
-                        }
                     });
                     setSettlementReport(output);
                     if (output.length > 0) {
@@ -178,7 +169,6 @@ export function useSettlementReport() {
                     setSettlementReport([]);
                     resetSettlementDetail();
                 }
-
                 setSettlementChart(
                     {
                         role: {
@@ -229,7 +219,7 @@ export function useSettlementReport() {
             contractId: settlement.contractId,
             userType: settlement.userType,
             energyCommited: settlement.energyCommitted,
-            netPrice: settlement.priceCommitted + settlement.tradingFee + settlement.wheelingChargeFee, // NET Buy | NET sale
+            netPrice: settlement.priceCommitted + settlement.tradingFee + settlement.wheelingChargeFee, // NET Buy | NET sale w/o imbalance price
             imbalanceType: settlement.imbalanceStatus,
             tradeMarket: settlement.tradeMarket,
             meterId: settlement.meterId,
@@ -245,32 +235,41 @@ export function useSettlementReport() {
                 case "BUYER":
 
                     // if (settlement.imbalanceStatus === "energyShortfall") { //case shortfall user have to buy DSO to commit imbalance amount
-                    let shortfallBuyer = settlement.imbalance && settlement.imbalance.find((tradeData) => { return settlement.buyerId === tradeData.buyerId || settlement.buyerId === tradeData.sellerId });
-                    if (shortfallBuyer) {
-                        newSettlementDetail.energyDeliverd = settlement.energyCommitted - shortfallBuyer.amount;
-                        newSettlementDetail.orderImbalanceAmount = shortfallBuyer.amount;
-                        newSettlementDetail.orderImbalance = shortfallBuyer.price;
+                    // }
+                    let imbalanceBuyer = settlement.imbalance && settlement.imbalance.find((tradeData: IImbalanceReport) => { return settlement.buyerId === tradeData.buyerId || settlement.buyerId === tradeData.sellerId });
+                    if (imbalanceBuyer && settlement.imbalanceStatus === "energyShortfall") {
+                        newSettlementDetail.energyDeliverd = settlement.energyCommitted - imbalanceBuyer.amount;
+                        newSettlementDetail.orderImbalanceAmount = imbalanceBuyer.amount;
+                        newSettlementDetail.orderImbalance = imbalanceBuyer.price;
                         newSettlementDetail.netEnergyPrice = newSettlementDetail.energyDeliverd === 0 ? 0 : newSettlementDetail.netPrice / newSettlementDetail.energyDeliverd;
                     }
                     // }
-                    else { // settlement.imbalanceStatus === energyExcess
-
+                    if (imbalanceBuyer && settlement.imbalanceStatus === "energyExcess") {
+                        newSettlementDetail.energyDeliverd = imbalanceBuyer.amount;
+                        newSettlementDetail.orderImbalanceAmount = imbalanceBuyer.amount > settlement.energyCommitted ? imbalanceBuyer.amount - settlement.energyCommitted : imbalanceBuyer.amount;
+                        newSettlementDetail.orderImbalance = imbalanceBuyer.price;
+                        /*ไม่มั่นใจเพราะไม่มีเคสของ excess ตัวอย่าง*/newSettlementDetail.netEnergyPrice = newSettlementDetail.energyDeliverd === 0 ? 0 : newSettlementDetail.netPrice / newSettlementDetail.energyDeliverd;
                     }
                     break;
                 case "SELLER":
-                    let shortfallSeller = settlement.imbalance && settlement.imbalance.find((tradeData) => { return settlement.sellerId === tradeData.buyerId || settlement.sellerId === tradeData.sellerId });
-                    if (shortfallSeller) {
-                        newSettlementDetail.energyDeliverd = settlement.energyCommitted - shortfallSeller.amount;
-                        newSettlementDetail.orderImbalanceAmount = shortfallSeller.amount;
-                        newSettlementDetail.orderImbalance = shortfallSeller.price;
+                    let imbalanceSeller = settlement.imbalance && settlement.imbalance.find((tradeData) => { return settlement.sellerId === tradeData.buyerId || settlement.sellerId === tradeData.sellerId });
+                    if (imbalanceSeller && settlement.imbalanceStatus === "energyShortfall") {
+                        newSettlementDetail.energyDeliverd = settlement.energyCommitted - imbalanceSeller.amount;
+                        newSettlementDetail.orderImbalanceAmount = imbalanceSeller.amount;
+                        newSettlementDetail.orderImbalance = imbalanceSeller.price;
                         newSettlementDetail.netEnergyPrice = newSettlementDetail.energyDeliverd === 0 ? 0 : newSettlementDetail.netPrice / newSettlementDetail.energyDeliverd;
+                    }
+                    if (imbalanceSeller && settlement.imbalanceStatus === "energyExcess") {
+                        newSettlementDetail.energyDeliverd = imbalanceSeller.amount;
+                        newSettlementDetail.orderImbalanceAmount = imbalanceSeller.amount > settlement.energyCommitted ? imbalanceSeller.amount - settlement.energyCommitted : imbalanceSeller.amount;
+                        newSettlementDetail.orderImbalance = imbalanceSeller.price;
+                        /*ไม่มั่นใจเพราะไม่มีเคสของ excess ตัวอย่าง*/newSettlementDetail.netEnergyPrice = newSettlementDetail.energyDeliverd === 0 ? 0 : newSettlementDetail.netPrice / newSettlementDetail.energyDeliverd;
                     }
                     break;
                 default: break;
             }
 
         }
-
         setSettlementDetail(newSettlementDetail);
 
     };

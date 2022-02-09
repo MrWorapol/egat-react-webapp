@@ -17,7 +17,7 @@ export function useUserDetail(id: string) {
     const refreshUserDetail = useCallback(async () => {
         if (session) {
             showLoading(10);
-            console.log(`refresh USer Detail`)
+            // console.log(`refresh USer Detail`)
             try {
                 const response = await api.getUserByMeterID({ meterId: id, session });
                 if (response) {

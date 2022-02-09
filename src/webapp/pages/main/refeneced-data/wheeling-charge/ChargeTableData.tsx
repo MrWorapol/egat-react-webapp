@@ -60,7 +60,6 @@ export default function ChargeTableData(props: inputProps) {
     }, [wheelingCharge]);
     // Avoid a layout jump when reaching the last page with empty rows.
     if (!wheelingCharge) {
-        console.log(`call wheeling Charge`);
         return <> </>;
     }
 

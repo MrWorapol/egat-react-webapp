@@ -43,7 +43,6 @@ export default function UserManagement() {
 
     const searchTextDebounce = useDebouncedCallback(
         () => {
-            console.log(`search text string : ${searchText}`)
             if (searchText === '') {
                 refreshAllUser();
             }

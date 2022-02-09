@@ -62,10 +62,7 @@ export default function GridUsedTable(props: IProps) {
     };
 
 
-    function onClickViewButton(row: any) {
-        console.log('click view button')
-    }
-
+    
     return (
         <Paper sx={{ width: '100%', mb: 2 }} >
             <TableContainer >

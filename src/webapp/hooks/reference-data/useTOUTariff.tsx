@@ -46,8 +46,7 @@ export function useTOUTariff() {
                 }
 
                 if (getGridPackage) {
-                    console.log(`get Grid Package result: `);
-                    console.info(getGridPackage)
+             
                     setGridUsedPackage(getGridPackage.context);
                 }
                 hideLoading(10);

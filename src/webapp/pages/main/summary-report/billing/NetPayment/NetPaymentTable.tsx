@@ -21,7 +21,6 @@ export default function NetPaymentTable(props: IProps) {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(3);
     const history = useHistory();
-    console.log(netPaymentTable);
 
     const columns: Column[] = [
         { id: 'meterId', label: 'Meter Id.' },
@@ -30,7 +29,7 @@ export default function NetPaymentTable(props: IProps) {
         { id: 'netPrice', label: 'Net Price' },
     ];
     if (netPaymentTable === null || netPaymentTable === undefined) {
-        console.log(`WTF : ${netPaymentTable}`);
+        console.log(`NULL`);
         return <></>;
     }
 

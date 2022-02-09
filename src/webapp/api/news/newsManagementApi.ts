@@ -64,8 +64,8 @@ export default class NewsManagementAPI {
             return null;
         }
         let result = await response.json();
-        console.log(result);
-        console.log(result.statusCode);
+        // console.log(result);
+        // console.log(result.statusCode);
         let content: IGetNewsResponse = {
             newsInfos: result
         }
@@ -104,8 +104,8 @@ export default class NewsManagementAPI {
         }
         else {
             let result = await response.json();
-            console.log(result);
-            console.log(result.statusCode);
+            // console.log(result);
+            // console.log(result.statusCode);
             let content: IGetNewsResponse = {
                 newsInfos: result
             }
@@ -129,7 +129,7 @@ export default class NewsManagementAPI {
         const path = '/web-admin/news';
         const api = new URL(this.host + path);
         let response: Response;
-        let accessToken = request.session.accessToken ;
+        let accessToken = request.session.accessToken;
         // let accessToken = "";
         let headers = {
             "Content-Type": "application/json",
@@ -140,9 +140,7 @@ export default class NewsManagementAPI {
             content: request.newsInfo.content,
         });
 
-        console.log(`----------------body context--------------`);
-        console.log(body);
-        console.log(`----------------body context END----------`);
+
         try {
             response = await fetch(api.toString(), {
                 method: "POST",
@@ -150,7 +148,7 @@ export default class NewsManagementAPI {
                 body: body
             });
             let result = await response.json();
-            console.log(result);
+
             let content: ICreateNewsResponse = {
                 status: result.status,
                 newsInfo: result.newsInfo,
@@ -159,10 +157,6 @@ export default class NewsManagementAPI {
         } catch (e) {
             throw new Error('error')
         }
-
-        // if (response.status){
-        //     console.log(response.status)
-        // }
     }
 
     async publishNews(request: IPublishNewsRequest): Promise<void> {
@@ -172,16 +166,12 @@ export default class NewsManagementAPI {
         let accessToken = request.session.accessToken;
         let headers = {
             "Content-Type": "application/json",
-            // Authorization: `Bearer ${token}`,
             Authorization: `Bearer ${accessToken}`,
         }
         const body = JSON.stringify({
             newsDetail: request.newsDetail,
         });
 
-        console.log(`----------------body context--------------`);
-        console.log(body);
-        console.log(`----------------body context END----------`);
         try {
             response = await fetch(api.toString(), {
                 method: "PUT",
@@ -193,16 +183,9 @@ export default class NewsManagementAPI {
             throw new Error('error')
         }
 
-        if (response.status) {
-            console.log(response.status)
+        if (response.status !== 204) {
+            throw new Error(`${response.status} : ${response.statusText}`);
         }
-
-        // let result = await response.json();
-        //     console.log(result);
-        //     let content: IPublishNewsResponse = {
-        //         status: result.status,
-        //     }
-        //     return content;
 
     }
 
@@ -221,9 +204,7 @@ export default class NewsManagementAPI {
             newsDetail: request.newsDetail,
         });
 
-        console.log(`----------------body context--------------`);
-        console.log(body);
-        console.log(`----------------body context END----------`);
+       
         try {
             response = await fetch(api.toString(), {
                 method: "Delete",
@@ -235,16 +216,9 @@ export default class NewsManagementAPI {
             throw new Error('error')
         }
 
-        if (response.status) {
-            console.log(response.status)
+        if (response.status !== 204) {
+            throw new Error(`${response.status} : ${response.statusText}`);
         }
-
-        // let result = await response.json();
-        //     console.log(result);
-        //     let content: IDeleteNewsResponse = {
-        //         status: result.status,
-        //     }
-        //     return content;
     }
 }
 

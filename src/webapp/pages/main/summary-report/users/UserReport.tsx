@@ -21,7 +21,6 @@ export default function UserReport() {
     let period = useRecoilValue(periodState);
     
     const refreshData = async () => {
-        console.log(`call refreshData Page`);
         refreshUserData();
         refreshUserTable(period);
     }

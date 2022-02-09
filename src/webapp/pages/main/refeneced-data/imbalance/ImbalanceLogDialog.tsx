@@ -14,7 +14,7 @@ interface ILogProps {
 }
 
 export default function ImbalanceLogDialog(props: ILogProps) {
-    console.log(`call log dialog`)
+    
     const { closeDialog } = useDialog();
     // const { register, handleSubmit, watch, formState: { errors }, control } = useForm<IWheelingCharge>();
     const { imbalanceLogs, refreshImbalanceLogs } = useImbalanceLogs(props.imbalance);

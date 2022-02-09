@@ -34,9 +34,9 @@ export default function CreateNewsDialog(this: any) {
     if (typeof (data?.title) === 'string' &&
       typeof (data?.content) === 'string') {
       newsrecentDetailholder.title = data.title;
-      console.log(data.title);
+    
       newsrecentDetailholder.content = data.content;
-      console.log(data.content);
+    
     }
     createDraftToAPI(newsrecentDetailholder);
 
@@ -74,7 +74,6 @@ export default function CreateNewsDialog(this: any) {
         })
       }
       refreshAllNews();
-      console.log(`back from api`);
     }
   }
   return (

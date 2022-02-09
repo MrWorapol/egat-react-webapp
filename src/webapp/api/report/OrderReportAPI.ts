@@ -103,16 +103,16 @@ export class OrderReportAPI {
     async getOpenPoolTradeOffer(req: IGetOrderRequest): Promise<IGetOrderResponse[] | null> {
         const period = req.period;
         const body: IGetDruidBody = {
-            "query": `SELECT "payload.id",
+            "query": `SELECT "payload._id",
             LATEST(CAST("__time" as VARCHAR),100) FILTER (WHERE "__time" is not null) as "timestamp",
             LATEST("payload.sellerId",50)FILTER(WHERE "payload.sellerId" IS NOT NULL) as userId, 
             LATEST("payload.status",10) FILTER (WHERE "payload.status" is not null) status,
             LATEST(CAST("payload.settlementTime" as VARCHAR),50 ) FILTER(WHERE "payload.settlementTime" is not null) settlementTime,
             LATEST(CAST("payload.targetPrice" as VARCHAR),10 ) FILTER(WHERE "payload.targetPrice" is not null) targetPrice,
             LATEST(CAST("payload.targetAmount" as VARCHAR),10 ) FILTER(WHERE "payload.targetAmount" is not null) targetAmount
-            FROM "PoolMarketOfferOnEgatF"
+            FROM "FinalPoolMarketOffer"
             WHERE "payload.status" = 'OPEN' AND "__time" > '2022-01-24T09:10'
-            GROUP BY "payload.id"`,
+            GROUP BY "payload._id"`,
             "resultFormat": "object"
         }
         let headers = {
@@ -148,21 +148,7 @@ export class OrderReportAPI {
 
                     })
                 }
-                // } else {
-                //     results.push({
-                //         timestamp: order.timestamp,
-                //         orderId: order[`payload.id`],
-                //         userId: order.userId,
-                //         status: order.status,
-                //         targetAmount: order.targetAmount,
-                //         targetPrice: order.targetPrice,
-                //         userType: "SELLER",
-                //         tradeMarket: "POOL",
-                //         settlementTime: order.settlementTime
-
-                //     })
-                // }
-
+              
             })
 
             return results;
@@ -171,21 +157,21 @@ export class OrderReportAPI {
 
             return null;
         }
-    }//wait for 
+    }
 
     async getOpenPoolMarketBid(req: IGetOrderRequest): Promise<IGetOrderResponse[] | null> { //new query
         const period = req.period;
         const body: IGetDruidBody = {
-            "query": `SELECT "payload.id",
+            "query": `SELECT "payload._id",
             LATEST(CAST("__time" as VARCHAR),100) FILTER (WHERE "__time" is not null) as "timestamp",
             LATEST("payload.bidderId",50)FILTER(WHERE "payload.bidderId" IS NOT NULL) as userId, 
             LATEST("payload.status",10) FILTER (WHERE "payload.status" is not null) status,
             LATEST(CAST("payload.settlementTime" as VARCHAR),50 ) FILTER(WHERE "payload.settlementTime" is not null) settlementTime,
             LATEST(CAST("payload.targetPrice" as VARCHAR),10 ) FILTER(WHERE "payload.targetPrice" is not null) targetPrice,
             LATEST(CAST("payload.targetAmount" as VARCHAR),10 ) FILTER(WHERE "payload.targetAmount" is not null) targetAmount
-            FROM "PoolMarketBidOnEgatF"
+            FROM "FinalPoolMarketBid"
             WHERE "payload.status" = 'OPEN' AND "__time" > '2022-01-24T09:10'
-            GROUP BY "payload.id"`,
+            GROUP BY "payload._id"`,
             "resultFormat": "object"
         }
         let headers = {
@@ -222,20 +208,6 @@ export class OrderReportAPI {
                         settlementTime: order.settlementTime
                     })
                 }
-
-                // else {
-                //     results.push({
-                //         timestamp: order.timestamp,
-                //         orderId: order[`payload.id`],
-                //         userId: order.userId,
-                //         status: order.status,
-                //         targetAmount: order.targetAmount,
-                //         targetPrice: order.targetPrice,
-                //         userType: "BUYER",
-                //         tradeMarket: "POOL",
-                //         settlementTime: order.settlementTime
-                //     })
-                // }
             })
             return results;
         } catch (e) {
@@ -248,16 +220,16 @@ export class OrderReportAPI {
     async getOpenBilateralTradeOffer(req: IGetOrderRequest): Promise<IGetOrderResponse[] | null> {  //new query
         const period = req.period;
         const body: IGetDruidBody = {
-            "query": `SELECT "payload.id",
+            "query": `SELECT "payload._id",
             LATEST(CAST("__time" as VARCHAR),100) FILTER (WHERE "__time" is not null) as "timestamp",
             LATEST("payload.sellerId",50)FILTER(WHERE "payload.sellerId" IS NOT NULL) as userId, 
             LATEST("payload.status",10) FILTER (WHERE "payload.status" is not null) status,
             LATEST(CAST("payload.settlementTime" as VARCHAR),50 ) FILTER(WHERE "payload.settlementTime" is not null) settlementTime,
             LATEST(CAST("payload.targetPrice" as VARCHAR),10 ) FILTER(WHERE "payload.targetPrice" is not null) targetPrice,
             LATEST(CAST("payload.targetAmount" as VARCHAR),10 ) FILTER(WHERE "payload.targetAmount" is not null) targetAmount
-            FROM "BilateralTradeOfferOnEgat"
+            FROM "FinalBilateralTradeOffer"
             WHERE "payload.status" = 'OPEN' AND "__time" > '2022-01-24T09:10'
-            GROUP BY "payload.id"`,
+            GROUP BY "payload._id"`,
             "resultFormat": "object"
         }
         let headers = {
@@ -279,9 +251,6 @@ export class OrderReportAPI {
                         let inRange = false;
                         if (period) {
                             inRange = dayjs(order.timestamp).isBetween(dayjs(period.startDate), dayjs(period.endDate), null, '[]');
-
-                            // inRange = dayjs(order.timestamp).isAfter(dayjs(period.startDate).startOf('day'))
-                            //     && dayjs(order.timestamp).isBefore(dayjs(period.endDate).endOf('day'))
                         }
                         if (period === undefined || inRange) {
                             results.push({
@@ -296,19 +265,7 @@ export class OrderReportAPI {
                                 settlementTime: order.settlementTime
                             })
                         }
-                        // } else {
-                        //     results.push({
-                        //         timestamp: order.timestamp,
-                        //         orderId: order[`payload.id`],
-                        //         userId: order.userId,
-                        //         status: order.status,
-                        //         targetAmount: order.targetAmount,
-                        //         targetPrice: order.targetPrice,
-                        //         userType: "SELLER",
-                        //         tradeMarket: "BILATERAL",
-                        //         settlementTime: order.settlementTime
-                        //     })
-                        // }
+                      
                     }
                 })
                 return results;
@@ -326,18 +283,16 @@ export class OrderReportAPI {
 
         try {
             const contracts = await this.tradeContractAPI.getTradeContractReport({ ...req });
-            // console.log(contracts);
             let results: IGetMathOrderResponse = { context: [] };
             if (contracts && contracts.context.length > 0) {
+             
                 contracts.context.forEach((contract: ITradeContractReport) => {
-                    console.log(`contract in order matched`);
-                    console.log(contract);
                     let inRange = false;
                     if (period) {
                         inRange = dayjs(contract.timestamp).isBetween(dayjs(period.startDate), dayjs(period.endDate), null, '[]');
                     }
                     if (period === undefined || inRange) { //period===undefined is selected All
-                        if (contract.sellerId !== null && contract.sellerId !== 'null') { //null incase pool trade 
+                        if (contract.sellerId !== null && contract.sellerId !== '_') { //null incase pool trade 
                             results.context.push({ // insert seller Matched
                                 orderId: contract.contractId,
                                 userId: contract.sellerId,
@@ -359,7 +314,7 @@ export class OrderReportAPI {
                                 }
                             })
                         }
-                        if (contract.buyerId !== null && contract.buyerId !== 'null') {
+                        if (contract.buyerId !== null && contract.buyerId !== '_') {
                             results.context.push({//insert buyer Matched
                                 orderId: contract.contractId,
                                 userId: contract.buyerId,
@@ -390,8 +345,7 @@ export class OrderReportAPI {
 
                 })
             }
-            console.log(`match order `);
-            console.log(results);
+            
             return results;
         } catch (err) {
             throw err;

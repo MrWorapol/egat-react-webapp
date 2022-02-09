@@ -44,7 +44,7 @@ export default function AllAreaTable(props: IProps) {
         { id: 'Action', label: '' }
     ];
     if (props.data === null || props.data === undefined) {
-        console.log(`WTF :`);
+        console.log(`DATA IS NULL :`);
         return <></>;
     }
     // Avoid a layout jump when reaching the last page with empty rows.

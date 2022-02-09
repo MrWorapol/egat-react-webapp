@@ -105,8 +105,8 @@ export class UserAndEnergyReportAPI {
           FROM (SELECT "payload.id" as meterId,
             LATEST("payload.locationCode",10) FILTER (WHERE "payload.locationCode" IS NOT NULL) as locationCode,
             LATEST("payload.meterName",100) FILTER (WHERE "payload.meterName" IS NOT NULL) as meterName,
-            LATEST("payload.position.lat",10) FILTER (WHERE "payload.position.lat" IS NOT NULL) as lat,
-            LATEST("payload.position.lng",10) FILTER (WHERE "payload.position.lng" IS NOT NULL) as lng,
+            LATEST(CAST("payload.position.lat" as VARCHAR),30) FILTER (WHERE "payload.position.lat" IS NOT NULL) as lat,
+            LATEST(CAST("payload.position.lng"as VARCHAR),30) FILTER (WHERE "payload.position.lng" IS NOT NULL) as lng,
             LATEST("payload.substationEgat",10) FILTER (WHERE "payload.substationEgat" IS NOT NULL) as substationEgat,
             LATEST("payload.substationPeaMea",10) FILTER (WHERE "payload.substationPeaMea" IS NOT NULL) as substationPeaMea,
             LATEST("payload.role",10) FILTER (WHERE "payload.role" IS NOT NULL) as role,
@@ -114,7 +114,7 @@ export class UserAndEnergyReportAPI {
             LATEST("payload.registrationDate",30) FILTER (WHERE "payload.registrationDate" IS NOT NULL) as registrationDate,
             LATEST("payload.userId",50) FILTER (WHERE "payload.userId" IS NOT NULL) as userId,
             LATEST("payload.userTypeName",50) FILTER (WHERE "payload.userTypeName" IS NOT NULL) as userTypeName
-          FROM "MeterInfoOnEgat"
+          FROM "MeterInfo2"
           GROUP BY "payload.id") as info
           INNER JOIN "MeterSiteDataTest" as site
           ON info."userTypeName" = site."payload.userTypeName"
@@ -187,8 +187,8 @@ export class UserAndEnergyReportAPI {
           FROM (SELECT "payload.id" as meterId,
             LATEST("payload.locationCode",10) FILTER (WHERE "payload.locationCode" IS NOT NULL) as locationCode,
             LATEST("payload.meterName",100) FILTER (WHERE "payload.meterName" IS NOT NULL) as meterName,
-            LATEST("payload.position.lat",10) FILTER (WHERE "payload.position.lat" IS NOT NULL) as lat,
-            LATEST("payload.position.lng",10) FILTER (WHERE "payload.position.lng" IS NOT NULL) as lng,
+            LATEST(CAST("payload.position.lat" as VARCHAR),30) FILTER (WHERE "payload.position.lat" IS NOT NULL) as lat,
+            LATEST(CAST("payload.position.lng"as VARCHAR),30) FILTER (WHERE "payload.position.lng" IS NOT NULL) as lng,
             LATEST("payload.substationEgat",10) FILTER (WHERE "payload.substationEgat" IS NOT NULL) as substationEgat,
             LATEST("payload.substationPeaMea",10) FILTER (WHERE "payload.substationPeaMea" IS NOT NULL) as substationPeaMea,
             LATEST("payload.role",10) FILTER (WHERE "payload.role" IS NOT NULL) as role,
@@ -196,7 +196,7 @@ export class UserAndEnergyReportAPI {
             LATEST("payload.registrationDate",30) FILTER (WHERE "payload.registrationDate" IS NOT NULL) as registrationDate,
             LATEST("payload.userId",50) FILTER (WHERE "payload.userId" IS NOT NULL) as userId,
             LATEST("payload.userTypeName",50) FILTER (WHERE "payload.userTypeName" IS NOT NULL) as userTypeName
-          FROM "MeterInfoOnEgat"
+          FROM "MeterInfo2"
           GROUP BY "payload.id") as info
           INNER JOIN "MeterSiteDataTest" as site
           ON info."userTypeName" = site."payload.userTypeName"`,
@@ -242,13 +242,13 @@ export class UserAndEnergyReportAPI {
 
             query: `SELECT DISTINCT
             "__time" as "timestamp",
-            "payload.id",
+            "payload._id",
             "payload.inBattery" as "inBattery", 
             "payload.inGrid" as "inGrid", 
             "payload.inSolar" as "inSolar", 
             "payload.load" as "load",
             "payload.meterId" as "meterId"
-            FROM "PowerOnEgatF"
+            FROM "FinalPower"
             WHERE "__time" >= '2022-01-24T13:00:00.000Z'`,
             resultFormat: "object",
         }
@@ -274,8 +274,7 @@ export class UserAndEnergyReportAPI {
                 responseJSON.forEach((power: IPowerResponse) => {
                     let inRange = false;
                     if (period !== undefined) { //case query with period time
-                        console.log(dayjs(power.timestamp).isBetween(dayjs(period.startDate),dayjs(period.endDate),null,'[]'));
-                        inRange = dayjs(power.timestamp).isBetween(dayjs(period.startDate),dayjs(period.endDate),null,'[]');
+                        inRange = dayjs(power.timestamp).isBetween(dayjs(period.startDate), dayjs(period.endDate), null, '[]');
                     }
 
                     if (period === undefined || inRange) { //
@@ -327,7 +326,7 @@ export class UserAndEnergyReportAPI {
                 "payload.inGrid" as "inGrid",
                 "payload.inSolar" as "inSolar",
                 "payload.load" as "load" 
-                FROM "ForecastOnEgatF"
+                FROM "FinalForecast"
                 WHERE "payload.meterId" = ${req.meterId} AND "__time" >= '2022-01-24T13:00:00.000Z'`,
             resultFormat: "object",
         }
@@ -346,7 +345,7 @@ export class UserAndEnergyReportAPI {
                 rawData.forEach((power: IPowerResponse) => {
                     let inRange = false;
                     if (period !== undefined) { //case query with period time
-                        inRange = dayjs(power.timestamp).isBetween(dayjs(period.startDate),dayjs(period.endDate),null,'[]');
+                        inRange = dayjs(power.timestamp).isBetween(dayjs(period.startDate), dayjs(period.endDate), null, '[]');
                     }
                     if (period === undefined || inRange) {
                         powerDatas.push({
@@ -361,24 +360,6 @@ export class UserAndEnergyReportAPI {
                         });
                     }
                 })
-
-                // console.log(`raw forecast data filter date`);
-                // console.log(powerDatas);
-                // {
-                //     rawData.forEach((power: IPowerResponse) => {
-                //         powerDatas.push({
-                //             meterId: power.meterId,
-                //             timestamp: power.timestamp,
-                //             inSolar: Math.abs(power.inSolar) || 0,
-                //             outBattery: power.inBattery > 0 ? power.inBattery : 0,
-                //             inBattery: power.inBattery < 0 ? Math.abs(power.inBattery) : 0,
-                //             inGrid: power.inGrid > 0 ? power.inGrid : 0,//inGrid > 0 can sell
-                //             excessPv: power.inGrid < 0 ? Math.abs(power.inGrid) : 0, //inGrid <0 use too much
-                //             load: power.load,
-                //         });
-                //     })
-                // }
-
                 return {
                     context: powerDatas
                 }

@@ -18,8 +18,7 @@ export function useCreateAdmin() {
                     admin: admin,
                 });
                 if (response) {
-                    console.log(`response from api`);
-                    console.log(response);
+               
                     refreshAllUser();
                 }
             } catch (err) {

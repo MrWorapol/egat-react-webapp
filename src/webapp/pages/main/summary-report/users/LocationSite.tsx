@@ -237,7 +237,6 @@ function buildForecastChart( //,chartRef: React.MutableRefObject<any>
 
 function sumPowerByHour(hour: string, inputData: IPowerGraph[]): IPowerGraph {
     let result: IPowerGraph = { timestamp: hour, grid: 0, pv: 0 };
-    if(hour === '00:00-01:00') {console.log(inputData)};
     inputData.forEach((power: IPowerGraph) => {
         if (dayjs(power.timestamp).format('HH:mm') === hour.slice(0, 5)) {
             result.grid += power.grid ?? 0;

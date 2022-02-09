@@ -97,7 +97,6 @@ export default class TOUTariffAPI {
         }
         if (response.status === 200) {
             let result = await response.json();
-            console.log(result);
             let content: IGetTOUResponse = {
                 context: result
             }
@@ -119,8 +118,7 @@ export default class TOUTariffAPI {
         }
 
         let body = JSON.stringify(req.tariff);
-        console.log(`body data`);
-        console.info(body);
+
         try {
             response = await fetch(api, {
                 method: "PUT",
@@ -158,8 +156,7 @@ export default class TOUTariffAPI {
         }
         if (response.status === 200) {
             let result = await response.json();
-            console.log(`get tariff logs`);
-            console.log(result);
+            
             let content: IGetTOULogsResponse = {
                 context: result
             }

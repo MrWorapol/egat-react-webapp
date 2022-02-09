@@ -77,16 +77,13 @@ interface TradeContractInfo {
 
 
 interface ITradeContractJSON {
-    tradeContractId?: string
-
-    sellerIds: string[]
-    buyerIds: string[]
-    priceRuleApplied: string
-
-    settlementTime: string
-
-    infos: string;
-    timestamp: string
+    tradeContractId?: string,
+    sellerIds: string,
+    buyerIds: string,
+    priceRuleApplied: string,
+    settlementTime: string,
+    infos: string,
+    timestamp: string,
 }
 
 
@@ -153,14 +150,15 @@ export class SettlementReportAPI {
     async getTradeContractReport(req: IGetSettlementReportRequest): Promise<IGetTradeContractResponse | null> {
         const period = req.period; //undefined is select all 
         const body: IGetDruidBody = {
-            "query": `SELECT "__time" as "timestamp",
-            "payload.id" as "tradeContractId",
-            "payload.buyerIds" as "buyerIds",
-            "payload.priceRuleApplied" as "priceRuleApplied",
-            "payload.sellerIds" as "sellerIds",  
-            "payload.settlementTime" as "settlementTime",
-            "payload.infos" as "infos"
-            FROM "TradeContractEgatFinal"`,
+            "query": `SELECT "__time" as "timestamp", 
+            "payload._id" as "tradeContractId",
+            LATEST("payload.buyerIds",1000)FILTER(WHERE "payload.buyerIds" is not NULL) as buyerIds,
+            LATEST("payload.infos",999999)FILTER(WHERE "payload.infos" is not NULL) as infos,
+            LATEST("payload.priceRuleApplied",20)FILTER(WHERE "payload.priceRuleApplied" is not NULL) as priceRuleApplied,
+            LATEST("payload.sellerIds",1000)FILTER(WHERE "payload.sellerIds" is not NULL) as sellerIds,
+            LATEST("payload.settlementTime",20)FILTER(WHERE "payload.settlementTime" is not NULL) as settlementTime
+            FROM "TradeContract"
+            GROUP BY "__time","payload._id"`,
             "resultFormat": "object"
         }
         let headers = {
@@ -180,28 +178,35 @@ export class SettlementReportAPI {
 
             const reponseJSON: ITradeContractJSON[] = await response.json();
             let context: ITradeContractReport[] = [];
-            console.log(reponseJSON);
+            // console.log(reponseJSON);
             reponseJSON.length > 0 && reponseJSON.forEach((tradeContract: ITradeContractJSON) => {
                 let inRange: boolean = false; //default is false
                 if (period !== undefined) {//is select all in selected period
                     inRange = dayjs(tradeContract.timestamp).isBetween(dayjs(period.startDate), dayjs(period.endDate), null, '[]');
                 }
                 if (inRange || period === undefined) {
+                    let buyerIds: string | string[] = tradeContract.buyerIds;
+                    let sellerIds: string | string[] = tradeContract.sellerIds;;
                     tradeContract.infos = tradeContract.infos.replace(/=/gi, ':'); //convert = -> :
                     let newRegex = new RegExp(/[a-zA-Z0-9._-]+[a-zA-Z0-9._-]|[0-9]/g); // check start and end with text,number,".","_","-" , 0-9
                     let infosConvert = tradeContract.infos.replace(newRegex, '"$&"');//insert "" around every text
                     let reformatStartBracket = infosConvert.replace(/(\[")/, '[') // [" -> [
                     let reformatEndBracket = reformatStartBracket.replace(/("\])/, ']') // "] -> ]
-                    let arrayInfos = reformatEndBracket.replace(/(",")/, ',');// between array object "," -> ,
-                    
+                    let arrayInfos = reformatEndBracket.replace(/(}","{)/g, '},{');// between array object "," -> ,
+                    if (tradeContract.buyerIds.match(/(\[\\")/)) {//check if buyerIds is array string
+                        buyerIds = JSON.parse(tradeContract.buyerIds);
+                    }
+                    if (tradeContract.sellerIds.match(/(\[\\")/)) { //check if buyerIds is array string
+                        sellerIds = JSON.parse(tradeContract.sellerIds);
+                    }
                     let infosJSON: TradeContractInfo | TradeContractInfo[] = JSON.parse(arrayInfos);
-                    
-                    if (!Array.isArray(infosJSON)) { //Bilateral market always isn't arrays 
+                    if (!Array.isArray(infosJSON)) { //Bilateral market info's always isn't arrays 
                         if (infosJSON.reference.marketType === "BILATERAL") {
+                       
                             context.push({
                                 contractId: tradeContract.tradeContractId || '_',
-                                buyerId: Array.isArray(tradeContract.buyerIds) ? tradeContract.buyerIds[0] : tradeContract.buyerIds,//if "_" is logic bug
-                                sellerId: Array.isArray(tradeContract.sellerIds) ? tradeContract.sellerIds[0] : tradeContract.sellerIds,//if "_" is logic bug
+                                buyerId: Array.isArray(buyerIds) ? tradeContract.buyerIds[0] : tradeContract.buyerIds,//if "_" is logic bug
+                                sellerId: Array.isArray(sellerIds) ? tradeContract.sellerIds[0] : tradeContract.sellerIds,//if "_" is logic bug
                                 energyCommitted: parseFloat(infosJSON.amount) || -99,//-99 if logic fail
                                 priceCommitted: parseFloat(infosJSON.price) || -99, //-99 if logic fail
                                 meterId: '_',
@@ -221,8 +226,8 @@ export class SettlementReportAPI {
                         infosJSON.forEach((tradeInfo: TradeContractInfo) => {
                             context.push({
                                 contractId: tradeContract.tradeContractId || '_',
-                                buyerId: tradeInfo.buyerId || "_",//if "_" is logic bug
-                                sellerId: tradeInfo.sellerId || "_",//if "_" is logic bug
+                                buyerId: tradeInfo.buyerId !== "null" ? tradeInfo.buyerId || '' : "_",//if "_" is logic bug
+                                sellerId: tradeInfo.sellerId !== "null" ? tradeInfo.sellerId || '' : "_",//if "_" is logic bug
                                 energyCommitted: parseFloat(tradeInfo.amount) || -99,//-99 if logic fail
                                 priceCommitted: parseFloat(tradeInfo.price) || -99, //-99 if logic fail
                                 meterId: '_',
@@ -239,143 +244,13 @@ export class SettlementReportAPI {
                             })
                         })
                     }
-                    // let tradeContractInfos = JSON.parse(tradeContract.infos);
-                    // if (tradeContract.infos.length > 0) {
-                    //     tradeContract.infos.forEach((tradeContractInfo: TradeContractInfo) => {
-                    //         if (tradeContractInfo.reference.marketType === "BILATERAL") {
-                    //             context.push({
-                    //                 contractId: tradeContract.tradeContractId || '_',
-                    //                 buyerId: tradeContract.buyerIds[0] || '_',//if "_" is logic bug
-                    //                 sellerId: tradeContract.sellerIds[0] || '_',//if "_" is logic bug
-                    //                 energyCommitted: tradeContractInfo.amount,
-                    //                 priceCommitted: tradeContractInfo.price,
-                    //                 meterId: '_',
-                    //                 matchedMeterId: '_',
-                    //                 bilateralTradeSettlementId: tradeContractInfo.reference.bilateralTradeSettlementId, // trade ID
-                    //                 userType: '_', //
-                    //                 tradeMarket: tradeContractInfo.reference.isBilateralLongTerm ? "LONGTERM_BILATERAL" : tradeContractInfo.reference.marketType, //short term, long term,pool market
-                    //                 settlementTime: +tradeContract.settlementTime, //settlement timedeliverd time
-                    //                 timestamp: tradeContract.timestamp, //unix Time
-                    //                 tradingFee: tradeContractInfo.tradingFee,
-                    //                 wheelingChargeFee: tradeContractInfo.wheelingChargeFee,
-                    //                 imbalanceStatus: "_",
-                    //                 priceRuleApplied: tradeContract.priceRuleApplied,
-                    //             })
-                    //         }
-                    //         if (tradeContractInfo.reference.marketType === "POOL") {
-
-                    //         }
-                    //     })
-                    // }
-
                 }
             })
-            //     let inRange: boolean = false; //default is false
-            //     if (period !== undefined) {//is select all in selected period
-            //         inRange = dayjs(tradeContract.timestamp).isBetween(dayjs(period.startDate), dayjs(period.endDate), null, '[]');
-            //     }
-            //     if (tradeContract.bilateralTradeSettlementId) {
-            //         if (tradeContract.isBilateralLongTerm) {
-            //             tradeContract.tradeMarket = "LONGTERM_BILATERAL"
-            //         }
-            //     }
-            //     if (tradeContract.poolTradeSettlementId) {
-            //         if (tradeContract.buyerIds.length > 0) {
-            //             tradeContract.buyerIds.forEach((buyerId: string) => {
-            //                 if (inRange || period === undefined) {
-            //                     context.push({
-            //                         contractId: tradeContract.contractId,
-            //                         buyerId: buyerId || '-1',//if -1 is logic bug
-            //                         sellerId: 'POOL',
-            //                         energyCommitted: tradeContract.energyCommitted,
-            //                         priceCommitted: tradeContract.priceCommitted,
-            //                         meterId: '-1',
-            //                         matchedMeterId: '-1',
-            //                         bilateralTradeSettlementId: tradeContract.bilateralTradeSettlementId, // trade ID
-            //                         poolTradeSettlementId: tradeContract.poolTradeSettlementId, // trade ID
-            //                         userType: 'BUYER', //buyer| seller
-            //                         tradeMarket: tradeContract.tradeMarket, //short term, long term,pool market
-            //                         settlementTime: tradeContract.settlementTime, //settlement timedeliverd time
-            //                         timestamp: tradeContract.timestamp, //unix Time
-            //                         tradingFee: tradeContract.tradingFee,
-            //                         wheelingChargeFee: tradeContract.wheelingChargeFee,
-            //                         imbalanceStatus: "CONTRACT",
-            //                         priceRuleApplied: tradeContract.priceRuleApplied,
-            //                     })
-            //                 }
-            //             })
-            //         } if (tradeContract.sellerIds.length > 0) {
-            //             tradeContract.sellerIds.forEach((sellerId: string) => {
-            //                 if (inRange || period === undefined) {
-            //                     context.push({
-            //                         contractId: tradeContract.contractId,
-            //                         buyerId: 'POOL',
-            //                         sellerId: sellerId || '-1',//if -1 is logic bug
-            //                         energyCommitted: tradeContract.energyCommitted,
-            //                         priceCommitted: tradeContract.priceCommitted,
-            //                         meterId: '-1',
-            //                         matchedMeterId: '-1',
-            //                         bilateralTradeSettlementId: tradeContract.bilateralTradeSettlementId, // trade ID
-            //                         poolTradeSettlementId: tradeContract.poolTradeSettlementId, // trade ID
-            //                         userType: 'BUYER', //buyer| seller
-            //                         tradeMarket: tradeContract.tradeMarket, //short term, long term,pool market
-            //                         settlementTime: tradeContract.settlementTime, //settlement timedeliverd time
-            //                         timestamp: tradeContract.timestamp, //unix Time
-            //                         tradingFee: tradeContract.tradingFee,
-            //                         wheelingChargeFee: tradeContract.wheelingChargeFee,
-            //                         imbalanceStatus: "CONTRACT",
-            //                         priceRuleApplied: tradeContract.priceRuleApplied,
-            //                     })
-            //                 }
-            //             })
-            //         }
-            //     }
-            //     if (inRange || period === undefined) {
-            //         context.push({
-            //             contractId: tradeContract.contractId,
-            //             buyerId: tradeContract.buyerIds[0] || '-1',//if -1 is logic bug
-            //             sellerId: tradeContract.sellerIds[0] || '-1',//if -1 is logic bug
-            //             energyCommitted: tradeContract.energyCommitted,
-            //             priceCommitted: tradeContract.priceCommitted,
-            //             meterId: '-1',
-            //             matchedMeterId: '-1',
-            //             bilateralTradeSettlementId: tradeContract.bilateralTradeSettlementId, // trade ID
-            //             poolTradeSettlementId: tradeContract.poolTradeSettlementId, // trade ID
-            //             userType: '', //buyer| seller
-            //             tradeMarket: tradeContract.tradeMarket, //short term, long term,pool market
-            //             settlementTime: tradeContract.settlementTime, //settlement timedeliverd time
-            //             timestamp: tradeContract.timestamp, //unix Time
-            //             tradingFee: tradeContract.tradingFee,
-            //             wheelingChargeFee: tradeContract.wheelingChargeFee,
-            //             imbalanceStatus: "CONTRACT",
-            //             priceRuleApplied: tradeContract.priceRuleApplied,
-            //         })
-            //     }
-            //     // else {
-            //     //     context.push({
-            //     //         contractId: tradeContract.contractId,
-            //     //         buyerId: tradeContract.buyerIds[0] || '-1', //if -1 is logic bug
-            //     //         sellerId: tradeContract.sellerIds[0] || '-1',//if -1 is logic bug
-            //     //         energyCommitted: tradeContract.energyCommitted,
-            //     //         priceCommitted: tradeContract.priceCommitted,
-            //     //         meterId: '-1',
-            //     //         matchedMeterId: '-1',
-            //     //         bilateralTradeSettlementId: tradeContract.bilateralTradeSettlementId, // trade ID
-            //     //         poolTradeSettlementId: tradeContract.poolTradeSettlementId, // trade ID
-            //     //         userType: '', //buyer| seller
-            //     //         tradeMarket: tradeContract.tradeMarket, //short term, long term,pool market
-            //     //         settlementTime: tradeContract.settlementTime, //settlement timedeliverd time
-            //     //         timestamp: tradeContract.timestamp, //unix Time
-            //     //         tradingFee: tradeContract.tradingFee,
-            //     //         wheelingChargeFee: tradeContract.wheelingChargeFee,
-            //     //         imbalanceStatus: "CONTRACT",
-            //     //         priceRuleApplied: tradeContract.priceRuleApplied,
-            //     //     })
-            //     // }
-            // })
+
+
             return {
                 context: context,
-                count: 0
+                count: reponseJSON.length
             };
         } catch (e) {
             console.log(e);
@@ -387,12 +262,12 @@ export class SettlementReportAPI {
     async getTradeDataReport(req: IGetSettlementReportRequest): Promise<IGetTradeDataResponse | null> {
         const period = req.period;
         const body: IGetDruidBody = {
-            "query": `SELECT 
+            "query": `SELECT
             "__time" as "timestamp",
             "payload.amount" as "amount", 
             "payload.buyerId" as "buyerId",
             "payload.buyerType" as "buyerType",
-            "payload.id" as "tradeDataId",
+            "payload._id" as "tradeDataId",
             "payload.price" as "price",
             "payload.sellerId" as "sellerId",
             "payload.sellerType" as "sellerType",
@@ -405,7 +280,7 @@ export class SettlementReportAPI {
             "payload.reference.imbalanceBuyerUnderCommit" as "imbalanceBuyerUnderCommit", 
             "payload.reference.imbalanceSellerOverCommit"as "imbalanceSellerOverCommit", 
             "payload.reference.imbalanceSellerUnderCommit" as "imbalanceSellerUnderCommit"
-            FROM "TradeFinal"
+            FROM "FinalTrade"
             WHERE "__time" >= '2022-01-24T09:10:00.000Z'`,
             "resultFormat": "object"
 
@@ -450,77 +325,77 @@ export class SettlementReportAPI {
         }
     }
 
-    async getPoolSettlement(req: IGetSettlementReportRequest): Promise<IPoolSettlementJSON[] | null> {
-        const period = req.period;
+    // async getPoolSettlement(req: IGetSettlementReportRequest): Promise<IPoolSettlementJSON[] | null> {
+    //     const period = req.period;
 
-        let headers = {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            "Authorization": `Bearer ${req.session.accessToken}`,
-        }
-        const body: IGetDruidBody = {
-            "query": `SELECT "__time" as "timestamp", 
-            "payload.id",
-            "payload.tradeContractId" as "tradeContractId",
-            "payload.buyerId" as "buyerId", 
-            "payload.sellerId" as "sellerId", 
-            "payload.actualAmountProvided" as "actualSellerAmount", 
-            "payload.actualAmountReceived" as "actualBuyerAmount",
-            "payload.agreementAmount" as "agreementAmount",
-            "payload.agreementPrice" as "agreementPrice",  
-            "payload.agreementTradingFee" as "agreementTradingFee", 
-            "payload.agreementWheelingChargeFee" as "agreementWheelingChargeFee", 
-            "payload.priceRuleApplied" as "priceRuleApplied", 
-            "payload.reference.discountAppFee" as "discountAppFee", 
-            "payload.reference.gridUsedDiscount" as "gridUsedDiscount",
-            "payload.reference.gridUsedFt" as "gridUsedFt",
-            "payload.reference.imbalanceBuyerOverCommit" as "imbalanceBuyerOverCommit",
-            "payload.reference.imbalanceBuyerUnderCommit" as "imbalanceBuyerUnderCommit",
-            "payload.reference.imbalanceSellerOverCommit" as "imbalanceSellerOverCommit",
-            "payload.reference.imbalanceSellerUnderCommit" as "imbalanceSellerUnderCommit",
-            "payload.reference.targetPrice" as "targetPrice",
-            "payload.reference.touTariff" as "touTariff",
-            "payload.reference.touTariffClass" as "touTariffClass",
-            "payload.reference.transactionFee" as "transactionFee", 
-            "payload.reference.vat" as "vat",
-            "payload.reference.wheelingBuyerEgatTotal", 
-            "payload.reference.wheelingSellerEgatTotal", 
-            "payload.reference.wheelingTotal" as "wheelingTotal"
-            FROM "ClearingSettlementOnEgat"`,
-            "resultFormat": "object"
-        }
-        let response: Response;
+    //     let headers = {
+    //         "Content-Type": "application/json",
+    //         "Accept": "application/json",
+    //         "Authorization": `Bearer ${req.session.accessToken}`,
+    //     }
+    //     const body: IGetDruidBody = {
+    //         "query": `SELECT "__time" as "timestamp", 
+    //         "payload.id",
+    //         "payload.tradeContractId" as "tradeContractId",
+    //         "payload.buyerId" as "buyerId", 
+    //         "payload.sellerId" as "sellerId", 
+    //         "payload.actualAmountProvided" as "actualSellerAmount", 
+    //         "payload.actualAmountReceived" as "actualBuyerAmount",
+    //         "payload.agreementAmount" as "agreementAmount",
+    //         "payload.agreementPrice" as "agreementPrice",  
+    //         "payload.agreementTradingFee" as "agreementTradingFee", 
+    //         "payload.agreementWheelingChargeFee" as "agreementWheelingChargeFee", 
+    //         "payload.priceRuleApplied" as "priceRuleApplied", 
+    //         "payload.reference.discountAppFee" as "discountAppFee", 
+    //         "payload.reference.gridUsedDiscount" as "gridUsedDiscount",
+    //         "payload.reference.gridUsedFt" as "gridUsedFt",
+    //         "payload.reference.imbalanceBuyerOverCommit" as "imbalanceBuyerOverCommit",
+    //         "payload.reference.imbalanceBuyerUnderCommit" as "imbalanceBuyerUnderCommit",
+    //         "payload.reference.imbalanceSellerOverCommit" as "imbalanceSellerOverCommit",
+    //         "payload.reference.imbalanceSellerUnderCommit" as "imbalanceSellerUnderCommit",
+    //         "payload.reference.targetPrice" as "targetPrice",
+    //         "payload.reference.touTariff" as "touTariff",
+    //         "payload.reference.touTariffClass" as "touTariffClass",
+    //         "payload.reference.transactionFee" as "transactionFee", 
+    //         "payload.reference.vat" as "vat",
+    //         "payload.reference.wheelingBuyerEgatTotal", 
+    //         "payload.reference.wheelingSellerEgatTotal", 
+    //         "payload.reference.wheelingTotal" as "wheelingTotal"
+    //         FROM "ClearingSettlementOnEgat"`,
+    //         "resultFormat": "object"
+    //     }
+    //     let response: Response;
 
-        try {
-            response = await fetch(this.endpoint, {
+    //     try {
+    //         response = await fetch(this.endpoint, {
 
-                headers,
-                method: "POST",
-                body: JSON.stringify(body),
-            })
-            if (response.status === 200) {
-                const result: IPoolSettlementJSON[] = [];
-                const responseJSON: IPoolSettlementJSON[] = await response.json();
-                if (responseJSON.length > 0) {
-                    responseJSON.forEach((poolSettlement) => {
-                        let inRange = false;
-                        if (period) {
-                            inRange = dayjs(poolSettlement.timestamp).isBetween(dayjs(period.startDate), dayjs(period.endDate), null, '[]');
-                        }
-                        if (period === undefined || inRange) {
-                            result.push(poolSettlement);
-                        }
-                    })
-                }
-                return result;
-            }
+    //             headers,
+    //             method: "POST",
+    //             body: JSON.stringify(body),
+    //         })
+    //         if (response.status === 200) {
+    //             const result: IPoolSettlementJSON[] = [];
+    //             const responseJSON: IPoolSettlementJSON[] = await response.json();
+    //             if (responseJSON.length > 0) {
+    //                 responseJSON.forEach((poolSettlement) => {
+    //                     let inRange = false;
+    //                     if (period) {
+    //                         inRange = dayjs(poolSettlement.timestamp).isBetween(dayjs(period.startDate), dayjs(period.endDate), null, '[]');
+    //                     }
+    //                     if (period === undefined || inRange) {
+    //                         result.push(poolSettlement);
+    //                     }
+    //                 })
+    //             }
+    //             return result;
+    //         }
 
-        } catch (e) {
-            console.log(e);
-            throw Error(`Unexpected handle error`);
-        }
-        return null;
-    }
+    //     } catch (e) {
+    //         console.log(e);
+    //         throw Error(`Unexpected handle error`);
+    //     }
+    //     return null;
+    // }
 
     // async getBilateralSettlementLongTerm(req: IGetSettlementReportRequest): Promise<IGetBilateralSettlementResponse | null> {
     //     const period = req.period;

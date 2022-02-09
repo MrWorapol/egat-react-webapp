@@ -34,7 +34,6 @@ export default function Imbalance() {
     }
     function onClickLogButton(no: number, selectedData: Iimbalance) {
         resetLogs();
-        console.log(`open log ${selectedData.imbalance}`)
         showDialog({
             content: <ImbalanceLogDialog no={no} imbalance={selectedData} />,
             onClose: () => false,

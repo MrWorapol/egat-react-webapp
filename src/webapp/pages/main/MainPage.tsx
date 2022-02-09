@@ -51,7 +51,7 @@ function PageRouting() {
 
     useEffect(() => {
         if (currentState === NavigationCurrentType.LOGIN) {
-            console.log(`current state ${currentState}`);
+         
             return () => {}
         } else {
             const timerInterval = setInterval(async () => {
@@ -60,7 +60,7 @@ function PageRouting() {
                 if (countInterval === 30) { //page away 30 mins will reload for aviod memory leak
                     window.location.reload();
                 }
-                console.log(`call Interval ${countInterval}`)
+    
                 checkRefreshToken();
             }, 60000);
 

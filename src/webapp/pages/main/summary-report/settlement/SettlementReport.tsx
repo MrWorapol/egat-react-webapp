@@ -18,7 +18,6 @@ export default function SettlementReport() {
     const { refreshSettlementReport, settlementChart } = useSettlementReport();
 
     const refreshPage = async () => {
-        console.log(`call refresh page`)
         refreshSettlementReport('all', 'all', 'all', 'all', 'all');
     };
 

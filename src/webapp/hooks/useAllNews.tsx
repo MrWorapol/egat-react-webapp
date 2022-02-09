@@ -47,8 +47,7 @@ export function useAllNews() {
             status: 'DRAFT',
 
         }
-        console.log(`put recents News Data: `);
-        console.log(newInfos);
+     
         //this is set
         if (newsInfoDataValue) {
             setNewsInfoValue([
@@ -85,7 +84,6 @@ export function useAllNews() {
                         const response = await api.getNews({
                             keyword: searchField.text, session
                         });
-                        console.log(response);
                         if (response) {
                             setNewsInfoValue(response.newsInfos);
                         } else {
@@ -102,7 +100,6 @@ export function useAllNews() {
                         if (response) {
                             // console.log(`result from response${response.userInfos}`);
                             setNewsInfoValue(response.newsInfos);
-                            console.log(response);
                             // console.log(userInfoDataValue);
                         } else {
                             setNewsInfoValue([]);

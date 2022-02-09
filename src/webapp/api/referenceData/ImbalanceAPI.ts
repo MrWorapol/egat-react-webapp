@@ -92,8 +92,7 @@ export class ImbalanceAPI {
         }
 
         let body = JSON.stringify(req.imbalance);
-        console.log(`body data`);
-        console.info(body);
+
         try {
             response = await fetch(api, {
                 method: "PUT",

@@ -21,7 +21,6 @@ export function useOtherSettingLogs() {
         try {
             showLoading(10);
             const response = await api.getOtherSettingLogs({ session, });
-            console.log('call wheeling log api');
             if (response !== null) {
                 showSnackBar({ serverity: 'success', message: "Loading successful" })
                 setotherSettingLogs(response.context);

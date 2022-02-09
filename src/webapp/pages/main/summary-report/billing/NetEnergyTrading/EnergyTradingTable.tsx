@@ -27,7 +27,6 @@ export default function EnergyTradingTable(props: IProps) {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(3);
     const history = useHistory();
-    console.log(energyPaymentTable);
 
     const columns: Column[] = [
         { id: 'meterId', label: 'Meter Id.' },
@@ -36,7 +35,7 @@ export default function EnergyTradingTable(props: IProps) {
         { id: 'netPrice', label: 'Net Price' },
     ];
     if (energyPaymentTable === null || energyPaymentTable === undefined) {
-        console.log(`WTF : ${energyPaymentTable}`);
+        console.log(`NULL`);
         return <></>;
     }
     
@@ -60,7 +59,7 @@ export default function EnergyTradingTable(props: IProps) {
 
 
     function onClickViewButton(row: any) {
-        console.log('click view button')
+        
     }
 
     return (

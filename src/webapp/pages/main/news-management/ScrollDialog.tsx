@@ -18,10 +18,10 @@ export default function ScrollDialog({ NewsPara }: { NewsPara: NewsInfo }) {
         () => {
             if (typeof (NewsPara?.content) === 'string') {
                 stringcontent = NewsPara?.content;
-                console.log(stringcontent)
+                // console.log(stringcontent)
             };
             const contentState = convertFromRaw(markdownToDraft(stringcontent));
-            console.log(contentState);
+            // console.log(contentState);
             return content
                 ? EditorState.createWithContent(contentState)
                 : EditorState.createEmpty();

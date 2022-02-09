@@ -109,7 +109,7 @@ export default function UserDetail() {
     let watchError = watch();
 
     useEffect(() => {
-      console.log(watchError);
+    //   console.log(watchError);
     
       return () => {
         
@@ -125,14 +125,14 @@ export default function UserDetail() {
     }
 
     const onEditUser = async (data: IFormTextFieldInput) => {
-        console.log(errors);
+        // console.log(errors);
         // if (userSession && data.userDetail && data.meterDetail) {
         showLoading(10);
         if (session) {
             try {
                 let newUserDetail = data.userDetail;
-                console.log(data.meterDetail);
-                console.log(newUserDetail);
+                // console.log(data.meterDetail);
+                // console.log(newUserDetail);
                 data.meterDetail.expectedDate = dayjs(data.meterDetail.expectedDate).toISOString();
                 await api.editUser({
                     session,
@@ -155,7 +155,7 @@ export default function UserDetail() {
         }
     }
     const onSubmit: SubmitHandler<IFormTextFieldInput> = data => {
-        console.log(data);
+
         onEditUser(data);
 
     }

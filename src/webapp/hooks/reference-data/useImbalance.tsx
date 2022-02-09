@@ -21,7 +21,6 @@ export function useImbalance() {
             try {
                 showLoading(10);
                 const response = await api.getImbalance({ session: session });
-                console.log('call wheeling chart api');
                 if (response !== null) {
                     showSnackBar({
                         serverity: "success",

@@ -34,7 +34,7 @@ export default function AllOrderTable(props: IProps) {
         { id: 'Action', label: '' }
     ];
     if (props.data === null || props.data === undefined) {
-        console.log(`WTF : ${props.data}`);
+        console.log(`NULL`);
         return <></>;
     }
     // if (userInfoData.length === 0) {
@@ -64,8 +64,7 @@ export default function AllOrderTable(props: IProps) {
         //     resetUserDetailData();
         //     history.push(`/user_management/${userInfo.meterId}`);
         // }
-        console.log(`click view`);
-        console.log(row)
+   
         refreshOrderDetail(row)
     }
     

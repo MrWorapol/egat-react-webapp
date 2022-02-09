@@ -125,7 +125,7 @@ export default function BillingReport() {
             </Box>
         )
     } else {
-        console.log(`cannot load page`);
+        // console.log(`cannot load page`);
         return <>Loading...</>;
     }
 

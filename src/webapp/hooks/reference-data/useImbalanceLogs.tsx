@@ -19,7 +19,6 @@ export function useImbalanceLogs(data: Iimbalance) {
             try {
                 showLoading(10);
                 const response = await api.getLogsImbalance({ session: userSession, imbalance: data.imbalance, type: data.type });
-                console.log('call wheeling log api');
                 if (response !== null) {
                     console.info(response);
                     setImbalanceLogs(response.context);

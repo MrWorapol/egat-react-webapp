@@ -39,7 +39,7 @@ export function useAuthGuard() {
                     let expireUnixTime = decodeToken.exp;
                     if (expireUnixTime && (dayjs().unix() + 70 > expireUnixTime)) {//check token expired
                         try {
-                            console.log(`call refresh api`)
+                            // console.log(`call refresh api`)
                             const response = await api.refreshToken({ refreshToken: sessionObject.refreshToken })
                             if (response) {
                                 let session = {
@@ -77,7 +77,7 @@ export function useAuthGuard() {
     }
 
     useEffect(() => {
-        console.log(`call useEffect AuthGuard ${count}`);
+        // console.log(`call useEffect AuthGuard ${count}`);
         checkRefreshToken();
 
     }, [currentState]);

@@ -31,7 +31,6 @@ export const touTypeLabel: IMap = {
 
 export default function TOUTariff() {
     useNavigationSet(NavigationCurrentType.TOU_TARIFF);
-    console.log(`open tou tariff`)
     const { showDialog } = useDialog();
     const { onLoad, touTariff, refreshTOUTariff, serviceChargeType1, serviceChargeType2, gridUsedPackage,editGridUsedPackage } = useTOUTariff();
     const resetLogs = useResetRecoilState(touTariffLogState);
@@ -69,7 +68,7 @@ export default function TOUTariff() {
     }
     function onClickLogButton(selectedData: ITouTariff) {
         resetLogs();
-        console.log(`open log ${selectedData.title}`)
+      
         showDialog({
             content: <TariffLogsDialog tariff={selectedData} />,
             onClose: () => false,

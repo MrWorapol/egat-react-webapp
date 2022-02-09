@@ -56,7 +56,7 @@ interface IGetUserByIDResponse {
 }
 
 export default class UserManagementAPI {
-    private host = localGateway;//egatGateway;
+    private host = egatGateway;
 
     async getAllUser(req: IGetUserRequest): Promise<IGetUsersResponse | null> {
         const path = '/web-admin/users'
@@ -115,8 +115,7 @@ export default class UserManagementAPI {
                 userDetail: userDetail,
                 meterDetail: meterDetail,
             }
-            console.log(`get userDetail API `);
-            console.log(content)
+         
             return content;
         } else {
             throw Error(`Error Code: ${response.status}`);
@@ -131,7 +130,7 @@ export default class UserManagementAPI {
         const path = '/web-admin/users/search'
         const api = new URL(this.host + path);
         api.searchParams.append('value', text);
-        console.log(`filter uri is : ${api.toString()}`);
+       
         let response: Response;
         let accessToken = request.session.accessToken;
         let headers = {
@@ -152,7 +151,6 @@ export default class UserManagementAPI {
         if (response.status === 200) {
 
             let result = await response.json();
-            console.log(result);
             let content: IGetUsersResponse = {
                 userInfos: result
             }
@@ -176,9 +174,7 @@ export default class UserManagementAPI {
             userDetail: request.userDetail,
             meterDetail: request.meterDetail,
         });
-        console.log(`----------------body context--------------`);
-        console.log(body);
-        console.log(`----------------body context END----------`);
+        
         try {
             response = await fetch(api.toString(), {
                 method: "PUT",
@@ -205,8 +201,7 @@ export default class UserManagementAPI {
         // https://egat-p2p-webadmin-profile.di.iknowplus.co.th/users/filter?roles=admin
 
         const rolesParams = request.roles.join('+');
-        console.log(`hello from getUserByRoles API`);
-        console.log(rolesParams);
+       
         const path = '/web-admin/users/filter'
         const api = new URL(this.host + path);
         api.searchParams.append('roles', rolesParams);
@@ -226,7 +221,6 @@ export default class UserManagementAPI {
         }
         if (response.status === 200) {
             let result = await response.json();
-            console.log(result);
             let content: IGetUsersResponse = {
                 userInfos: result
             }
@@ -248,9 +242,7 @@ export default class UserManagementAPI {
             Authorization: `Bearer ${accessToken}`,
         }
         const body = JSON.stringify(request.admin);
-        console.log(`----------------body context--------------`);
-        console.log(body);
-        console.log(`----------------body context END----------`);
+     
         try {
             response = await fetchWithTimeout(api.toString(), {
                 method: "POST",
@@ -263,7 +255,6 @@ export default class UserManagementAPI {
             //     body: body
             // });
             let result = await response.json();
-            console.log(result);
             let content: ICreateAdminResponse = {
                 status: result.status,
                 userInfo: result.userInfo,

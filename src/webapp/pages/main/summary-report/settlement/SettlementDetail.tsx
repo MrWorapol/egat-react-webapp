@@ -47,15 +47,17 @@ function buildSettlementDetail(settlement: ISettlementDetail) {
                     {settlement.userType.toLowerCase() === 'seller' && `Seller meter:  ${settlement.meterId}`}
                     {settlement.userType.toLowerCase() === 'buyer' && `Buyer meter:  ${settlement.meterId}`}
                 </Typography>
-                <Typography pl={2}>
-                    {settlement.userType.toLowerCase() === 'seller' && `Buyer meter:  ${settlement.matchedMeterId}`}
-                    {settlement.userType.toLowerCase() === 'buyer' && `Seller meter:  ${settlement.matchedMeterId}`}
-                </Typography>
+                {settlement.tradeMarket === "POOl" &&
+                    <Typography pl={2}>
+                        {settlement.userType.toLowerCase() === 'seller' && `Buyer meter:  ${settlement.matchedMeterId}`}
+                        {settlement.userType.toLowerCase() === 'buyer' && `Seller meter:  ${settlement.matchedMeterId}`}
+                    </Typography>
+                }
             </Grid>
             <Grid container item direction='row' alignItems='center' pt={2}>
                 <Typography sx={{ fontSize: '1.2em', color: 'error.light' }}>
                     {settlement.imbalanceType === "energyShortfall" && "Energy Shortfall"}
-                    {settlement.imbalanceType === "POOl" && "Energy Excess"}
+                    {settlement.imbalanceType === "energyExcess" && "Energy Excess"}
                 </Typography>
 
                 <Typography sx={{ fontSize: '1.2em' }} ml={2}>
@@ -81,7 +83,7 @@ function buildSettlementDetail(settlement: ISettlementDetail) {
                         {`${settlement.energyCommited.toFixed(3)}/${settlement.energyDeliverd.toFixed(3)} kWh`}
                     </Typography>
                 </Grid>
-              
+
                 {settlement.orderImbalanceAmount &&
                     <Grid container item justifyContent='space-between' pl={4} pr={6} >
                         <Typography>
@@ -104,7 +106,7 @@ function buildSettlementDetail(settlement: ISettlementDetail) {
                         </Typography>
                     </Grid>
                 }
-                  <Grid container item justifyContent='space-between' pl={4} pr={6} >
+                <Grid container item justifyContent='space-between' pl={4} pr={6} >
                     <Typography>
                         {settlement.userType.toLowerCase() === 'seller' && 'NET Sales'}
                         {settlement.userType.toLowerCase() === 'buyer' && 'NET Buy'}

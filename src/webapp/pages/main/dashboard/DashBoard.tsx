@@ -53,7 +53,6 @@ const header_name = createTheme({
     }
 })
 export default function DashBoard() {
-    console.log(`call dashboard`);
     useNavigationSet(NavigationCurrentType.DASHBOARD);
 
     const { userDashboard, energyDashboard, tradingDashboard } = useDashBoard();

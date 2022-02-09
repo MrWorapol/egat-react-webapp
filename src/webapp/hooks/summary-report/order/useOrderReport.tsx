@@ -60,9 +60,9 @@ export default function useOrderReport() {
                             summaryRole[meterInfo.role.toLowerCase()] += 1;
                             summaryUserType[order.userType.toLowerCase()] += 1;
                             summaryStatus[order.status.toLowerCase()] += 1;
-                            if(order.tradeMarket.toLowerCase().includes('bilateral')){ //support bilateral and long-term bilateral
+                            if (order.tradeMarket.toLowerCase().includes('bilateral')) { //support bilateral and long-term bilateral
                                 summaryTradeMarket['bilateral'] += 1;
-                            }else{
+                            } else {
                                 summaryTradeMarket['pool'] += 1;
                             }
                             if (order.tradeContractId) {// case matching Id
@@ -70,27 +70,27 @@ export default function useOrderReport() {
                                 switch (order.userType) {
                                     case ("BUYER"):
                                         let sellerMeter = userMeterInfos.context.find((user: IUserMeterInfo) => { return user.id.toString() === order.orderDetail?.sellerId })
-                                        if (sellerMeter) {
+                                        if (sellerMeter || order.orderDetail?.sellerId === "_") {
                                             output.push({
                                                 ...order,
                                                 role: meterInfo.role,
                                                 area: meterInfo.area,
                                                 regionName: meterInfo.region,
                                                 meterId: meterInfo.meterId,
-                                                matchingMeterId: sellerMeter.meterId,
+                                                matchingMeterId: sellerMeter?.meterId || "_",
                                             })
                                         }
                                         break;
                                     case ("SELLER"):
                                         let buyerMeter = userMeterInfos.context.find((user: IUserMeterInfo) => { return user.id.toString() === order.orderDetail?.buyerId })
-                                        if (buyerMeter) {
+                                        if (buyerMeter || order.orderDetail?.buyerId === "_") {
                                             output.push({
                                                 ...order,
                                                 role: meterInfo.role,
                                                 area: meterInfo.area,
                                                 regionName: meterInfo.region,
                                                 meterId: meterInfo.meterId,
-                                                matchingMeterId: buyerMeter.meterId,
+                                                matchingMeterId: buyerMeter?.meterId || "_", //"_" is pool market 
                                             })
                                         }
                                         break;
@@ -132,8 +132,9 @@ export default function useOrderReport() {
                     // console.log(`output data before render table`);
                     // console.log(output)
                     setOrderReport(output);
-
-                    refreshOrderDetail(output[0]);
+                    if (output.length > 0) {
+                        refreshOrderDetail(output[0]);
+                    }
 
                 } else {
                     setOrderChart(

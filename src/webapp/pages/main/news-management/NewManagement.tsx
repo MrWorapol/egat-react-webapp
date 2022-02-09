@@ -21,7 +21,7 @@ export default function NewManagement() {
 
     const searchTextDebounce = useDebouncedCallback(
         () => {
-            console.log(`search text string : ${searchText}`)
+
             if (searchText === '') {
                 refreshAllNews();
             }

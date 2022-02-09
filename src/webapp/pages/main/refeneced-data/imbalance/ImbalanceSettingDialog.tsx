@@ -44,7 +44,6 @@ export default function ImbalanceSettingDialog(props: ISettingProps) {
     };
     const onSubmitForm = (data: Iimbalance) => 
     {
-        console.log(`onSubmit edit imbalcne ${data.effectiveTime}`);
         data.effectiveDate = dayjs(data.effectiveDate).startOf('day').toISOString();
         data.effectiveTime = dayjs(data.effectiveDate).startOf('hour').set('hour', +data.effectiveTime).toISOString();
         const requestData: Iimbalance = { ...data, id: props.imbalance.id, type: props.imbalance.type, imbalance: props.imbalance.imbalance };

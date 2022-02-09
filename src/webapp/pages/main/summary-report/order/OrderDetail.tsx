@@ -25,7 +25,6 @@ export default function OrderDetail() {
             }
         }
     } else {
-        console.log(`orderDEtail not found`)
         return (
             <Grid px={2} py={2} direction='column' sx={{ minHeight: '25vh' }}>
                 <Grid item >
@@ -57,7 +56,7 @@ function buildMatchedBuyOrder(orderDetail: IOrderDetail) {
                 <Typography sx={{ fontSize: '1.1em', color: 'error.light' }}>
                     {`Buyer meter id: ${orderDetail.meterId}`}
                 </Typography>
-                {orderDetail.tradeMarket.toLowerCase() === 'bilateral' &&
+                {orderDetail.tradeMarket.toLowerCase().includes('bilateral') &&
                     <Typography sx={{ fontSize: '1.1em' }} pl={2}>
                         {`Seller meter id: ${orderDetail.matchedMeterId}`}
                     </Typography>
@@ -177,14 +176,14 @@ function buildMatchedSellOrder(orderDetail: IOrderDetail) {
                 <Typography sx={{ fontSize: '1.1em', color: 'success.light' }}>
                     {`Seller meter id: ${orderDetail.meterId}`}
                 </Typography>
-                {orderDetail.tradeMarket.toLowerCase() === 'bilateral' &&
+                {orderDetail.tradeMarket.toLowerCase().includes('bilateral') &&
                     <Typography sx={{ fontSize: '1.1em' }} pl={2}>
                         {`Buyer meter id: ${orderDetail.matchedMeterId}`}
                     </Typography>
                 }
             </Grid>
             <Grid item py={1}>
-                <Typography sx={{ fontSize: '1.2em' }}>{orderDetail.tradeMarket === 'pool' ? 'Pool Market Trade' : 'Bilateral Trade'}</Typography>
+                <Typography sx={{ fontSize: '1.2em' }}>{orderDetail.tradeMarket.toLowerCase() === 'pool' ? 'Pool Market Trade' : 'Bilateral Trade'}</Typography>
             </Grid>
             <Grid item container id='energy-info'>
                 <Grid container item justifyContent='space-between' px={4} >

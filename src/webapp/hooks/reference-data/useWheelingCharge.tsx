@@ -22,7 +22,7 @@ export function useWheelingCharge() {
             showLoading(10);
             try {
                 const response = await api.getWheelingCharge({ session: session });
-                console.log('call wheeling chart api');
+
                 if (response !== null) {
                     console.info(response);
                     setWheelingCharge(response.context);

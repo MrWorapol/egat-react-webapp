@@ -18,7 +18,6 @@ export function useWheelingLogs(wheelingType: 'AS' | 'T' | 'D' | 'RE') {
             try {
                 showLoading(10);
                 const response = await api.getLogByTypes({ session: userSession, wheelingType: wheelingType });
-                console.log('call wheeling log api');
                 if (response !== null) {
                     console.info(response);
                     setWheelingLogs(response.context);

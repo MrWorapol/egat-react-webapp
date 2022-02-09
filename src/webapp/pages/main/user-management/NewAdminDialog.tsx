@@ -25,7 +25,6 @@ export default function NewAdminDialog() {
             closeDialog();
 
         }
-        console.log(data)
     };
 
     return (
