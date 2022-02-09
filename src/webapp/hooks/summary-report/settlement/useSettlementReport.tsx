@@ -163,6 +163,7 @@ export function useSettlementReport() {
                     });
                     setSettlementReport(output);
                     if (output.length > 0) {
+                        resetSettlementDetail();
                         refreshSettlementDetail(output[0]);
                     }
                 } else {

@@ -21,8 +21,8 @@ export default function PeriodComponent(props: PeriodProps) {
     const { showLoading, hideLoading } = useLoadingScreen();
     const [init, setInit] = useState(true);
     let isCurrentMonth = (dayjs().month() === dayjs(period.startDate).month() &&
-    dayjs().year() === dayjs(period.startDate).year()) ? true : false;
-    
+        dayjs().year() === dayjs(period.startDate).year()) ? true : false;
+
     const debounceFn = useDebouncedCallback(() => {
         // console.log(`debounce fn`)
         try {
@@ -147,9 +147,9 @@ export default function PeriodComponent(props: PeriodProps) {
                                             value={`${day}`}
                                             disabled={
                                                 isCurrentMonth && day > dayjs().date()/* is case this month && year */
-                                                    ? day < +startDay || day > dayjs().date()  //YES : disabled  day within range 'under startDay ' and 'more than today'   
+                                                    ? day < +startDay || day > dayjs().date()  //in case YES : disabled  day within range 'under startDay ' and 'more than today'   
 
-                                                    : day < +startDay} //'disabled day within range under startDay'
+                                                    : day < +startDay} //in case not current month and year : 'disabled day within range under startDay'
                                         >
                                             {day}
                                         </MenuItem>

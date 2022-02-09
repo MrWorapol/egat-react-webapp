@@ -42,11 +42,21 @@ export default function ImbalanceSettingDialog(props: ISettingProps) {
     const handleCheckSwitch = (event: React.ChangeEvent<HTMLInputElement>) => {
         setCustomGridChecked(event.target.checked);
     };
-    const onSubmitForm = (data: Iimbalance) => 
-    {
+    const onSubmitForm = (data: Iimbalance) => {
+        console.log(`onSubmit edit imbalcne ${data.effectiveTime}`);
         data.effectiveDate = dayjs(data.effectiveDate).startOf('day').toISOString();
         data.effectiveTime = dayjs(data.effectiveDate).startOf('hour').set('hour', +data.effectiveTime).toISOString();
-        const requestData: Iimbalance = { ...data, id: props.imbalance.id, type: props.imbalance.type, imbalance: props.imbalance.imbalance };
+        const requestData: Iimbalance = {
+            // ...data,
+            id: props.imbalance.id,
+            type: props.imbalance.type,
+            imbalance: props.imbalance.imbalance,
+            scenario: props.imbalance.scenario,
+            imbalanceClearing: props.imbalance.imbalanceClearing,
+            effectiveDate: dayjs(data.effectiveDate).startOf('day').toISOString(),
+            effectiveTime: dayjs(data.effectiveDate).startOf('hour').set('hour', +data.effectiveTime).toISOString(),
+            bahtPerKWh: data.bahtPerKWh,        
+        };
         console.info(requestData);
         updateImbalance(requestData);
     }
@@ -78,30 +88,9 @@ export default function ImbalanceSettingDialog(props: ISettingProps) {
                                         </Typography>
                                     </Grid>
                                     <Grid item xs={12}>
-                                        <Controller
-                                            render={({ field }) => (
-                                                <Select variant="standard"
-                                                    margin="dense"
-                                                    size='small'
-                                                    sx={{}}
-                                                    fullWidth={true}
-                                                    {...field}
-                                                >
-                                                    {scenario.map((option) => (
-
-                                                        <MenuItem key={option.value} value={option.value}>
-                                                            {option.value}
-                                                        </MenuItem>
-                                                    ))}
-                                                </Select>)}
-                                            name="scenario"
-                                            control={control}
-                                            defaultValue={props.imbalance.scenario}
-                                            rules={{
-                                                required: true,
-                                            }}
-
-                                        />
+                                        <Typography pt={1}>
+                                            {props.imbalance.scenario}
+                                        </Typography>
                                     </Grid>
                                 </Grid>
                                 <Grid item container>
@@ -111,39 +100,12 @@ export default function ImbalanceSettingDialog(props: ISettingProps) {
                                         </Typography>
                                     </Grid>
                                     <Grid item xs={12}>
-                                        <Controller
-
-                                            render={({ field }) => (
-                                                <Select variant="standard"
-                                                    margin="dense"
-                                                    size='small'
-                                                    sx={{}}
-                                                    fullWidth={true}
-                                                    {...field}
-                                                >
-                                                    {clearing.map((option) => (
-
-                                                        <MenuItem key={option.value} value={option.value}>
-                                                            {option.value}
-                                                        </MenuItem>
-                                                    ))}
-                                                </Select>)}
-                                            name="imbalanceClearing"
-                                            control={control}
-                                            defaultValue={props.imbalance.imbalanceClearing}
-                                            rules={{
-                                                required: true,
-                                            }}
-
-                                        />
+                                        <Typography pt={1}>
+                                            {props.imbalance.imbalanceClearing}
+                                        </Typography>
                                     </Grid>
                                 </Grid>
                                 {watchClearing === clearing[3].value &&
-                                    // <Switch
-                                    //     checked={customGridChecked}
-                                    //     onChange={handleCheckSwitch}
-                                    //     inputProps={{ 'aria-label': 'controlled' }}
-                                    // />
                                     <Grid item container>
                                         <FormControlLabel
                                             value="end"
