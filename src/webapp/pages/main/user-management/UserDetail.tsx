@@ -109,13 +109,13 @@ export default function UserDetail() {
     let watchError = watch();
 
     useEffect(() => {
-    //   console.log(watchError);
-    
-      return () => {
-        
-      };
+        //   console.log(watchError);
+
+        return () => {
+
+        };
     }, []);
-    
+
     const [edit, setEdit] = React.useState(false);
     let session = useRecoilValue(userSessionState);
     const { showLoading, hideLoading } = useLoadingScreen();
@@ -147,6 +147,7 @@ export default function UserDetail() {
                 });
                 showSnackBar({ serverity: 'success', message: `updated successful` })
                 hideLoading(10);
+                setEdit(!edit);
             } catch (e) {
 
                 hideLoading(10);
