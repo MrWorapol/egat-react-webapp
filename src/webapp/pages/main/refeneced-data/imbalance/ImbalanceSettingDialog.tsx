@@ -43,7 +43,7 @@ export default function ImbalanceSettingDialog(props: ISettingProps) {
         setCustomGridChecked(event.target.checked);
     };
     const onSubmitForm = (data: Iimbalance) => {
-        console.log(`onSubmit edit imbalcne ${data.effectiveTime}`);
+        // console.log(`onSubmit edit imbalcne ${data.effectiveTime}`);
         data.effectiveDate = dayjs(data.effectiveDate).startOf('day').toISOString();
         data.effectiveTime = dayjs(data.effectiveDate).startOf('hour').set('hour', +data.effectiveTime).toISOString();
         const requestData: Iimbalance = {
@@ -53,9 +53,9 @@ export default function ImbalanceSettingDialog(props: ISettingProps) {
             imbalance: props.imbalance.imbalance,
             scenario: props.imbalance.scenario,
             imbalanceClearing: props.imbalance.imbalanceClearing,
-            effectiveDate: dayjs(data.effectiveDate).startOf('day').toISOString(),
-            effectiveTime: dayjs(data.effectiveDate).startOf('hour').set('hour', +data.effectiveTime).toISOString(),
-            bahtPerKWh: data.bahtPerKWh,        
+            effectiveDate: data.effectiveDate,
+            effectiveTime: data.effectiveTime,
+            bahtPerKWh: data.bahtPerKWh,
         };
         console.info(requestData);
         updateImbalance(requestData);
@@ -105,50 +105,34 @@ export default function ImbalanceSettingDialog(props: ISettingProps) {
                                         </Typography>
                                     </Grid>
                                 </Grid>
-                                {watchClearing === clearing[3].value &&
-                                    <Grid item container>
-                                        <FormControlLabel
-                                            value="end"
-                                            control={<Switch checked={customGridChecked}
-                                                onChange={handleCheckSwitch}
-                                                inputProps={{ 'aria-label': 'controlled' }} />
-                                            }
-                                            label="ระบุราคาที่ Grid รับซื้อ"
-                                            labelPlacement="end"
+                                <Grid item container>
+                                    <Grid item xs={12}>
+                                        <Typography sx={{ fontSize: '1.2em', color: '#707070' }}>
+                                            Baht/kWh
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <Controller
+
+                                            render={({ field }) => (
+                                                <TextField variant="standard"
+                                                    margin="dense"
+
+                                                    size='small'
+                                                    sx={{}}
+                                                    fullWidth={true}
+                                                    {...field}
+                                                />)}
+                                            name="bahtPerKWh"
+                                            control={control}
+                                            defaultValue={props.imbalance.bahtPerKWh}
+                                            rules={{
+                                                required: true,
+                                            }}
+
                                         />
                                     </Grid>
-                                }
-                                {(watchClearing !== clearing[3].value || (watchClearing === clearing[3].value && customGridChecked)) &&/* เงื่อนไข -> grid รับซื้อแบบไม่ระบุราคา  จะทำให้ช่อง baht/kWh หายไป  */
-                                    <Grid item container>
-                                        <Grid item xs={12}>
-                                            <Typography sx={{ fontSize: '1.2em', color: '#707070' }}>
-                                                Baht/kWh
-                                            </Typography>
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <Controller
-
-                                                render={({ field }) => (
-                                                    <TextField variant="standard"
-                                                        margin="dense"
-
-                                                        size='small'
-                                                        sx={{}}
-                                                        fullWidth={true}
-                                                        {...field}
-                                                    />)}
-                                                name="bahtPerKWh"
-                                                control={control}
-                                                defaultValue={props.imbalance.bahtPerKWh}
-                                                rules={{
-                                                    required: true,
-                                                }}
-
-                                            />
-                                        </Grid>
-                                    </Grid>
-                                }
-
+                                </Grid>
                                 <Grid container item sx={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', alignItems: 'center' }}>
                                     <Grid container xs={7} direction="row" alignItems="center">
                                         <Grid>
