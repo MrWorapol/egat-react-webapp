@@ -103,16 +103,16 @@ export class OrderReportAPI {
     async getOpenPoolTradeOffer(req: IGetOrderRequest): Promise<IGetOrderResponse[] | null> {
         const period = req.period;
         const body: IGetDruidBody = {
-            "query": `SELECT "payload._id",
+            "query": `SELECT "payload.id",
             LATEST(CAST("__time" as VARCHAR),100) FILTER (WHERE "__time" is not null) as "timestamp",
             LATEST("payload.sellerId",50)FILTER(WHERE "payload.sellerId" IS NOT NULL) as userId, 
             LATEST("payload.status",10) FILTER (WHERE "payload.status" is not null) status,
             LATEST(CAST("payload.settlementTime" as VARCHAR),50 ) FILTER(WHERE "payload.settlementTime" is not null) settlementTime,
             LATEST(CAST("payload.targetPrice" as VARCHAR),10 ) FILTER(WHERE "payload.targetPrice" is not null) targetPrice,
             LATEST(CAST("payload.targetAmount" as VARCHAR),10 ) FILTER(WHERE "payload.targetAmount" is not null) targetAmount
-            FROM "FinalPoolMarketOffer"
+            FROM "tmpPoolMarketOffer"
             WHERE "payload.status" = 'OPEN' AND "__time" > '2022-01-24T09:10'
-            GROUP BY "payload._id"`,
+            GROUP BY "payload.id"`,
             "resultFormat": "object"
         }
         let headers = {
@@ -162,16 +162,16 @@ export class OrderReportAPI {
     async getOpenPoolMarketBid(req: IGetOrderRequest): Promise<IGetOrderResponse[] | null> { //new query
         const period = req.period;
         const body: IGetDruidBody = {
-            "query": `SELECT "payload._id",
+            "query": `SELECT "payload.id",
             LATEST(CAST("__time" as VARCHAR),100) FILTER (WHERE "__time" is not null) as "timestamp",
             LATEST("payload.bidderId",50)FILTER(WHERE "payload.bidderId" IS NOT NULL) as userId, 
             LATEST("payload.status",10) FILTER (WHERE "payload.status" is not null) status,
             LATEST(CAST("payload.settlementTime" as VARCHAR),50 ) FILTER(WHERE "payload.settlementTime" is not null) settlementTime,
             LATEST(CAST("payload.targetPrice" as VARCHAR),10 ) FILTER(WHERE "payload.targetPrice" is not null) targetPrice,
             LATEST(CAST("payload.targetAmount" as VARCHAR),10 ) FILTER(WHERE "payload.targetAmount" is not null) targetAmount
-            FROM "FinalPoolMarketBid"
+            FROM "tmpPoolMarketBid"
             WHERE "payload.status" = 'OPEN' AND "__time" > '2022-01-24T09:10'
-            GROUP BY "payload._id"`,
+            GROUP BY "payload.id"`,
             "resultFormat": "object"
         }
         let headers = {
@@ -220,16 +220,16 @@ export class OrderReportAPI {
     async getOpenBilateralTradeOffer(req: IGetOrderRequest): Promise<IGetOrderResponse[] | null> {  //new query
         const period = req.period;
         const body: IGetDruidBody = {
-            "query": `SELECT "payload._id",
+            "query": `SELECT "payload.id",
             LATEST(CAST("__time" as VARCHAR),100) FILTER (WHERE "__time" is not null) as "timestamp",
             LATEST("payload.sellerId",50)FILTER(WHERE "payload.sellerId" IS NOT NULL) as userId, 
             LATEST("payload.status",10) FILTER (WHERE "payload.status" is not null) status,
             LATEST(CAST("payload.settlementTime" as VARCHAR),50 ) FILTER(WHERE "payload.settlementTime" is not null) settlementTime,
             LATEST(CAST("payload.targetPrice" as VARCHAR),10 ) FILTER(WHERE "payload.targetPrice" is not null) targetPrice,
             LATEST(CAST("payload.targetAmount" as VARCHAR),10 ) FILTER(WHERE "payload.targetAmount" is not null) targetAmount
-            FROM "FinalBilateralTradeOffer"
+            FROM "tmpBilateralTradeOffer"
             WHERE "payload.status" = 'OPEN' AND "__time" > '2022-01-24T09:10'
-            GROUP BY "payload._id"`,
+            GROUP BY "payload.id"`,
             "resultFormat": "object"
         }
         let headers = {

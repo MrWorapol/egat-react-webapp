@@ -114,7 +114,7 @@ export class UserAndEnergyReportAPI {
             LATEST("payload.registrationDate",30) FILTER (WHERE "payload.registrationDate" IS NOT NULL) as registrationDate,
             LATEST("payload.userId",50) FILTER (WHERE "payload.userId" IS NOT NULL) as userId,
             LATEST("payload.userTypeName",50) FILTER (WHERE "payload.userTypeName" IS NOT NULL) as userTypeName
-          FROM "MeterInfo2"
+          FROM "tmpMeterInfo"
           GROUP BY "payload.id") as info
           INNER JOIN "MeterSiteDataTest" as site
           ON info."userTypeName" = site."payload.userTypeName"
@@ -196,7 +196,7 @@ export class UserAndEnergyReportAPI {
             LATEST("payload.registrationDate",30) FILTER (WHERE "payload.registrationDate" IS NOT NULL) as registrationDate,
             LATEST("payload.userId",50) FILTER (WHERE "payload.userId" IS NOT NULL) as userId,
             LATEST("payload.userTypeName",50) FILTER (WHERE "payload.userTypeName" IS NOT NULL) as userTypeName
-          FROM "MeterInfo2"
+          FROM "tmpMeterInfo"
           GROUP BY "payload.id") as info
           INNER JOIN "MeterSiteDataTest" as site
           ON info."userTypeName" = site."payload.userTypeName"
@@ -245,13 +245,13 @@ export class UserAndEnergyReportAPI {
 
             query: `SELECT DISTINCT
             "__time" as "timestamp",
-            "payload._id",
+            "payload.id",
             "payload.inBattery" as "inBattery", 
             "payload.inGrid" as "inGrid", 
             "payload.inSolar" as "inSolar", 
             "payload.load" as "load",
             "payload.meterId" as "meterId"
-            FROM "FinalPower"
+            FROM "tmpPower"
             WHERE "__time" >= '2022-01-24T13:00:00.000Z'`,
             resultFormat: "object",
         }
@@ -329,7 +329,7 @@ export class UserAndEnergyReportAPI {
                 "payload.inGrid" as "inGrid",
                 "payload.inSolar" as "inSolar",
                 "payload.load" as "load" 
-                FROM "FinalForecast"
+                FROM "tmpForecast"
                 WHERE "payload.meterId" = ${req.meterId} AND "__time" >= '2022-01-24T13:00:00.000Z'`,
             resultFormat: "object",
         }

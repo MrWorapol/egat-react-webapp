@@ -80,7 +80,7 @@ export class BillingReportAPI {
                 "payload.discountGridUsed" as "discountGridUsed",
                 "payload.expireTime" as "expireTime",  
                 "payload.gridUsedFt" as "gridUsedFt", 
-                "payload._id" as "invoiceId",
+                "payload.id" as "invoiceId",
                 "payload.invoiceType" as "invoiceType",
                 "payload.issueToUserId" as "issueToUserId",
                 "payload.price" as "price", 
@@ -121,7 +121,7 @@ export class BillingReportAPI {
                 "payload.wheelingChargeRe" as "wheelingChargeRe",
                 "payload.wheelingChargeT" as "wheelingChargeT",
                 "payload.wheelingChargeTotal" as "wheelingChargeTotal"
-                FROM "FinalInvoice"
+                FROM "tmpInvoice"
                 WHERE "__time" >= '2022-01-24T09:10:00.000Z'`,
             "resultFormat": "object"
         }

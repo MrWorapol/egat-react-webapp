@@ -151,14 +151,14 @@ export class SettlementReportAPI {
         const period = req.period; //undefined is select all 
         const body: IGetDruidBody = {
             "query": `SELECT "__time" as "timestamp", 
-            "payload._id" as "tradeContractId",
+            "payload.id" as "tradeContractId",
             LATEST("payload.buyerIds",1000)FILTER(WHERE "payload.buyerIds" is not NULL) as buyerIds,
             LATEST("payload.infos",999999)FILTER(WHERE "payload.infos" is not NULL) as infos,
             LATEST("payload.priceRuleApplied",20)FILTER(WHERE "payload.priceRuleApplied" is not NULL) as priceRuleApplied,
             LATEST("payload.sellerIds",1000)FILTER(WHERE "payload.sellerIds" is not NULL) as sellerIds,
             LATEST("payload.settlementTime",20)FILTER(WHERE "payload.settlementTime" is not NULL) as settlementTime
-            FROM "TradeContract"
-            GROUP BY "__time","payload._id"`,
+            FROM "tmpTradeContract"
+            GROUP BY "__time","payload.id"`,
             "resultFormat": "object"
         }
         let headers = {
@@ -267,7 +267,7 @@ export class SettlementReportAPI {
             "payload.amount" as "amount", 
             "payload.buyerId" as "buyerId",
             "payload.buyerType" as "buyerType",
-            "payload._id" as "tradeDataId",
+            "payload.id" as "tradeDataId",
             "payload.price" as "price",
             "payload.sellerId" as "sellerId",
             "payload.sellerType" as "sellerType",
@@ -280,7 +280,7 @@ export class SettlementReportAPI {
             "payload.reference.imbalanceBuyerUnderCommit" as "imbalanceBuyerUnderCommit", 
             "payload.reference.imbalanceSellerOverCommit"as "imbalanceSellerOverCommit", 
             "payload.reference.imbalanceSellerUnderCommit" as "imbalanceSellerUnderCommit"
-            FROM "FinalTrade"
+            FROM "tmpTrade"
             WHERE "__time" >= '2022-01-24T09:10:00.000Z'`,
             "resultFormat": "object"
 
