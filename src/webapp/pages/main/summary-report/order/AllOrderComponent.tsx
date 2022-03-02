@@ -42,7 +42,7 @@ export default function AllOrder() {
                 tableFilter = tableFilter.filter((order) => { return order.userType === userType });
             }
             if (tradeMarket !== 'all') {
-                tableFilter = tableFilter.filter((order) => { return order.tradeMarket === tradeMarket });
+                tableFilter = tableFilter.filter((order) => { return order.tradeMarket.toLowerCase().includes(tradeMarket.toLowerCase()) });
             }
             if (orderStatus !== 'all') {
                 tableFilter = tableFilter.filter((order) => { return order.status.toLowerCase() === orderStatus.toLowerCase() });
