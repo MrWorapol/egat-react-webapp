@@ -20,6 +20,7 @@ interface ISummaryMap {
 }
 
 export function useSettlementReport() {
+    let countRefreshSettlementReport = 0;
     const session = useRecoilValue(userSessionState);
     const { currentState } = useNavigationGet();
 
@@ -37,6 +38,8 @@ export function useSettlementReport() {
     const refreshSettlementReport = async (role: string, area: string, buyerType: string, tradeMarket: string, orderStatus: string) => {
         if (session) {
             try {
+                console.warn(`call count ${countRefreshSettlementReport}`);
+                countRefreshSettlementReport++;
                 showLoading(10);
                 const userMeterInfos = await userMeterApi.getUserMeterInfo({ period, session });
                 const req = {
@@ -87,11 +90,13 @@ export function useSettlementReport() {
                                                 summaryImbalnceAmount["sellerOverCommit"] += imbalance.amount;
                                                 break;
                                             case "BUYER_IMBALANCE_OVERCOMMIT":
+                                                console.log(`${imbalance.amount} is buyer over committ`)
                                                 contract.imbalanceStatus = "energyExcess";
                                                 contract.imbalance?.push(imbalance);
                                                 summaryNet["netBuy"] += contract.priceCommitted + contract.tradingFee + contract.wheelingChargeFee;
                                                 summaryNet["netImbalance"] += imbalance.price;
                                                 summaryImbalnceAmount["buyerOverCommit"] += imbalance.amount;
+                                                console.log(`summary buyer + : ${summaryImbalnceAmount["buyerOverCommit"]}`);
                                                 break;
                                             //case under commit
                                             case "SELLER_IMBALANCE_UNDERCOMMIT":
@@ -102,7 +107,6 @@ export function useSettlementReport() {
                                                 summaryImbalnceAmount["sellerUnderCommit"] += imbalance.amount;
                                                 break;
                                             case "BUYER_IMBALANCE_UNDERCOMMIT":
-
                                                 contract.imbalanceStatus = "energyShortfall";
                                                 contract.imbalance?.push(imbalance);
                                                 summaryNet["netBuy"] += contract.priceCommitted + contract.tradingFee + contract.wheelingChargeFee;

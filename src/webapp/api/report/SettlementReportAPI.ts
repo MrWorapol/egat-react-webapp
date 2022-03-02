@@ -262,7 +262,7 @@ export class SettlementReportAPI {
     async getTradeDataReport(req: IGetSettlementReportRequest): Promise<IGetTradeDataResponse | null> {
         const period = req.period;
         const body: IGetDruidBody = {
-            "query": `SELECT
+            "query": `SELECT DISTINCT
             "__time" as "timestamp",
             "payload.amount" as "amount", 
             "payload.buyerId" as "buyerId",

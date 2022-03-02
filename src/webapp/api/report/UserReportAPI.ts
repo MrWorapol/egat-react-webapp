@@ -118,7 +118,7 @@ export class UserAndEnergyReportAPI {
           GROUP BY "payload.id") as info
           INNER JOIN "MeterSiteDataTest" as site
           ON info."userTypeName" = site."payload.userTypeName"
-          WHERE info."active" = true`,
+          WHERE info."active" = true AND info."meterId" != ''`,
             "resultFormat": "object"
         }
         let headers = {
@@ -173,7 +173,7 @@ export class UserAndEnergyReportAPI {
 
     async getAllUser(req: IGetAllUserRequest): Promise<IGetAllUserResponse | null> {
         const body: IGetDruidBody = {
-            "query": `SELECT 
+            "query": `SELECT
             "meterId",
             "userId",
             "meterName",
@@ -199,7 +199,8 @@ export class UserAndEnergyReportAPI {
           FROM "MeterInfo2"
           GROUP BY "payload.id") as info
           INNER JOIN "MeterSiteDataTest" as site
-          ON info."userTypeName" = site."payload.userTypeName"`,
+          ON info."userTypeName" = site."payload.userTypeName"
+          WHERE info."meterId" != ''`,
             "resultFormat": "object"
         }
         let headers = {
@@ -216,6 +217,8 @@ export class UserAndEnergyReportAPI {
 
             if (response.status === 200) {
                 const resultFromJSON: IGetAllUser[] = await response.json();
+                console.log(`meter ID`)
+                console.log(resultFromJSON);
                 return {
                     context: resultFromJSON
                 };

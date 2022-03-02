@@ -57,7 +57,9 @@ export default function useUserReport() {
         if (session) {
             showLoading(10);
             try {
-                const userMeters = await api.getUserMeterInfo({ period, session })
+                let userMeters = await api.getUserMeterInfo({ period, session })
+                console.log(`user meter info`)
+                console.log(userMeters);
                 if (userMeters && userMeters.context.length > 0) {
                     let userSummary: IUserSummary = { AGGREGATOR: 0, CONSUMER: 0, PROSUMER: 0, noUser: 0 };
                     userMeters.context.forEach((meter: IUserMeterInfo) => {
