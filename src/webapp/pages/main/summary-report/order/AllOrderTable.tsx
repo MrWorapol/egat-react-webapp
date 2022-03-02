@@ -1,5 +1,5 @@
 import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography, useTheme } from '@mui/material'
-import React from 'react'
+import React, { useEffect } from 'react'
 import SearchIcon from '@mui/icons-material/Search';
 import IconButton from '@mui/material/IconButton';
 import useOrderReport from '../../../../hooks/summary-report/order/useOrderReport';
@@ -33,13 +33,17 @@ export default function AllOrderTable(props: IProps) {
         { id: 'orderStatus', label: 'Order Status' },
         { id: 'Action', label: '' }
     ];
+
+    useEffect(() => { //watch update length of data and set page to start page
+        setPage(0);
+        return () => {
+        }
+      }, [props.data.length])
+
     if (props.data === null || props.data === undefined) {
-        console.log(`NULL`);
         return <></>;
     }
-    // if (userInfoData.length === 0) {
-    //     return <div><Typography variant="h1">Not found</Typography></div>;
-    // }
+   
     // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - props.data.length) : 0;
 

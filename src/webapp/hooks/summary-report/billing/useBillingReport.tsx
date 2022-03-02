@@ -34,18 +34,19 @@ export default function useBillingReport() {
     const [gridUsedReport, setGridUsedReport] = useRecoilState(gridUsedReportState);
     const [wheelingChargeReport, setWheelingChargeReport] = useRecoilState(wheelingReportState);
 
-    const resetNetPayment = useResetRecoilState(netPaymentReportState);
-    const resetEnergyPayment = useResetRecoilState(energyPaymentReportState);
-    const resetGridUsed = useResetRecoilState(gridUsedReportState);
-    const resetWheelingCharge = useResetRecoilState(wheelingReportState);
+    const resetBillingState = useResetRecoilState(billingState);
+    const resetNetPaymentState = useResetRecoilState(netPaymentReportState);
+    const resetEnergyPaymentState = useResetRecoilState(energyPaymentReportState);
+    const resetGridUsedState = useResetRecoilState(gridUsedReportState);
+    const resetWheelingChargeState = useResetRecoilState(wheelingReportState);
 
     const { showSnackBar } = useSnackBarNotification();
     const refreshInvoice = async (session: IUserSession, role?: string, area?: string) => {
 
-        resetGridUsed();
-        resetWheelingCharge();
-        resetNetPayment();
-        resetEnergyPayment();
+        resetGridUsedState();
+        resetWheelingChargeState();
+        resetNetPaymentState();
+        resetEnergyPaymentState();
         showLoading(15);
         if (session !== null) {
             try {
@@ -287,8 +288,12 @@ export default function useBillingReport() {
                 refreshInvoice(session);
             }
         }
-        return () => {
-            
+        return () => {//clean up state when unmount component. In this situation it means clear data in state when change page for new reload when comeback
+            resetBillingState();
+            resetNetPaymentState();
+            resetEnergyPaymentState();
+            resetGridUsedState();
+            resetWheelingChargeState();
         }
     }, [currentState])
 

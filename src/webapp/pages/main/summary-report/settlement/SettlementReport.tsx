@@ -19,7 +19,7 @@ export default function SettlementReport() {
     const { refreshSettlementReport, settlementChart } = useSettlementReport();
 
     const refreshPage = async () => {
-        refreshSettlementReport('all', 'all', 'all', 'all', 'all');
+        refreshSettlementReport();
     };
 
     if (session && currentState === NavigationCurrentType.SETTLEMENT_REPORT) {

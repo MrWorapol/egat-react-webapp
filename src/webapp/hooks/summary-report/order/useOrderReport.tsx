@@ -52,7 +52,7 @@ export default function useOrderReport() {
                 let summaryStatus: ISummaryMap = { 'open': 0, 'matched': 0 }
                 if (allOrder && allOrder.context.length > 0 && userMeterInfos) {
                     let output: IOrderInfo[] = [];
-                    allOrder.context.forEach((order: IOrderInfo, index: number) => {
+                    allOrder.context.forEach((order: IOrderInfo) => {
 
                         let meterInfo = userMeterInfos.context.find((user: IUserMeterInfo) => { return user.id.toString() === order.userId.toString() })
                         if (meterInfo && meterInfo !== undefined) {
@@ -169,13 +169,13 @@ export default function useOrderReport() {
 
 
     const refreshOrderDetail = async (orderInfo: IOrderInfo) => {
+        console.log(orderInfo);
 
         if (orderDetail) { //clear state of detail 
             resetOrderDetail();
         }
         if (orderInfo.orderDetail === undefined) {//case open order
             // console.log(`order Detail`)
-            // console.log(orderInfo);
             setOrderDetail({
                 userType: orderInfo.userType,
                 tradeMarket: orderInfo.tradeMarket,
@@ -209,8 +209,10 @@ export default function useOrderReport() {
         // if (orderReport && !orderDetail) { //table has data and automatic get detail from first row in table
         // refreshOrderDetail(orderReport[0].orderId);
         // }
-        return () => {
-
+        return () => { //clean up state when unmount component. In this situation it means clear data in state when change page for new reload when comeback
+            resetOrderReport();
+            resetOrderDetail();
+            resetChart();
         }
     }, [currentState])
 

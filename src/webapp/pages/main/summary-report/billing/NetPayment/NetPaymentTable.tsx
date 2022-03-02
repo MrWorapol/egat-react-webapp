@@ -1,5 +1,5 @@
 import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography, useTheme } from '@mui/material'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useHistory } from 'react-router-dom';
 import TablePaginationActionsComponent from '../../../../../components/TablePaginationActions';
 import { IEnergyPaymentTable } from '../../../../../state/summary-report/billing-report/energy-payment-state';
@@ -28,14 +28,8 @@ export default function NetPaymentTable(props: IProps) {
         { id: 'role', label: 'Role' },
         { id: 'netPrice', label: 'Net Price' },
     ];
-    if (netPaymentTable === null || netPaymentTable === undefined) {
-        console.log(`NULL`);
-        return <></>;
-    }
-
     // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - netPaymentTable.length) : 0;
-
 
     const handleChangePage = (
         event: React.MouseEvent<HTMLButtonElement> | null,
@@ -50,6 +44,19 @@ export default function NetPaymentTable(props: IProps) {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     };
+
+    useEffect(() => { //watch update length of data and set page to start page
+        setPage(0);
+    
+        return () => {
+          
+        }
+      }, [netPaymentTable.length])
+
+    if (netPaymentTable === null || netPaymentTable === undefined) {
+        console.log(`NULL`);
+        return <></>;
+    }
 
     return (
         <Paper sx={{ width: '100%', mb: 2 }} >

@@ -1,13 +1,6 @@
-import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography, useTheme } from '@mui/material'
-import React from 'react'
-import SearchIcon from '@mui/icons-material/Search';
-import IconButton from '@mui/material/IconButton';
-import FirstPageIcon from '@mui/icons-material/FirstPage';
-import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
-import LastPageIcon from '@mui/icons-material/LastPage';
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
+import React, { useEffect } from 'react'
 import { useHistory } from 'react-router-dom';
-import { useResetRecoilState } from 'recoil';
 import TablePaginationActionsComponent from '../../../../../components/TablePaginationActions';
 import { IEnergyPaymentTable } from '../../../../../state/summary-report/billing-report/energy-payment-state';
 
@@ -26,7 +19,6 @@ export default function EnergyTradingTable(props: IProps) {
     let energyPaymentTable = props.energyPaymentTable;
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(3);
-    const history = useHistory();
 
     const columns: Column[] = [
         { id: 'meterId', label: 'Meter Id.' },
@@ -34,11 +26,14 @@ export default function EnergyTradingTable(props: IProps) {
         { id: 'role', label: 'Role' },
         { id: 'netPrice', label: 'Net Price' },
     ];
-    if (energyPaymentTable === null || energyPaymentTable === undefined) {
-        console.log(`NULL`);
-        return <></>;
-    }
     
+    useEffect(() => { //watch update length of data and set page to start page
+        setPage(0);
+    
+        return () => {
+          
+        }
+      }, [energyPaymentTable.length])
     // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - energyPaymentTable.length) : 0;
 
@@ -57,9 +52,9 @@ export default function EnergyTradingTable(props: IProps) {
         setPage(0);
     };
 
-
-    function onClickViewButton(row: any) {
-        
+    if (energyPaymentTable === null || energyPaymentTable === undefined) {
+        console.log(`NULL`);
+        return <></>;
     }
 
     return (

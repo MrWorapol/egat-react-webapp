@@ -19,9 +19,11 @@ export default function AllSettlementComponent() {
 
     const refreshTable = useDebouncedCallback(() => {
         if (settlementReport) {
+            console.log(settlementReport);
             let tableFilter = [...settlementReport];
             if (role !== 'all') {
-                tableFilter = tableFilter.filter((report) => { return report.role === role });
+                console.log()
+                tableFilter = tableFilter.filter((report) => { return report.role?.toLowerCase() === role.toLowerCase() });
             }
             if (userType !== 'all') {
                 tableFilter = tableFilter.filter((report) => { return report.userType === userType });
@@ -178,12 +180,19 @@ export default function AllSettlementComponent() {
                 {buildTableSelecter()}
             </Grid>
             <Grid id="area-table">
+                {/* {buildTable(filterData)} */}
                 {filterData && <AllSettlementTable data={filterData} page={0} />}
             </Grid>
         </Grid >
     )
 }
 
+// const buildTable = (filterData : ITradeContractReport[] | null) : JSX.Element | null=>{
+//     if(filterData){
+//     return (<AllSettlementTable data={filterData} page={0} />)
+//     }
+//     return null;
+// }
 const buildAreaSelector = (region: string) => {
     const areaSelector = [
         { value: 'total', display: 'Total', region: 'all' },

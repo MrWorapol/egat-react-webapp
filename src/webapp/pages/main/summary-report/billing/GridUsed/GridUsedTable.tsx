@@ -1,5 +1,5 @@
 import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography, useTheme } from '@mui/material'
-import React from 'react'
+import React, { useEffect } from 'react'
 import SearchIcon from '@mui/icons-material/Search';
 import IconButton from '@mui/material/IconButton';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
@@ -27,7 +27,6 @@ export default function GridUsedTable(props: IProps) {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(3);
     const history = useHistory();
-    console.log(gridUsedTable);
 
     const columns: Column[] = [
         { id: 'meterId', label: 'Meter Id.' },
@@ -36,16 +35,9 @@ export default function GridUsedTable(props: IProps) {
         { id: 'gridPrice', label: 'Grid Price' },
         { id: 'gridUsed', label: 'Grid Used' }
     ];
-    if (gridUsedTable === null || gridUsedTable === undefined) {
-        console.log(`WTF : ${gridUsedTable}`);
-        return <></>;
-    }
-    // if (userInfoData.length === 0) {
-    //     return <div><Typography variant="h1">Not found</Typography></div>;
-    // }
+
     // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - gridUsedTable.length) : 0;
-
 
     const handleChangePage = (
         event: React.MouseEvent<HTMLButtonElement> | null,
@@ -60,8 +52,20 @@ export default function GridUsedTable(props: IProps) {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     };
+    
+    
+    useEffect(() => { //watch update length of data and set page to start page
+        setPage(0);
+    
+        return () => {
+          
+        }
+      }, [gridUsedTable.length])
 
-
+    if (gridUsedTable === null || gridUsedTable === undefined) {
+        console.log(`WTF : ${gridUsedTable}`);
+        return <></>;
+    }
     
     return (
         <Paper sx={{ width: '100%', mb: 2 }} >

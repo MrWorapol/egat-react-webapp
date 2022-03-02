@@ -43,6 +43,15 @@ export default function AllAreaTable(props: IProps) {
         { id: 'locationCode', label: 'Location Code' },
         { id: 'Action', label: '' }
     ];
+
+    useEffect(() => { //watch update length of data and set page to start page
+        setPage(0);
+    
+        return () => {
+          
+        }
+      }, [props.data.length])
+
     if (props.data === null || props.data === undefined) {
         console.log(`DATA IS NULL :`);
         return <></>;

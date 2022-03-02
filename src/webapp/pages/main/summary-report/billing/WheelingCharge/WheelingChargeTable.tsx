@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography, useTheme } from '@mui/material'
 import TablePaginationActionsComponent from '../../../../../components/TablePaginationActions';
 import { IWheelingChargeTable } from '../../../../../state/summary-report/billing-report/wheeling-charge-state';
@@ -26,10 +26,7 @@ export default function WheelingChargeTable(props: IProps) {
         { id: 'role', label: 'Role' },
         { id: 'price', label: 'Price' },
     ];
-    if (wheelingChargeTable === null || wheelingChargeTable === undefined) {
-        console.log(`NULL`);
-        return <></>;
-    }
+   
 
     // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - wheelingChargeTable.length) : 0;
@@ -49,11 +46,19 @@ export default function WheelingChargeTable(props: IProps) {
         setPage(0);
     };
 
+    useEffect(() => { //watch update length of data and set page to start page
+        setPage(0);
+    
+        return () => {
+          
+        }
+      }, [wheelingChargeTable.length])
 
-    function onClickViewButton(row: any) {
 
+      if (wheelingChargeTable === null || wheelingChargeTable === undefined) {
+        console.log(`NULL`);
+        return <></>;
     }
-
     return (
         <Paper sx={{ width: '100%', mb: 2 }} >
             <TableContainer >
